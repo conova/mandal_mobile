@@ -1,0 +1,10 @@
+{
+    "appTitle": "Aplicación Antigravedad",
+    "settingsTitle": "Configuración",
+    "homeTitle": "Inicio",
+    "themeLabel": "Tema",
+    "languageLabel": "Idioma",
+    "darkTheme": "Tema Oscuro",
+    "lightTheme": "Tema Claro",
+    "helloWorld": "¡Hola Mundo!"
+}

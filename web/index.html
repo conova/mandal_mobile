@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Antigravity Financial Dashboard">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="antigravity">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png" />
+
+  <title>Mandal Capital</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      background-color: #00897B;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+      background-color: #00897B;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .logo {
+      width: 156px;
+      height: 56px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loading" class="loading">
+    <img class="logo" src="/assets/images/logo_full.svg" alt="Logo">
+  </div>
+  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    window.addEventListener('load', function (ev) {
+      // Wait for a bit to ensure Flutter has started rendering
+      setTimeout(function () {
+        var loading = document.getElementById('loading');
+        if (loading) {
+          loading.style.opacity = '0';
+          setTimeout(function () {
+            loading.remove();
+          }, 500);
+        }
+      }, 1000);
+    });
+  </script>
+</body>
+
+</html>
