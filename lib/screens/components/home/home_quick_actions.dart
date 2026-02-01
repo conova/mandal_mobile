@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../widgets/custom_button.dart';
+import '../../../l10n/app_localizations.dart';
 
 class HomeQuickActions extends StatelessWidget {
   const HomeQuickActions({super.key});
@@ -17,7 +17,8 @@ class HomeQuickActions extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: CustomButton(
               label: l10n.income,
-              variant: CustomButtonVariant.secondary,
+              variant: CustomButtonVariant.primary,
+              size: CustomButtonSize.small,
               icon: Icons.add,
               onPressed: () => Navigator.pushNamed(context, '/settings'),
             ),
@@ -28,8 +29,9 @@ class HomeQuickActions extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: CustomButton(
               label: l10n.expense,
-              variant: CustomButtonVariant.secondary,
-              icon: Icons.arrow_forward,
+              variant: CustomButtonVariant.tertiary,
+              size: CustomButtonSize.small,
+              icon: Icons.north_east,
               onPressed: () {},
             ),
           ),
@@ -39,7 +41,8 @@ class HomeQuickActions extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: CustomButton(
               label: l10n.history,
-              variant: CustomButtonVariant.secondary,
+              variant: CustomButtonVariant.tertiary,
+              size: CustomButtonSize.small,
               icon: Icons.history,
               onPressed: () {},
             ),

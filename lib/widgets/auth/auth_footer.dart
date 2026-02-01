@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 
 class AuthFooter extends StatelessWidget {
   final String questionText;
@@ -22,17 +23,18 @@ class AuthFooter extends StatelessWidget {
       children: [
         Text(
           questionText,
-          style: TextStyle(color: theme.disabledColor, fontSize: 15),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: AppTextStyles.regular,
+          ),
         ),
         const SizedBox(width: 4),
         GestureDetector(
           onTap: onAction,
           child: Text(
             actionText,
-            style: TextStyle(
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: AppTextStyles.regular,
               color: colorScheme.primary,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
             ),
           ),
         ),

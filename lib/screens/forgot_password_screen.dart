@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
-import '../widgets/custom_input.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
-import '../widgets/custom_button.dart';
+import 'components/forgot_password/forgot_password_form.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,14 +13,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _regNoController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  bool _isButtonEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _regNoController.addListener(_checkFields);
-    _phoneController.addListener(_checkFields);
-  }
 
   @override
   void dispose() {
@@ -30,14 +21,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _checkFields() {
-    setState(() {
-      _isButtonEnabled = _regNoController.text.isNotEmpty && _phoneController.text.isNotEmpty;
-    });
-  }
-
   void _handleContinue() {
-    if (!_isButtonEnabled) return;
     // Navigate to verification screen
     Navigator.pushNamed(context, '/forgot_password_verification');
   }
@@ -71,23 +55,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               style: TextStyle(color: theme.disabledColor, fontSize: 16),
             ),
             const SizedBox(height: 48),
-            CustomInput(
-              label: l10n.registrationNumber,
-              hint: '',
-              controller: _regNoController,
-            ),
-            const SizedBox(height: 16),
-            CustomInput(
-              label: l10n.phoneNumber,
-              hint: '',
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 48),
-            CustomButton(
-              label: l10n.continueBtn,
-              onPressed: _isButtonEnabled ? _handleContinue : null,
-              variant: CustomButtonVariant.primary,
+            ForgotPasswordForm(
+              onContinue: _handleContinue,
+              regNoController: _regNoController,
+              phoneController: _phoneController,
             ),
             const SizedBox(height: 40),
           ],

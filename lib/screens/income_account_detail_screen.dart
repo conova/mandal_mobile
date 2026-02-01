@@ -38,10 +38,7 @@ class IncomeAccountDetailScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               l10n.incomeAccountDetailDesc,
-              style: TextStyle(
-                color: theme.disabledColor,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: theme.disabledColor, fontSize: 14),
             ),
             const SizedBox(height: 32),
             _buildInfoCard(l10n.ibanNumber, 'MN650039008000110088', theme),
@@ -50,32 +47,6 @@ class IncomeAccountDetailScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildInfoCard(l10n.receiver, 'Алтанцоож Энхтүвшин', theme),
             const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                   Container(
-                     padding: const EdgeInsets.all(4),
-                     decoration: const BoxDecoration(
-                       color: Colors.teal,
-                       shape: BoxShape.circle,
-                     ),
-                     child: const Icon(Icons.check, color: Colors.white, size: 16),
-                   ),
-                   const SizedBox(width: 12),
-                   Expanded(
-                     child: Text(
-                       l10n.accountChangedSuccess,
-                       style: const TextStyle(color: Colors.white, fontSize: 14),
-                     ),
-                   ),
-                ],
-              ),
-            ),
             const SizedBox(height: 24),
             CustomButton(
               label: l10n.changeAccount,
@@ -88,7 +59,10 @@ class IncomeAccountDetailScreen extends StatelessWidget {
             CustomButton(
               label: l10n.setAsDefaultAccount,
               onPressed: () {
-                CustomSnackbar.show(context, message: 'Set as receiving account');
+                CustomSnackbar.show(
+                  context,
+                  message: 'Set as receiving account',
+                );
               },
               variant: CustomButtonVariant.secondary,
             ),
@@ -112,18 +86,12 @@ class IncomeAccountDetailScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: theme.disabledColor,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: theme.disabledColor, fontSize: 13),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
           ),
         ],
       ),

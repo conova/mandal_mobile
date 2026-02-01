@@ -10,6 +10,11 @@ import 'screens/splash_screen.dart';
 import 'screens/main_container.dart';
 import 'screens/profile_screen.dart';
 import 'screens/notification_screen.dart';
+import 'screens/order_detail_screen.dart';
+import 'screens/stock_detail_screen.dart';
+import 'screens/stock_trading_screen.dart';
+import 'screens/stock_success_screen.dart';
+import 'screens/release_locked_amount_screen.dart';
 import 'screens/my_info_screen.dart';
 import 'screens/income_account_screen.dart';
 import 'screens/add_income_account_screen.dart';
@@ -31,19 +36,28 @@ import 'screens/register_password_screen.dart';
 import 'screens/register_bank_selection_screen.dart';
 import 'screens/register_income_account_screen.dart';
 import 'screens/register_success_screen.dart';
+import 'screens/bond/bond_detail_screen.dart';
+import 'screens/bond/bond_main_screen.dart';
+import 'screens/bond/bond_buy_screen.dart';
+import 'screens/bond/bond_confirmation_screen.dart';
+import 'screens/bond/bond_success_screen.dart';
+import 'screens/bond/bond_sell_screen.dart';
+import 'screens/bond/bond_sell_confirmation_screen.dart';
+import 'screens/bond/bond_sell_success_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'theme/app_colors.dart';
 import 'theme/extended_colors.dart';
 import 'theme/app_state_manager.dart';
+import 'theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   final authService = AuthService();
   await authService.init();
-  
+
   final apiService = ApiService(
     authService,
     onLogout: () => AppStateManager.instance.logout(),
@@ -70,7 +84,7 @@ class MyApp extends StatelessWidget {
       animation: AppStateManager.instance,
       builder: (context, child) {
         final state = AppStateManager.instance;
-        
+
         return MaterialApp(
           title: 'Mandal Capital',
           themeMode: state.themeMode,
@@ -99,10 +113,38 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: AppColors.neutral100),
-              bodyMedium: TextStyle(color: AppColors.neutral200),
-              titleLarge: TextStyle(color: AppColors.neutral100, fontWeight: FontWeight.bold),
+            textTheme: TextTheme(
+              displayLarge: AppTextStyles.display.copyWith(
+                color: AppColors.neutral100,
+              ),
+              headlineLarge: AppTextStyles.h1.copyWith(
+                color: AppColors.neutral100,
+              ),
+              headlineMedium: AppTextStyles.h2.copyWith(
+                color: AppColors.neutral100,
+              ),
+              headlineSmall: AppTextStyles.h3.copyWith(
+                color: AppColors.neutral100,
+              ),
+              bodyLarge: AppTextStyles.body1.copyWith(
+                color: AppColors.neutral100,
+              ),
+              bodyMedium: AppTextStyles.body2.copyWith(
+                color: AppColors.neutral200,
+              ),
+              labelLarge: AppTextStyles.paragraph1.copyWith(
+                color: AppColors.neutral200,
+              ),
+              labelMedium: AppTextStyles.paragraph2.copyWith(
+                color: AppColors.neutral200,
+              ),
+              labelSmall: AppTextStyles.caption.copyWith(
+                color: AppColors.neutral300,
+              ),
+              titleLarge: AppTextStyles.h2.copyWith(
+                color: AppColors.neutral100,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             dividerTheme: const DividerThemeData(color: AppColors.bgTertiary),
             extensions: [
@@ -155,10 +197,38 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: AppColors.dpNeutral100),
-              bodyMedium: TextStyle(color: AppColors.dpNeutral200),
-              titleLarge: TextStyle(color: AppColors.dpNeutral100, fontWeight: FontWeight.bold),
+            textTheme: TextTheme(
+              displayLarge: AppTextStyles.display.copyWith(
+                color: AppColors.dpNeutral100,
+              ),
+              headlineLarge: AppTextStyles.h1.copyWith(
+                color: AppColors.dpNeutral100,
+              ),
+              headlineMedium: AppTextStyles.h2.copyWith(
+                color: AppColors.dpNeutral100,
+              ),
+              headlineSmall: AppTextStyles.h3.copyWith(
+                color: AppColors.dpNeutral100,
+              ),
+              bodyLarge: AppTextStyles.body1.copyWith(
+                color: AppColors.dpNeutral100,
+              ),
+              bodyMedium: AppTextStyles.body2.copyWith(
+                color: AppColors.dpNeutral200,
+              ),
+              labelLarge: AppTextStyles.paragraph1.copyWith(
+                color: AppColors.dpNeutral200,
+              ),
+              labelMedium: AppTextStyles.paragraph2.copyWith(
+                color: AppColors.dpNeutral200,
+              ),
+              labelSmall: AppTextStyles.caption.copyWith(
+                color: AppColors.dpNeutral300,
+              ),
+              titleLarge: AppTextStyles.h2.copyWith(
+                color: AppColors.dpNeutral100,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             dividerTheme: const DividerThemeData(color: AppColors.dpBgTertiary),
             extensions: [
@@ -191,10 +261,7 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('mn'),
-          ],
+          supportedLocales: const [Locale('en'), Locale('mn')],
           locale: state.locale,
           home: const SplashScreen(),
           routes: {
@@ -211,22 +278,45 @@ class MyApp extends StatelessWidget {
             '/add_income_account': (context) => const AddIncomeAccountScreen(),
             '/summary_report': (context) => const SummaryReportScreen(),
             '/connected_devices': (context) => const ConnectedDevicesScreen(),
-            '/change_password_verify': (context) => const ChangePasswordVerifyScreen(),
-            '/change_password_code': (context) => const ChangePasswordCodeScreen(),
-            '/change_password_new': (context) => const ChangePasswordNewScreen(),
-            '/income_account_detail': (context) => const IncomeAccountDetailScreen(),
+            '/change_password_verify': (context) =>
+                const ChangePasswordVerifyScreen(),
+            '/change_password_code': (context) =>
+                const ChangePasswordCodeScreen(),
+            '/change_password_new': (context) =>
+                const ChangePasswordNewScreen(),
+            '/income_account_detail': (context) =>
+                const IncomeAccountDetailScreen(),
             '/login_verification': (context) => const LoginVerificationScreen(),
             '/login_otp': (context) => const LoginOtpScreen(),
             '/forgot_password': (context) => const ForgotPasswordScreen(),
-            '/forgot_password_verification': (context) => const ForgotPasswordVerificationScreen(),
-            '/forgot_password_otp': (context) => const ForgotPasswordOtpScreen(),
-            '/forgot_password_new': (context) => const ForgotPasswordNewScreen(),
+            '/forgot_password_verification': (context) =>
+                const ForgotPasswordVerificationScreen(),
+            '/forgot_password_otp': (context) =>
+                const ForgotPasswordOtpScreen(),
+            '/forgot_password_new': (context) =>
+                const ForgotPasswordNewScreen(),
             '/register': (context) => const RegisterScreen(),
             '/register_otp': (context) => const RegisterOtpScreen(),
             '/register_password': (context) => const RegisterPasswordScreen(),
-            '/register_bank_selection': (context) => const RegisterBankSelectionScreen(),
-            '/register_income_account': (context) => const RegisterIncomeAccountScreen(),
+            '/register_bank_selection': (context) =>
+                const RegisterBankSelectionScreen(),
+            '/register_income_account': (context) =>
+                const RegisterIncomeAccountScreen(),
             '/register_success': (context) => const RegisterSuccessScreen(),
+            '/bond_detail': (context) => const BondDetailScreen(),
+            '/bond_main': (context) => const BondMainScreen(),
+            '/bond_buy': (context) => const BondBuyScreen(),
+            '/bond_confirmation': (context) => const BondConfirmationScreen(),
+            '/bond_success': (context) => const BondSuccessScreen(),
+            '/bond_sell': (context) => const BondSellScreen(),
+            '/bond_sell_confirmation': (context) =>
+                const BondSellConfirmationScreen(),
+            '/bond_sell_success': (context) => const BondSellSuccessScreen(),
+            '/order_detail': (context) => const OrderDetailScreen(),
+            '/stock_detail': (context) => const StockDetailScreen(),
+            '/stock_trading': (context) => const StockTradingScreen(),
+            '/stock_success': (context) => const StockSuccessScreen(),
+            '/release_locked': (context) => const ReleaseLockedAmountScreen(),
           },
           debugShowCheckedModeBanner: false,
         );

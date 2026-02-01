@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import 'home_screen.dart';
-import 'savings_screen.dart';
+import 'bond/bond_main_screen.dart';
 import 'stock_screen.dart';
 import 'order_screen.dart';
 import 'settings_screen.dart';
@@ -14,11 +14,12 @@ class MainContainer extends StatefulWidget {
 }
 
 class _MainContainerState extends State<MainContainer> {
-  int _selectedIndex = 3; // Defaulting to Orders as requested recently
+  int _selectedIndex =
+      0; // Defaulting to Bond tab as requested indirectly by design
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const SavingsScreen(),
+    const BondMainScreen(),
     const StockScreen(),
     const OrderScreen(),
   ];
@@ -33,12 +34,9 @@ class _MainContainerState extends State<MainContainer> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    
+
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -47,7 +45,10 @@ class _MainContainerState extends State<MainContainer> {
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: theme.disabledColor,
         showUnselectedLabels: true,
-        selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        selectedLabelStyle: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
         unselectedLabelStyle: const TextStyle(fontSize: 11),
         items: [
           BottomNavigationBarItem(

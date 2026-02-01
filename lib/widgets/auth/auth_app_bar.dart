@@ -7,11 +7,7 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showLogo;
   final VoidCallback? onClose;
 
-  const AuthAppBar({
-    super.key,
-    this.showLogo = true,
-    this.onClose,
-  });
+  const AuthAppBar({super.key, this.showLogo = true, this.onClose});
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +32,27 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       actions: [
         const LanguageSwitcher(),
-        const SizedBox(width: 8),
+        const SizedBox(width: 12),
         Container(
           decoration: BoxDecoration(
             color: colorScheme.secondary,
             shape: BoxShape.circle,
           ),
-          child: IconButton(
-            icon: Icon(Icons.close, color: colorScheme.onBackground, size: 20),
-            onPressed: onClose ?? () => Navigator.of(context).pop(),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          child: InkWell(
+            onTap: onClose ?? () => Navigator.of(context).pop(),
+            borderRadius: BorderRadius.circular(16), // Half of 32 for a circle
+            child: SizedBox(
+              width: 32,
+              height: 32,
+              child: Icon(
+                Icons.close,
+                color: colorScheme.onBackground,
+                size: 24,
+              ),
+            ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 20),
       ],
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/filter_chip_bar.dart';
 import '../widgets/order_card.dart';
@@ -10,10 +11,11 @@ class OrderScreen extends StatefulWidget {
   State<OrderScreen> createState() => _OrderScreenState();
 }
 
-class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStateMixin {
+class _OrderScreenState extends State<OrderScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String? _selectedFilter;
-  
+
   @override
   void initState() {
     super.initState();
@@ -31,38 +33,27 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final List<String> filters = [l10n.all, l10n.bond, l10n.stocks];
     _selectedFilter ??= l10n.all;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.book, color: colorScheme.onSurface),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/notifications'),
-            icon: Icon(Icons.notifications_outlined, color: colorScheme.onSurface),
-          ),
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/profile'),
-            icon: Icon(Icons.person_outline, color: colorScheme.onSurface),
-          ),
-          const SizedBox(width: 8),
-        ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
+          preferredSize: const Size.fromHeight(0),
           child: TabBar(
             controller: _tabController,
             indicatorColor: theme.primaryColor,
             indicatorWeight: 3,
             labelColor: colorScheme.onSurface,
             unselectedLabelColor: theme.disabledColor,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
             tabs: [
               Tab(text: l10n.activeOrders),
               Tab(text: l10n.orderHistory),
@@ -74,18 +65,18 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
         controller: _tabController,
         children: [
           _buildOrderList(context, theme, l10n, filters),
-          Center(
-            child: Text(
-              'History WIP', 
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
+          Center(child: Text('History WIP', style: theme.textTheme.bodyMedium)),
         ],
       ),
     );
   }
 
-  Widget _buildOrderList(BuildContext context, ThemeData theme, AppLocalizations l10n, List<String> filters) {
+  Widget _buildOrderList(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+    List<String> filters,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -113,6 +104,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
             status: OrderStatus.open,
             market: MarketType.bond,
             onEdit: () {},
+            onTap: () => Navigator.pushNamed(context, '/order_detail'),
           ),
           OrderCard(
             companyName: 'Net Capital',
@@ -125,6 +117,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
             status: OrderStatus.closed,
             market: MarketType.bond,
             onEdit: () {},
+            onTap: () => Navigator.pushNamed(context, '/order_detail'),
           ),
           OrderCard(
             companyName: 'MIK',
@@ -137,6 +130,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
             status: OrderStatus.open,
             market: MarketType.foreign,
             onEdit: () {},
+            onTap: () => Navigator.pushNamed(context, '/order_detail'),
           ),
           OrderCard(
             companyName: 'Net Capital',

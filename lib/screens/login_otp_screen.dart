@@ -93,9 +93,9 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final channel = args['channel'] as String;
-    final value = args['value'] as String;
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final channel = args?['channel'] as String? ?? 'SMS';
+    final value = args?['value'] as String? ?? '';
 
     return Scaffold(
       backgroundColor: colorScheme.background,

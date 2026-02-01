@@ -112,6 +112,18 @@ abstract class AppLocalizations {
   /// **'Login'**
   String get login;
 
+  /// No description provided for @loginErrorPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number or password is incorrect.'**
+  String get loginErrorPhone;
+
+  /// No description provided for @loginErrorEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or password is incorrect.'**
+  String get loginErrorEmail;
+
   /// No description provided for @phoneNumber.
   ///
   /// In en, this message translates to:
@@ -1125,6 +1137,480 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check payment'**
   String get selectBankToContinue;
+
+  /// No description provided for @amountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amountLabel;
+
+  /// No description provided for @lockedAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked Amount'**
+  String get lockedAmountLabel;
+
+  /// No description provided for @placeOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Place Order'**
+  String get placeOrder;
+
+  /// No description provided for @receivableAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Receivable Amount'**
+  String get receivableAmountLabel;
+
+  /// No description provided for @sellPriceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The lower the selling price, the more likely your order will be executed quickly.'**
+  String get sellPriceDesc;
+
+  /// No description provided for @swipeUpToConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe up to confirm'**
+  String get swipeUpToConfirm;
+
+  /// No description provided for @orderPlacedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'ORDER\nPLACED'**
+  String get orderPlacedSuccess;
+
+  /// No description provided for @orderPlacedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We will notify you when the order is fulfilled and interest starts accruing.'**
+  String get orderPlacedDesc;
+
+  /// No description provided for @viewOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'View Orders'**
+  String get viewOrders;
+
+  /// No description provided for @sellOrderSuccessDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please note that only the best selling price will be visible to other investors.'**
+  String get sellOrderSuccessDesc;
+
+  /// No description provided for @commissionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission'**
+  String get commissionLabel;
+
+  /// No description provided for @ownedAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned Amount'**
+  String get ownedAmountLabel;
+
+  /// No description provided for @pledgeBondDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You can take a loan by pledging your existing bonds.'**
+  String get pledgeBondDesc;
+
+  /// No description provided for @pledge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pledge'**
+  String get pledge;
+
+  /// No description provided for @newBond.
+  ///
+  /// In en, this message translates to:
+  /// **'New Bond'**
+  String get newBond;
+
+  /// No description provided for @newBondDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn steady returns with our premium bond offerings. Start investing today.'**
+  String get newBondDesc;
+
+  /// No description provided for @watchlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Watchlist'**
+  String get watchlist;
+
+  /// No description provided for @recommendationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t know which bond to choose?'**
+  String get recommendationTitle;
+
+  /// No description provided for @recommendationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We recommend the best bonds based on your interests.'**
+  String get recommendationDesc;
+
+  /// No description provided for @sellBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell Bond'**
+  String get sellBond;
+
+  /// No description provided for @mandalBond.
+  ///
+  /// In en, this message translates to:
+  /// **'MANDAL BOND'**
+  String get mandalBond;
+
+  /// No description provided for @primaryMarket.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Market'**
+  String get primaryMarket;
+
+  /// No description provided for @secondaryMarket.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary Market'**
+  String get secondaryMarket;
+
+  /// No description provided for @myBond.
+  ///
+  /// In en, this message translates to:
+  /// **'My Bond'**
+  String get myBond;
+
+  /// No description provided for @pledgeBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Pledge Bond'**
+  String get pledgeBond;
+
+  /// No description provided for @bondCollectionTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Target'**
+  String get bondCollectionTarget;
+
+  /// No description provided for @annualInterest.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual Interest'**
+  String get annualInterest;
+
+  /// No description provided for @paymentFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Frequency'**
+  String get paymentFrequency;
+
+  /// No description provided for @availableCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Cash'**
+  String get availableCash;
+
+  /// No description provided for @buyQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Quantity'**
+  String get buyQuantity;
+
+  /// No description provided for @availableQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get availableQuantity;
+
+  /// No description provided for @totalPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Payment'**
+  String get totalPayment;
+
+  /// No description provided for @totalReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Return'**
+  String get totalReturn;
+
+  /// No description provided for @lockedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked Amount'**
+  String get lockedAmount;
+
+  /// No description provided for @release.
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get release;
+
+  /// No description provided for @orderRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'ORDER REGISTERED'**
+  String get orderRegistered;
+
+  /// No description provided for @sellPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell Price'**
+  String get sellPrice;
+
+  /// No description provided for @executionProbability.
+  ///
+  /// In en, this message translates to:
+  /// **'Execution Probability'**
+  String get executionProbability;
+
+  /// No description provided for @orderBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Board'**
+  String get orderBoard;
+
+  /// No description provided for @high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get high;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get low;
+
+  /// No description provided for @bondClosingDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing Date'**
+  String get bondClosingDateLabel;
+
+  /// No description provided for @viewBondPresentation.
+  ///
+  /// In en, this message translates to:
+  /// **'View Presentation'**
+  String get viewBondPresentation;
+
+  /// No description provided for @buyBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Bond'**
+  String get buyBond;
+
+  /// No description provided for @availableAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Amount'**
+  String get availableAmountLabel;
+
+  /// No description provided for @costLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Interest Rate'**
+  String get costLabel;
+
+  /// No description provided for @quantityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get quantityLabel;
+
+  /// No description provided for @tradeAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade Amount'**
+  String get tradeAmount;
+
+  /// No description provided for @orderTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get orderTypeLabel;
+
+  /// No description provided for @orderStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get orderStatusLabel;
+
+  /// No description provided for @yieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yield'**
+  String get yieldLabel;
+
+  /// No description provided for @settlementDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Settlement Date'**
+  String get settlementDate;
+
+  /// No description provided for @orderDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Date'**
+  String get orderDate;
+
+  /// No description provided for @executionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Execution History'**
+  String get executionHistory;
+
+  /// No description provided for @executedQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Executed Quantity'**
+  String get executedQuantity;
+
+  /// No description provided for @partiallyFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Partially Filled'**
+  String get partiallyFilled;
+
+  /// No description provided for @limitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit Price'**
+  String get limitPrice;
+
+  /// No description provided for @generalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'General Information'**
+  String get generalInfo;
+
+  /// No description provided for @marketCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Market Cap'**
+  String get marketCap;
+
+  /// No description provided for @avgVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Volume'**
+  String get avgVolume;
+
+  /// No description provided for @dividendYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Dividend Yield'**
+  String get dividendYield;
+
+  /// No description provided for @dailyVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Volume'**
+  String get dailyVolume;
+
+  /// No description provided for @pastDividends.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Dividends'**
+  String get pastDividends;
+
+  /// No description provided for @trade.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade'**
+  String get trade;
+
+  /// No description provided for @billion.
+  ///
+  /// In en, this message translates to:
+  /// **'billion'**
+  String get billion;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @stockTrading.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock Trading'**
+  String get stockTrading;
+
+  /// No description provided for @paste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get paste;
+
+  /// No description provided for @buyTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get buyTab;
+
+  /// No description provided for @sellTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell'**
+  String get sellTab;
+
+  /// No description provided for @totalPaymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Payment'**
+  String get totalPaymentLabel;
+
+  /// No description provided for @totalReceivableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Receivable'**
+  String get totalReceivableLabel;
+
+  /// No description provided for @orderBoardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Board'**
+  String get orderBoardTitle;
+
+  /// No description provided for @buyAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get buyAmount;
+
+  /// No description provided for @sellAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell'**
+  String get sellAmount;
+
+  /// No description provided for @releaseLockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Locked Amount'**
+  String get releaseLockedTitle;
+
+  /// No description provided for @releaseLockedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can increase your cash by canceling active orders (locked amount).'**
+  String get releaseLockedSubtitle;
+
+  /// No description provided for @cancelOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Order'**
+  String get cancelOrder;
 }
 
 class _AppLocalizationsDelegate

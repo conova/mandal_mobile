@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -8,10 +9,11 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
 
     return AppBar(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       elevation: 0,
       leading: IconButton(
         icon: Icon(Icons.book, color: colorScheme.onSurface),
@@ -22,7 +24,10 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
           children: [
             IconButton(
               onPressed: () => Navigator.pushNamed(context, '/notifications'),
-              icon: Icon(Icons.notifications_outlined, color: colorScheme.onSurface),
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: colorScheme.onSurface,
+              ),
             ),
             Positioned(
               right: 12,
@@ -30,9 +35,12 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
               child: Container(
                 width: 8,
                 height: 8,
-                decoration: BoxDecoration(color: colorScheme.error, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: colorScheme.error,
+                  shape: BoxShape.circle,
+                ),
               ),
-            )
+            ),
           ],
         ),
         IconButton(

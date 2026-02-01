@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/api_service.dart';
 import '../../../config/api_config.dart';
+import '../../../theme/extended_colors.dart';
 
 class HomeAssetSummary extends StatefulWidget {
   const HomeAssetSummary({super.key});
@@ -29,8 +30,8 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     setState(() => _isLoading = true);
     try {
       final apiService = context.read<ApiService>();
-      final response = await apiService.get(ApiConfig.profile);
-      // Data would be updated here from response
+      final dynamic response = await apiService.get(ApiConfig.profile);
+      debugPrint('Asset data: $response');
     } catch (e) {
       // Handle error
     } finally {
@@ -44,23 +45,36 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.totalAssets,
-          style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: theme.disabledColor,
+          ),
         ),
         const SizedBox(height: 4),
         _isLoading
-            ? const SizedBox(height: 48, child: Center(child: CircularProgressIndicator()))
+            ? const SizedBox(
+                height: 48,
+                child: Center(child: CircularProgressIndicator()),
+              )
             : Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
                 children: [
                   Text(
                     _totalAssets,
-                    style: theme.textTheme.bodyLarge?.copyWith(fontSize: 32, fontWeight: FontWeight.bold),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
                   Text(
                     _totalAssetsDec,
@@ -77,13 +91,29 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
           children: [
             Text(
               _assetChange,
-              style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: extendedColors.primaryMain,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
             ),
-            const SizedBox(width: 8),
-            Icon(Icons.arrow_drop_up, color: theme.primaryColor, size: 16),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.arrow_drop_up,
+              color: extendedColors.primaryMain,
+              size: 18,
+            ),
             Text(
-              '$_assetChangePercent (${l10n.last1Month})',
-              style: TextStyle(color: theme.primaryColor),
+              '$_assetChangePercent ',
+              style: TextStyle(
+                color: extendedColors.primaryMain,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+            Text(
+              '(${l10n.last1Month})',
+              style: TextStyle(color: theme.disabledColor, fontSize: 14),
             ),
           ],
         ),

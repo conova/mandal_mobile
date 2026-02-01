@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 
-import '../widgets/device_item.dart';
+import 'components/connected_devices/device_item.dart';
 
 class ConnectedDevicesScreen extends StatelessWidget {
   const ConnectedDevicesScreen({super.key});

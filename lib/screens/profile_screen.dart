@@ -6,7 +6,10 @@ import '../widgets/custom_button.dart';
 import '../widgets/logout_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
-import '../widgets/profile_widgets.dart';
+import 'components/profile/profile_header.dart';
+import 'components/profile/profile_list_item.dart';
+import 'components/profile/profile_toggle_item.dart';
+import 'components/profile/profile_section_header.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -20,9 +23,9 @@ class ProfileScreen extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
@@ -33,18 +36,28 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () {
               // Toggle language mn/en
               final current = AppStateManager.instance.locale.languageCode;
-              AppStateManager.instance.setLocale(Locale(current == 'mn' ? 'en' : 'mn'));
+              AppStateManager.instance.setLocale(
+                Locale(current == 'mn' ? 'en' : 'mn'),
+              );
             },
             icon: CircleAvatar(
               radius: 10,
               backgroundColor: colorScheme.surfaceVariant,
               child: Text(
-                AppStateManager.instance.locale.languageCode == 'mn' ? 'MN' : 'EN',
-                style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: colorScheme.onSurfaceVariant),
+                AppStateManager.instance.locale.languageCode == 'mn'
+                    ? 'MN'
+                    : 'EN',
+                style: TextStyle(
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
             label: Text(
-              AppStateManager.instance.locale.languageCode == 'mn' ? 'MNG' : 'ENG',
+              AppStateManager.instance.locale.languageCode == 'mn'
+                  ? 'MNG'
+                  : 'ENG',
               style: TextStyle(color: colorScheme.onSurface, fontSize: 12),
             ),
           ),
@@ -57,31 +70,12 @@ class ProfileScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             // Profile Header
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundColor: colorScheme.surfaceVariant,
-                    child: Icon(Icons.person, size: 80, color: colorScheme.tertiary),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Өлзийдэлгэр',
-                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '80006272',
-                    style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
+            // Profile Header
+            const ProfileHeader(name: 'Өлзийдэлгэр', phoneNumber: '80006272'),
             const SizedBox(height: 32),
 
             // Personal Information Section
-            const ProfileSectionHeader(title: 'ХУВИЙН МЭДЭЭЛЭЛ'), 
+            const ProfileSectionHeader(title: 'ХУВИЙН МЭДЭЭЛЭЛ'),
             ProfileToggleItem(
               icon: Icons.dark_mode_outlined,
               title: l10n.darkMode,
@@ -95,7 +89,11 @@ class ProfileScreen extends StatelessWidget {
               title: l10n.myInfo,
               subtitle: l10n.myInfoSubtitle,
               onTap: () => Navigator.pushNamed(context, '/my_info'),
-              trailing: Icon(Icons.info_outline, color: extendedColors.yellow, size: 20),
+              trailing: Icon(
+                Icons.info_outline,
+                color: extendedColors.yellow,
+                size: 20,
+              ),
             ),
             ProfileListItem(
               icon: Icons.account_balance_outlined,
@@ -134,7 +132,8 @@ class ProfileScreen extends StatelessWidget {
               icon: Icons.lock_outline,
               title: l10n.changePassword,
               subtitle: l10n.lastChanged,
-              onTap: () => Navigator.pushNamed(context, '/change_password_verify'),
+              onTap: () =>
+                  Navigator.pushNamed(context, '/change_password_verify'),
             ),
             ProfileListItem(
               icon: Icons.devices_outlined,
@@ -158,16 +157,15 @@ class ProfileScreen extends StatelessWidget {
                       backgroundColor: Colors.transparent,
                       builder: (context) => const LogoutBottomSheet(),
                     );
-                    
+
                     if (result == true && context.mounted) {
                       // Clear authentication session
                       await context.read<AuthService>().clearSession();
                       // Navigate to login and clear stack
                       if (context.mounted) {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/login',
-                          (route) => false,
-                        );
+                        Navigator.of(
+                          context,
+                        ).pushNamedAndRemoveUntil('/login', (route) => false);
                       }
                     }
                   },

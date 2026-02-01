@@ -15,6 +15,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login => 'Login';
 
   @override
+  String get loginErrorPhone => 'Phone number or password is incorrect.';
+
+  @override
+  String get loginErrorEmail => 'Email or password is incorrect.';
+
+  @override
   String get phoneNumber => 'Phone Number';
 
   @override
@@ -532,4 +538,248 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectBankToContinue => 'Check payment';
+
+  @override
+  String get amountLabel => 'Amount';
+
+  @override
+  String get lockedAmountLabel => 'Locked Amount';
+
+  @override
+  String get placeOrder => 'Place Order';
+
+  @override
+  String get receivableAmountLabel => 'Receivable Amount';
+
+  @override
+  String get sellPriceDesc =>
+      'The lower the selling price, the more likely your order will be executed quickly.';
+
+  @override
+  String get swipeUpToConfirm => 'Swipe up to confirm';
+
+  @override
+  String get orderPlacedSuccess => 'ORDER\nPLACED';
+
+  @override
+  String get orderPlacedDesc =>
+      'We will notify you when the order is fulfilled and interest starts accruing.';
+
+  @override
+  String get viewOrders => 'View Orders';
+
+  @override
+  String get sellOrderSuccessDesc =>
+      'Please note that only the best selling price will be visible to other investors.';
+
+  @override
+  String get commissionLabel => 'Commission';
+
+  @override
+  String get ownedAmountLabel => 'Owned Amount';
+
+  @override
+  String get pledgeBondDesc =>
+      'You can take a loan by pledging your existing bonds.';
+
+  @override
+  String get pledge => 'Pledge';
+
+  @override
+  String get newBond => 'New Bond';
+
+  @override
+  String get newBondDesc =>
+      'Earn steady returns with our premium bond offerings. Start investing today.';
+
+  @override
+  String get watchlist => 'Watchlist';
+
+  @override
+  String get recommendationTitle => 'Don\'t know which bond to choose?';
+
+  @override
+  String get recommendationDesc =>
+      'We recommend the best bonds based on your interests.';
+
+  @override
+  String get sellBond => 'Sell Bond';
+
+  @override
+  String get mandalBond => 'MANDAL BOND';
+
+  @override
+  String get primaryMarket => 'Primary Market';
+
+  @override
+  String get secondaryMarket => 'Secondary Market';
+
+  @override
+  String get myBond => 'My Bond';
+
+  @override
+  String get pledgeBond => 'Pledge Bond';
+
+  @override
+  String get bondCollectionTarget => 'Collection Target';
+
+  @override
+  String get annualInterest => 'Annual Interest';
+
+  @override
+  String get paymentFrequency => 'Payment Frequency';
+
+  @override
+  String get availableCash => 'Available Cash';
+
+  @override
+  String get buyQuantity => 'Buy Quantity';
+
+  @override
+  String get availableQuantity => 'Available';
+
+  @override
+  String get totalPayment => 'Total Payment';
+
+  @override
+  String get totalReturn => 'Total Return';
+
+  @override
+  String get lockedAmount => 'Locked Amount';
+
+  @override
+  String get release => 'Release';
+
+  @override
+  String get orderRegistered => 'ORDER REGISTERED';
+
+  @override
+  String get sellPrice => 'Sell Price';
+
+  @override
+  String get executionProbability => 'Execution Probability';
+
+  @override
+  String get orderBoard => 'Order Board';
+
+  @override
+  String get high => 'High';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get low => 'Low';
+
+  @override
+  String get bondClosingDateLabel => 'Closing Date';
+
+  @override
+  String get viewBondPresentation => 'View Presentation';
+
+  @override
+  String get buyBond => 'Buy Bond';
+
+  @override
+  String get availableAmountLabel => 'Available Amount';
+
+  @override
+  String get costLabel => 'Interest Rate';
+
+  @override
+  String get quantityLabel => 'Quantity';
+
+  @override
+  String get tradeAmount => 'Trade Amount';
+
+  @override
+  String get orderTypeLabel => 'Type';
+
+  @override
+  String get orderStatusLabel => 'Status';
+
+  @override
+  String get yieldLabel => 'Yield';
+
+  @override
+  String get settlementDate => 'Settlement Date';
+
+  @override
+  String get orderDate => 'Order Date';
+
+  @override
+  String get executionHistory => 'Execution History';
+
+  @override
+  String get executedQuantity => 'Executed Quantity';
+
+  @override
+  String get partiallyFilled => 'Partially Filled';
+
+  @override
+  String get limitPrice => 'Limit Price';
+
+  @override
+  String get generalInfo => 'General Information';
+
+  @override
+  String get marketCap => 'Market Cap';
+
+  @override
+  String get avgVolume => 'Avg Volume';
+
+  @override
+  String get dividendYield => 'Dividend Yield';
+
+  @override
+  String get dailyVolume => 'Daily Volume';
+
+  @override
+  String get pastDividends => 'Past Dividends';
+
+  @override
+  String get trade => 'Trade';
+
+  @override
+  String get billion => 'billion';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get stockTrading => 'Stock Trading';
+
+  @override
+  String get paste => 'Paste';
+
+  @override
+  String get buyTab => 'Buy';
+
+  @override
+  String get sellTab => 'Sell';
+
+  @override
+  String get totalPaymentLabel => 'Total Payment';
+
+  @override
+  String get totalReceivableLabel => 'Total Receivable';
+
+  @override
+  String get orderBoardTitle => 'Order Board';
+
+  @override
+  String get buyAmount => 'Buy';
+
+  @override
+  String get sellAmount => 'Sell';
+
+  @override
+  String get releaseLockedTitle => 'Release Locked Amount';
+
+  @override
+  String get releaseLockedSubtitle =>
+      'You can increase your cash by canceling active orders (locked amount).';
+
+  @override
+  String get cancelOrder => 'Cancel Order';
 }

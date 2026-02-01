@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 
 class CustomInput extends StatefulWidget {
   final String label;
@@ -64,7 +65,7 @@ class _CustomInputState extends State<CustomInput> {
     final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Priority: External errorText > Internal validation error
     final String? currentError = widget.errorText ?? _internalErrorText;
     final bool hasError = currentError != null;
@@ -72,70 +73,90 @@ class _CustomInputState extends State<CustomInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16), // Adjusted vertical padding
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: hasError 
-                ? colorScheme.error 
-                : (_isFocused ? theme.primaryColor : extendedColors.neutral500),
-              width: _isFocused ? 2 : 1,
+        GestureDetector(
+          onTap: () {
+            _focusNode.requestFocus();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ), // Adjusted vertical padding
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: hasError
+                    ? colorScheme.error
+                    : (_isFocused
+                          ? theme.primaryColor
+                          : extendedColors.neutral500),
+                width: _isFocused ? 2 : 1,
+              ),
             ),
-          ),
-          child: TextFormField(
-            controller: widget.controller,
-            focusNode: _focusNode,
-            obscureText: widget.isPassword ? _obscureText : false,
-            keyboardType: widget.keyboardType,
-            onChanged: widget.onChanged,
-            validator: (value) {
-              // Run the custom validator
-              final result = widget.validator?.call(value);
-              // Update the UI state to show the red border
-              if (_internalErrorText != result) {
+            child: TextFormField(
+              controller: widget.controller,
+              focusNode: _focusNode,
+              obscureText: widget.isPassword ? _obscureText : false,
+              keyboardType: widget.keyboardType,
+              onChanged: widget.onChanged,
+              validator: (value) {
+                // Run the custom validator
+                final result = widget.validator?.call(value);
+                // Update the UI state to show the red border
+                if (_internalErrorText != result) {
                   // This schedules the update for the very next frame
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) { // Ensure the widget still exists
+                    if (mounted) {
+                      // Ensure the widget still exists
                       setState(() {
                         _internalErrorText = result;
                       });
                     }
                   });
                 }
-              return result;
-            },
-            autovalidateMode: widget.autovalidateMode,
-            onSaved: widget.onSaved,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: colorScheme.onBackground,
-              fontSize: 16,
-            ),
-            decoration: InputDecoration(
-              labelText: widget.label,
-              labelStyle: TextStyle(color: theme.disabledColor),
-              hintText: widget.hint,
-              hintStyle: TextStyle(color: theme.disabledColor.withOpacity(0.5)),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error text
-              suffixIcon: widget.isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                        color: theme.disabledColor,
-                        size: 24,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                    )
-                  : widget.suffix,
+                return result;
+              },
+              autovalidateMode: widget.autovalidateMode,
+              onSaved: widget.onSaved,
+              style: AppTextStyles.body1.copyWith(
+                fontWeight: AppTextStyles.light,
+                color: colorScheme.onBackground,
+              ),
+              decoration: InputDecoration(
+                labelText: widget.label,
+                labelStyle: AppTextStyles.paragraph1.copyWith(
+                  fontWeight: AppTextStyles.light,
+                  color: theme.disabledColor,
+                ),
+                hintText: widget.hint,
+                hintStyle: AppTextStyles.body1.copyWith(
+                  color: theme.disabledColor,
+                ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                errorStyle: const TextStyle(
+                  height: 0,
+                  fontSize: 0,
+                ), // Hide default error text
+                suffixIcon: widget.isPassword
+                    ? IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: theme.disabledColor,
+                          size: 24,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      )
+                    : widget.suffix,
+              ),
             ),
           ),
         ),
@@ -144,9 +165,8 @@ class _CustomInputState extends State<CustomInput> {
             padding: const EdgeInsets.only(top: 7, left: 16),
             child: Text(
               currentError!,
-              style: TextStyle(
+              style: AppTextStyles.paragraph1Light.copyWith(
                 color: theme.colorScheme.error,
-                fontSize: 13,
               ),
             ),
           ),

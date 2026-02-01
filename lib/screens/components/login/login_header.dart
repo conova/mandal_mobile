@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 
 class LoginHeader extends StatelessWidget {
@@ -16,18 +17,16 @@ class LoginHeader extends StatelessWidget {
         const SizedBox(height: 32),
         Text(
           l10n.login,
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onBackground,
-            fontSize: 32,
+          style: theme.textTheme.headlineLarge?.copyWith(
+            fontWeight: AppTextStyles.semiBold,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.loginSubtitle,
-          style: TextStyle(
-            color: theme.disabledColor,
-            fontSize: 16,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: AppTextStyles.extraLight,
           ),
         ),
       ],

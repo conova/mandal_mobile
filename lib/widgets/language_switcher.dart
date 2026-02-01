@@ -3,24 +3,22 @@ import '../theme/app_state_manager.dart';
 
 class LanguageSwitcher extends StatelessWidget {
   final bool showLabel;
-  
-  const LanguageSwitcher({
-    super.key,
-    this.showLabel = true,
-  });
+
+  const LanguageSwitcher({super.key, this.showLabel = true});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final currentLocale = AppStateManager.instance.locale.languageCode;
-    
+
     return GestureDetector(
       onTap: () {
         final newLocale = currentLocale == 'mn' ? 'en' : 'mn';
         AppStateManager.instance.setLocale(Locale(newLocale));
       },
       child: Container(
+        height: 32,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: colorScheme.secondary,
@@ -33,11 +31,15 @@ class LanguageSwitcher extends StatelessWidget {
             if (showLabel) ...[
               const SizedBox(width: 6),
               Text(
-                currentLocale == 'mn' ? 'MN' : 'EN',
+                currentLocale == 'mn' ? 'MN' : 'ENG',
                 style: TextStyle(
                   color: colorScheme.onBackground,
-                  fontSize: 12,
+                  fontSize: 10,
                   fontWeight: FontWeight.bold,
+                ),
+                textHeightBehavior: const TextHeightBehavior(
+                  applyHeightToFirstAscent: false,
+                  applyHeightToLastDescent: false,
                 ),
               ),
             ],
@@ -51,11 +53,13 @@ class LanguageSwitcher extends StatelessWidget {
     final flagUrl = locale == 'mn'
         ? 'https://flagcdn.com/w20/mn.png'
         : 'https://flagcdn.com/w20/gb.png';
-    
+
     return Image.network(
       flagUrl,
-      width: 20,
-      errorBuilder: (context, error, stackTrace) => const Icon(Icons.language, size: 16),
+      height: 16,
+      width: 22,
+      errorBuilder: (context, error, stackTrace) =>
+          const Icon(Icons.language, size: 16),
     );
   }
 }

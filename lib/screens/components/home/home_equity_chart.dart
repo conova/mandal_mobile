@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../widgets/finance_chart.dart';
 
 class HomeEquityChart extends StatefulWidget {
@@ -15,7 +14,6 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       children: [
@@ -29,7 +27,7 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
             _timeFilter(theme, '1C'),
             _timeFilter(theme, '3C'),
             _timeFilter(theme, '1Ж'),
-            _timeFilter(theme, l10n.all),
+            _timeFilter(theme, 'Бүгд'),
           ],
         ),
       ],

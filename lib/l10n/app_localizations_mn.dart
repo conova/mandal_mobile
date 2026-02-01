@@ -15,6 +15,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get login => 'Нэвтрэх';
 
   @override
+  String get loginErrorPhone => 'Утасны дугаар эсвэл нууц үг буруу байна.';
+
+  @override
+  String get loginErrorEmail => 'И-мэйл эсвэл нууц үг буруу байна.';
+
+  @override
   String get phoneNumber => 'Утасны дугаар';
 
   @override
@@ -531,4 +537,248 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get selectBankToContinue => 'Төлбөр шалгах';
+
+  @override
+  String get amountLabel => 'Дүн';
+
+  @override
+  String get lockedAmountLabel => 'Түгжигдсэн дүн';
+
+  @override
+  String get placeOrder => 'Захиалга өгөх';
+
+  @override
+  String get receivableAmountLabel => 'Хүлээн авах дүн';
+
+  @override
+  String get sellPriceDesc =>
+      'Зарах ханш бага байх тусам таны захиалга хурдан биелэх магадлалтай.';
+
+  @override
+  String get swipeUpToConfirm => 'Дээш сөхөж баталгаажуулна уу';
+
+  @override
+  String get orderPlacedSuccess => 'ЗАХИАЛГА\nБҮРТГЭГДЛЭЭ';
+
+  @override
+  String get orderPlacedDesc =>
+      'Захиалга биелж, хүү тооцогдож эхлэхэд бид танд мэдэгдэх болно.';
+
+  @override
+  String get viewOrders => 'Захиалга харах';
+
+  @override
+  String get sellOrderSuccessDesc =>
+      'Зөвхөн хамгийн сайн зарах ханш бусад хөрөнгө оруулагч нарт харагдахыг анхаарна уу.';
+
+  @override
+  String get commissionLabel => 'Шимтгэл';
+
+  @override
+  String get ownedAmountLabel => 'Эзэмшиж буй дүн';
+
+  @override
+  String get pledgeBondDesc =>
+      'Та өөрт байгаа бондоо барьцаалан зээл авах боломжтой.';
+
+  @override
+  String get pledge => 'Барьцаалах';
+
+  @override
+  String get newBond => 'Шинэ бонд';
+
+  @override
+  String get newBondDesc =>
+      'Earn steady returns with our premium bond offerings. Start investing today.';
+
+  @override
+  String get watchlist => 'Хянах жагсаалт';
+
+  @override
+  String get recommendationTitle => 'Та ямар бонд авахаа мэдэхгүй байна уу?';
+
+  @override
+  String get recommendationDesc =>
+      'Бид таны сонирхолд нийцсэн шилдэг бондуудыг санал болгож байна.';
+
+  @override
+  String get sellBond => 'Бонд зарах';
+
+  @override
+  String get mandalBond => 'МАНДАЛ БОНД';
+
+  @override
+  String get primaryMarket => 'Анхдагч арилжаа';
+
+  @override
+  String get secondaryMarket => 'Хоёрдогч арилжаа';
+
+  @override
+  String get myBond => 'Миний бонд';
+
+  @override
+  String get pledgeBond => 'Бонд барьцаалах';
+
+  @override
+  String get bondCollectionTarget => 'Цуглуулах дүн';
+
+  @override
+  String get annualInterest => 'Жилийн хүү';
+
+  @override
+  String get paymentFrequency => 'Хүү төлөх давтамж';
+
+  @override
+  String get availableCash => 'Бэлэн мөнгө';
+
+  @override
+  String get buyQuantity => 'Авах ширхэг';
+
+  @override
+  String get availableQuantity => 'Боломжит';
+
+  @override
+  String get totalPayment => 'Нийт төлөх дүн';
+
+  @override
+  String get totalReturn => 'Нийт өгөөж';
+
+  @override
+  String get lockedAmount => 'Түгжигдсэн дүн';
+
+  @override
+  String get release => 'Суллах';
+
+  @override
+  String get orderRegistered => 'ЗАХИАЛГА БҮРТГЭГДЛЭЭ';
+
+  @override
+  String get sellPrice => 'Зарах ханш';
+
+  @override
+  String get executionProbability => 'Биелэх магадлал';
+
+  @override
+  String get orderBoard => 'Захиалгийн самбар';
+
+  @override
+  String get high => 'Өндөр';
+
+  @override
+  String get medium => 'Дунд';
+
+  @override
+  String get low => 'Бага';
+
+  @override
+  String get bondClosingDateLabel => 'Хаалтын огноо';
+
+  @override
+  String get viewBondPresentation => 'Танилцуулга харах';
+
+  @override
+  String get buyBond => 'Бонд авах';
+
+  @override
+  String get availableAmountLabel => 'Боломжит дүн';
+
+  @override
+  String get costLabel => 'Зээлийн хүү';
+
+  @override
+  String get quantityLabel => 'Ширхэг';
+
+  @override
+  String get tradeAmount => 'Арилжааны дүн';
+
+  @override
+  String get orderTypeLabel => 'Төрөл';
+
+  @override
+  String get orderStatusLabel => 'Төлөв';
+
+  @override
+  String get yieldLabel => 'Өгөөж';
+
+  @override
+  String get settlementDate => 'Төлбөр тооцоо хийгдэх';
+
+  @override
+  String get orderDate => 'Захиалга оруулсан';
+
+  @override
+  String get executionHistory => 'Биелэлтийн түүх';
+
+  @override
+  String get executedQuantity => 'Биелсэн ширхэг';
+
+  @override
+  String get partiallyFilled => 'Хэсэгчлэн биелсэн';
+
+  @override
+  String get limitPrice => 'Нөхцөлт үнэ';
+
+  @override
+  String get generalInfo => 'Ерөнхий мэдээлэл';
+
+  @override
+  String get marketCap => 'Нийт зах зээлийн үнэлгээ';
+
+  @override
+  String get avgVolume => 'Дундаж арилжааны хэмжээ';
+
+  @override
+  String get dividendYield => 'Ногдол ашгийн хувь';
+
+  @override
+  String get dailyVolume => 'Өдрийн арилжааны хэмжээ';
+
+  @override
+  String get pastDividends => 'Өнгөрсөн хугацаанд олгосон ноогдол ашиг';
+
+  @override
+  String get trade => 'Арилжаа хийх';
+
+  @override
+  String get billion => 'тэрбум';
+
+  @override
+  String get today => 'Өнөөдөр';
+
+  @override
+  String get stockTrading => 'Хувьцаа арилжих';
+
+  @override
+  String get paste => 'Paste';
+
+  @override
+  String get buyTab => 'Авах';
+
+  @override
+  String get sellTab => 'Зарах';
+
+  @override
+  String get totalPaymentLabel => 'Нийт төлөх дүн';
+
+  @override
+  String get totalReceivableLabel => 'Нийт хүлээн авах дүн';
+
+  @override
+  String get orderBoardTitle => 'Захиалгийн самбар';
+
+  @override
+  String get buyAmount => 'Авах';
+
+  @override
+  String get sellAmount => 'Зарах';
+
+  @override
+  String get releaseLockedTitle => 'Түгжигдсэн дүн суллах';
+
+  @override
+  String get releaseLockedSubtitle =>
+      'Та идэвхтэй захиалгаа цуцлаж (түгжигдсэн дүнг) бэлэн мөнгөө ихэсгэх боломжтой.';
+
+  @override
+  String get cancelOrder => 'Захиалга цуцлах';
 }

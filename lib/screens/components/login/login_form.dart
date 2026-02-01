@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../widgets/custom_button.dart';
@@ -17,7 +18,8 @@ class LoginForm extends StatefulWidget {
   State<LoginForm> createState() => _LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMixin {
+class _LoginFormState extends State<LoginForm>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -38,10 +40,11 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
   }
 
   Future<void> _handleLogin() async {
+    final l10n = AppLocalizations.of(context)!;
     // Basic validation
     final email = _emailController.text;
     final password = _passwordController.text;
-    
+
     // Note: In the original code, it checks both but they are in separate forms.
     // We'll just check if the relevant field for the current tab is filled.
     if (_tabController.index == 1 && email.isEmpty) return;
@@ -54,17 +57,19 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
       final authService = context.read<AuthService>();
 
       // Mocking tokens as in original code
-      await authService.saveTokens(
-        accessToken: 'mock_access_token',
-        refreshToken: 'mock_refresh_token',
-      );
+      await authService.login(email, password);
 
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/login_verification');
       }
     } catch (e) {
       if (mounted) {
-        CustomSnackbar.show(context, message: 'Login failed: ${e.toString()}');
+        CustomSnackbar.show(
+          context,
+          message: _tabController.index == 1
+              ? l10n.loginErrorEmail
+              : l10n.loginErrorPhone,
+        );
       }
     } finally {
       if (mounted) {
@@ -83,23 +88,34 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
       children: [
         Align(
           alignment: Alignment.centerLeft,
-          child: TabBar(
-            controller: _tabController,
-            labelColor: colorScheme.primary,
-            unselectedLabelColor: colorScheme.onSurface,
-            indicatorColor: colorScheme.primary,
-            indicatorWeight: 3,
-            indicatorSize: TabBarIndicatorSize.label,
-            labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            unselectedLabelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
-            dividerColor: Colors.transparent,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            labelPadding: const EdgeInsets.only(right: 24),
-            tabs: [
-              Tab(text: l10n.phoneNumber),
-              Tab(text: l10n.email),
-            ],
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.grey.shade300, width: 1.0),
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              labelColor: colorScheme.primary,
+              unselectedLabelColor: colorScheme.onSurface,
+              indicatorColor: colorScheme.primary,
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.label,
+              labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: AppTextStyles.regular,
+              ),
+              unselectedLabelStyle: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: AppTextStyles.regular,
+              ),
+              dividerColor: Colors.transparent,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              labelPadding: const EdgeInsets.only(right: 24),
+              tabs: [
+                Tab(text: l10n.phoneNumber),
+                Tab(text: l10n.email),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 32),
@@ -140,10 +156,9 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
               onTap: () => Navigator.pushNamed(context, '/forgot_password'),
               child: Text(
                 l10n.forgotPasswordBtn,
-                style: TextStyle(
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: AppTextStyles.regular,
                   color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
             ),
@@ -157,7 +172,7 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
           const SizedBox(height: 24),
           AuthFooter(
             questionText: l10n.newToApp,
-            actionText: 'Бүртгүүлэх',
+            actionText: l10n.register,
             onAction: () => Navigator.pushNamed(context, '/register'),
           ),
         ],
@@ -191,10 +206,9 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
               onTap: () => Navigator.pushNamed(context, '/forgot_password'),
               child: Text(
                 l10n.forgotPasswordBtn,
-                style: TextStyle(
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: AppTextStyles.regular,
                   color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
             ),
@@ -208,7 +222,7 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
           const SizedBox(height: 24),
           AuthFooter(
             questionText: l10n.newToApp,
-            actionText: 'Бүртгүүлэх',
+            actionText: l10n.register,
             onAction: () => Navigator.pushNamed(context, '/register'),
           ),
         ],

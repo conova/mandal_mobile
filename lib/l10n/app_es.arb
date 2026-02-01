@@ -1,5 +1,7 @@
 {
     "appTitle": "Aplicación Antigravedad",
+    "loginErrorPhone": "El número de teléfono o la contraseña son incorrectos.",
+    "loginErrorEmail": "El correo electrónico o la contraseña son incorrectos.",
     "settingsTitle": "Configuración",
     "homeTitle": "Inicio",
     "themeLabel": "Tema",

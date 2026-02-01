@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 enum CustomButtonVariant { primary, secondary, tertiary, text }
@@ -55,20 +56,19 @@ class CustomButton extends StatelessWidget {
 
     // Adjust for disabled state
     if (isDisabled) {
-      backgroundColor = variant == CustomButtonVariant.text 
-          ? Colors.transparent 
+      backgroundColor = variant == CustomButtonVariant.text
+          ? Colors.transparent
           : theme.disabledColor.withOpacity(0.12);
       foregroundColor = theme.disabledColor;
     }
 
     // Dimensions based on size
-    final double height = size == CustomButtonSize.large ? 54 : 38;
-    final EdgeInsets padding = size == CustomButtonSize.large 
-        ? const EdgeInsets.symmetric(horizontal: 24, vertical: 12)
-        : const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
-    final double fontSize = size == CustomButtonSize.large ? 16 : 14;
-    final double iconSize = size == CustomButtonSize.large ? 20 : 16;
-    final double borderRadius = size == CustomButtonSize.large ? 27 : 19;
+    final double height = size == CustomButtonSize.large ? 52 : 40;
+    final EdgeInsets padding = size == CustomButtonSize.large
+        ? const EdgeInsets.symmetric(horizontal: 24, vertical: 16)
+        : const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
+    final double iconSize = size == CustomButtonSize.large ? 20 : 20;
+    final double borderRadius = size == CustomButtonSize.large ? 26 : 20;
 
     Widget content = Row(
       mainAxisSize: MainAxisSize.min,
@@ -85,15 +85,28 @@ class CustomButton extends StatelessWidget {
           )
         else if (icon != null)
           Icon(icon, size: iconSize, color: foregroundColor),
-        
-        if (isLoading || icon != null) const SizedBox(width: 8),
-        
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: FontWeight.w600,
-            color: foregroundColor,
+
+        if (isLoading || icon != null) const SizedBox(width: 6),
+
+        Flexible(
+          child: Text(
+            textAlign: TextAlign.center,
+            label,
+            style: size == CustomButtonSize.large
+                ? AppTextStyles.body1.copyWith(
+                    fontWeight: AppTextStyles.regular,
+                    color: foregroundColor,
+                  )
+                : AppTextStyles.paragraph1.copyWith(
+                    fontWeight: AppTextStyles.regular,
+                    color: foregroundColor,
+                  ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            textHeightBehavior: const TextHeightBehavior(
+              applyHeightToFirstAscent: false,
+              applyHeightToLastDescent: false,
+            ),
           ),
         ),
       ],
