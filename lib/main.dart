@@ -9,6 +9,7 @@ import 'screens/theme_colors_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_container.dart';
 import 'screens/profile_screen.dart';
+import 'screens/quick_login_screen.dart';
 import 'screens/notification_screen.dart';
 import 'screens/order_detail_screen.dart';
 import 'screens/stock_detail_screen.dart';
@@ -67,7 +68,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: AppStateManager.instance),
-        Provider.value(value: authService),
+        ChangeNotifierProvider.value(value: authService),
         Provider.value(value: apiService),
       ],
       child: const MyApp(),
@@ -266,6 +267,7 @@ class MyApp extends StatelessWidget {
           home: const SplashScreen(),
           routes: {
             '/login': (context) => const LoginScreen(),
+            '/quick_login': (context) => const QuickLoginScreen(),
             '/main': (context) => const MainContainer(),
             '/home': (context) => const HomeScreen(),
             '/settings': (context) => const SettingsScreen(),

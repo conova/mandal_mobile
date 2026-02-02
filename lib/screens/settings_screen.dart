@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import 'components/settings/settings_list_item.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -38,6 +40,43 @@ class SettingsScreen extends StatelessWidget {
               Localizations.localeOf(context).languageCode.toUpperCase(),
             ),
             showArrow: false,
+          ),
+          const Divider(),
+          Consumer<AuthService>(
+            builder: (context, authService, _) {
+              return SettingsListItem(
+                icon: Icons.fingerprint,
+                title: l10n.biometric,
+                subtitle: l10n.biometric, // Or a more descriptive subtitle
+                trailing: Switch(
+                  value: authService.isBiometricEnabled,
+                  onChanged: (value) async {
+                    if (value) {
+                      final authenticated = await authService
+                          .authenticateWithBiometrics();
+                      if (authenticated) {
+                        authService.setBiometricEnabled(true);
+                      }
+                    } else {
+                      authService.setBiometricEnabled(false);
+                    }
+                  },
+                ),
+                onTap: () async {
+                  final bool currentValue = authService.isBiometricEnabled;
+                  if (!currentValue) {
+                    final authenticated = await authService
+                        .authenticateWithBiometrics();
+                    if (authenticated) {
+                      authService.setBiometricEnabled(true);
+                    }
+                  } else {
+                    authService.setBiometricEnabled(false);
+                  }
+                },
+                showArrow: false,
+              );
+            },
           ),
           // Add more settings items here
         ],

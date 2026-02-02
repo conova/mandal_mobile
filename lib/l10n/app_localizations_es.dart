@@ -15,6 +15,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get login => 'Login';
 
   @override
+  String get useAnotherAccount => 'Use another account';
+
+  @override
   String get loginErrorPhone =>
       'El número de teléfono o la contraseña son incorrectos.';
 

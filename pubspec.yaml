@@ -43,6 +43,7 @@ dependencies:
   flutter_svg: ^2.2.3
   google_fonts: ^6.2.1
   dio: ^5.7.0
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,12 @@ flutter:
     - assets/images/briefcase.png
     - assets/images/logo_mini.svg
     - assets/images/logo_full.svg
+    - assets/images/story_bank.png
+    - assets/images/story_chart.png
+    - assets/images/bank_building.png
+    - assets/images/bar_chart.png
+    - assets/images/story_handshaking.png
+    - assets/images/splash_screen.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

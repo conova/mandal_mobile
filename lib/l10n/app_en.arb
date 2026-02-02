@@ -1,6 +1,7 @@
 {
     "appTitle": "Antigravity",
     "login": "Login",
+    "useAnotherAccount": "Use another account",
     "loginErrorPhone": "Phone number or password is incorrect.",
     "loginErrorEmail": "Email or password is incorrect.",
     "phoneNumber": "Phone Number",

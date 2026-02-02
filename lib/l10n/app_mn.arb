@@ -1,6 +1,7 @@
 {
     "appTitle": "Антигравити",
     "login": "Нэвтрэх",
+    "useAnotherAccount": "Өөр хаяг ашиглах",
     "loginErrorPhone": "Утасны дугаар эсвэл нууц үг буруу байна.",
     "loginErrorEmail": "И-мэйл эсвэл нууц үг буруу байна.",
     "phoneNumber": "Утасны дугаар",

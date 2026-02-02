@@ -112,6 +112,12 @@ abstract class AppLocalizations {
   /// **'Login'**
   String get login;
 
+  /// No description provided for @useAnotherAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Use another account'**
+  String get useAnotherAccount;
+
   /// No description provided for @loginErrorPhone.
   ///
   /// In en, this message translates to:

@@ -21,6 +21,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -34,6 +35,7 @@ class _LoginFormState extends State<LoginForm>
   @override
   void dispose() {
     _tabController.dispose();
+    _phoneController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -55,9 +57,17 @@ class _LoginFormState extends State<LoginForm>
 
     try {
       final authService = context.read<AuthService>();
+      final userName = _tabController.index == 0
+          ? _phoneController.text
+          : _emailController.text;
 
       // Mocking tokens as in original code
-      await authService.login(email, password);
+      await authService.saveTokens(accessToken: "123", refreshToken: "312312");
+
+      // await authService.login(userName, password);
+
+      // Save user info for Quick Login
+      await authService.saveLastUser('Өлзийдэлгэр', userName);
 
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/login_verification');
@@ -141,6 +151,7 @@ class _LoginFormState extends State<LoginForm>
             label: l10n.phoneNumber,
             hint: '99101294',
             keyboardType: TextInputType.phone,
+            controller: _phoneController,
           ),
           const SizedBox(height: 16),
           CustomInput(

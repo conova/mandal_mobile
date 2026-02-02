@@ -15,6 +15,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get login => 'Нэвтрэх';
 
   @override
+  String get useAnotherAccount => 'Өөр хаяг ашиглах';
+
+  @override
   String get loginErrorPhone => 'Утасны дугаар эсвэл нууц үг буруу байна.';
 
   @override
