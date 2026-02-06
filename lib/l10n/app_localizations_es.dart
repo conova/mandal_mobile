@@ -18,8 +18,40 @@ class AppLocalizationsEs extends AppLocalizations {
   String get useAnotherAccount => 'Use another account';
 
   @override
+  String get newDeviceTitle => 'New Device';
+
+  @override
+  String get newDeviceDescription =>
+      'You are logging in from this device for the first time. Please verify to ensure information security.';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get back => 'Back';
+
+  @override
   String get loginErrorPhone =>
       'El número de teléfono o la contraseña son incorrectos.';
+
+  @override
+  String get biometricEnableTitle => 'Enable biometric login?';
+
+  @override
+  String get faceIdEnableTitle => 'Enable Face ID?';
+
+  @override
+  String get fingerprintEnableTitle => 'Enable Fingerprint?';
+
+  @override
+  String get biometricEnableDesc =>
+      'This will allow you to log in easily using biometrics in the future.';
+
+  @override
+  String get yesEnable => 'Enable';
+
+  @override
+  String get skip => 'Skip';
 
   @override
   String get loginErrorEmail =>
@@ -300,9 +332,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get confirm => 'Yes, mark as read';
-
-  @override
-  String get back => 'Back';
 
   @override
   String get surname => 'Surname';

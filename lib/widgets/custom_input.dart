@@ -64,7 +64,6 @@ class _CustomInputState extends State<CustomInput> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final isDark = theme.brightness == Brightness.dark;
 
     // Priority: External errorText > Internal validation error
     final String? currentError = widget.errorText ?? _internalErrorText;
@@ -164,7 +163,7 @@ class _CustomInputState extends State<CustomInput> {
           Padding(
             padding: const EdgeInsets.only(top: 7, left: 16),
             child: Text(
-              currentError!,
+              currentError,
               style: AppTextStyles.paragraph1Light.copyWith(
                 color: theme.colorScheme.error,
               ),

@@ -10,6 +10,7 @@ import 'screens/splash_screen.dart';
 import 'screens/main_container.dart';
 import 'screens/profile_screen.dart';
 import 'screens/quick_login_screen.dart';
+import 'screens/new_device_screen.dart';
 import 'screens/notification_screen.dart';
 import 'screens/order_detail_screen.dart';
 import 'screens/stock_detail_screen.dart';
@@ -45,6 +46,7 @@ import 'screens/bond/bond_success_screen.dart';
 import 'screens/bond/bond_sell_screen.dart';
 import 'screens/bond/bond_sell_confirmation_screen.dart';
 import 'screens/bond/bond_sell_success_screen.dart';
+import 'screens/biometric_setup_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'theme/app_colors.dart';
@@ -268,6 +270,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/login': (context) => const LoginScreen(),
             '/quick_login': (context) => const QuickLoginScreen(),
+            '/new_device': (context) => const NewDeviceScreen(),
             '/main': (context) => const MainContainer(),
             '/home': (context) => const HomeScreen(),
             '/settings': (context) => const SettingsScreen(),
@@ -319,6 +322,7 @@ class MyApp extends StatelessWidget {
             '/stock_trading': (context) => const StockTradingScreen(),
             '/stock_success': (context) => const StockSuccessScreen(),
             '/release_locked': (context) => const ReleaseLockedAmountScreen(),
+            '/biometric_setup': (context) => const BiometricSetupScreen(),
           },
           debugShowCheckedModeBanner: false,
         );

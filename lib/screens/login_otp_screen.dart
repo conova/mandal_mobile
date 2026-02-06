@@ -11,7 +11,10 @@ class LoginOtpScreen extends StatefulWidget {
 }
 
 class _LoginOtpScreenState extends State<LoginOtpScreen> {
-  final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+    4,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
   int _attemptCount = 0;
   bool _isBlocked = false;
@@ -51,7 +54,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     if (value.isEmpty && index > 0) {
       _focusNodes[index - 1].requestFocus();
     }
-    
+
     // Check if all filled
     if (_controllers.every((c) => c.text.isNotEmpty)) {
       _verifyOtp();
@@ -62,23 +65,24 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     if (_isBlocked) return;
 
     final enteredCode = _controllers.map((c) => c.text).join();
-    
+
     // Mock validation - correct code is "1234"
     if (enteredCode == "1234") {
-      // Success - navigate to main
-      Navigator.pushReplacementNamed(context, '/main');
+      // Success - navigate to biometric setup
+      Navigator.pushReplacementNamed(context, '/biometric_setup');
     } else {
       // Failed attempt
       setState(() {
         _attemptCount++;
-        
+
         if (_attemptCount >= 5) {
           _isBlocked = true;
-          _errorMessage = 'Таны эрх түр хаагдлаа. 30 минутын дараа дахин оролдоно уу.';
+          _errorMessage =
+              'Таны эрх түр хаагдлаа. 30 минутын дараа дахин оролдоно уу.';
         } else {
           _errorMessage = 'Буруу код. ${5 - _attemptCount} оролдлого үлдсэн.';
         }
-        
+
         // Clear all fields
         for (var controller in _controllers) {
           controller.clear();
@@ -93,7 +97,8 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final channel = args?['channel'] as String? ?? 'SMS';
     final value = args?['value'] as String? ?? '';
 
@@ -122,24 +127,33 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
             const SizedBox(height: 48),
             Wrap(
               spacing: 24,
-              children: List.generate(4, (index) => _buildCodeField(index, theme)),
+              children: List.generate(
+                4,
+                (index) => _buildCodeField(index, theme),
+              ),
             ),
             if (_errorMessage != null) ...[
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: _isBlocked ? theme.colorScheme.errorContainer : theme.colorScheme.surfaceVariant,
+                  color: _isBlocked
+                      ? theme.colorScheme.errorContainer
+                      : theme.colorScheme.surfaceVariant,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: _isBlocked ? theme.colorScheme.error : theme.colorScheme.secondary,
+                    color: _isBlocked
+                        ? theme.colorScheme.error
+                        : theme.colorScheme.secondary,
                   ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       _isBlocked ? Icons.block : Icons.warning_amber_rounded,
-                      color: _isBlocked ? theme.colorScheme.error : theme.colorScheme.secondary,
+                      color: _isBlocked
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.secondary,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -147,7 +161,9 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                       child: Text(
                         _errorMessage!,
                         style: TextStyle(
-                          color: _isBlocked ? theme.colorScheme.error : theme.colorScheme.secondary,
+                          color: _isBlocked
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.secondary,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -191,11 +207,19 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
       width: 48,
       height: 56,
       decoration: BoxDecoration(
-        color: _isBlocked ? (isDark ? colorScheme.surfaceVariant : Colors.grey[100]) : colorScheme.surface,
+        color: _isBlocked
+            ? (isDark ? colorScheme.surfaceVariant : Colors.grey[100])
+            : colorScheme.surface,
         border: Border.all(
-          color: _isBlocked 
-              ? (isDark ? colorScheme.outline.withOpacity(0.5) : Colors.grey[300]!)
-              : (_focusNodes[index].hasFocus ? colorScheme.primary : (isDark ? colorScheme.outline.withOpacity(0.2) : Colors.grey[200]!)),
+          color: _isBlocked
+              ? (isDark
+                    ? colorScheme.outline.withOpacity(0.5)
+                    : Colors.grey[300]!)
+              : (_focusNodes[index].hasFocus
+                    ? colorScheme.primary
+                    : (isDark
+                          ? colorScheme.outline.withOpacity(0.2)
+                          : Colors.grey[200]!)),
           width: 1,
         ),
         borderRadius: BorderRadius.circular(16),

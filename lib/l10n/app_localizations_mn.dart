@@ -18,7 +18,39 @@ class AppLocalizationsMn extends AppLocalizations {
   String get useAnotherAccount => 'Өөр хаяг ашиглах';
 
   @override
+  String get newDeviceTitle => 'Шинэ төхөөрөмж';
+
+  @override
+  String get newDeviceDescription =>
+      'Та энэ төхөөрөмжөөс анх удаа нэвтэрч байна. Мэдээллийн аюулгүй байдлыг хангаж баталгаажуулалт хийж үргэлжлүүлээрэй.';
+
+  @override
+  String get verify => 'Баталгаажуулах';
+
+  @override
+  String get back => 'Буцах';
+
+  @override
   String get loginErrorPhone => 'Утасны дугаар эсвэл нууц үг буруу байна.';
+
+  @override
+  String get biometricEnableTitle => 'Царай таниулах уу';
+
+  @override
+  String get faceIdEnableTitle => 'Царай таниулах уу';
+
+  @override
+  String get fingerprintEnableTitle => 'Хурууны хээ таниулах уу';
+
+  @override
+  String get biometricEnableDesc =>
+      'Ингэснээр та цаашид биометрик ашиглан хялбар нэвтрэх боломжтой болно.';
+
+  @override
+  String get yesEnable => 'Тэгье';
+
+  @override
+  String get skip => 'Алгасах';
 
   @override
   String get loginErrorEmail => 'И-мэйл эсвэл нууц үг буруу байна.';
@@ -298,9 +330,6 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get confirm => 'Тийм, уншсан болгох';
-
-  @override
-  String get back => 'Буцах';
 
   @override
   String get surname => 'Овог';

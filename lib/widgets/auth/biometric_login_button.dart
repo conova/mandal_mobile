@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../services/auth_service.dart';
+import '../../theme/extended_colors.dart';
 
 class BiometricLoginButton extends StatelessWidget {
   final VoidCallback onAuthenticated;
@@ -16,6 +18,8 @@ class BiometricLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = context.watch<AuthService>();
+    final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return FutureBuilder<List<BiometricType>>(
       future: authService.getAvailableBiometrics(),
@@ -25,28 +29,32 @@ class BiometricLoginButton extends StatelessWidget {
         }
 
         final biometrics = snapshot.data!;
-        IconData iconData = Icons.fingerprint;
+        String assetPath = 'assets/images/fingerprint.svg';
 
         if (biometrics.contains(BiometricType.face)) {
-          iconData = Icons.face_retouching_natural;
+          assetPath = 'assets/images/face_id.svg';
         } else if (biometrics.contains(BiometricType.fingerprint) ||
             biometrics.contains(BiometricType.strong) ||
             biometrics.contains(BiometricType.weak)) {
-          iconData = Icons.fingerprint;
+          assetPath = 'assets/images/fingerprint.svg';
         }
 
         return Container(
           width: 52,
           height: 52,
           decoration: BoxDecoration(
-            color: const Color(0xFFE0F2F1), // Very light teal background
+            color: extendedColors.bgSecondary,
             borderRadius: BorderRadius.circular(16),
           ),
           child: IconButton(
-            icon: Icon(
-              iconData,
-              color: const Color(0xFF29A396), // Mandal teal color
-              size: 32,
+            icon: SvgPicture.asset(
+              assetPath,
+              width: 32,
+              height: 32,
+              colorFilter: ColorFilter.mode(
+                extendedColors.primaryMain,
+                BlendMode.srcIn,
+              ),
             ),
             onPressed: () async {
               final authenticated = await authService

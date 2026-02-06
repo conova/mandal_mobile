@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../logo.dart';
 
@@ -97,6 +98,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: Colors.black, // Story aesthetic is usually black
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -167,12 +169,11 @@ class _StoryCarouselState extends State<StoryCarousel> {
                   // Simplified logo for carousel
                   const AppLogo(width: 32, height: 32, color: Colors.white),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Мандал Капитал',
-                    style: TextStyle(
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: AppTextStyles.regular,
                       color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
@@ -189,15 +190,15 @@ class _StoryCarouselState extends State<StoryCarousel> {
                   _buildStoryButton(
                     label: 'Бүртгүүлэх',
                     onPressed: widget.onRegisterPressed,
-                    backgroundColor: const Color(0xFF41CEC2),
-                    textColor: Colors.black,
+                    backgroundColor: AppColors.dpPrimaryMain,
+                    textColor: AppColors.dpBgBase,
                   ),
                   const SizedBox(height: 12),
                   _buildStoryButton(
                     label: 'Нэвтрэх',
                     onPressed: widget.onLoginPressed,
-                    backgroundColor: const Color(0xFF062C2D),
-                    textColor: const Color(0xFF41CEC2),
+                    backgroundColor: AppColors.dpPrimary100,
+                    textColor: AppColors.dpPrimaryMain,
                   ),
                 ],
               ),
@@ -280,9 +281,6 @@ class _StoryCarouselState extends State<StoryCarousel> {
                 style: AppTextStyles.h2.copyWith(
                   color: Colors.white,
                   fontWeight: AppTextStyles.semiBold,
-                  fontSize: 22,
-                  height: 32 / 22,
-                  letterSpacing: 22 * -0.002, // -0.2%
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -293,22 +291,16 @@ class _StoryCarouselState extends State<StoryCarousel> {
         // Subtitle content
         Positioned(
           top: 551,
-          left: 0,
-          right: 0,
+          left: 32,
+          right: 32,
           child: Center(
-            child: SizedBox(
-              width: 340,
-              child: Text(
-                slide['subtitle']!,
-                style: AppTextStyles.body1.copyWith(
-                  color: Colors.white.withOpacity(0.8),
-                  fontWeight: AppTextStyles.extraLight,
-                  fontSize: 16,
-                  height: 26 / 16,
-                  letterSpacing: 0,
-                ),
-                textAlign: TextAlign.center,
+            child: Text(
+              slide['subtitle']!,
+              style: AppTextStyles.body1.copyWith(
+                color: Colors.white.withOpacity(0.9),
+                fontWeight: AppTextStyles.extraLight,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
         ),

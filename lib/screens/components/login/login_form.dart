@@ -70,7 +70,9 @@ class _LoginFormState extends State<LoginForm>
       await authService.saveLastUser('Өлзийдэлгэр', userName);
 
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login_verification');
+        // Mocking "new device" detection.
+        // In a real app, this would be based on the API response.
+        Navigator.pushReplacementNamed(context, '/new_device');
       }
     } catch (e) {
       if (mounted) {

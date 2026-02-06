@@ -118,11 +118,71 @@ abstract class AppLocalizations {
   /// **'Use another account'**
   String get useAnotherAccount;
 
+  /// No description provided for @newDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Device'**
+  String get newDeviceTitle;
+
+  /// No description provided for @newDeviceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You are logging in from this device for the first time. Please verify to ensure information security.'**
+  String get newDeviceDescription;
+
+  /// No description provided for @verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verify;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
   /// No description provided for @loginErrorPhone.
   ///
   /// In en, this message translates to:
   /// **'Phone number or password is incorrect.'**
   String get loginErrorPhone;
+
+  /// No description provided for @biometricEnableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable biometric login?'**
+  String get biometricEnableTitle;
+
+  /// No description provided for @faceIdEnableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Face ID?'**
+  String get faceIdEnableTitle;
+
+  /// No description provided for @fingerprintEnableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Fingerprint?'**
+  String get fingerprintEnableTitle;
+
+  /// No description provided for @biometricEnableDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This will allow you to log in easily using biometrics in the future.'**
+  String get biometricEnableDesc;
+
+  /// No description provided for @yesEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get yesEnable;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
 
   /// No description provided for @loginErrorEmail.
   ///
@@ -675,12 +735,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yes, mark as read'**
   String get confirm;
-
-  /// No description provided for @back.
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get back;
 
   /// No description provided for @surname.
   ///

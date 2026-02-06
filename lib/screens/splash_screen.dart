@@ -26,6 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final authService = Provider.of<AuthService>(context, listen: false);
     final bool isLoggedIn = authService.isAuthenticated;
     final bool hasShownStory = authService.hasShownStory;
+    final bool hasSavedUser = authService.hasSavedUser;
 
     if (isLoggedIn) {
       Navigator.pushReplacementNamed(context, '/main');

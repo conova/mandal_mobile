@@ -45,7 +45,7 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
     final savedUser = authService.savedUser;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -145,14 +145,15 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                       onPressed: _handleLogin,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  if (authService.isBiometricEnabled)
+                  if (authService.isBiometricEnabled) ...[
+                    const SizedBox(width: 16),
                     BiometricLoginButton(
                       onAuthenticated: _handleLogin,
                       onError: () {
                         // Optional error handling
                       },
                     ),
+                  ],
                 ],
               ),
               const SizedBox(height: 32),

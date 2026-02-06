@@ -13,6 +13,7 @@ class CustomButton extends StatelessWidget {
   final CustomButtonSize size;
   final IconData? icon;
   final bool isLoading;
+  final bool fullWidth;
 
   const CustomButton({
     super.key,
@@ -22,6 +23,7 @@ class CustomButton extends StatelessWidget {
     this.size = CustomButtonSize.large,
     this.icon,
     this.isLoading = false,
+    this.fullWidth = false,
   });
 
   bool get isDisabled => onPressed == null || isLoading;
@@ -33,7 +35,6 @@ class CustomButton extends StatelessWidget {
     // Colors based on variants
     Color backgroundColor;
     Color foregroundColor;
-    BorderSide borderSide = BorderSide.none;
 
     switch (variant) {
       case CustomButtonVariant.primary:
@@ -114,6 +115,7 @@ class CustomButton extends StatelessWidget {
 
     return SizedBox(
       height: height,
+      width: fullWidth ? double.infinity : null,
       child: Material(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),

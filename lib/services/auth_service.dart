@@ -12,6 +12,7 @@ class AuthService with ChangeNotifier {
   static const String _lastUserNameKey = 'last_user_name';
   static const String _lastUserIdKey = 'last_user_id';
   static const String _biometricEnabledKey = 'biometric_enabled';
+  static const String _biometricTokenKey = 'biometric_token';
 
   final LocalAuthentication _localAuth = LocalAuthentication();
 
@@ -21,11 +22,13 @@ class AuthService with ChangeNotifier {
   String? _lastUserName;
   String? _lastUserId;
   bool _isBiometricEnabled = false;
+  String? _biometricToken;
 
   String? get accessToken => _accessToken;
   bool get hasShownStory => _storyShown;
   bool get hasSavedUser => _lastUserId != null;
   bool get isBiometricEnabled => _isBiometricEnabled;
+  String? get biometricToken => _biometricToken;
 
   Map<String, String?> get savedUser => {
     'name': _lastUserName,
@@ -40,12 +43,24 @@ class AuthService with ChangeNotifier {
     _lastUserName = prefs.getString(_lastUserNameKey);
     _lastUserId = prefs.getString(_lastUserIdKey);
     _isBiometricEnabled = prefs.getBool(_biometricEnabledKey) ?? false;
+    _biometricToken = prefs.getString(_biometricTokenKey);
   }
 
   Future<void> setBiometricEnabled(bool enabled) async {
     _isBiometricEnabled = enabled;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_biometricEnabledKey, enabled);
+    if (!enabled) {
+      _biometricToken = null;
+      await prefs.remove(_biometricTokenKey);
+    }
+    notifyListeners();
+  }
+
+  Future<void> saveBiometricToken(String token) async {
+    _biometricToken = token;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_biometricTokenKey, token);
     notifyListeners();
   }
 
