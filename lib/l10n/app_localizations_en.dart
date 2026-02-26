@@ -430,8 +430,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterCodeTitle => 'Enter 4-digit code';
 
   @override
-  String codeSentTo(Object channel, Object value) {
-    return 'A code was sent to your $channel $value.';
+  String codeSentTo(Object value) {
+    return 'A code was sent to your $value.';
   }
 
   @override
@@ -785,4 +785,132 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelOrder => 'Cancel Order';
+
+  @override
+  String get acceptTerms => 'I agree to the terms of the agreement';
+
+  @override
+  String get agree => 'Agree';
+
+  @override
+  String get agreed => 'Agreed';
+
+  @override
+  String get securitiesAgreementContent =>
+      'This agreement is entered into between \"Mongolian Stock Exchange\" JSC /hereinafter referred to as the Exchange/, represented by ................................................, and \"................................................\" JSC /hereinafter referred to as the Issuer, collectively the Parties/, represented by ........................................... on the following terms and conditions.\n\n1.1 This agreement defines the rights, duties, and responsibilities of the parties in relation to the Exchange\'s actions of registering the Issuer and its securities, organizing the trading of securities in accordance with the relevant rules and regulations, and the Issuer\'s obligation to be registered with the Exchange in accordance with relevant procedures and pay service fees.';
+
+  @override
+  String get khurSystem => 'KHUR system';
+
+  @override
+  String registrationProgress(String percent) {
+    return 'Registration progress: $percent%';
+  }
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get preparationWork => 'Preparation work';
+
+  @override
+  String get preparationDesc =>
+      'You will be ready to trade after completing the following steps.';
+
+  @override
+  String get danSystem => 'DAN identification system';
+
+  @override
+  String get danSystemDesc => 'Information verification';
+
+  @override
+  String get addressInfo => 'Address information';
+
+  @override
+  String get addressInfoDesc => 'Your residential address';
+
+  @override
+  String get securitiesAgreement => 'Securities agreement';
+
+  @override
+  String get securitiesAgreementDesc => 'Read and agree to terms';
+
+  @override
+  String get document => 'Documents';
+
+  @override
+  String get documentDesc => 'ID card, selfie photo';
+
+  @override
+  String get idFront => 'ID Card - Front';
+
+  @override
+  String get idBack => 'ID Card - Back';
+
+  @override
+  String get selfiePhoto => 'Selfie Photo';
+
+  @override
+  String get addPhoto => 'Add Photo';
+
+  @override
+  String get editPhoto => 'Edit Photo';
+
+  @override
+  String get photoRequirements => 'Photo Requirements';
+
+  @override
+  String get reqCorner => 'All 4 corners of the ID must be visible';
+
+  @override
+  String get reqValid => 'Use a valid document';
+
+  @override
+  String get reqClear => 'No blur or glare';
+
+  @override
+  String get reqReadable => 'Information must be clearly readable';
+
+  @override
+  String get sendPhoto => 'Send Photo';
+
+  @override
+  String get cameraInstructionId => 'Fit the document within the frame';
+
+  @override
+  String get cameraInstructionSelfie => 'Fit your face within the frame';
+
+  @override
+  String get readyToTrade => 'Ready to Trade';
+
+  @override
+  String get readyToTradeDesc =>
+      'Let\'s start your investment journey together!';
+
+  @override
+  String get pepQuestion =>
+      'Are you, a family member, or a close associate a Politically Exposed Person (PEP)?';
+
+  @override
+  String get pepDefinition => 'Who is a PEP?';
+
+  @override
+  String get pepDefinitionFull =>
+      'A Politically Exposed Person (PEP) is defined as an individual who is or has been entrusted with a prominent public function. This includes:\n\nPresident of Mongolia, Members of Parliament, Prime Minister, Cabinet Members, Members of the Constitutional Court, Chief Justice and Judges of the Supreme Court, Prosecutor General, Heads of organizations directly accountable to Parliament, Governors of Aimags and the Capital city, Chairmen of Citizens\' Representative Khurals of Aimags and the Capital city, State Secretaries of Ministries, Heads of government agencies, and Heads/Directors of state-owned companies and international organizations.';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get danVerificationDesc =>
+      'Verify your personal information using the system.';
+
+  @override
+  String get success => 'Success';
 }

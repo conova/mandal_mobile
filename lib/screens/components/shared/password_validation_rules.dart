@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../theme/extended_colors.dart';
 
 class PasswordValidationRules extends StatelessWidget {
   final bool has8Chars;
@@ -35,25 +36,35 @@ class PasswordValidationRules extends StatelessWidget {
   }
 
   Widget _buildValidationRule(String label, bool isValid) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(
-            Icons.check,
-            size: 20,
-            color: isValid ? Colors.teal[400] : Colors.grey[300],
+    return Builder(
+      builder: (context) {
+        final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+        final theme = Theme.of(context);
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.check,
+                size: 20,
+                color: !isValid
+                    ? extendedColors.neutral200
+                    : extendedColors.primaryMain,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: !isValid
+                      ? extendedColors.neutral200
+                      : extendedColors.primaryMain,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: isValid ? Colors.black87 : Colors.grey[400],
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

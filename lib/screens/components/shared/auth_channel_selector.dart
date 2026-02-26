@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 
 class AuthChannelSelector extends StatelessWidget {
   final IconData icon;
@@ -18,31 +20,26 @@ class AuthChannelSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: theme.brightness == Brightness.dark
-                ? colorScheme.outline.withOpacity(0.2)
-                : Colors.grey[200]!,
-          ),
-          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: extendedColors.neutral500),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? colorScheme.surfaceVariant
-                    : Colors.grey[50],
+                color: extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: colorScheme.onSurface),
+              child: Icon(icon, color: extendedColors.neutral100),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -51,21 +48,26 @@ class AuthChannelSelector extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(color: theme.disabledColor, fontSize: 13),
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: AppTextStyles.light,
+                      color: extendedColors.neutral200,
+                    ),
                   ),
-                  const SizedBox(height: 4),
                   Text(
                     value,
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: AppTextStyles.light,
                       color: colorScheme.onBackground,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: theme.disabledColor),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: extendedColors.neutral300,
+            ),
           ],
         ),
       ),

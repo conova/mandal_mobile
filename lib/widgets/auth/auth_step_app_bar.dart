@@ -4,11 +4,7 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? stepText;
   final VoidCallback? onBack;
 
-  const AuthStepAppBar({
-    super.key,
-    this.stepText,
-    this.onBack,
-  });
+  const AuthStepAppBar({super.key, this.stepText, this.onBack});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +24,11 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back, color: colorScheme.onBackground, size: 20),
+            icon: Icon(
+              Icons.arrow_back,
+              color: colorScheme.onBackground,
+              size: 20,
+            ),
             onPressed: onBack ?? () => Navigator.pop(context),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
@@ -41,16 +41,15 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
             margin: const EdgeInsets.only(right: 16, top: 12, bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: isDark ? colorScheme.surfaceVariant.withOpacity(0.2) : Colors.grey[100],
+              color: colorScheme.secondary,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
               child: Text(
                 stepText!,
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w400,
+                  color: colorScheme.onBackground,
                 ),
               ),
             ),

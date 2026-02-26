@@ -1,17 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
-import 'components/change_password/change_password_form.dart';
+import 'components/shared/auth_password_form.dart';
+import '../services/api_service.dart';
+import '../config/api_config.dart';
+import '../widgets/custom_snackbar.dart';
 
-class ChangePasswordNewScreen extends StatefulWidget {
+class ChangePasswordNewScreen extends StatelessWidget {
   const ChangePasswordNewScreen({super.key});
 
-  @override
-  State<ChangePasswordNewScreen> createState() =>
-      _ChangePasswordNewScreenState();
-}
+  Future<void> _handleSubmitPassword(
+    BuildContext context,
+    String password,
+  ) async {
+    try {
+      final apiService = context.read<ApiService>();
+      await apiService.post(
+        ApiConfig
+            .refreshToken, // Note: This was the endpoint in ChangePasswordForm
+        data: {'password': password},
+      );
+      if (context.mounted) {
+        CustomSnackbar.show(context, message: 'Password changed successfully');
+        Navigator.popUntil(context, ModalRoute.withName('/profile'));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        CustomSnackbar.show(
+          context,
+          message: 'Failed to change password: ${e.toString()}',
+        );
+        rethrow; // Re-throw to let AuthPasswordForm handle loading state termination
+      }
+    }
+  }
 
-class _ChangePasswordNewScreenState extends State<ChangePasswordNewScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -29,13 +53,16 @@ class _ChangePasswordNewScreenState extends State<ChangePasswordNewScreen> {
             const SizedBox(height: 40),
             Text(
               l10n.createNewPassword,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontSize: 28,
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 40),
-            const ChangePasswordForm(),
+            AuthPasswordForm(
+              onContinue: (password) =>
+                  _handleSubmitPassword(context, password),
+              continueLabel: l10n.continueLabel,
+            ),
           ],
         ),
       ),

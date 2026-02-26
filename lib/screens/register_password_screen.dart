@@ -1,31 +1,10 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
-import 'components/register/register_password_form.dart';
+import 'components/shared/auth_password_form.dart';
 
-class RegisterPasswordScreen extends StatefulWidget {
+class RegisterPasswordScreen extends StatelessWidget {
   const RegisterPasswordScreen({super.key});
-
-  @override
-  State<RegisterPasswordScreen> createState() => _RegisterPasswordScreenState();
-}
-
-class _RegisterPasswordScreenState extends State<RegisterPasswordScreen> {
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  void _handleContinue() {
-    // Navigate to income account screen
-    Navigator.pushNamed(context, '/register_income_account');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +23,19 @@ class _RegisterPasswordScreenState extends State<RegisterPasswordScreen> {
             const SizedBox(height: 40),
             Text(
               l10n.createNewPassword,
-              style: TextStyle(
-                fontSize: 28,
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
             ),
             const SizedBox(height: 48),
-            RegisterPasswordForm(
-              onContinue: _handleContinue,
-              passwordController: _passwordController,
-              confirmPasswordController: _confirmPasswordController,
+            AuthPasswordForm(
+              onContinue: (password) async {
+                await Future.delayed(const Duration(seconds: 1));
+                if (context.mounted) {
+                  Navigator.pushNamed(context, '/register_income_account');
+                }
+              },
             ),
             const SizedBox(height: 32),
           ],

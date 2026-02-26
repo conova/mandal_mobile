@@ -1,31 +1,10 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
-import 'components/forgot_password/forgot_password_new_form.dart';
+import 'components/shared/auth_password_form.dart';
 
-class ForgotPasswordNewScreen extends StatefulWidget {
+class ForgotPasswordNewScreen extends StatelessWidget {
   const ForgotPasswordNewScreen({super.key});
-
-  @override
-  State<ForgotPasswordNewScreen> createState() =>
-      _ForgotPasswordNewScreenState();
-}
-
-class _ForgotPasswordNewScreenState extends State<ForgotPasswordNewScreen> {
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  void _handleContinue() {
-    Navigator.pushReplacementNamed(context, '/main');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +23,20 @@ class _ForgotPasswordNewScreenState extends State<ForgotPasswordNewScreen> {
             const SizedBox(height: 40),
             Text(
               l10n.createNewPassword,
-              style: TextStyle(
-                fontSize: 28,
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
             ),
             const SizedBox(height: 48),
-            ForgotPasswordNewForm(
-              onContinue: _handleContinue,
-              passwordController: _passwordController,
-              confirmPasswordController: _confirmPasswordController,
+            AuthPasswordForm(
+              onContinue: (password) async {
+                // Mock API call or just navigate
+                await Future.delayed(const Duration(seconds: 1));
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/main');
+                }
+              },
             ),
             const SizedBox(height: 32),
           ],

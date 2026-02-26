@@ -429,8 +429,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get enterCodeTitle => '4 оронтой код оруулна уу';
 
   @override
-  String codeSentTo(Object channel, Object value) {
-    return 'Таны $value $channel код илгээлээ.';
+  String codeSentTo(Object value) {
+    return 'Таны $value дугаарт код илгээлээ.';
   }
 
   @override
@@ -784,4 +784,132 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get cancelOrder => 'Захиалга цуцлах';
+
+  @override
+  String get acceptTerms => 'Гэрээний нөхцөлийг хүлээн зөвшөөрч байна';
+
+  @override
+  String get agree => 'Зөвшөөрөх';
+
+  @override
+  String get agreed => 'Зөвшөөрсөн';
+
+  @override
+  String get securitiesAgreementContent =>
+      'Энэхүү гэрээг нэг талаас \"Монголын Хөрөнгийн Бирж\" ТӨХК /цаашид Бирж гэх/, түүнийг төлөөлж................................................, нөгөө талаас “................................................” ХК /цаашид Үнэт цаас гаргагч, хамтад нь Талууд гэх/-ийг төлөөлж ............................................ нар дараах нөхцөлийг харилцан тохиролцож байгуулав.\n\n1.1 Энэхүү гэрээгээр Бирж нь Үнэт цаас гаргагч, түүний гаргасан үнэт цаасыг бүртгэх, үнэт цаасны арилжааг зохион байгуулах ажиллагааг зохих дүрэм, журмын дагуу хийж гүйцэтгэх, Үнэт цаас гаргагч нь холбогдох журмын дагуу Биржид бүртгэлтэй байх хугацаандаа зохих үүргийг хүлээх, үйлчилгээний төлбөр төлөхтэй холбогдон үүсэх харилцаанд талуудын эдлэх эрх, хүлээх үүрэг, хариуцлагыг тодорхойлно.';
+
+  @override
+  String get khurSystem => 'ХУР систем';
+
+  @override
+  String registrationProgress(String percent) {
+    return 'Бүртгэлийн явц: ';
+  }
+
+  @override
+  String get start => 'Эхлэх';
+
+  @override
+  String get preparationWork => 'Бэлтгэл ажил';
+
+  @override
+  String get preparationDesc =>
+      'Та доорх алхмуудыг гүйцэтгэсний дараа арилжаа хийхэд бэлэн болно.';
+
+  @override
+  String get danSystem => 'ДАН танилт систем';
+
+  @override
+  String get danSystemDesc => 'Мэдээлэл баталгаажуулах';
+
+  @override
+  String get addressInfo => 'Хаягийн мэдээлэл';
+
+  @override
+  String get addressInfoDesc => 'Таны оршин суугаа хаяг';
+
+  @override
+  String get securitiesAgreement => 'Үнэт цаасны гэрээ';
+
+  @override
+  String get securitiesAgreementDesc => 'Гэрээтэй уншиж танилцах';
+
+  @override
+  String get document => 'Бичиг баримт';
+
+  @override
+  String get documentDesc => 'Иргэний үнэмлэх, селфи зураг';
+
+  @override
+  String get idFront => 'Иргэний үнэмлэх - Урд тал';
+
+  @override
+  String get idBack => 'Иргэний үнэмлэх - Ард тал';
+
+  @override
+  String get selfiePhoto => 'Селфье зураг';
+
+  @override
+  String get addPhoto => 'Зураг оруулах';
+
+  @override
+  String get editPhoto => 'Зураг засах';
+
+  @override
+  String get photoRequirements => 'Зургийн шаардлага';
+
+  @override
+  String get reqCorner => 'Үнэмлэхийн 4 булан бүтэн орсон байх';
+
+  @override
+  String get reqValid => 'Хүчин төгөлдөр бичиг баримт ашиглах';
+
+  @override
+  String get reqClear => 'Бүрсгэр эсвэл гялбаагүй байх';
+
+  @override
+  String get reqReadable => 'Мэдээлэл тод уншигдахуйц байх';
+
+  @override
+  String get sendPhoto => 'Зураг илгээх';
+
+  @override
+  String get cameraInstructionId => 'Доорх хэлбэрт зургийг багтаана уу';
+
+  @override
+  String get cameraInstructionSelfie => 'Нүүрээ доорх хэлбэрт багтаана уу';
+
+  @override
+  String get readyToTrade => 'Арилжаа хийхэд бэлэн боллоо';
+
+  @override
+  String get readyToTradeDesc =>
+      'Хөрөнгө оруулалтын урт аялалаа хамдаа эхлүүлцгээе!';
+
+  @override
+  String get pepQuestion =>
+      'Та, таны гэр бүлийн гишүүн эсвэл ойрын хүрээний хүн улс төрд нөлөө бүхий этгээд үү?';
+
+  @override
+  String get pepDefinition => 'УТНБЭ гэж хэн бэ?';
+
+  @override
+  String get pepDefinitionFull =>
+      'Улс төрд нөлөө бүхий этгээд гэж дараах ажил албан тушаалыг хашиж байсан хүнийг ойлгоно. Үүнд:\n\nМонгол Улсын Ерөнхийлөгч, Улсын Их Хурлын гишүүн, Монгол Улсын Ерөнхий сайд, Засгийн газрын гишүүн, Үндсэн Хуулийн цэцийн гишүүн, Улсын дээд шүүхийн Ерөнхий шүүгч, Улсын дээд шүүхийн шүүгч, Улсын ерөнхий прокурор, Улсын Их Хуралд ажлаа шууд хариуцан тайлагнадаг байгууллагын дарга, Аймаг, нийслэлийн Засаг дарга, Аймаг, нийслэлийн иргэдийн Төлөөлөгчдийн Хурлын Тэргүүлэгчдийн дарга, Яамны Төрийн нарийн бичгийн дарга, Засгийн газрын агентлагийн дарга, Төрийн өмчит компани, олон улсын байгууллагын дарга, захирлын албан тушаал эрхэлж байсан болон эрхэлж байгаа хүн.';
+
+  @override
+  String get no => 'Үгүй';
+
+  @override
+  String get yes => 'Тийм';
+
+  @override
+  String get verify => 'Баталгаажуулах';
+
+  @override
+  String get danVerificationDesc =>
+      'Систем ашиглан өөрийн хувийн мэдээллээ баталгаажуулаарай.';
+
+  @override
+  String get success => 'Амжилттай';
 }

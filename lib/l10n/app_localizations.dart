@@ -931,8 +931,8 @@ abstract class AppLocalizations {
   /// No description provided for @codeSentTo.
   ///
   /// In en, this message translates to:
-  /// **'A code was sent to your {channel} {value}.'**
-  String codeSentTo(Object channel, Object value);
+  /// **'A code was sent to your {value}.'**
+  String codeSentTo(Object value);
 
   /// No description provided for @resendCode.
   ///
@@ -1617,6 +1617,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel Order'**
   String get cancelOrder;
+
+  /// No description provided for @acceptTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the terms of the agreement'**
+  String get acceptTerms;
+
+  /// No description provided for @agree.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree'**
+  String get agree;
+
+  /// No description provided for @agreed.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreed'**
+  String get agreed;
+
+  /// No description provided for @securitiesAgreementContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This agreement is entered into between \"Mongolian Stock Exchange\" JSC /hereinafter referred to as the Exchange/, represented by ................................................, and \"................................................\" JSC /hereinafter referred to as the Issuer, collectively the Parties/, represented by ........................................... on the following terms and conditions.\n\n1.1 This agreement defines the rights, duties, and responsibilities of the parties in relation to the Exchange\'s actions of registering the Issuer and its securities, organizing the trading of securities in accordance with the relevant rules and regulations, and the Issuer\'s obligation to be registered with the Exchange in accordance with relevant procedures and pay service fees.'**
+  String get securitiesAgreementContent;
+
+  /// No description provided for @khurSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'KHUR system'**
+  String get khurSystem;
+
+  /// No description provided for @registrationProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration progress: {percent}%'**
+  String registrationProgress(String percent);
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @preparationWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation work'**
+  String get preparationWork;
+
+  /// No description provided for @preparationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be ready to trade after completing the following steps.'**
+  String get preparationDesc;
+
+  /// No description provided for @danSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'DAN identification system'**
+  String get danSystem;
+
+  /// No description provided for @danSystemDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Information verification'**
+  String get danSystemDesc;
+
+  /// No description provided for @addressInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Address information'**
+  String get addressInfo;
+
+  /// No description provided for @addressInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your residential address'**
+  String get addressInfoDesc;
+
+  /// No description provided for @securitiesAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'Securities agreement'**
+  String get securitiesAgreement;
+
+  /// No description provided for @securitiesAgreementDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Read and agree to terms'**
+  String get securitiesAgreementDesc;
+
+  /// No description provided for @document.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents'**
+  String get document;
+
+  /// No description provided for @documentDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'ID card, selfie photo'**
+  String get documentDesc;
+
+  /// No description provided for @idFront.
+  ///
+  /// In en, this message translates to:
+  /// **'ID Card - Front'**
+  String get idFront;
+
+  /// No description provided for @idBack.
+  ///
+  /// In en, this message translates to:
+  /// **'ID Card - Back'**
+  String get idBack;
+
+  /// No description provided for @selfiePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie Photo'**
+  String get selfiePhoto;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photo'**
+  String get addPhoto;
+
+  /// No description provided for @editPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Photo'**
+  String get editPhoto;
+
+  /// No description provided for @photoRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Requirements'**
+  String get photoRequirements;
+
+  /// No description provided for @reqCorner.
+  ///
+  /// In en, this message translates to:
+  /// **'All 4 corners of the ID must be visible'**
+  String get reqCorner;
+
+  /// No description provided for @reqValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a valid document'**
+  String get reqValid;
+
+  /// No description provided for @reqClear.
+  ///
+  /// In en, this message translates to:
+  /// **'No blur or glare'**
+  String get reqClear;
+
+  /// No description provided for @reqReadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Information must be clearly readable'**
+  String get reqReadable;
+
+  /// No description provided for @sendPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Photo'**
+  String get sendPhoto;
+
+  /// No description provided for @cameraInstructionId.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit the document within the frame'**
+  String get cameraInstructionId;
+
+  /// No description provided for @cameraInstructionSelfie.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit your face within the frame'**
+  String get cameraInstructionSelfie;
+
+  /// No description provided for @readyToTrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to Trade'**
+  String get readyToTrade;
+
+  /// No description provided for @readyToTradeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s start your investment journey together!'**
+  String get readyToTradeDesc;
+
+  /// No description provided for @pepQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you, a family member, or a close associate a Politically Exposed Person (PEP)?'**
+  String get pepQuestion;
+
+  /// No description provided for @pepDefinition.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is a PEP?'**
+  String get pepDefinition;
+
+  /// No description provided for @pepDefinitionFull.
+  ///
+  /// In en, this message translates to:
+  /// **'A Politically Exposed Person (PEP) is defined as an individual who is or has been entrusted with a prominent public function. This includes:\n\nPresident of Mongolia, Members of Parliament, Prime Minister, Cabinet Members, Members of the Constitutional Court, Chief Justice and Judges of the Supreme Court, Prosecutor General, Heads of organizations directly accountable to Parliament, Governors of Aimags and the Capital city, Chairmen of Citizens\' Representative Khurals of Aimags and the Capital city, State Secretaries of Ministries, Heads of government agencies, and Heads/Directors of state-owned companies and international organizations.'**
+  String get pepDefinitionFull;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verify;
+
+  /// No description provided for @danVerificationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your personal information using the system.'**
+  String get danVerificationDesc;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
 }
 
 class _AppLocalizationsDelegate

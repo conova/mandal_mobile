@@ -15,6 +15,11 @@ class CustomInput extends StatefulWidget {
   final String? Function(String?)? validator;
   final AutovalidateMode? autovalidateMode;
   final void Function(String?)? onSaved;
+  final FocusNode? focusNode;
+  final int? maxLength;
+  final bool enabled;
+  final TextAlign textAlign;
+  final bool showCounter;
 
   const CustomInput({
     super.key,
@@ -29,6 +34,11 @@ class CustomInput extends StatefulWidget {
     this.validator,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.onSaved,
+    this.focusNode,
+    this.maxLength,
+    this.enabled = true,
+    this.textAlign = TextAlign.start,
+    this.showCounter = true,
   });
 
   @override
@@ -45,17 +55,37 @@ class _CustomInputState extends State<CustomInput> {
   void initState() {
     super.initState();
     _obscureText = widget.isPassword;
-    _focusNode = FocusNode();
-    _focusNode.addListener(() {
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (mounted) {
       setState(() {
         _isFocused = _focusNode.hasFocus;
       });
-    });
+    }
+  }
+
+  @override
+  void didUpdateWidget(CustomInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode) {
+      oldWidget.focusNode?.removeListener(_handleFocusChange);
+      _focusNode.removeListener(_handleFocusChange);
+
+      _focusNode = widget.focusNode ?? FocusNode();
+      _focusNode.addListener(_handleFocusChange);
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    } else {
+      _focusNode.removeListener(_handleFocusChange);
+    }
     super.dispose();
   }
 
@@ -97,9 +127,12 @@ class _CustomInputState extends State<CustomInput> {
             child: TextFormField(
               controller: widget.controller,
               focusNode: _focusNode,
+              enabled: widget.enabled,
               obscureText: widget.isPassword ? _obscureText : false,
               keyboardType: widget.keyboardType,
               onChanged: widget.onChanged,
+              textAlign: widget.textAlign,
+              maxLength: widget.maxLength,
               validator: (value) {
                 // Run the custom validator
                 final result = widget.validator?.call(value);
@@ -124,7 +157,7 @@ class _CustomInputState extends State<CustomInput> {
                 color: colorScheme.onBackground,
               ),
               decoration: InputDecoration(
-                labelText: widget.label,
+                labelText: widget.label.isEmpty ? null : widget.label,
                 labelStyle: AppTextStyles.paragraph1.copyWith(
                   fontWeight: AppTextStyles.light,
                   color: theme.disabledColor,
@@ -136,6 +169,7 @@ class _CustomInputState extends State<CustomInput> {
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
+                counterText: widget.showCounter ? null : '',
                 errorStyle: const TextStyle(
                   height: 0,
                   fontSize: 0,

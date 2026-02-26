@@ -45,6 +45,13 @@ import 'screens/bond/bond_success_screen.dart';
 import 'screens/bond/bond_sell_screen.dart';
 import 'screens/bond/bond_sell_confirmation_screen.dart';
 import 'screens/bond/bond_sell_success_screen.dart';
+import 'screens/pep_question_screen.dart';
+import 'screens/dan_verification_screen.dart';
+import 'screens/pep_definition_screen.dart';
+import 'screens/securities_agreement_screen.dart';
+import 'screens/document_verification_screen.dart';
+import 'screens/camera_overlay_screen.dart';
+import 'screens/onboarding_success_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'theme/app_colors.dart';
@@ -298,6 +305,15 @@ class MyApp extends StatelessWidget {
             '/forgot_password_new': (context) =>
                 const ForgotPasswordNewScreen(),
             '/register': (context) => const RegisterScreen(),
+            '/pep_question': (context) => const PepQuestionScreen(),
+            '/pep_definition': (context) => const PepDefinitionScreen(),
+            '/securities_agreement': (context) =>
+                const SecuritiesAgreementScreen(),
+            '/document_verification': (context) =>
+                const DocumentVerificationScreen(),
+            '/camera_overlay': (context) => const CameraOverlayScreen(),
+            '/onboarding_success': (context) => const OnboardingSuccessScreen(),
+            '/dan_verification': (context) => const DanVerificationScreen(),
             '/register_otp': (context) => const RegisterOtpScreen(),
             '/register_password': (context) => const RegisterPasswordScreen(),
             '/register_bank_selection': (context) =>

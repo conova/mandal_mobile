@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
-import 'components/shared/otp_input_fields.dart';
+import 'components/shared/auth_otp_form.dart';
 
 class RegisterOtpScreen extends StatelessWidget {
   const RegisterOtpScreen({super.key});
@@ -26,42 +27,25 @@ class RegisterOtpScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               l10n.enterCodeTitle,
-              style: TextStyle(
-                fontSize: 28,
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
             ),
-            const SizedBox(height: 12),
             Text(
-              'Таны $phone дугаарт код илгээлээ.',
-              style: TextStyle(color: theme.disabledColor, fontSize: 16),
+              l10n.codeSentTo(phone),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onBackground,
+                fontWeight: AppTextStyles.extraLight,
+              ),
             ),
-            const SizedBox(height: 48),
-            OtpInputFields(
-              onCompleted: (code) {
-                Navigator.pushNamed(context, '/register_password');
+            const SizedBox(height: 16),
+            AuthOtpForm(
+              onSuccess: () =>
+                  Navigator.pushNamed(context, '/register_password'),
+              onResend: () {
+                // Handle resend logic
               },
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Text(
-                  l10n.noCodeReceived,
-                  style: TextStyle(color: theme.disabledColor, fontSize: 15),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    l10n.resendCode,
-                    style: TextStyle(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
