@@ -40,7 +40,7 @@ class OnboardingStepsSheet extends StatelessWidget {
     final percent = (progress * 100).toInt();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.zero,
@@ -49,71 +49,94 @@ class OnboardingStepsSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40,
-            height: 4,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
             decoration: BoxDecoration(
-              color: theme.disabledColor.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(2),
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.zero,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.disabledColor.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.preparationWork,
+                  style: AppTextStyles.h2.copyWith(
+                    color: extendedColors.neutral100,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.preparationDesc,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.body2.copyWith(
+                    color: extendedColors.neutral200,
+                    fontWeight: AppTextStyles.light,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...steps.map((step) => _buildStepItem(context, step)).toList(),
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize
+                          .min, // Shrinks the row to fit its children
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          l10n.registrationProgress(percent.toString()),
+                          style: AppTextStyles.body2.copyWith(
+                            color: extendedColors.neutral200,
+                            fontWeight: AppTextStyles.light,
+                          ),
+                        ),
+                        Text(
+                          "$percent%",
+                          style: AppTextStyles.body2.copyWith(
+                            color: extendedColors.neutral100,
+                            fontWeight: AppTextStyles.regular,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
-          Text(
-            l10n.preparationWork,
-            style: AppTextStyles.h2.copyWith(
-              color: extendedColors.neutral100,
-              fontWeight: FontWeight.bold,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: extendedColors.neutral500, width: 1.0),
+              ),
+            ),
+            child: CustomButton(
+              label: l10n.continueLabel,
+              onPressed: () async {},
+              variant: CustomButtonVariant.primary,
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            l10n.preparationDesc,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body2.copyWith(
-              color: extendedColors.neutral200,
-              fontWeight: AppTextStyles.light,
-            ),
-          ),
-          const SizedBox(height: 32),
-          ...steps.map((step) => _buildStepItem(context, step)).toList(),
-          const SizedBox(height: 24),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              color: extendedColors.bgSecondary,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Row(
-                mainAxisSize:
-                    MainAxisSize.min, // Shrinks the row to fit its children
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    l10n.registrationProgress(percent.toString()),
-                    style: AppTextStyles.body2.copyWith(
-                      color: extendedColors.neutral200,
-                      fontWeight: AppTextStyles.light,
-                    ),
-                  ),
-                  Text(
-                    "$percent%",
-                    style: AppTextStyles.body2.copyWith(
-                      color: extendedColors.neutral100,
-                      fontWeight: AppTextStyles.regular,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          CustomButton(
-            label: l10n.continueLabel,
-            onPressed: () async {},
-            variant: CustomButtonVariant.primary,
-          ),
-          const SizedBox(height: 20),
         ],
       ),
     );
