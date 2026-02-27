@@ -62,14 +62,18 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
             children: [
               Text(
                 l10n.sellPrice,
-                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: Colors.grey,
+                ),
               ),
               Row(
                 children: [
                   Flexible(
                     child: Text(
                       l10n.executionProbability,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: Colors.grey,
+                      ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
@@ -77,10 +81,9 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
                   const SizedBox(width: 8),
                   Text(
                     _getProbabilityText(l10n),
-                    style: TextStyle(
+                    style: theme.textTheme.labelMedium?.copyWith(
                       color: _getProbabilityColor(),
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -92,9 +95,8 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
           const SizedBox(height: 12),
           Text(
             '${_currentValue.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
-            style: TextStyle(
+            style: theme.textTheme.displaySmall?.copyWith(
               fontWeight: FontWeight.bold,
-              fontSize: 28,
               color: theme.colorScheme.onSurface,
             ),
           ),
@@ -129,11 +131,15 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
             children: [
               Text(
                 'Min: ${widget.min.toInt()}₮',
-                style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: Colors.grey.shade400,
+                ),
               ),
               Text(
                 'Max: ${widget.max.toInt()}₮',
-                style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: Colors.grey.shade400,
+                ),
               ),
             ],
           ),

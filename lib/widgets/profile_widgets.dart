@@ -44,12 +44,15 @@ class ProfileListItem extends StatelessWidget {
               color: colorScheme.surfaceVariant.withOpacity(0.5),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: iconColor ?? colorScheme.onSurface, size: 22),
+            child: Icon(
+              icon,
+              color: iconColor ?? colorScheme.onSurface,
+              size: 22,
+            ),
           ),
           title: Text(
             title,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontSize: 16,
               fontWeight: FontWeight.w500,
               color: extendedColors.neutral100,
             ),
@@ -57,7 +60,9 @@ class ProfileListItem extends StatelessWidget {
           subtitle: subtitle != null
               ? Text(
                   subtitle!,
-                  style: theme.textTheme.bodyMedium?.copyWith(fontSize: 12, color: extendedColors.neutral200),
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                  ),
                 )
               : null,
           trailing: Row(
@@ -65,7 +70,12 @@ class ProfileListItem extends StatelessWidget {
             children: [
               if (trailing != null) trailing!,
               if (trailing != null && showArrow) const SizedBox(width: 8),
-              if (showArrow) Icon(Icons.arrow_forward_ios, size: 14, color: extendedColors.neutral200),
+              if (showArrow)
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: extendedColors.neutral200,
+                ),
             ],
           ),
         ),
@@ -109,12 +119,17 @@ class ProfileToggleItem extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: theme.textTheme.bodyLarge?.copyWith(fontSize: 16, fontWeight: FontWeight.w500, color: extendedColors.neutral100),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: extendedColors.neutral100,
+          ),
         ),
         subtitle: subtitle != null
             ? Text(
                 subtitle!,
-                style: theme.textTheme.bodyMedium?.copyWith(fontSize: 12, color: extendedColors.neutral300),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: extendedColors.neutral300,
+                ),
               )
             : null,
         trailing: Switch(
@@ -130,10 +145,7 @@ class ProfileToggleItem extends StatelessWidget {
 class ProfileSectionHeader extends StatelessWidget {
   final String title;
 
-  const ProfileSectionHeader({
-    super.key,
-    required this.title,
-  });
+  const ProfileSectionHeader({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -145,10 +157,9 @@ class ProfileSectionHeader extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Text(
           title,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontSize: 14, 
-            fontWeight: FontWeight.w500, 
-            color: theme.disabledColor
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: theme.disabledColor,
           ),
         ),
       ),

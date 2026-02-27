@@ -61,18 +61,14 @@ class BondMarketCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           subtitle,
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 13,
-                          ),
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(color: Colors.grey.shade400),
                         ),
                       ],
                     ),
@@ -88,10 +84,9 @@ class BondMarketCard extends StatelessWidget {
                       ),
                       child: Text(
                         status,
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: statusTextColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 11,
                         ),
                       ),
                     ),
@@ -114,7 +109,9 @@ class BondMarketCard extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.buy,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -123,9 +120,9 @@ class BondMarketCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMetric(l10n.tenureLabel, tenure),
-              _buildMetric(l10n.interestRate, yield),
-              _buildMetric(l10n.amountLabel, totalAmount),
+              _buildMetric(Theme.of(context), l10n.tenureLabel, tenure),
+              _buildMetric(Theme.of(context), l10n.interestRate, yield),
+              _buildMetric(Theme.of(context), l10n.amountLabel, totalAmount),
             ],
           ),
           if (progress != null) ...[
@@ -145,14 +142,15 @@ class BondMarketCard extends StatelessWidget {
               children: [
                 Text(
                   progressLabel,
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: Colors.grey.shade400),
                 ),
                 Text(
                   '${(progress! * 100).toInt()}%',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -162,14 +160,19 @@ class BondMarketCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(String label, String value) {
+  Widget _buildMetric(ThemeData theme, String label, String value) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey),
+        ),
         const SizedBox(height: 6),
         Text(
           value,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );

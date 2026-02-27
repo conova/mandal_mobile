@@ -14,8 +14,7 @@ class MainContainer extends StatefulWidget {
 }
 
 class _MainContainerState extends State<MainContainer> {
-  int _selectedIndex =
-      0; // Defaulting to Bond tab as requested indirectly by design
+  int _selectedIndex = 0;
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -45,11 +44,10 @@ class _MainContainerState extends State<MainContainer> {
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: theme.disabledColor,
         showUnselectedLabels: true,
-        selectedLabelStyle: const TextStyle(
-          fontSize: 11,
+        selectedLabelStyle: theme.textTheme.labelSmall?.copyWith(
           fontWeight: FontWeight.bold,
         ),
-        unselectedLabelStyle: const TextStyle(fontSize: 11),
+        unselectedLabelStyle: theme.textTheme.labelSmall,
         items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.account_balance_wallet_outlined),

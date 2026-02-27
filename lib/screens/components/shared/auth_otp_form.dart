@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../theme/extended_colors.dart';
 import 'otp_input_field.dart';
@@ -127,7 +126,7 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
             _errorMessage!,
             style: theme.textTheme.labelLarge?.copyWith(
               color: colorScheme.error,
-              fontWeight: AppTextStyles.light,
+              fontWeight: FontWeight.w300,
             ),
           ),
         ],
@@ -138,7 +137,7 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
               l10n.noCodeReceived,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onBackground,
-                fontWeight: AppTextStyles.extraLight,
+                fontWeight: FontWeight.w200,
               ),
             ),
             TextButton(
@@ -147,7 +146,7 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
                 l10n.resendCode,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.primary,
-                  fontWeight: AppTextStyles.regular,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),

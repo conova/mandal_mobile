@@ -31,13 +31,13 @@ class MarkReadBottomSheet extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             l10n.markAllReadTitle,
-            style: theme.textTheme.titleLarge?.copyWith(fontSize: 20),
+            style: theme.textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           Text(
             l10n.markAllReadDesc,
-            style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
+            style: theme.textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -56,7 +56,9 @@ class MarkReadBottomSheet extends StatelessWidget {
               ),
               child: Text(
                 l10n.confirm,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -75,7 +77,9 @@ class MarkReadBottomSheet extends StatelessWidget {
               ),
               child: Text(
                 l10n.back,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

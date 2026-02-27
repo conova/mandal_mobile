@@ -18,8 +18,7 @@ class BondOrderBoard extends StatelessWidget {
       children: [
         Text(
           l10n.orderBoard,
-          style: TextStyle(
-            fontSize: 22,
+          style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: extendedColors.neutral100,
           ),
@@ -36,11 +35,15 @@ class BondOrderBoard extends StatelessWidget {
             children: [
               Text(
                 l10n.sellPrice,
-                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: Colors.grey,
+                ),
               ),
               Text(
                 l10n.quantityLabel,
-                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: Colors.grey,
+                ),
               ),
             ],
           ),
@@ -66,17 +69,15 @@ class BondOrderBoard extends StatelessWidget {
                 children: [
                   Text(
                     '${order.price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
-                    style: TextStyle(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.red,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
                     ),
                   ),
                   Text(
                     '${order.quantity}',
-                    style: TextStyle(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
-                      fontSize: 14,
                       color: theme.colorScheme.onSurface,
                     ),
                   ),

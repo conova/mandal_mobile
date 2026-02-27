@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/app_colors.dart';
 import '../widgets/mark_read_bottom_sheet.dart';
 
 import '../widgets/filter_chip_bar.dart';
@@ -51,9 +50,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
               label: Text(
                 l10n.markAllAsRead,
-                style: TextStyle(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -77,8 +75,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               children: [
                 Text(
                   l10n.notifications,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -92,11 +89,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     color: colorScheme.error,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Text(
+                  child: Text(
                     '2',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

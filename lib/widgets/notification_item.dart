@@ -28,8 +28,12 @@ class NotificationItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: isUnread ? theme.primaryColor.withOpacity(0.05) : Colors.transparent,
-          border: Border(bottom: BorderSide(color: theme.dividerColor, width: 0.5)),
+          color: isUnread
+              ? theme.primaryColor.withOpacity(0.05)
+              : Colors.transparent,
+          border: Border(
+            bottom: BorderSide(color: theme.dividerColor, width: 0.5),
+          ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +58,10 @@ class NotificationItem extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: theme.primaryColor,
                         shape: BoxShape.circle,
-                        border: Border.all(color: colorScheme.surface, width: 2),
+                        border: Border.all(
+                          color: colorScheme.surface,
+                          width: 2,
+                        ),
                       ),
                     ),
                   ),
@@ -67,19 +74,23 @@ class NotificationItem extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14, height: 1.4),
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     time,
-                    style: theme.textTheme.bodySmall?.copyWith(fontSize: 12, color: theme.disabledColor),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.disabledColor,
+                    ),
                   ),
                 ],
               ),

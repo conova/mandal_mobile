@@ -27,7 +27,9 @@ class AccountCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: colorScheme.surfaceVariant.withOpacity(0.3),
           borderRadius: BorderRadius.circular(16),
-          border: isPrimary ? Border.all(color: theme.primaryColor.withOpacity(0.5)) : null,
+          border: isPrimary
+              ? Border.all(color: theme.primaryColor.withOpacity(0.5))
+              : null,
         ),
         child: Row(
           children: [
@@ -37,15 +39,16 @@ class AccountCard extends StatelessWidget {
                 children: [
                   Text(
                     accountNumber,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: 18,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     bankName,
-                    style: TextStyle(color: theme.disabledColor, fontSize: 14),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.disabledColor,
+                    ),
                   ),
                 ],
               ),

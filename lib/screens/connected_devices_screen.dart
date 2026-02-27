@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 
 import 'components/connected_devices/device_item.dart';
 
@@ -8,9 +9,10 @@ class ConnectedDevicesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -29,15 +31,16 @@ class ConnectedDevicesScreen extends StatelessWidget {
           children: [
             Text(
               l10n.connectedDevices,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontSize: 28,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.connectedDevicesDesc,
-              style: TextStyle(color: theme.disabledColor, fontSize: 14),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral500,
+              ),
             ),
             const SizedBox(height: 32),
             DeviceItem(

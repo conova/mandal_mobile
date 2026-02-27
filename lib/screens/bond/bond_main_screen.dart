@@ -51,16 +51,14 @@ class _BondMainScreenState extends State<BondMainScreen>
             child: TabBar(
               controller: _tabController,
               labelColor: extendedColors.neutral100,
-              unselectedLabelColor: Colors.grey,
+              unselectedLabelColor: extendedColors.neutral400,
               indicatorColor: extendedColors.primaryMain,
               indicatorWeight: 3,
-              labelStyle: const TextStyle(
+              labelStyle: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
               ),
-              unselectedLabelStyle: const TextStyle(
+              unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.normal,
-                fontSize: 16,
               ),
               tabs: [
                 Tab(text: l10n.buyBond),
@@ -73,18 +71,22 @@ class _BondMainScreenState extends State<BondMainScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildBuyTab(l10n, extendedColors),
-          _buildSellTab(l10n, extendedColors),
+          _buildBuyTab(l10n, extendedColors, theme),
+          _buildSellTab(l10n, extendedColors, theme),
         ],
       ),
     );
   }
 
-  Widget _buildBuyTab(AppLocalizations l10n, ExtendedColors extendedColors) {
+  Widget _buildBuyTab(
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+    ThemeData theme,
+  ) {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        _buildSectionHeader(l10n.primaryMarket, extendedColors),
+        _buildSectionHeader(l10n.primaryMarket, extendedColors, theme),
         const SizedBox(height: 24),
         BondMarketCard(
           title: 'Net Capital',
@@ -113,7 +115,7 @@ class _BondMainScreenState extends State<BondMainScreen>
           onBuyPressed: () {},
         ),
         const SizedBox(height: 16),
-        _buildSectionHeader(l10n.secondaryMarket, extendedColors),
+        _buildSectionHeader(l10n.secondaryMarket, extendedColors, theme),
         const SizedBox(height: 24),
         BondMarketCard(
           title: 'Simple',
@@ -165,13 +167,17 @@ class _BondMainScreenState extends State<BondMainScreen>
     );
   }
 
-  Widget _buildSellTab(AppLocalizations l10n, ExtendedColors extendedColors) {
+  Widget _buildSellTab(
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+    ThemeData theme,
+  ) {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
         const PledgeBondBanner(),
         const SizedBox(height: 48),
-        _buildSectionHeader(l10n.myBond, extendedColors),
+        _buildSectionHeader(l10n.myBond, extendedColors, theme),
         const SizedBox(height: 24),
         MyBondCard(
           title: 'Net Capital',
@@ -207,14 +213,17 @@ class _BondMainScreenState extends State<BondMainScreen>
     );
   }
 
-  Widget _buildSectionHeader(String title, ExtendedColors extendedColors) {
+  Widget _buildSectionHeader(
+    String title,
+    ExtendedColors extendedColors,
+    ThemeData theme,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 28,
+          style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: extendedColors.neutral100,
           ),

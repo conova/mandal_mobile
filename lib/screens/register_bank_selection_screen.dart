@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import 'components/register/register_bank_list.dart';
@@ -36,9 +37,10 @@ class _RegisterBankSelectionScreenState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -48,13 +50,14 @@ class _RegisterBankSelectionScreenState
           const SizedBox(height: 24),
           Text(
             l10n.selectYourBank,
-            style: TextStyle(color: Colors.grey[500], fontSize: 14),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral500,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             '₮5,000',
-            style: TextStyle(
-              fontSize: 48,
+            style: theme.textTheme.displayMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onBackground,
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../theme/extended_colors.dart';
 
 class InfoCard extends StatelessWidget {
   final String label;
@@ -17,6 +18,7 @@ class InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
 
     return InkWell(
@@ -39,15 +41,13 @@ class InfoCard extends StatelessWidget {
                   Text(
                     label,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.disabledColor,
-                      fontSize: 14,
+                      color: extendedColors.neutral200,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     value,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

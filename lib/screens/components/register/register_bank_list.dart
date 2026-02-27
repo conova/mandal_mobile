@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../theme/extended_colors.dart';
 
 class RegisterBankList extends StatelessWidget {
   final List<Map<String, dynamic>> banks;
@@ -14,6 +15,10 @@ class RegisterBankList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
+
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       itemCount: banks.length,
@@ -31,7 +36,9 @@ class RegisterBankList extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? const Color(0xFF1E8675) : Colors.grey[200]!,
+                color: isSelected
+                    ? extendedColors.primaryMain
+                    : extendedColors.neutral500,
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -47,7 +54,7 @@ class RegisterBankList extends StatelessWidget {
                   child: Center(
                     child: Text(
                       bank['icon'],
-                      style: const TextStyle(fontSize: 24),
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -55,17 +62,16 @@ class RegisterBankList extends StatelessWidget {
                 Expanded(
                   child: Text(
                     bank['name'],
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
-                  color: Colors.grey[300],
+                  color: extendedColors.neutral400,
                 ),
               ],
             ),

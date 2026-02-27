@@ -20,7 +20,6 @@ class HomeWatchlistSection extends StatelessWidget {
             Text(
               l10n.watchlist,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -44,11 +43,11 @@ class HomeWatchlistSection extends StatelessWidget {
           children: [
             Text(
               l10n.stocks,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
+              style: theme.textTheme.labelLarge?.copyWith(color: Colors.grey),
             ),
             Text(
               l10n.lastPrice24h,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
+              style: theme.textTheme.labelLarge?.copyWith(color: Colors.grey),
             ),
           ],
         ),
@@ -60,6 +59,7 @@ class HomeWatchlistSection extends StatelessWidget {
           '+ 9.71%',
           true,
           extendedColors,
+          context,
         ),
         _buildWatchlistItem(
           'APU',
@@ -68,6 +68,7 @@ class HomeWatchlistSection extends StatelessWidget {
           '- 0.24%',
           false,
           extendedColors,
+          context,
         ),
         _buildWatchlistItem(
           'GLMT',
@@ -76,6 +77,7 @@ class HomeWatchlistSection extends StatelessWidget {
           '0.00%',
           null,
           extendedColors,
+          context,
         ),
         _buildWatchlistItem(
           'KHAN',
@@ -84,6 +86,7 @@ class HomeWatchlistSection extends StatelessWidget {
           '- 4.02%',
           false,
           extendedColors,
+          context,
         ),
         _buildWatchlistItem(
           'LEND',
@@ -92,6 +95,7 @@ class HomeWatchlistSection extends StatelessWidget {
           '- 3.43%',
           false,
           extendedColors,
+          context,
         ),
         const SizedBox(height: 20),
         SizedBox(
@@ -107,10 +111,9 @@ class HomeWatchlistSection extends StatelessWidget {
             ),
             child: Text(
               '${l10n.viewAll} (12)',
-              style: TextStyle(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: extendedColors.neutral100,
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
               ),
             ),
           ),
@@ -126,7 +129,9 @@ class HomeWatchlistSection extends StatelessWidget {
     String change,
     bool? isPositive,
     ExtendedColors extendedColors,
+    BuildContext context,
   ) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: Row(
@@ -137,14 +142,15 @@ class HomeWatchlistSection extends StatelessWidget {
             children: [
               Text(
                 symbol,
-                style: const TextStyle(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
               Text(
                 name,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: Colors.grey,
+                ),
               ),
             ],
           ),
@@ -153,20 +159,18 @@ class HomeWatchlistSection extends StatelessWidget {
             children: [
               Text(
                 price,
-                style: const TextStyle(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
               Text(
                 change,
-                style: TextStyle(
+                style: theme.textTheme.labelMedium?.copyWith(
                   color: isPositive == null
                       ? Colors.grey
                       : (isPositive
                             ? extendedColors.primaryMain
                             : extendedColors.red),
-                  fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
               ),

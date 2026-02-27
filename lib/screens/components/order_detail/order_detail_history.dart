@@ -17,7 +17,9 @@ class OrderDetailHistory extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Text(
             l10n.executionHistory,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 24),
@@ -64,7 +66,9 @@ class OrderDetailHistory extends StatelessWidget {
         children: [
           Text(
             date,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           OrderDetailSummaryItem(label: l10n.tradeAmount, value: amount),

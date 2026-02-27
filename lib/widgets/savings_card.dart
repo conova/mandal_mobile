@@ -25,7 +25,7 @@ class SavingsCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
@@ -46,12 +46,7 @@ class SavingsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 16),
-                ),
-              ),
+              Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
               CustomButton(
                 label: l10n.add,
                 variant: CustomButtonVariant.secondary,
@@ -63,8 +58,7 @@ class SavingsCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             amount,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontSize: 24,
+            style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -88,13 +82,14 @@ class SavingsCard extends StatelessWidget {
       children: [
         Text(
           label,
-          style: theme.textTheme.bodyMedium?.copyWith(fontSize: 12),
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.disabledColor,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
           style: theme.textTheme.bodyLarge?.copyWith(
-            fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),

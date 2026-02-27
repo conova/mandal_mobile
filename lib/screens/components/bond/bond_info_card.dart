@@ -28,20 +28,36 @@ class BondInfoCard extends StatelessWidget {
       child: Column(
         children: [
           _buildInfoRow(
+            Theme.of(context),
             Icons.calendar_today_outlined,
             l10n.tenureLabel,
             tenure,
           ),
           const SizedBox(height: 20),
-          _buildInfoRow(Icons.percent, l10n.annualInterest, rate),
+          _buildInfoRow(
+            Theme.of(context),
+            Icons.percent,
+            l10n.annualInterest,
+            rate,
+          ),
           const SizedBox(height: 20),
-          _buildInfoRow(Icons.refresh, l10n.paymentFrequency, frequency),
+          _buildInfoRow(
+            Theme.of(context),
+            Icons.refresh,
+            l10n.paymentFrequency,
+            frequency,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+    ThemeData theme,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Row(
       children: [
         Container(
@@ -58,12 +74,16 @@ class BondInfoCard extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.disabledColor,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

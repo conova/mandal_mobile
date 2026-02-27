@@ -32,9 +32,8 @@ class LanguageSwitcher extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 currentLocale == 'mn' ? 'MN' : 'ENG',
-                style: TextStyle(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: colorScheme.onBackground,
-                  fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
                 textHeightBehavior: const TextHeightBehavior(

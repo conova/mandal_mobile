@@ -17,7 +17,8 @@ class BondActionBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+    final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
@@ -40,14 +41,15 @@ class BondActionBottomBar extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 amount,
-                style: TextStyle(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
                   color: extendedColors.neutral100,
                 ),
               ),
@@ -66,7 +68,9 @@ class BondActionBottomBar extends StatelessWidget {
             ),
             child: Text(
               buttonText,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],

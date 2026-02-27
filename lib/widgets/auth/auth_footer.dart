@@ -18,27 +18,30 @@ class AuthFooter extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          questionText,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: AppTextStyles.regular,
-          ),
-        ),
-        const SizedBox(width: 4),
-        GestureDetector(
-          onTap: onAction,
-          child: Text(
-            actionText,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            questionText,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: AppTextStyles.regular,
-              color: colorScheme.primary,
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: onAction,
+            child: Text(
+              actionText,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: AppTextStyles.regular,
+                color: colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

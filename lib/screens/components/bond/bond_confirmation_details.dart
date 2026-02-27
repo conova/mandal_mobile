@@ -27,13 +27,13 @@ class BondConfirmationDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDetailRow(l10n.type, type),
+        _buildDetailRow(theme, l10n.type, type),
         const SizedBox(height: 16),
-        _buildDetailRow(l10n.buyQuantity, quantity),
+        _buildDetailRow(theme, l10n.buyQuantity, quantity),
         const SizedBox(height: 16),
-        _buildDetailRow(l10n.unitPrice, unitPrice),
+        _buildDetailRow(theme, l10n.unitPrice, unitPrice),
         const SizedBox(height: 16),
-        _buildDetailRow('${l10n.commissionLabel} (0.1%)', commission),
+        _buildDetailRow(theme, '${l10n.commissionLabel} (0.1%)', commission),
         const SizedBox(height: 24),
         const Divider(height: 1),
         const SizedBox(height: 24),
@@ -42,13 +42,12 @@ class BondConfirmationDetails extends StatelessWidget {
           children: [
             Text(
               l10n.totalPayment,
-              style: const TextStyle(color: Colors.grey, fontSize: 16),
+              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
             ),
             Text(
               total,
-              style: TextStyle(
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
                 color: theme.colorScheme.onSurface,
               ),
             ),
@@ -58,14 +57,19 @@ class BondConfirmationDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow(ThemeData theme, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+        ),
         Text(
           value,
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );

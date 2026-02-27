@@ -29,6 +29,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.8,
           0.4,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1476',
@@ -38,6 +39,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.2,
           0.6,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '984',
@@ -47,6 +49,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.5,
           0.3,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1599',
@@ -56,6 +59,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.1,
           0.7,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1107',
@@ -65,6 +69,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.3,
           0.4,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1722',
@@ -74,6 +79,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.6,
           0.2,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1230',
@@ -83,6 +89,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.4,
           0.5,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1845',
@@ -92,6 +99,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.7,
           0.8,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1353',
@@ -101,6 +109,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.4,
           0.1,
           extendedColors,
+          theme,
         ),
         _buildOrderDepthRow(
           '1968',
@@ -110,6 +119,7 @@ class StockTradingOrderBoard extends StatelessWidget {
           0.2,
           0.3,
           extendedColors,
+          theme,
         ),
       ],
     );
@@ -139,7 +149,9 @@ class StockTradingOrderBoard extends StatelessWidget {
       child: Center(
         child: Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -153,6 +165,7 @@ class StockTradingOrderBoard extends StatelessWidget {
     double bFill,
     double sFill,
     ExtendedColors extendedColors,
+    ThemeData theme,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -162,7 +175,7 @@ class StockTradingOrderBoard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(bQty, style: const TextStyle(fontSize: 13)),
+                Text(bQty, style: theme.textTheme.bodySmall),
                 const SizedBox(width: 8),
                 Container(
                   width: 100,
@@ -188,9 +201,8 @@ class StockTradingOrderBoard extends StatelessWidget {
                       Center(
                         child: Text(
                           bPrice,
-                          style: const TextStyle(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize: 13,
                           ),
                         ),
                       ),
@@ -239,7 +251,7 @@ class StockTradingOrderBoard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(sQty, style: const TextStyle(fontSize: 13)),
+                Text(sQty, style: theme.textTheme.bodySmall),
               ],
             ),
           ),

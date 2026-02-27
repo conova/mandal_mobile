@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
-import '../../../theme/app_text_styles.dart';
 
 class RegistrationProgressBanner extends StatelessWidget {
   final double progress; // 0.0 to 1.0
@@ -21,19 +20,48 @@ class RegistrationProgressBanner extends StatelessWidget {
     final percent = (progress * 100).toInt();
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.khurSystem,
-                style: AppTextStyles.h3.copyWith(
-                  color: theme.colorScheme.onBackground,
-                  fontWeight: FontWeight.bold,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.khurSystem,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.onBackground,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text(
+                        l10n.registrationProgress(percent.toString()),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral200,
+                        ),
+                      ),
+                      Text(
+                        percent.toString() + "%",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral100,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        size: 16,
+                        color: extendedColors.yellow,
+                      ),
+                    ],
+                  ),
+                ],
               ),
               ElevatedButton(
                 onPressed: onStartPressed,
@@ -51,35 +79,11 @@ class RegistrationProgressBanner extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.start,
-                  style: AppTextStyles.paragraph1.copyWith(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     color: extendedColors.bgBase,
-                    fontWeight: AppTextStyles.regular,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                l10n.registrationProgress(percent.toString()),
-                style: AppTextStyles.body2.copyWith(
-                  color: extendedColors.neutral200,
-                ),
-              ),
-              Text(
-                percent.toString() + "%",
-                style: AppTextStyles.body2.copyWith(
-                  color: extendedColors.neutral100,
-                  fontWeight: AppTextStyles.regular,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.warning_amber_rounded,
-                size: 16,
-                color: extendedColors.yellow,
               ),
             ],
           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/app_colors.dart';
 import '../theme/app_state_manager.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/logout_bottom_sheet.dart';
@@ -47,8 +46,7 @@ class ProfileScreen extends StatelessWidget {
                 AppStateManager.instance.locale.languageCode == 'mn'
                     ? 'MN'
                     : 'EN',
-                style: TextStyle(
-                  fontSize: 8,
+                style: theme.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -58,7 +56,9 @@ class ProfileScreen extends StatelessWidget {
               AppStateManager.instance.locale.languageCode == 'mn'
                   ? 'MNG'
                   : 'ENG',
-              style: TextStyle(color: colorScheme.onSurface, fontSize: 12),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface,
+              ),
             ),
           ),
           const SizedBox(width: 8),

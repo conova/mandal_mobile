@@ -46,13 +46,12 @@ class _OrderScreenState extends State<OrderScreen>
           preferredSize: const Size.fromHeight(0),
           child: TabBar(
             controller: _tabController,
-            indicatorColor: theme.primaryColor,
+            indicatorColor: extendedColors.primaryMain,
             indicatorWeight: 3,
             labelColor: colorScheme.onSurface,
-            unselectedLabelColor: theme.disabledColor,
-            labelStyle: const TextStyle(
+            unselectedLabelColor: extendedColors.neutral500,
+            labelStyle: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.bold,
-              fontSize: 16,
             ),
             tabs: [
               Tab(text: l10n.activeOrders),

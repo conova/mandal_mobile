@@ -65,9 +65,7 @@ class OrderCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           companyName,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontSize: 18,
-                          ),
+                          style: theme.textTheme.titleMedium,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -76,9 +74,7 @@ class OrderCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           subtitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontSize: 14,
-                          ),
+                          style: theme.textTheme.bodyMedium,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -88,8 +84,7 @@ class OrderCard extends StatelessWidget {
                 ),
                 Text(
                   amount,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontSize: 18,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -99,6 +94,7 @@ class OrderCard extends StatelessWidget {
             Row(
               children: [
                 _buildBadge(
+                  theme,
                   type == OrderType.buy ? l10n.buy : l10n.sell,
                   type == OrderType.buy
                       ? theme.primaryColor.withOpacity(0.12)
@@ -109,12 +105,14 @@ class OrderCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 _buildBadge(
+                  theme,
                   status == OrderStatus.open ? l10n.open : l10n.closed,
                   colorScheme.surfaceVariant,
                   colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 8),
                 _buildBadge(
+                  theme,
                   market == MarketType.bond
                       ? l10n.bond
                       : (market == MarketType.stock
@@ -135,16 +133,12 @@ class OrderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  l10n.executionQuantity,
-                  style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
-                ),
+                Text(l10n.executionQuantity, style: theme.textTheme.bodyMedium),
                 Row(
                   children: [
                     Text(
                       execution,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -167,7 +161,9 @@ class OrderCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               date,
-              style: theme.textTheme.bodyMedium?.copyWith(fontSize: 12),
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.disabledColor,
+              ),
             ),
           ],
         ),
@@ -175,7 +171,12 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBadge(String text, Color bgColor, Color textColor) {
+  Widget _buildBadge(
+    ThemeData theme,
+    String text,
+    Color bgColor,
+    Color textColor,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -184,9 +185,8 @@ class OrderCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: TextStyle(
+        style: theme.textTheme.labelSmall?.copyWith(
           color: textColor,
-          fontSize: 12,
           fontWeight: FontWeight.bold,
         ),
         overflow: TextOverflow.ellipsis,
@@ -199,11 +199,10 @@ class OrderCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14)),
+        Text(label, style: theme.textTheme.bodyMedium),
         Text(
           value,
           style: theme.textTheme.bodyLarge?.copyWith(
-            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),

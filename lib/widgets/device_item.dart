@@ -32,7 +32,9 @@ class DeviceItem extends StatelessWidget {
           children: [
             Text(
               deviceName,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(
               height: 40,
@@ -49,7 +51,9 @@ class DeviceItem extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.remove,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -59,14 +63,15 @@ class DeviceItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: isActive ? Colors.teal[50]?.withOpacity(0.5) : Colors.grey[100],
+            color: isActive
+                ? Colors.teal[50]?.withOpacity(0.5)
+                : Colors.grey[100],
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             status,
-            style: TextStyle(
+            style: theme.textTheme.labelSmall?.copyWith(
               color: isActive ? Colors.teal[400] : Colors.black87,
-              fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -78,9 +83,14 @@ class DeviceItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.date, style: TextStyle(color: theme.disabledColor, fontSize: 13)),
+                  Text(
+                    l10n.date,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.disabledColor,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(date, style: const TextStyle(fontSize: 14)),
+                  Text(date, style: theme.textTheme.bodyMedium),
                 ],
               ),
             ),
@@ -88,9 +98,14 @@ class DeviceItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.ipAddress, style: TextStyle(color: theme.disabledColor, fontSize: 13)),
+                  Text(
+                    l10n.ipAddress,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.disabledColor,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(ip, style: const TextStyle(fontSize: 14)),
+                  Text(ip, style: theme.textTheme.bodyMedium),
                 ],
               ),
             ),

@@ -24,6 +24,30 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isDanCompleted = false;
   bool _isAgreementCompleted = false;
   bool _isDocCompleted = false;
+  final ScrollController _scrollController = ScrollController();
+  double _scrollOpacity = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    final newOpacity = (offset / 100).clamp(0.0, 1.0);
+    if (newOpacity != _scrollOpacity) {
+      setState(() {
+        _scrollOpacity = newOpacity;
+      });
+    }
+  }
 
   void _showOnboardingSheet() {
     showModalBottomSheet(
@@ -114,12 +138,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      appBar: const HomeHeader(),
+      appBar: HomeHeader(showSummaryOpacity: _scrollOpacity),
       body: RefreshIndicator(
         onRefresh: () async {
           await Future.delayed(const Duration(seconds: 1));
         },
         child: SingleChildScrollView(
+          controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),

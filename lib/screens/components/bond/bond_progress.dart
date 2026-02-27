@@ -23,7 +23,7 @@ class BondProgress extends StatelessWidget {
       children: [
         Text(
           l10n.bondCollectionTarget,
-          style: const TextStyle(color: Colors.grey, fontSize: 13),
+          style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
         ),
         const SizedBox(height: 8),
         Row(
@@ -31,18 +31,16 @@ class BondProgress extends StatelessWidget {
           children: [
             RichText(
               text: TextSpan(
-                style: TextStyle(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
-                  fontSize: 18,
                 ),
                 children: [
                   TextSpan(text: current),
                   TextSpan(
                     text: ' / $total',
-                    style: TextStyle(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.grey.withOpacity(0.7),
-                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -50,9 +48,8 @@ class BondProgress extends StatelessWidget {
             ),
             Text(
               '${(percentage * 100).toInt()}%',
-              style: TextStyle(
+              style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
                 color: theme.colorScheme.onSurface,
               ),
             ),

@@ -38,16 +38,14 @@ class InfoCard extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.disabledColor,
-                      fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     value,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

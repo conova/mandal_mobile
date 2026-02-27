@@ -33,15 +33,9 @@ class StockPriceRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    symbol,
-                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
-                  ),
+                  Text(symbol, style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 4),
-                  Text(
-                    name,
-                    style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
-                  ),
+                  Text(name, style: theme.textTheme.bodyMedium),
                 ],
               ),
             ),
@@ -50,8 +44,7 @@ class StockPriceRow extends StatelessWidget {
               children: [
                 Text(
                   price,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontSize: 18,
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -62,17 +55,20 @@ class StockPriceRow extends StatelessWidget {
                     if (change != '0.00%')
                       Icon(
                         isGrowing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                        color: isGrowing ? theme.primaryColor : colorScheme.error,
+                        color: isGrowing
+                            ? theme.primaryColor
+                            : colorScheme.error,
                         size: 20,
                       ),
                     Text(
                       change,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: change == '0.00%' 
-                          ? theme.textTheme.bodySmall?.color ?? Colors.grey 
-                          : (isGrowing ? theme.primaryColor : colorScheme.error),
+                        color: change == '0.00%'
+                            ? theme.textTheme.bodySmall?.color ?? Colors.grey
+                            : (isGrowing
+                                  ? theme.primaryColor
+                                  : colorScheme.error),
                       ),
                     ),
                   ],

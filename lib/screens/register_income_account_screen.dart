@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_dropdown.dart';
@@ -9,10 +10,12 @@ class RegisterIncomeAccountScreen extends StatefulWidget {
   const RegisterIncomeAccountScreen({super.key});
 
   @override
-  State<RegisterIncomeAccountScreen> createState() => _RegisterIncomeAccountScreenState();
+  State<RegisterIncomeAccountScreen> createState() =>
+      _RegisterIncomeAccountScreenState();
 }
 
-class _RegisterIncomeAccountScreenState extends State<RegisterIncomeAccountScreen> {
+class _RegisterIncomeAccountScreenState
+    extends State<RegisterIncomeAccountScreen> {
   final TextEditingController _ibanController = TextEditingController();
   final TextEditingController _recipientController = TextEditingController();
   String? _selectedBank;
@@ -42,7 +45,8 @@ class _RegisterIncomeAccountScreenState extends State<RegisterIncomeAccountScree
 
   void _checkFields() {
     setState(() {
-      _isButtonEnabled = _ibanController.text.isNotEmpty &&
+      _isButtonEnabled =
+          _ibanController.text.isNotEmpty &&
           _recipientController.text.isNotEmpty &&
           _selectedBank != null;
     });
@@ -56,9 +60,10 @@ class _RegisterIncomeAccountScreenState extends State<RegisterIncomeAccountScree
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -71,8 +76,7 @@ class _RegisterIncomeAccountScreenState extends State<RegisterIncomeAccountScree
             const SizedBox(height: 40),
             Text(
               l10n.enterIncomeAccount,
-              style: TextStyle(
-                fontSize: 28,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
@@ -80,24 +84,27 @@ class _RegisterIncomeAccountScreenState extends State<RegisterIncomeAccountScree
             const SizedBox(height: 12),
             Text(
               l10n.enterIncomeAccountSubtitle,
-              style: TextStyle(color: theme.disabledColor, fontSize: 16),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: extendedColors.neutral500,
+              ),
             ),
             const SizedBox(height: 48),
             CustomInput(
               label: l10n.ibanNumber,
               hint: '',
               controller: _ibanController,
-              suffix: Icon(Icons.copy_outlined, color: theme.disabledColor, size: 20),
+              suffix: Icon(
+                Icons.copy_outlined,
+                color: extendedColors.neutral400,
+                size: 20,
+              ),
             ),
             const SizedBox(height: 16),
             CustomDropdown<String>(
               label: l10n.bankName,
               value: _selectedBank,
               items: _banks.map((String bank) {
-                return DropdownMenuItem<String>(
-                  value: bank,
-                  child: Text(bank),
-                );
+                return DropdownMenuItem<String>(value: bank, child: Text(bank));
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
@@ -115,7 +122,9 @@ class _RegisterIncomeAccountScreenState extends State<RegisterIncomeAccountScree
             const SizedBox(height: 16),
             Text(
               l10n.lastNameOrFirstNameNote,
-              style: TextStyle(color: theme.disabledColor, fontSize: 13),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: extendedColors.neutral500,
+              ),
             ),
             const Spacer(),
             CustomButton(

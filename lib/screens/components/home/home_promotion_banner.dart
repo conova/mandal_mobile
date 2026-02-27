@@ -38,8 +38,7 @@ class HomePromotionBanner extends StatelessWidget {
               children: [
                 Text(
                   l10n.newBond,
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
                   ),
@@ -47,8 +46,7 @@ class HomePromotionBanner extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   l10n.newBondDesc,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: extendedColors.neutral100,
                     height: 1.2,
                   ),

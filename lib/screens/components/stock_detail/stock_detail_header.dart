@@ -18,24 +18,21 @@ class StockDetailHeader extends StatelessWidget {
         children: [
           Text(
             'MNDL',
-            style: TextStyle(
-              fontSize: 32,
+            style: theme.textTheme.displaySmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
             ),
           ),
           Text(
             'Мандал даатгал ХК',
-            style: TextStyle(
-              fontSize: 16,
+            style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.5),
             ),
           ),
           const SizedBox(height: 16),
           Text(
             '65.62₮',
-            style: TextStyle(
-              fontSize: 36,
+            style: theme.textTheme.displayMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
             ),
@@ -49,18 +46,16 @@ class StockDetailHeader extends StatelessWidget {
               ),
               Text(
                 '0.65% (-2.07)',
-                style: TextStyle(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: extendedColors.primaryMain,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 l10n.today,
-                style: TextStyle(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.5),
-                  fontSize: 16,
                 ),
               ),
             ],

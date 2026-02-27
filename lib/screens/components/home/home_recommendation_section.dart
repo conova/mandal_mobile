@@ -17,7 +17,6 @@ class HomeRecommendationSection extends StatelessWidget {
         Text(
           l10n.recommendationTitle,
           style: theme.textTheme.titleLarge?.copyWith(
-            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -69,6 +68,7 @@ class HomeRecommendationSection extends StatelessWidget {
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
+    final theme = Theme.of(context);
     return Container(
       width: 280,
       padding: const EdgeInsets.all(20),
@@ -94,10 +94,9 @@ class HomeRecommendationSection extends StatelessWidget {
                 ),
                 child: Text(
                   tag,
-                  style: TextStyle(
+                  style: theme.textTheme.labelSmall?.copyWith(
                     color: iconColor,
                     fontWeight: FontWeight.bold,
-                    fontSize: 10,
                   ),
                 ),
               ),
@@ -107,12 +106,16 @@ class HomeRecommendationSection extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+            style: Theme.of(
+              context,
+            ).textTheme.labelSmall?.copyWith(color: Colors.grey.shade400),
           ),
           const SizedBox(height: 20),
           Row(
@@ -123,14 +126,15 @@ class HomeRecommendationSection extends StatelessWidget {
                 children: [
                   Text(
                     l10n.annualInterest,
-                    style: const TextStyle(color: Colors.grey, fontSize: 11),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelSmall?.copyWith(color: Colors.grey),
                   ),
                   Text(
                     rate,
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: iconColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
                     ),
                   ),
                 ],
@@ -151,7 +155,9 @@ class HomeRecommendationSection extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.buy,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
             ],

@@ -23,7 +23,7 @@ class RegisterPasswordScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               l10n.createNewPassword,
-              style: theme.textTheme.headlineMedium?.copyWith(
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),

@@ -56,7 +56,9 @@ class AssetCard extends StatelessWidget {
                 ),
                 Text(
                   subtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(fontSize: 12),
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.disabledColor,
+                  ),
                 ),
               ],
             ),

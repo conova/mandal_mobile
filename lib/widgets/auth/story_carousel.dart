@@ -97,6 +97,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: Colors.black, // Story aesthetic is usually black
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -167,12 +168,11 @@ class _StoryCarouselState extends State<StoryCarousel> {
                   // Simplified logo for carousel
                   const AppLogo(width: 32, height: 32, color: Colors.white),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Мандал Капитал',
-                    style: TextStyle(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: AppTextStyles.semiBold,
                     ),
                   ),
                 ],
@@ -214,6 +214,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
     required Color backgroundColor,
     required Color textColor,
   }) {
+    final theme = Theme.of(context);
     return SizedBox(
       width: double.infinity,
       height: 52,
@@ -226,7 +227,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
           child: Center(
             child: Text(
               label,
-              style: AppTextStyles.body1.copyWith(
+              style: theme.textTheme.bodyLarge?.copyWith(
                 color: textColor,
                 fontWeight: AppTextStyles.regular,
               ),
@@ -238,6 +239,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
   }
 
   Widget _buildSlide(Map<String, String> slide) {
+    final theme = Theme.of(context);
     final bool isHandshake =
         slide['image'] == 'assets/images/story_handshaking.png';
 
@@ -277,12 +279,9 @@ class _StoryCarouselState extends State<StoryCarousel> {
               width: 311,
               child: Text(
                 slide['title']!,
-                style: AppTextStyles.h2.copyWith(
+                style: theme.textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: AppTextStyles.semiBold,
-                  fontSize: 22,
-                  height: 32 / 22,
-                  letterSpacing: 22 * -0.002, // -0.2%
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -300,12 +299,9 @@ class _StoryCarouselState extends State<StoryCarousel> {
               width: 340,
               child: Text(
                 slide['subtitle']!,
-                style: AppTextStyles.body1.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: Colors.white.withOpacity(0.8),
                   fontWeight: AppTextStyles.extraLight,
-                  fontSize: 16,
-                  height: 26 / 16,
-                  letterSpacing: 0,
                 ),
                 textAlign: TextAlign.center,
               ),

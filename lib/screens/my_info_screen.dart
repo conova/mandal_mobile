@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 
 import 'components/my_info/info_card.dart';
 import 'components/my_info/my_info_back_button.dart';
@@ -11,6 +12,7 @@ class MyInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
@@ -29,7 +31,6 @@ class MyInfoScreen extends StatelessWidget {
             Text(
               l10n.myInfo,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -45,13 +46,13 @@ class MyInfoScreen extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.verified_user_outlined,
-                    color: Colors.orange[300],
+                    color: extendedColors.orange,
                     size: 18,
                   ),
                   const SizedBox(width: 8),
                   Icon(
                     Icons.edit_outlined,
-                    color: theme.primaryColor,
+                    color: extendedColors.primaryMain,
                     size: 18,
                   ),
                 ],
@@ -62,7 +63,7 @@ class MyInfoScreen extends StatelessWidget {
               value: '80006272',
               trailing: Icon(
                 Icons.edit_outlined,
-                color: theme.primaryColor,
+                color: extendedColors.primaryMain,
                 size: 18,
               ),
             ),
@@ -72,7 +73,7 @@ class MyInfoScreen extends StatelessWidget {
                   'Улаанбаатар, Баянзүрх, 26-р хороо, Олимп хотхон, 1001 байр, 55а тоот',
               trailing: Icon(
                 Icons.edit_outlined,
-                color: theme.primaryColor,
+                color: extendedColors.primaryMain,
                 size: 18,
               ),
             ),

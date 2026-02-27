@@ -93,11 +93,11 @@ class CustomButton extends StatelessWidget {
             textAlign: TextAlign.center,
             label,
             style: size == CustomButtonSize.large
-                ? AppTextStyles.body1.copyWith(
+                ? theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: AppTextStyles.regular,
                     color: foregroundColor,
                   )
-                : AppTextStyles.paragraph1.copyWith(
+                : theme.textTheme.labelLarge?.copyWith(
                     fontWeight: AppTextStyles.regular,
                     color: foregroundColor,
                   ),

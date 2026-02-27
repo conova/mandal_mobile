@@ -21,8 +21,7 @@ class OrderDetailHeader extends StatelessWidget {
             children: [
               Text(
                 'Net Capital',
-                style: TextStyle(
-                  fontSize: 32,
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
                 ),
@@ -32,8 +31,7 @@ class OrderDetailHeader extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Text(
                   'Нэт Капитал',
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurface.withOpacity(0.5),
                   ),
                 ),
@@ -47,18 +45,21 @@ class OrderDetailHeader extends StatelessWidget {
                 l10n.buy.toUpperCase(),
                 extendedColors.primary100,
                 extendedColors.primaryMain,
+                theme,
               ),
               const SizedBox(width: 8),
               _buildBadge(
                 l10n.closed.toUpperCase(),
                 extendedColors.bgSecondary,
                 theme.colorScheme.onSurface,
+                theme,
               ),
               const SizedBox(width: 8),
               _buildBadge(
                 l10n.bond.toUpperCase(),
                 extendedColors.bgSecondary,
                 theme.colorScheme.onSurface,
+                theme,
               ),
             ],
           ),
@@ -67,7 +68,12 @@ class OrderDetailHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildBadge(String label, Color bgColor, Color textColor) {
+  Widget _buildBadge(
+    String label,
+    Color bgColor,
+    Color textColor,
+    ThemeData theme,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -76,10 +82,9 @@ class OrderDetailHeader extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: theme.textTheme.labelSmall?.copyWith(
           color: textColor,
           fontWeight: FontWeight.bold,
-          fontSize: 12,
         ),
       ),
     );

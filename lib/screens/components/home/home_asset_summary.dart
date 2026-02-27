@@ -53,7 +53,6 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
         Text(
           l10n.totalAssets,
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontSize: 14,
             fontWeight: FontWeight.w500,
             color: theme.disabledColor,
           ),
@@ -70,16 +69,14 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
                 children: [
                   Text(
                     _totalAssets,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: 32,
+                    style: theme.textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
                   Text(
                     _totalAssetsDec,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: 24,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.disabledColor,
                     ),
@@ -91,10 +88,9 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
           children: [
             Text(
               _assetChange,
-              style: TextStyle(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
               ),
             ),
             const SizedBox(width: 4),
@@ -105,15 +101,16 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
             ),
             Text(
               '$_assetChangePercent ',
-              style: TextStyle(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
               ),
             ),
             Text(
               '(${l10n.last1Month})',
-              style: TextStyle(color: theme.disabledColor, fontSize: 14),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.disabledColor,
+              ),
             ),
           ],
         ),

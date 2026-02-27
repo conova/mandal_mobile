@@ -37,8 +37,10 @@ class FilterChipBar extends StatelessWidget {
               },
               selectedColor: theme.primaryColor,
               backgroundColor: colorScheme.surfaceVariant,
-              labelStyle: TextStyle(
-                color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+              labelStyle: theme.textTheme.labelLarge?.copyWith(
+                color: isSelected
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurfaceVariant,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               shape: RoundedRectangleBorder(

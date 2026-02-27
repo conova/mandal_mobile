@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import 'components/shared/auth_otp_form.dart';
@@ -27,7 +26,7 @@ class ChangePasswordCodeScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               l10n.enterCodeTitle,
-              style: theme.textTheme.headlineMedium?.copyWith(
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
@@ -36,7 +35,7 @@ class ChangePasswordCodeScreen extends StatelessWidget {
               l10n.codeSentTo(value),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onBackground,
-                fontWeight: AppTextStyles.extraLight,
+                fontWeight: FontWeight.w300,
               ),
             ),
             const SizedBox(height: 16),

@@ -32,8 +32,7 @@ class BondBuyScreen extends StatelessWidget {
               children: [
                 Text(
                   'Net Capital',
-                  style: TextStyle(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -41,14 +40,16 @@ class BondBuyScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   'Нэт Капитал',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral400,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
               '${l10n.availableCash}: 10,000,000₮',
-              style: TextStyle(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
                 fontWeight: FontWeight.w500,
               ),
@@ -100,8 +101,7 @@ class BondBuyScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       '${l10n.lockedAmountLabel}: 500,000₮',
-                      style: TextStyle(
-                        fontSize: 15,
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                         color: extendedColors.neutral100,
                       ),
@@ -109,7 +109,7 @@ class BondBuyScreen extends StatelessWidget {
                   ),
                   Text(
                     l10n.release,
-                    style: TextStyle(
+                    style: theme.textTheme.labelLarge?.copyWith(
                       color: extendedColors.neutral100,
                       fontWeight: FontWeight.bold,
                     ),
@@ -126,7 +126,7 @@ class BondBuyScreen extends StatelessWidget {
                     Navigator.pushNamed(context, '/bond_confirmation'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: extendedColors.neutral100,
-                  foregroundColor: Colors.white,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -135,9 +135,9 @@ class BondBuyScreen extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.placeOrder,
-                  style: const TextStyle(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    color: theme.colorScheme.onPrimary,
                   ),
                 ),
               ),

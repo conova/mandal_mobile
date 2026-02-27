@@ -16,8 +16,9 @@ class BondPaymentDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -35,22 +36,23 @@ class BondPaymentDetails extends StatelessWidget {
               children: [
                 Text(
                   l10n.totalPayment,
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey,
+                  ),
                 ),
                 Row(
                   children: [
                     Text(
                       totalPayment,
-                      style: TextStyle(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Icon(
                       Icons.chevron_right,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: theme.colorScheme.onSurface,
                       size: 20,
                     ),
                   ],
@@ -64,14 +66,13 @@ class BondPaymentDetails extends StatelessWidget {
             children: [
               Text(
                 l10n.totalReturn,
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ),
               Text(
                 totalReturn,
-                style: TextStyle(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],

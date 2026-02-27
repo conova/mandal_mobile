@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_input.dart';
 import '../../../widgets/auth/auth_footer.dart';
-import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
-import '../../../config/api_config.dart';
 import '../../../widgets/custom_snackbar.dart';
 import '../../../common/validators.dart';
 
@@ -111,11 +108,11 @@ class _LoginFormState extends State<LoginForm>
               indicatorColor: colorScheme.primary,
               indicatorWeight: 3,
               indicatorSize: TabBarIndicatorSize.label,
-              labelStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: AppTextStyles.regular,
+              labelStyle: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w400,
               ),
-              unselectedLabelStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: AppTextStyles.regular,
+              unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w400,
               ),
               dividerColor: Colors.transparent,
               isScrollable: true,
@@ -167,8 +164,8 @@ class _LoginFormState extends State<LoginForm>
               onTap: () => Navigator.pushNamed(context, '/forgot_password'),
               child: Text(
                 l10n.forgotPasswordBtn,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: AppTextStyles.regular,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w400,
                   color: theme.colorScheme.primary,
                 ),
               ),
@@ -217,8 +214,8 @@ class _LoginFormState extends State<LoginForm>
               onTap: () => Navigator.pushNamed(context, '/forgot_password'),
               child: Text(
                 l10n.forgotPasswordBtn,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: AppTextStyles.regular,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w400,
                   color: theme.colorScheme.primary,
                 ),
               ),

@@ -18,7 +18,6 @@ class HomeAssetBreakdown extends StatelessWidget {
         Text(
           l10n.assetBreakdown,
           style: theme.textTheme.titleLarge?.copyWith(
-            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),

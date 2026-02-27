@@ -49,7 +49,9 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
               border: Border.all(
                 color: hasError
                     ? colorScheme.error
-                    : (_isFocused ? theme.primaryColor : extendedColors.neutral500),
+                    : (_isFocused
+                          ? theme.primaryColor
+                          : extendedColors.neutral500),
                 width: _isFocused ? 2 : 1,
               ),
             ),
@@ -59,9 +61,8 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
               children: [
                 Text(
                   widget.label,
-                  style: TextStyle(
-                    color: colorScheme.onSurfaceVariant, // Better for labels
-                    fontSize: 12, // Usually labels are smaller than the value
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -74,8 +75,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                     isExpanded: true,
                     isDense: true,
                     icon: Icon(Icons.expand_more, color: theme.disabledColor),
-                    style: TextStyle(
-                      fontSize: 16,
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colorScheme.onSurface,
                     ),
@@ -90,9 +90,8 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             padding: const EdgeInsets.only(top: 4, left: 16),
             child: Text(
               widget.errorText!,
-              style: TextStyle(
+              style: theme.textTheme.labelSmall?.copyWith(
                 color: colorScheme.error,
-                fontSize: 12,
               ),
             ),
           ),

@@ -50,7 +50,7 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
         children: [
           Text(
             l10n.buyQuantity,
-            style: const TextStyle(color: Colors.grey, fontSize: 13),
+            style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
           ),
           const SizedBox(height: 12),
           Row(
@@ -58,9 +58,8 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
             children: [
               Text(
                 '$_quantity',
-                style: TextStyle(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
@@ -76,7 +75,7 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
           const SizedBox(height: 12),
           Text(
             '${l10n.availableQuantity}: ${widget.maxQuantity} ш',
-            style: const TextStyle(color: Colors.grey, fontSize: 13),
+            style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
           ),
         ],
       ),

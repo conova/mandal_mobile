@@ -53,8 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 40),
             Text(
               l10n.registerTitle,
-              style: TextStyle(
-                fontSize: 28,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
@@ -62,7 +61,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 12),
             Text(
               l10n.registerSubtitle,
-              style: TextStyle(color: theme.disabledColor, fontSize: 16),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.disabledColor,
+              ),
             ),
             const SizedBox(height: 48),
             RegisterForm(

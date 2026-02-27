@@ -51,18 +51,14 @@ class MyBondCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           subtitle,
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 13,
-                          ),
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(color: Colors.grey.shade400),
                         ),
                       ],
                     ),
@@ -78,10 +74,9 @@ class MyBondCard extends StatelessWidget {
                       ),
                       child: Text(
                         status,
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: statusTextColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 11,
                         ),
                       ),
                     ),
@@ -104,7 +99,9 @@ class MyBondCard extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.sell,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -113,9 +110,13 @@ class MyBondCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              _buildMetric(l10n.ownedAmountLabel, ownedAmount),
+              _buildMetric(
+                Theme.of(context),
+                l10n.ownedAmountLabel,
+                ownedAmount,
+              ),
               const SizedBox(width: 48),
-              _buildMetric(l10n.interestRate, interestRate),
+              _buildMetric(Theme.of(context), l10n.interestRate, interestRate),
             ],
           ),
         ],
@@ -123,15 +124,20 @@ class MyBondCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(String label, String value) {
+  Widget _buildMetric(ThemeData theme, String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+        Text(
+          label,
+          style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
+        ),
         const SizedBox(height: 6),
         Text(
           value,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );

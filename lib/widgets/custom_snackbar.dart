@@ -57,9 +57,8 @@ class CustomSnackbar {
                 children: [
                   Text(
                     message,
-                    style: const TextStyle(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white,
-                      fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -72,9 +71,8 @@ class CustomSnackbar {
                       },
                       child: Text(
                         actionLabel,
-                        style: const TextStyle(
-                          color: Color(0xFF4DB6AC), // Action color
-                          fontSize: 14,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xFF4DB6AC), // Action color
                           fontWeight: FontWeight.w500,
                         ),
                       ),

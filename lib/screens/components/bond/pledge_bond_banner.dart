@@ -7,8 +7,9 @@ class PledgeBondBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -28,8 +29,7 @@ class PledgeBondBanner extends StatelessWidget {
                   children: [
                     Text(
                       l10n.pledgeBond,
-                      style: TextStyle(
-                        fontSize: 22,
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: extendedColors.neutral100,
                       ),
@@ -37,8 +37,7 @@ class PledgeBondBanner extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       l10n.pledgeBondDesc,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: extendedColors.neutral100,
                         height: 1.4,
                       ),
@@ -58,12 +57,14 @@ class PledgeBondBanner extends StatelessWidget {
           Row(
             children: [
               _buildBannerMetric(
+                theme,
                 l10n.availableAmountLabel,
                 '23,000,000₮',
                 extendedColors,
               ),
               const SizedBox(width: 32),
               _buildBannerMetric(
+                theme,
                 l10n.costLabel,
                 'Бондын хүү +6%',
                 extendedColors,
@@ -86,9 +87,8 @@ class PledgeBondBanner extends StatelessWidget {
               ),
               child: Text(
                 l10n.pledge,
-                style: const TextStyle(
+                style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
                 ),
               ),
             ),
@@ -99,6 +99,7 @@ class PledgeBondBanner extends StatelessWidget {
   }
 
   Widget _buildBannerMetric(
+    ThemeData theme,
     String label,
     String value,
     ExtendedColors extendedColors,
@@ -108,17 +109,15 @@ class PledgeBondBanner extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: theme.textTheme.labelMedium?.copyWith(
             color: extendedColors.neutral100.withOpacity(0.6),
-            fontSize: 13,
           ),
         ),
         const SizedBox(height: 6),
         Text(
           value,
-          style: TextStyle(
+          style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 16,
             color: extendedColors.neutral100,
           ),
         ),

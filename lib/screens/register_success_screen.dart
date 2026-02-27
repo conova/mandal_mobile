@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/custom_button.dart';
+import '../theme/extended_colors.dart';
 
 class RegisterSuccessScreen extends StatelessWidget {
   const RegisterSuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
+    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: extendedColors.bgBase,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
@@ -22,7 +26,7 @@ class RegisterSuccessScreen extends StatelessWidget {
               width: 200,
               height: 200,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E8675).withOpacity(0.1),
+                color: extendedColors.primaryMain.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Stack(
@@ -36,7 +40,7 @@ class RegisterSuccessScreen extends StatelessWidget {
                       width: 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E8675).withOpacity(0.3),
+                        color: extendedColors.primaryMain.withOpacity(0.3),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -48,7 +52,7 @@ class RegisterSuccessScreen extends StatelessWidget {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E8675).withOpacity(0.3),
+                        color: extendedColors.primaryMain.withOpacity(0.3),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -60,7 +64,7 @@ class RegisterSuccessScreen extends StatelessWidget {
                       width: 15,
                       height: 15,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E8675).withOpacity(0.5),
+                        color: extendedColors.primaryMain.withOpacity(0.5),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -70,7 +74,7 @@ class RegisterSuccessScreen extends StatelessWidget {
                     width: 120,
                     height: 120,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2D3E3F),
+                      color: extendedColors.neutral100,
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
@@ -92,19 +96,17 @@ class RegisterSuccessScreen extends StatelessWidget {
             const SizedBox(height: 48),
             Text(
               l10n.registrationSuccess,
-              style: const TextStyle(
-                fontSize: 28,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: colorScheme.onBackground,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             Text(
               l10n.registrationSuccessMessage,
-              style: TextStyle(
-                color: Colors.grey[500],
-                fontSize: 16,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: extendedColors.neutral500,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -114,7 +116,11 @@ class RegisterSuccessScreen extends StatelessWidget {
               label: l10n.finish,
               onPressed: () {
                 // Navigate to main screen
-                Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/main',
+                  (route) => false,
+                );
               },
               variant: CustomButtonVariant.primary,
             ),

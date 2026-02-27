@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/finance_chart.dart';
 import '../widgets/summary_table_row.dart';
 import '../widgets/custom_button.dart';
@@ -9,9 +10,10 @@ class SummaryReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -28,13 +30,20 @@ class SummaryReportScreen extends StatelessWidget {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 100),
+            padding: const EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 16,
+              bottom: 100,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   l10n.totalAssets,
-                  style: TextStyle(color: theme.disabledColor, fontSize: 14),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral500,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -43,18 +52,16 @@ class SummaryReportScreen extends StatelessWidget {
                   children: [
                     Text(
                       '50,628,000',
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onBackground,
-                        fontSize: 32,
                       ),
                     ),
                     Text(
                       '.21₮',
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.disabledColor,
-                        fontSize: 24,
+                        color: extendedColors.neutral500,
                       ),
                     ),
                   ],
@@ -64,27 +71,39 @@ class SummaryReportScreen extends StatelessWidget {
                   children: [
                     Text(
                       '+210,351.52₮',
-                      style: TextStyle(color: Colors.teal[400], fontWeight: FontWeight.w500),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.primaryMain,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Container(width: 1, height: 12, color: theme.dividerColor),
                     const SizedBox(width: 8),
-                    Icon(Icons.arrow_drop_up, color: Colors.teal[400], size: 20),
+                    Icon(
+                      Icons.arrow_drop_up,
+                      color: extendedColors.primaryMain,
+                      size: 20,
+                    ),
                     Text(
                       '9.71%',
-                      style: TextStyle(color: Colors.teal[400], fontWeight: FontWeight.w500),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.primaryMain,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '(${l10n.lastMonth})',
-                      style: TextStyle(color: theme.disabledColor),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral500,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
                 const FinanceChart(),
                 const SizedBox(height: 16),
-                _buildTimeFilters(l10n, theme),
+                _buildTimeFilters(l10n, theme, extendedColors),
                 const SizedBox(height: 32),
                 _buildAssetTable(l10n, theme),
                 const SizedBox(height: 32),
@@ -107,16 +126,28 @@ class SummaryReportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeFilters(AppLocalizations l10n, ThemeData theme) {
-    final filters = [l10n.oneDay, l10n.threeDays, l10n.sixDays, l10n.oneYear, l10n.all];
+  Widget _buildTimeFilters(
+    AppLocalizations l10n,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+  ) {
+    final filters = [
+      l10n.oneDay,
+      l10n.threeDays,
+      l10n.sixDays,
+      l10n.oneYear,
+      l10n.all,
+    ];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: filters.map((f) {
         bool isSelected = f == l10n.oneDay;
         return Text(
           f,
-          style: TextStyle(
-            color: isSelected ? theme.colorScheme.onSurface : theme.disabledColor,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: isSelected
+                ? theme.colorScheme.onSurface
+                : extendedColors.neutral500,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         );
@@ -132,11 +163,32 @@ class SummaryReportScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          SummaryTableRow(label: l10n.type, val1: '2025.10.28', val2: '2025.11.27', isHeader: true),
-          SummaryTableRow(label: l10n.totalAssets, val1: '50,000,000₮', val2: '1,000,000,000₮'),
-          SummaryTableRow(label: l10n.cash, val1: '5,000,000₮', val2: '5,000,000₮'),
-          SummaryTableRow(label: l10n.stocks, val1: '40,000,000₮', val2: '40,000,000₮'),
-          SummaryTableRow(label: l10n.bonds, val1: '5,000,000₮', val2: '5,000,000₮'),
+          SummaryTableRow(
+            label: l10n.type,
+            val1: '2025.10.28',
+            val2: '2025.11.27',
+            isHeader: true,
+          ),
+          SummaryTableRow(
+            label: l10n.totalAssets,
+            val1: '50,000,000₮',
+            val2: '1,000,000,000₮',
+          ),
+          SummaryTableRow(
+            label: l10n.cash,
+            val1: '5,000,000₮',
+            val2: '5,000,000₮',
+          ),
+          SummaryTableRow(
+            label: l10n.stocks,
+            val1: '40,000,000₮',
+            val2: '40,000,000₮',
+          ),
+          SummaryTableRow(
+            label: l10n.bonds,
+            val1: '5,000,000₮',
+            val2: '5,000,000₮',
+          ),
         ],
       ),
     );
@@ -145,7 +197,11 @@ class SummaryReportScreen extends StatelessWidget {
   Widget _buildCashFlowSection(AppLocalizations l10n, ThemeData theme) {
     return Column(
       children: [
-        SummaryTableRow(label: l10n.incomeExpense, val1: l10n.selectedPeriod, isHeader: true),
+        SummaryTableRow(
+          label: l10n.incomeExpense,
+          val1: l10n.selectedPeriod,
+          isHeader: true,
+        ),
         SummaryTableRow(label: l10n.incomeSalary, val1: '1,000,000₮'),
         SummaryTableRow(label: l10n.stockProfit, val1: '1,000,000₮'),
         SummaryTableRow(label: l10n.interestIncome, val1: '100,000₮'),

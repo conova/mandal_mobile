@@ -152,19 +152,20 @@ class _CustomInputState extends State<CustomInput> {
               },
               autovalidateMode: widget.autovalidateMode,
               onSaved: widget.onSaved,
-              style: AppTextStyles.body1.copyWith(
+              style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: AppTextStyles.light,
                 color: colorScheme.onBackground,
               ),
               decoration: InputDecoration(
                 labelText: widget.label.isEmpty ? null : widget.label,
-                labelStyle: AppTextStyles.paragraph1.copyWith(
+                labelStyle: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: AppTextStyles.light,
                   color: theme.disabledColor,
                 ),
                 hintText: widget.hint,
-                hintStyle: AppTextStyles.body1.copyWith(
+                hintStyle: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.disabledColor,
+                  fontWeight: AppTextStyles.light,
                 ),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
@@ -199,7 +200,8 @@ class _CustomInputState extends State<CustomInput> {
             padding: const EdgeInsets.only(top: 7, left: 16),
             child: Text(
               currentError!,
-              style: AppTextStyles.paragraph1Light.copyWith(
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: AppTextStyles.light,
                 color: theme.colorScheme.error,
               ),
             ),

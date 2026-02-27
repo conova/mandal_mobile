@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../theme/extended_colors.dart';
 
 class DeviceItem extends StatelessWidget {
   final String deviceName;
@@ -22,6 +23,8 @@ class DeviceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
+    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -32,15 +35,17 @@ class DeviceItem extends StatelessWidget {
           children: [
             Text(
               deviceName,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(
               height: 40,
               child: ElevatedButton(
                 onPressed: onRemove,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[50]?.withOpacity(0.5),
-                  foregroundColor: Colors.red[400],
+                  backgroundColor: colorScheme.error.withOpacity(0.1),
+                  foregroundColor: colorScheme.error,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   shape: RoundedRectangleBorder(
@@ -49,7 +54,9 @@ class DeviceItem extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.remove,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -60,15 +67,16 @@ class DeviceItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             color: isActive
-                ? Colors.teal[50]?.withOpacity(0.5)
-                : Colors.grey[100],
+                ? extendedColors.primary100
+                : extendedColors.neutral100,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             status,
-            style: TextStyle(
-              color: isActive ? Colors.teal[400] : Colors.black87,
-              fontSize: 12,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: isActive
+                  ? extendedColors.primaryMain
+                  : extendedColors.neutral300,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -82,10 +90,12 @@ class DeviceItem extends StatelessWidget {
                 children: [
                   Text(
                     l10n.date,
-                    style: TextStyle(color: theme.disabledColor, fontSize: 13),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: extendedColors.neutral500,
+                    ),
                   ),
                   const SizedBox(height: 4),
-                  Text(date, style: const TextStyle(fontSize: 14)),
+                  Text(date, style: theme.textTheme.bodyMedium),
                 ],
               ),
             ),
@@ -95,10 +105,12 @@ class DeviceItem extends StatelessWidget {
                 children: [
                   Text(
                     l10n.ipAddress,
-                    style: TextStyle(color: theme.disabledColor, fontSize: 13),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: extendedColors.neutral500,
+                    ),
                   ),
                   const SizedBox(height: 4),
-                  Text(ip, style: const TextStyle(fontSize: 14)),
+                  Text(ip, style: theme.textTheme.bodyMedium),
                 ],
               ),
             ),

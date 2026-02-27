@@ -33,8 +33,7 @@ class BondDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   'Net Capital',
-                  style: TextStyle(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -42,7 +41,9 @@ class BondDetailScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   'Нэт Капитал',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral400,
+                  ),
                 ),
               ],
             ),
@@ -89,16 +90,14 @@ class BondDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           l10n.bondClosingDateLabel,
-                          style: TextStyle(
-                            fontSize: 13,
+                          style: theme.textTheme.bodySmall?.copyWith(
                             color: extendedColors.neutral100,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '2025.12.20 16:00',
-                          style: TextStyle(
-                            fontSize: 16,
+                          style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: extendedColors.neutral100,
                           ),
@@ -129,10 +128,9 @@ class BondDetailScreen extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.viewBondPresentation,
-                  style: TextStyle(
+                  style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
                   ),
                 ),
               ),
