@@ -88,8 +88,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                   Flexible(
                     child: Text(
                       l10n.limitPrice,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                         color: theme.colorScheme.onSurface,
                       ),
@@ -118,8 +117,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     children: [
                       Text(
                         'MNDL - ${l10n.buyTab}',
-                        style: TextStyle(
-                          fontSize: 32,
+                        style: theme.textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.onSurface,
                         ),
@@ -128,9 +126,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       RichText(
                         text: TextSpan(
                           text: '${l10n.availableCash}: ',
-                          style: TextStyle(
+                          style: theme.textTheme.bodyLarge?.copyWith(
                             color: theme.colorScheme.onSurface.withOpacity(0.5),
-                            fontSize: 16,
                           ),
                           children: [
                             TextSpan(
@@ -146,9 +143,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       const SizedBox(height: 4),
                       Text(
                         '1 MNDL = 65.62₮',
-                        style: TextStyle(
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurface.withOpacity(0.5),
-                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -203,8 +199,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     children: [
                       Text(
                         l10n.orderBoardTitle,
-                        style: const TextStyle(
-                          fontSize: 24,
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),

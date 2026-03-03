@@ -37,9 +37,8 @@ class StockTradingQuantitySelector extends StatelessWidget {
           children: [
             Text(
               l10n.quantityLabel,
-              style: TextStyle(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.3),
-                fontSize: 13,
               ),
             ),
             const SizedBox(height: 4),
@@ -51,8 +50,7 @@ class StockTradingQuantitySelector extends StatelessWidget {
                     controller: controller,
                     focusNode: focusNode,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                     decoration: const InputDecoration(

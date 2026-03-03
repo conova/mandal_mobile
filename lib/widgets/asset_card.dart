@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 
 class AssetCard extends StatelessWidget {
   final IconData icon;
@@ -22,26 +24,21 @@ class AssetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color:
                   iconColor ??
                   (isDark ? colorScheme.onSurface : theme.primaryColor),
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              icon,
-              color: (iconColor != null || !isDark)
-                  ? Colors.white
-                  : colorScheme.surface,
-              size: 24,
-            ),
+            child: Icon(icon, color: extendedColors.bgBase, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -51,13 +48,15 @@ class AssetCard extends StatelessWidget {
                 Text(
                   title,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.normal,
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral100,
                   ),
                 ),
                 Text(
                   subtitle,
                   style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.disabledColor,
+                    color: extendedColors.neutral200,
+                    fontWeight: AppTextStyles.light,
                   ),
                 ),
               ],
@@ -66,7 +65,8 @@ class AssetCard extends StatelessWidget {
           Text(
             amount,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
+              fontWeight: AppTextStyles.light,
+              color: extendedColors.neutral100,
             ),
           ),
         ],

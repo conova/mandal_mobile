@@ -16,7 +16,9 @@ class StockDetailGeneralInfo extends StatelessWidget {
         children: [
           Text(
             l10n.generalInfo,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 24),
           Row(
@@ -67,15 +69,16 @@ class StockDetailGeneralInfo extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
+          style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurface.withOpacity(0.4),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
@@ -97,8 +100,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
             children: [
               Text(
                 label2,
-                style: TextStyle(
-                  fontSize: 13,
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.4),
                 ),
               ),
@@ -107,8 +109,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
                 children: [
                   Text(
                     value2,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),

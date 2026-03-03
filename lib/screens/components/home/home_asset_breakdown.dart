@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../widgets/asset_card.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
@@ -17,8 +18,8 @@ class HomeAssetBreakdown extends StatelessWidget {
       children: [
         Text(
           l10n.assetBreakdown,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: AppTextStyles.semiBold,
           ),
         ),
         const SizedBox(height: 16),

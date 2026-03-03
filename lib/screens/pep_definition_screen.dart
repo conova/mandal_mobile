@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class PepDefinitionScreen extends StatelessWidget {
@@ -9,42 +10,30 @@ class PepDefinitionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: theme.disabledColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.arrow_back, size: 20),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      backgroundColor: extendedColors.bgBase,
+      appBar: _PepAppBar(theme: theme, extendedColors: extendedColors),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 24),
             Text(
               l10n.pepDefinition,
-              style: AppTextStyles.h2.copyWith(
+              style: theme.textTheme.headlineMedium?.copyWith(
                 color: theme.colorScheme.onBackground,
-                fontWeight: FontWeight.bold,
+                fontWeight: AppTextStyles.semiBold,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               l10n.pepDefinitionFull,
-              style: AppTextStyles.body1.copyWith(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onBackground,
-                height: 1.6,
+                fontWeight: AppTextStyles.extraLight,
               ),
             ),
           ],
@@ -52,4 +41,42 @@ class PepDefinitionScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PepAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final ThemeData theme;
+  final ExtendedColors extendedColors;
+
+  const _PepAppBar({required this.theme, required this.extendedColors});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 20),
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: extendedColors.neutral500,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.arrow_back,
+              size: 20,
+              color: theme.colorScheme.onBackground,
+            ),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

@@ -31,8 +31,7 @@ class BondSellConfirmationScreen extends StatelessWidget {
               children: [
                 Text(
                   'Net Capital',
-                  style: TextStyle(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -40,7 +39,9 @@ class BondSellConfirmationScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   'Нэт Капитал',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral400,
+                  ),
                 ),
               ],
             ),
@@ -83,10 +84,9 @@ class BondSellConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 l10n.swipeUpToConfirm,
-                style: const TextStyle(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
                 ),
               ),
             ],

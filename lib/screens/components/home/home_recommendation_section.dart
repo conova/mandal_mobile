@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -11,159 +12,250 @@ class HomeRecommendationSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.recommendationTitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFC5D4F8), Color(0xFFDEE6FB)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: extendedColors.purple, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: extendedColors.purple,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              Icons.currency_ruble,
+              color: extendedColors.bgBase,
+              size: 32,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.recommendationDesc,
-          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-        ),
-        const SizedBox(height: 24),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildRecommendationCard(
-                context,
-                l10n.mandalBond,
-                'Net Capital бонд',
-                'БОНД ТАНЫ ИРЭЭДҮЙН ТӨЛӨӨ',
-                '19.5%',
-                extendedColors.primaryMain,
-                extendedColors,
-                l10n,
+          SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              textAlign: TextAlign.center,
+              l10n.recommendationTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(width: 16),
-              _buildRecommendationCard(
-                context,
-                'MIK BOND',
-                'МИК Орон сууцны бонд',
-                'ЭРСДЭЛ БАГА ХӨРӨНГӨ ОРУУЛАЛТ',
-                '11.6%',
-                extendedColors.purple,
-                extendedColors,
-                l10n,
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              textAlign: TextAlign.center,
+              l10n.recommendationDesc,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.disabledColor,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                _buildRecommendationCard(
+                  context: context,
+                  title: 'Net Capital',
+                  subtitle: 'Нэт Капитал',
+                  status: 'ХААЛТТАЙ',
+                  durationValue: '12 сар',
+                  returnValue: '19.5%',
+                  amountValue: '900 сая',
+                  extendedColors: extendedColors,
+                  l10n: l10n,
+                ),
+                const SizedBox(width: 16),
+                _buildRecommendationCard(
+                  context: context,
+                  title: 'MIK BOND',
+                  subtitle: 'Орон сууцны бонд',
+                  status: 'НЭЭЛТТЭЙ',
+                  durationValue: '24 сар',
+                  returnValue: '11.6%',
+                  amountValue: '50 тэрбум',
+                  extendedColors: extendedColors,
+                  l10n: l10n,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildRecommendationCard(
-    BuildContext context,
-    String tag,
-    String title,
-    String subtitle,
-    String rate,
-    Color iconColor,
-    ExtendedColors extendedColors,
-    AppLocalizations l10n,
-  ) {
+  Widget _buildRecommendationCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required String status,
+    required String durationValue,
+    required String returnValue,
+    required String amountValue,
+    required ExtendedColors extendedColors,
+    required AppLocalizations l10n,
+  }) {
     final theme = Theme.of(context);
     return Container(
-      width: 280,
+      width: 330,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: extendedColors.neutral100),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  tag,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: iconColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Icon(Icons.bookmark_border, color: Colors.grey.shade300),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(color: Colors.grey.shade400),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.annualInterest,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.labelSmall?.copyWith(color: Colors.grey),
-                  ),
-                  Text(
-                    rate,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: iconColor,
-                      fontWeight: FontWeight.bold,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      spacing: 8,
+                      children: [
+                        Text(
+                          title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 2),
+                          child: Text(
+                            subtitle,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral300,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: extendedColors.bgSecondary,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        status,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: extendedColors.neutral100,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              ElevatedButton(
+              const SizedBox(width: 12),
+              CustomButton(
+                label: l10n.buy,
+                size: CustomButtonSize.small,
                 onPressed: () => Navigator.pushNamed(context, '/bond_detail'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: extendedColors.purple,
-                  foregroundColor: extendedColors.bgBase,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 15.5,
-                  ),
-                ),
-                child: Text(
-                  l10n.buy,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
               ),
             ],
+          ),
+          const SizedBox(height: 24),
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildStatColumn(
+                    'Хугацаа',
+                    durationValue,
+                    theme,
+                    extendedColors,
+                  ),
+                ),
+                VerticalDivider(
+                  color: extendedColors.neutral200,
+                  thickness: 1,
+                  width: 24,
+                ),
+                Expanded(
+                  child: _buildStatColumn(
+                    'Өгөөж',
+                    returnValue,
+                    theme,
+                    extendedColors,
+                  ),
+                ),
+                VerticalDivider(
+                  color: extendedColors.neutral200,
+                  thickness: 1,
+                  width: 24,
+                ),
+                Expanded(
+                  child: _buildStatColumn(
+                    'Дүн',
+                    amountValue,
+                    theme,
+                    extendedColors,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatColumn(
+    String label,
+    String value,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: extendedColors.neutral300,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: extendedColors.neutral100,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }

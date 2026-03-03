@@ -90,19 +90,19 @@ class _StockTradingConfirmationOverlayState
                                   children: [
                                     Text(
                                       'MNDL',
-                                      style: TextStyle(
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold,
-                                        color: theme.colorScheme.onSurface,
-                                      ),
+                                      style: theme.textTheme.headlineLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.onSurface,
+                                          ),
                                     ),
                                     Text(
                                       'Мандал даатгал ХК',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: theme.colorScheme.onSurface
-                                            .withOpacity(0.5),
-                                      ),
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                            color: theme.colorScheme.onSurface
+                                                .withOpacity(0.5),
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -140,18 +140,15 @@ class _StockTradingConfirmationOverlayState
                               children: [
                                 Text(
                                   l10n.totalPaymentLabel,
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
                                     color: theme.colorScheme.onSurface
                                         .withOpacity(0.5),
                                   ),
                                 ),
-                                const Text(
+                                Text(
                                   '65,520.23₮',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: theme.textTheme.headlineMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -177,14 +174,15 @@ class _StockTradingConfirmationOverlayState
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 16,
+          style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.onSurface.withOpacity(0.4),
           ),
         ),
         Text(
           value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );

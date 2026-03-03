@@ -33,8 +33,7 @@ class BondSellScreen extends StatelessWidget {
               children: [
                 Text(
                   'Net Capital',
-                  style: TextStyle(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -42,14 +41,16 @@ class BondSellScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   'Нэт Капитал',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral400,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
               '${l10n.ownedAmountLabel}: 10,000,000₮',
-              style: TextStyle(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
                 fontWeight: FontWeight.w500,
               ),
@@ -59,6 +60,7 @@ class BondSellScreen extends StatelessWidget {
               l10n.closed,
               extendedColors.primary100,
               extendedColors.primaryMain,
+              theme,
             ),
             const SizedBox(height: 32),
             BondPriceSlider(
@@ -76,7 +78,7 @@ class BondSellScreen extends StatelessWidget {
             const SizedBox(height: 24),
             _buildProceedsCard(l10n, extendedColors, theme),
             const SizedBox(height: 24),
-            _buildInfoBanner(l10n, extendedColors),
+            _buildInfoBanner(l10n, extendedColors, theme),
             const SizedBox(height: 32),
             BondOrderBoard(
               orders: [
@@ -109,7 +111,7 @@ class BondSellScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/bond_sell_confirmation'),
             style: ElevatedButton.styleFrom(
               backgroundColor: extendedColors.neutral100,
-              foregroundColor: Colors.white,
+              foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -118,7 +120,10 @@ class BondSellScreen extends StatelessWidget {
             ),
             child: Text(
               l10n.placeOrder,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onPrimary,
+              ),
             ),
           ),
         ),
@@ -142,15 +147,16 @@ class BondSellScreen extends StatelessWidget {
         children: [
           Text(
             l10n.receivableAmountLabel,
-            style: const TextStyle(color: Colors.grey, fontSize: 14),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral400,
+            ),
           ),
           Row(
             children: [
               Text(
                 '998,000₮',
-                style: TextStyle(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
@@ -170,6 +176,7 @@ class BondSellScreen extends StatelessWidget {
   Widget _buildInfoBanner(
     AppLocalizations l10n,
     ExtendedColors extendedColors,
+    ThemeData theme,
   ) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -188,10 +195,8 @@ class BondSellScreen extends StatelessWidget {
           Expanded(
             child: Text(
               l10n.sellPriceDesc,
-              style: TextStyle(
-                fontSize: 13,
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: extendedColors.neutral100,
-                height: 1.4,
               ),
             ),
           ),
@@ -200,7 +205,12 @@ class BondSellScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBadge(String label, Color bgColor, Color textColor) {
+  Widget _buildBadge(
+    String label,
+    Color bgColor,
+    Color textColor,
+    ThemeData theme,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -209,10 +219,9 @@ class BondSellScreen extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: theme.textTheme.labelMedium?.copyWith(
           color: textColor,
           fontWeight: FontWeight.bold,
-          fontSize: 12,
         ),
       ),
     );

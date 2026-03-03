@@ -17,9 +17,8 @@ class StockTradingPercentageSelector extends StatelessWidget {
           onPressed: () => onPercentageSelected?.call(p),
           child: Text(
             p,
-            style: TextStyle(
+            style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.3),
-              fontSize: 16,
             ),
           ),
         );

@@ -26,7 +26,9 @@ class StockDetailDividendHistory extends StatelessWidget {
         children: [
           Text(
             l10n.pastDividends,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 32),
           Column(
@@ -40,8 +42,7 @@ class StockDetailDividendHistory extends StatelessWidget {
                       width: 60,
                       child: Text(
                         item['year']!,
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.normal,
                         ),
                       ),
@@ -73,8 +74,7 @@ class StockDetailDividendHistory extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 24),
                       child: Text(
                         item['amount']!,
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.primaryMain,
                         ),

@@ -31,16 +31,14 @@ class StockDetailBottomBar extends StatelessWidget {
                 children: [
                   Text(
                     l10n.tugrik,
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurface.withOpacity(0.4),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '142,000.53₮',
-                    style: TextStyle(
-                      fontSize: 18,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.primaryMain,
                     ),
@@ -64,9 +62,9 @@ class StockDetailBottomBar extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.trade,
-                  style: const TextStyle(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    color: Colors.white,
                   ),
                 ),
               ),

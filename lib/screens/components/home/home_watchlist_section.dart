@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -19,21 +21,17 @@ class HomeWatchlistSection extends StatelessWidget {
           children: [
             Text(
               l10n.watchlist,
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: extendedColors.neutral100.withOpacity(0.1),
+                color: extendedColors.primaryMain,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.add,
-                color: extendedColors.neutral100,
-                size: 18,
-              ),
+              child: Icon(Icons.add, color: Colors.white, size: 20),
             ),
           ],
         ),
@@ -43,11 +41,15 @@ class HomeWatchlistSection extends StatelessWidget {
           children: [
             Text(
               l10n.stocks,
-              style: theme.textTheme.labelLarge?.copyWith(color: Colors.grey),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral200,
+              ),
             ),
             Text(
               l10n.lastPrice24h,
-              style: theme.textTheme.labelLarge?.copyWith(color: Colors.grey),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral200,
+              ),
             ),
           ],
         ),
@@ -100,22 +102,10 @@ class HomeWatchlistSection extends StatelessWidget {
         const SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
-          child: TextButton(
+          child: CustomButton(
             onPressed: () {},
-            style: TextButton.styleFrom(
-              backgroundColor: extendedColors.bgSecondary,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(
-              '${l10n.viewAll} (12)',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral100,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            label: '${l10n.viewAll} (12)',
+            variant: CustomButtonVariant.tertiary,
           ),
         ),
       ],
@@ -133,7 +123,7 @@ class HomeWatchlistSection extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -144,12 +134,14 @@ class HomeWatchlistSection extends StatelessWidget {
                 symbol,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
                 ),
               ),
               Text(
                 name,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: Colors.grey,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: AppTextStyles.light,
+                  color: extendedColors.neutral200,
                 ),
               ),
             ],
@@ -165,9 +157,9 @@ class HomeWatchlistSection extends StatelessWidget {
               ),
               Text(
                 change,
-                style: theme.textTheme.labelMedium?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: isPositive == null
-                      ? Colors.grey
+                      ? extendedColors.neutral200
                       : (isPositive
                             ? extendedColors.primaryMain
                             : extendedColors.red),

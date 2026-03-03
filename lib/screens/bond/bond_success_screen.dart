@@ -37,22 +37,16 @@ class BondSuccessScreen extends StatelessWidget {
               Text(
                 l10n.orderPlacedSuccess,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: theme.textTheme.headlineLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
-                  fontSize: 36,
-                  height: 1.1,
                 ),
               ),
               const SizedBox(height: 24),
               Text(
                 l10n.orderPlacedDesc,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  height: 1.5,
-                ),
+                style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
               ),
               const Spacer(),
               SizedBox(
@@ -74,10 +68,9 @@ class BondSuccessScreen extends StatelessWidget {
                   ),
                   child: Text(
                     l10n.viewOrders,
-                    style: TextStyle(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       color: extendedColors.neutral100,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
                     ),
                   ),
                 ),

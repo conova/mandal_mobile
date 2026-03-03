@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -26,120 +27,191 @@ class _DocumentVerificationScreenState
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: theme.disabledColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.arrow_back, size: 20),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      backgroundColor: extendedColors.bgBase,
+      appBar: _DocAppBar(theme: theme, extendedColors: extendedColors),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Text(
-                l10n.document,
-                style: AppTextStyles.h2.copyWith(
-                  color: theme.colorScheme.onBackground,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.documentDesc,
-                style: AppTextStyles.body2.copyWith(color: theme.disabledColor),
+              _DocHeader(l10n: l10n, theme: theme),
+              const SizedBox(height: 32),
+              _DocItemList(
+                l10n: l10n,
+                isIdFrontDone: _isIdFrontDone,
+                isIdBackDone: _isIdBackDone,
+                isSelfieDone: _isSelfieDone,
+                onIdFrontTap: () async {
+                  final result = await Navigator.pushNamed(
+                    context,
+                    '/camera_overlay',
+                    arguments: 'id',
+                  );
+                  if (result == true) setState(() => _isIdFrontDone = true);
+                },
+                onIdBackTap: () async {
+                  final result = await Navigator.pushNamed(
+                    context,
+                    '/camera_overlay',
+                    arguments: 'id',
+                  );
+                  if (result == true) setState(() => _isIdBackDone = true);
+                },
+                onSelfieTap: () async {
+                  final result = await Navigator.pushNamed(
+                    context,
+                    '/camera_overlay',
+                    arguments: 'selfie',
+                  );
+                  if (result == true) setState(() => _isSelfieDone = true);
+                },
               ),
               const SizedBox(height: 32),
-              _buildDocItem(l10n.idFront, _isIdFrontDone, () async {
-                final result = await Navigator.pushNamed(
-                  context,
-                  '/camera_overlay',
-                  arguments: 'id',
-                );
-                if (result == true) setState(() => _isIdFrontDone = true);
-              }),
-              _buildDocItem(l10n.idBack, _isIdBackDone, () async {
-                final result = await Navigator.pushNamed(
-                  context,
-                  '/camera_overlay',
-                  arguments: 'id',
-                );
-                if (result == true) setState(() => _isIdBackDone = true);
-              }),
-              _buildDocItem(l10n.selfiePhoto, _isSelfieDone, () async {
-                final result = await Navigator.pushNamed(
-                  context,
-                  '/camera_overlay',
-                  arguments: 'selfie',
-                );
-                if (result == true) setState(() => _isSelfieDone = true);
-              }),
-              const SizedBox(height: 32),
-              Text(
-                l10n.photoRequirements,
-                style: AppTextStyles.body1.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onBackground,
-                ),
+              _DocRequirements(
+                l10n: l10n,
+                theme: theme,
+                extendedColors: extendedColors,
               ),
-              const SizedBox(height: 16),
-              _buildRequirement(l10n.reqCorner),
-              _buildRequirement(l10n.reqValid),
-              _buildRequirement(l10n.reqClear),
-              _buildRequirement(l10n.reqReadable),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isAllDone
-                      ? () =>
-                            Navigator.pushNamed(context, '/onboarding_success')
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _isAllDone
-                        ? extendedColors.primaryMain
-                        : theme.disabledColor.withOpacity(0.1),
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: theme.disabledColor.withOpacity(
-                      0.1,
-                    ),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Text(
-                    l10n.sendPhoto,
-                    style: AppTextStyles.body1.copyWith(
-                      color: _isAllDone ? Colors.white : theme.disabledColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              _DocActionButtons(
+                l10n: l10n,
+                isAllDone: _isAllDone,
+                onSend: () {
+                  Navigator.pushNamed(context, '/onboarding_success');
+                },
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildDocItem(String title, bool isDone, VoidCallback onTap) {
+class _DocAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final ThemeData theme;
+  final ExtendedColors extendedColors;
+
+  const _DocAppBar({required this.theme, required this.extendedColors});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 20),
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: extendedColors.neutral500,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.arrow_back,
+              size: 20,
+              color: theme.colorScheme.onBackground,
+            ),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _DocHeader extends StatelessWidget {
+  final AppLocalizations l10n;
+  final ThemeData theme;
+
+  const _DocHeader({required this.l10n, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    final extendedColors = theme.extension<ExtendedColors>()!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.document,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            color: theme.colorScheme.onBackground,
+            fontWeight: AppTextStyles.semiBold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.documentDesc,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: extendedColors.neutral200,
+            fontWeight: AppTextStyles.light,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DocItemList extends StatelessWidget {
+  final AppLocalizations l10n;
+  final bool isIdFrontDone;
+  final bool isIdBackDone;
+  final bool isSelfieDone;
+  final VoidCallback onIdFrontTap;
+  final VoidCallback onIdBackTap;
+  final VoidCallback onSelfieTap;
+
+  const _DocItemList({
+    required this.l10n,
+    required this.isIdFrontDone,
+    required this.isIdBackDone,
+    required this.isSelfieDone,
+    required this.onIdFrontTap,
+    required this.onIdBackTap,
+    required this.onSelfieTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _DocItem(
+          title: l10n.idFront,
+          isDone: isIdFrontDone,
+          onTap: onIdFrontTap,
+        ),
+        _DocItem(title: l10n.idBack, isDone: isIdBackDone, onTap: onIdBackTap),
+        _DocItem(
+          title: l10n.selfiePhoto,
+          isDone: isSelfieDone,
+          onTap: onSelfieTap,
+        ),
+      ],
+    );
+  }
+}
+
+class _DocItem extends StatelessWidget {
+  final String title;
+  final bool isDone;
+  final VoidCallback onTap;
+
+  const _DocItem({
+    required this.title,
+    required this.isDone,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
@@ -147,19 +219,19 @@ class _DocumentVerificationScreenState
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.only(bottom: 16),
         child: Row(
           children: [
             Container(
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: theme.disabledColor.withOpacity(0.1), // Placeholder
-                borderRadius: BorderRadius.circular(12),
+                color: extendedColors.bgSecondary,
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 Icons.camera_alt_outlined,
-                color: theme.disabledColor,
+                color: extendedColors.neutral300,
               ),
             ),
             const SizedBox(width: 16),
@@ -169,47 +241,141 @@ class _DocumentVerificationScreenState
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.body1.copyWith(
-                      fontWeight: FontWeight.w600,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: AppTextStyles.light,
                       color: theme.colorScheme.onBackground,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     isDone ? l10n.editPhoto : l10n.addPhoto,
-                    style: AppTextStyles.body2.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: AppTextStyles.light,
                       color: isDone
                           ? extendedColors.primaryMain
-                          : theme.disabledColor,
+                          : extendedColors.neutral200,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: theme.disabledColor),
+            Icon(Icons.chevron_right, color: extendedColors.neutral400),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildRequirement(String text) {
-    final theme = Theme.of(context);
-    final extendedColors = theme.extension<ExtendedColors>()!;
+class _DocRequirements extends StatelessWidget {
+  final AppLocalizations l10n;
+  final ThemeData theme;
+  final ExtendedColors extendedColors;
 
+  const _DocRequirements({
+    required this.l10n,
+    required this.theme,
+    required this.extendedColors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.photoRequirements,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: AppTextStyles.bold,
+            color: theme.colorScheme.onBackground,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _RequirementItem(
+          text: l10n.reqCorner,
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+        _RequirementItem(
+          text: l10n.reqValid,
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+        _RequirementItem(
+          text: l10n.reqClear,
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+        _RequirementItem(
+          text: l10n.reqReadable,
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+      ],
+    );
+  }
+}
+
+class _RequirementItem extends StatelessWidget {
+  final String text;
+  final ExtendedColors extendedColors;
+  final ThemeData theme;
+
+  const _RequirementItem({
+    required this.text,
+    required this.extendedColors,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(Icons.check, size: 18, color: extendedColors.primaryMain),
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: AppTextStyles.body2.copyWith(
-              color: theme.colorScheme.onBackground,
+          Icon(Icons.check, size: 19, color: extendedColors.primaryMain),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onBackground.withOpacity(0.7),
+                fontWeight: AppTextStyles.light,
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DocActionButtons extends StatelessWidget {
+  final AppLocalizations l10n;
+  final bool isAllDone;
+  final VoidCallback onSend;
+
+  const _DocActionButtons({
+    required this.l10n,
+    required this.isAllDone,
+    required this.onSend,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: extendedColors.neutral500, width: 1.0),
+        ),
+      ),
+      child: CustomButton(
+        label: l10n.sendPhoto,
+        onPressed: isAllDone ? onSend : null,
+        variant: CustomButtonVariant.primary,
       ),
     );
   }

@@ -48,9 +48,9 @@ class StockTradingBottomBar extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.placeOrder,
-                  style: const TextStyle(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    color: theme.colorScheme.onPrimary,
                   ),
                 ),
               ),

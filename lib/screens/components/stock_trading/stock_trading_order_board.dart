@@ -240,9 +240,8 @@ class StockTradingOrderBoard extends StatelessWidget {
                       Center(
                         child: Text(
                           sPrice,
-                          style: TextStyle(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize: 13,
                             color: extendedColors.red,
                           ),
                         ),

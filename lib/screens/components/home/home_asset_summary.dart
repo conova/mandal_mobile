@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/api_service.dart';
@@ -52,9 +53,9 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
       children: [
         Text(
           l10n.totalAssets,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: theme.disabledColor,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: AppTextStyles.light,
+            color: extendedColors.neutral100,
           ),
         ),
         const SizedBox(height: 4),
@@ -69,16 +70,16 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
                 children: [
                   Text(
                     _totalAssets,
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontWeight: AppTextStyles.semiBold,
+                      color: theme.colorScheme.onBackground,
                     ),
                   ),
                   Text(
                     _totalAssetsDec,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.disabledColor,
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontWeight: AppTextStyles.semiBold,
+                      color: extendedColors.neutral300,
                     ),
                   ),
                 ],
@@ -90,7 +91,7 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
               _assetChange,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
-                fontWeight: FontWeight.w600,
+                fontWeight: AppTextStyles.light,
               ),
             ),
             const SizedBox(width: 4),
@@ -103,13 +104,14 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
               '$_assetChangePercent ',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
-                fontWeight: FontWeight.w600,
+                fontWeight: AppTextStyles.light,
               ),
             ),
             Text(
               '(${l10n.last1Month})',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.disabledColor,
+                fontWeight: AppTextStyles.light,
+                color: extendedColors.neutral100,
               ),
             ),
           ],

@@ -40,7 +40,7 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
       onTap: () => setState(() => _selectedFilter = text),
       child: Text(
         text,
-        style: TextStyle(
+        style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           color: isSelected ? theme.colorScheme.onSurface : theme.disabledColor,
         ),

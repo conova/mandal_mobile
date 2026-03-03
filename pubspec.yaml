@@ -44,6 +44,8 @@ dependencies:
   google_fonts: ^6.2.1
   dio: ^5.7.0
   local_auth: ^2.3.0
+  camera: ^0.11.0
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +77,10 @@ flutter:
     - assets/images/bar_chart.png
     - assets/images/story_handshaking.png
     - assets/images/splash_screen.png
+    - assets/images/3d_finance.png
+    - assets/images/finger_print.png
+    - assets/images/ready_trade.png
+    - assets/images/vault.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

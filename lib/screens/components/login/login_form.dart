@@ -98,7 +98,10 @@ class _LoginFormState extends State<LoginForm>
           child: DecoratedBox(
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Colors.grey.shade300, width: 1.0),
+                bottom: BorderSide(
+                  color: theme.dividerColor.withOpacity(0.1),
+                  width: 1.0,
+                ),
               ),
             ),
             child: TabBar(
