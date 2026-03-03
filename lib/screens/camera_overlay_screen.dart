@@ -187,9 +187,15 @@ class _CameraOverlayScreenState extends State<CameraOverlayScreen> {
                           if (_controller != null &&
                               _controller!.value.isInitialized) {
                             try {
-                              Navigator.pop(context, true);
+                              final image = await _controller!.takePicture();
+                              if (mounted) {
+                                Navigator.pop(context, image.path);
+                              }
                             } catch (e) {
                               debugPrint(e.toString());
+                              if (mounted) {
+                                Navigator.pop(context, true);
+                              }
                             }
                           } else {
                             Navigator.pop(

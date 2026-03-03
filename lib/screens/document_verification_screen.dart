@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
@@ -14,9 +15,13 @@ class DocumentVerificationScreen extends StatefulWidget {
 
 class _DocumentVerificationScreenState
     extends State<DocumentVerificationScreen> {
-  bool _isIdFrontDone = false;
-  bool _isIdBackDone = false;
-  bool _isSelfieDone = false;
+  String? _idFrontPath;
+  String? _idBackPath;
+  String? _selfiePath;
+
+  bool get _isIdFrontDone => _idFrontPath != null;
+  bool get _isIdBackDone => _idBackPath != null;
+  bool get _isSelfieDone => _selfiePath != null;
 
   bool get _isAllDone => _isIdFrontDone && _isIdBackDone && _isSelfieDone;
 
@@ -43,13 +48,20 @@ class _DocumentVerificationScreenState
                 isIdFrontDone: _isIdFrontDone,
                 isIdBackDone: _isIdBackDone,
                 isSelfieDone: _isSelfieDone,
+                idFrontPath: _idFrontPath,
+                idBackPath: _idBackPath,
+                selfiePath: _selfiePath,
                 onIdFrontTap: () async {
                   final result = await Navigator.pushNamed(
                     context,
                     '/camera_overlay',
                     arguments: 'id',
                   );
-                  if (result == true) setState(() => _isIdFrontDone = true);
+                  if (result != null) {
+                    setState(() {
+                      _idFrontPath = result is String ? result : 'done';
+                    });
+                  }
                 },
                 onIdBackTap: () async {
                   final result = await Navigator.pushNamed(
@@ -57,7 +69,11 @@ class _DocumentVerificationScreenState
                     '/camera_overlay',
                     arguments: 'id',
                   );
-                  if (result == true) setState(() => _isIdBackDone = true);
+                  if (result != null) {
+                    setState(() {
+                      _idBackPath = result is String ? result : 'done';
+                    });
+                  }
                 },
                 onSelfieTap: () async {
                   final result = await Navigator.pushNamed(
@@ -65,7 +81,11 @@ class _DocumentVerificationScreenState
                     '/camera_overlay',
                     arguments: 'selfie',
                   );
-                  if (result == true) setState(() => _isSelfieDone = true);
+                  if (result != null) {
+                    setState(() {
+                      _selfiePath = result is String ? result : 'done';
+                    });
+                  }
                 },
               ),
               const SizedBox(height: 32),
@@ -165,6 +185,9 @@ class _DocItemList extends StatelessWidget {
   final bool isIdFrontDone;
   final bool isIdBackDone;
   final bool isSelfieDone;
+  final String? idFrontPath;
+  final String? idBackPath;
+  final String? selfiePath;
   final VoidCallback onIdFrontTap;
   final VoidCallback onIdBackTap;
   final VoidCallback onSelfieTap;
@@ -174,6 +197,9 @@ class _DocItemList extends StatelessWidget {
     required this.isIdFrontDone,
     required this.isIdBackDone,
     required this.isSelfieDone,
+    this.idFrontPath,
+    this.idBackPath,
+    this.selfiePath,
     required this.onIdFrontTap,
     required this.onIdBackTap,
     required this.onSelfieTap,
@@ -186,12 +212,19 @@ class _DocItemList extends StatelessWidget {
         _DocItem(
           title: l10n.idFront,
           isDone: isIdFrontDone,
+          imagePath: idFrontPath,
           onTap: onIdFrontTap,
         ),
-        _DocItem(title: l10n.idBack, isDone: isIdBackDone, onTap: onIdBackTap),
+        _DocItem(
+          title: l10n.idBack,
+          isDone: isIdBackDone,
+          imagePath: idBackPath,
+          onTap: onIdBackTap,
+        ),
         _DocItem(
           title: l10n.selfiePhoto,
           isDone: isSelfieDone,
+          imagePath: selfiePath,
           onTap: onSelfieTap,
         ),
       ],
@@ -202,11 +235,13 @@ class _DocItemList extends StatelessWidget {
 class _DocItem extends StatelessWidget {
   final String title;
   final bool isDone;
+  final String? imagePath;
   final VoidCallback onTap;
 
   const _DocItem({
     required this.title,
     required this.isDone,
+    this.imagePath,
     required this.onTap,
   });
 
@@ -219,7 +254,7 @@ class _DocItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             Container(
@@ -229,10 +264,13 @@ class _DocItem extends StatelessWidget {
                 color: extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                Icons.camera_alt_outlined,
-                color: extendedColors.neutral300,
-              ),
+              clipBehavior: Clip.antiAlias,
+              child: isDone && imagePath != null && imagePath != 'done'
+                  ? Image.file(File(imagePath!), fit: BoxFit.cover)
+                  : Icon(
+                      Icons.camera_alt_outlined,
+                      color: extendedColors.neutral300,
+                    ),
             ),
             const SizedBox(width: 16),
             Expanded(
