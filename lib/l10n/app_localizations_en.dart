@@ -913,4 +913,155 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get success => 'Success';
+
+  @override
+  String get myStocks => 'My Stocks';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get totalProfit => 'Total Profit';
+
+  @override
+  String get realizedProfit => 'Realized Profit';
+
+  @override
+  String get unrealizedProfit => 'Unrealized Profit';
+
+  @override
+  String get futureReturn => 'Future Return';
+
+  @override
+  String get totalReturnReceived => 'Total Return Received';
+
+  @override
+  String get bondName => 'Bond Name';
+
+  @override
+  String get amountPieces => 'Amount | Pieces';
+
+  @override
+  String get profitPlusMinus => 'Profit (+ -)';
+
+  @override
+  String get historyAll => 'History (All)';
+
+  @override
+  String get view => 'View';
+
+  @override
+  String get pieces => 'pieces';
+
+  @override
+  String get interestRateShort => 'Interest';
+
+  @override
+  String get incomeMethod => 'Income Method';
+
+  @override
+  String get incomeMethodDesc =>
+      'You can buy bonds or stocks with your deposited money.';
+
+  @override
+  String get qpay => 'Qpay';
+
+  @override
+  String get qpayAndCard => 'Qpay and card';
+
+  @override
+  String get recommend => 'Recommend';
+
+  @override
+  String get enterAmount => 'Enter amount';
+
+  @override
+  String get makeIncome => 'Make Income';
+
+  @override
+  String get million => 'сая';
+
+  @override
+  String get incomeSuccess => 'Income completed';
+
+  @override
+  String get incomeSuccessDesc => 'You are ready to invest!';
+
+  @override
+  String get withdrawMethod => 'Withdraw Method';
+
+  @override
+  String get withdrawMethodDesc => 'You can withdraw money from your account.';
+
+  @override
+  String get makeWithdraw => 'Withdraw';
+
+  @override
+  String get withdrawSuccess => 'Withdrawal completed';
+
+  @override
+  String get withdrawSuccessDesc =>
+      'Your withdrawal has been processed successfully!';
+
+  @override
+  String get bankTransfer => 'Bank Transfer';
+
+  @override
+  String get bankTransferDesc => 'Transfer to bank account';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get filterAction => 'Filter';
+
+  @override
+  String get clearFilter => 'Clear';
+
+  @override
+  String get selectPeriod => 'Select period';
+
+  @override
+  String get last7Days => 'Last 7 days';
+
+  @override
+  String get last1MonthFilter => 'Last 1 month';
+
+  @override
+  String get last3Months => 'Last 3 months';
+
+  @override
+  String get last6Months => 'Last 6 months';
+
+  @override
+  String get selectDateRange => 'Select start and end date';
+
+  @override
+  String get startDate => 'Start date';
+
+  @override
+  String get endDate => 'End date';
+
+  @override
+  String get cashSection => 'Cash';
+
+  @override
+  String get boughtType => 'Bought';
+
+  @override
+  String get soldType => 'Sold';
+
+  @override
+  String get bondReturnType => 'Bond return';
+
+  @override
+  String get stockTransferType => 'Stock transfer received';
+
+  @override
+  String get monthLabel => 'month';
+
+  @override
+  String approxUsd(String amount) {
+    return '≈$amount\$';
+  }
 }

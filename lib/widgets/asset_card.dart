@@ -9,6 +9,7 @@ class AssetCard extends StatelessWidget {
   final String amount;
   final bool isDark;
   final Color? iconColor;
+  final VoidCallback? onTap;
 
   const AssetCard({
     super.key,
@@ -18,6 +19,7 @@ class AssetCard extends StatelessWidget {
     required this.amount,
     this.isDark = false,
     this.iconColor,
+    this.onTap,
   });
 
   @override
@@ -26,7 +28,10 @@ class AssetCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
@@ -70,6 +75,7 @@ class AssetCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

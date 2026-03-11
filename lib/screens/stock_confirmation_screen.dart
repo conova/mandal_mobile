@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import '../components/bond/bond_confirmation_details.dart';
-import '../../l10n/app_localizations.dart';
-import '../../theme/extended_colors.dart';
+import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 
-class BondSellConfirmationScreen extends StatefulWidget {
-  const BondSellConfirmationScreen({super.key});
+class StockConfirmationScreen extends StatefulWidget {
+  const StockConfirmationScreen({super.key});
 
   @override
-  State<BondSellConfirmationScreen> createState() =>
-      _BondSellConfirmationScreenState();
+  State<StockConfirmationScreen> createState() =>
+      _StockConfirmationScreenState();
 }
 
-class _BondSellConfirmationScreenState
-    extends State<BondSellConfirmationScreen> with TickerProviderStateMixin {
+class _StockConfirmationScreenState extends State<StockConfirmationScreen>
+    with TickerProviderStateMixin {
   late AnimationController _expandController;
   late Animation<double> _contentFadeAnimation;
 
@@ -154,6 +153,7 @@ class _BondSellConfirmationScreenState
 
           return Stack(
             children: [
+              // White confirmation content with bottom border radius
               Positioned.fill(
                 bottom: bottomSheetHeight,
                 child: Opacity(
@@ -191,37 +191,42 @@ class _BondSellConfirmationScreenState
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Row(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Net Capital',
-                                  style: theme.textTheme.headlineSmall
-                                      ?.copyWith(
+                                Row(
+                                  children: [
+                                    Text(
+                                      'MNDL',
+                                      style: theme.textTheme.headlineSmall
+                                          ?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: extendedColors.neutral100,
                                       ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Нэт Капитал',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: extendedColors.neutral300,
-                                  ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'Мандал даатгал ХК',
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        color: extendedColors.neutral300,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(height: 48),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: BondConfirmationDetails(
-                              name: 'Net Capital',
-                              type: l10n.closed,
-                              quantity: '10',
-                              unitPrice: '991,000₮',
-                              commission: '5,000₮',
-                              total: '9,915,000₮',
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24),
+                            child: _buildConfirmationDetails(
+                              theme: theme,
+                              l10n: l10n,
+                              extendedColors: extendedColors,
                             ),
                           ),
                         ],
@@ -230,6 +235,8 @@ class _BondSellConfirmationScreenState
                   ),
                 ),
               ),
+
+              // Draggable teal overlay
               Positioned(
                 left: 0,
                 right: 0,
@@ -284,6 +291,97 @@ class _BondSellConfirmationScreenState
     );
   }
 
+  Widget _buildConfirmationDetails({
+    required ThemeData theme,
+    required AppLocalizations l10n,
+    required ExtendedColors extendedColors,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDetailRow(theme, extendedColors, l10n.orderTypeLabel, l10n.limitPrice),
+        const SizedBox(height: 16),
+        _buildDetailRow(theme, extendedColors, l10n.quantityLabel, '1,000'),
+        const SizedBox(height: 16),
+        _buildDetailRow(theme, extendedColors, l10n.unitPrice, '62.00₮'),
+        const SizedBox(height: 16),
+        _buildDetailRow(
+          theme,
+          extendedColors,
+          '${l10n.commissionLabel} (0.1%)',
+          '12,132₮',
+        ),
+        const SizedBox(height: 24),
+        // Dotted divider
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const dashWidth = 4.0;
+            const dashSpace = 4.0;
+            final dashCount =
+                (constraints.maxWidth / (dashWidth + dashSpace)).floor();
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(dashCount, (_) {
+                return SizedBox(
+                  width: dashWidth,
+                  height: 1,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(color: extendedColors.neutral400),
+                  ),
+                );
+              }),
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.totalPaymentLabel,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: extendedColors.neutral300,
+              ),
+            ),
+            Text(
+              '65,520.23₮',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: extendedColors.neutral100,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(
+    ThemeData theme,
+    ExtendedColors extendedColors,
+    String label,
+    String value,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: extendedColors.neutral300,
+          ),
+        ),
+        Text(
+          value,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: extendedColors.neutral100,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSuccessContent(
     ThemeData theme,
     AppLocalizations l10n,
@@ -317,7 +415,7 @@ class _BondSellConfirmationScreenState
               child: SlideTransition(
                 position: _titleSlideAnimation,
                 child: Text(
-                  l10n.orderPlacedSuccess,
+                  l10n.orderRegistered,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineLarge?.copyWith(
                     color: Colors.white,
@@ -332,7 +430,7 @@ class _BondSellConfirmationScreenState
               child: SlideTransition(
                 position: _descSlideAnimation,
                 child: Text(
-                  l10n.sellOrderSuccessDesc,
+                  l10n.orderPlacedDesc,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: Colors.white,

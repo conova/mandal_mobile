@@ -15,6 +15,17 @@ import 'screens/order_detail_screen.dart';
 import 'screens/stock_detail_screen.dart';
 import 'screens/stock_trading_screen.dart';
 import 'screens/stock_success_screen.dart';
+import 'screens/stock_confirmation_screen.dart';
+import 'screens/currency_detail_screen.dart';
+import 'screens/bond_portfolio_screen.dart';
+import 'screens/stock_portfolio_screen.dart';
+import 'screens/income_method_screen.dart';
+import 'screens/income_amount_screen.dart';
+import 'screens/income_success_screen.dart';
+import 'screens/withdraw_method_screen.dart';
+import 'screens/withdraw_amount_screen.dart';
+import 'screens/withdraw_success_screen.dart';
+import 'screens/transaction_history_screen.dart';
 import 'screens/release_locked_amount_screen.dart';
 import 'screens/my_info_screen.dart';
 import 'screens/income_account_screen.dart';
@@ -334,6 +345,17 @@ class MyApp extends StatelessWidget {
             '/stock_detail': (context) => const StockDetailScreen(),
             '/stock_trading': (context) => const StockTradingScreen(),
             '/stock_success': (context) => const StockSuccessScreen(),
+            '/stock_confirmation': (context) => const StockConfirmationScreen(),
+            '/currency_detail': (context) => const CurrencyDetailScreen(),
+            '/bond_portfolio': (context) => const BondPortfolioScreen(),
+            '/stock_portfolio': (context) => const StockPortfolioScreen(),
+            '/income_method': (context) => const IncomeMethodScreen(),
+            '/income_amount': (context) => const IncomeAmountScreen(),
+            '/income_success': (context) => const IncomeSuccessScreen(),
+            '/withdraw_method': (context) => const WithdrawMethodScreen(),
+            '/withdraw_amount': (context) => const WithdrawAmountScreen(),
+            '/withdraw_success': (context) => const WithdrawSuccessScreen(),
+            '/transaction_history': (context) => const TransactionHistoryScreen(),
             '/release_locked': (context) => const ReleaseLockedAmountScreen(),
           },
           debugShowCheckedModeBanner: false,

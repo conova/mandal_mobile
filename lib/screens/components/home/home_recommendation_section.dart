@@ -1,10 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
-class HomeRecommendationSection extends StatelessWidget {
+class HomeRecommendationSection extends StatefulWidget {
   const HomeRecommendationSection({super.key});
+
+  @override
+  State<HomeRecommendationSection> createState() =>
+      _HomeRecommendationSectionState();
+}
+
+class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
+  final PageController _pageController = PageController(viewportFraction: 0.88);
+  int _currentPage = 0;
+
+  final List<_RecommendationData> _recommendations = const [
+    _RecommendationData(
+      title: 'Net Capital',
+      subtitle: 'Нэт Капитал',
+      status: 'ХААЛТТАЙ',
+      duration: '12 сар',
+      returnRate: '19.5%',
+      amount: '900 сая',
+    ),
+    _RecommendationData(
+      title: 'MIK BOND',
+      subtitle: 'Орон сууцны бонд',
+      status: 'НЭЭЛТТЭЙ',
+      duration: '24 сар',
+      returnRate: '11.6%',
+      amount: '50 тэрбум',
+    ),
+    _RecommendationData(
+      title: 'Lend.mn',
+      subtitle: 'Лэнд.мн',
+      status: 'НЭЭЛТТЭЙ',
+      duration: '12 сар',
+      returnRate: '19.5%',
+      amount: '1 тэрбум',
+    ),
+    _RecommendationData(
+      title: 'GSB Capital',
+      subtitle: 'ЖИЭСБ капитал',
+      status: 'НЭЭЛТТЭЙ',
+      duration: '12 сар',
+      returnRate: '18.2%',
+      amount: '420 сая',
+    ),
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,18 +63,17 @@ class HomeRecommendationSection extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [Color(0xFFC5D4F8), Color(0xFFDEE6FB)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: extendedColors.purple, width: 1),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
+          // Purple icon badge
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -33,64 +81,80 @@ class HomeRecommendationSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
-              Icons.currency_ruble,
+              Icons.account_balance_wallet_outlined,
               color: extendedColors.bgBase,
               size: 32,
             ),
           ),
-          SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const SizedBox(height: 20),
+          // Title
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              textAlign: TextAlign.center,
               l10n.recommendationTitle,
+              textAlign: TextAlign.center,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const SizedBox(height: 8),
+          // Description
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              textAlign: TextAlign.center,
               l10n.recommendationDesc,
+              textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.disabledColor,
+                color: extendedColors.neutral300,
               ),
             ),
           ),
           const SizedBox(height: 20),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                _buildRecommendationCard(
-                  context: context,
-                  title: 'Net Capital',
-                  subtitle: 'Нэт Капитал',
-                  status: 'ХААЛТТАЙ',
-                  durationValue: '12 сар',
-                  returnValue: '19.5%',
-                  amountValue: '900 сая',
-                  extendedColors: extendedColors,
-                  l10n: l10n,
-                ),
-                const SizedBox(width: 16),
-                _buildRecommendationCard(
-                  context: context,
-                  title: 'MIK BOND',
-                  subtitle: 'Орон сууцны бонд',
-                  status: 'НЭЭЛТТЭЙ',
-                  durationValue: '24 сар',
-                  returnValue: '11.6%',
-                  amountValue: '50 тэрбум',
-                  extendedColors: extendedColors,
-                  l10n: l10n,
-                ),
-              ],
+          // PageView carousel
+          SizedBox(
+            height: 200,
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: _recommendations.length,
+              allowImplicitScrolling: true,
+              onPageChanged: (index) {
+                setState(() => _currentPage = index);
+              },
+              itemBuilder: (context, index) {
+                final item = _recommendations[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: _buildRecommendationCard(
+                    context: context,
+                    data: item,
+                    extendedColors: extendedColors,
+                    l10n: l10n,
+                  ),
+                );
+              },
             ),
           ),
+          const SizedBox(height: 16),
+          // Page indicator dots
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(_recommendations.length, (index) {
+              final isActive = index == _currentPage;
+              return Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isActive
+                      ? extendedColors.neutral100
+                      : extendedColors.neutral400,
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -98,25 +162,19 @@ class HomeRecommendationSection extends StatelessWidget {
 
   Widget _buildRecommendationCard({
     required BuildContext context,
-    required String title,
-    required String subtitle,
-    required String status,
-    required String durationValue,
-    required String returnValue,
-    required String amountValue,
+    required _RecommendationData data,
     required ExtendedColors extendedColors,
     required AppLocalizations l10n,
   }) {
     final theme = Theme.of(context);
     return Container(
-      width: 330,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -138,7 +196,7 @@ class HomeRecommendationSection extends StatelessWidget {
                       spacing: 8,
                       children: [
                         Text(
-                          title,
+                          data.title,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: extendedColors.neutral100,
@@ -147,7 +205,7 @@ class HomeRecommendationSection extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 2),
                           child: Text(
-                            subtitle,
+                            data.subtitle,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: extendedColors.neutral300,
                             ),
@@ -166,7 +224,7 @@ class HomeRecommendationSection extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        status,
+                        data.status,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: extendedColors.neutral100,
                           fontWeight: FontWeight.w500,
@@ -177,47 +235,65 @@ class HomeRecommendationSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              CustomButton(
-                label: l10n.buy,
-                size: CustomButtonSize.small,
-                onPressed: () => Navigator.pushNamed(context, '/bond_detail'),
+              ElevatedButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/bond_detail'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: extendedColors.purple,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                ),
+                child: Text(
+                  l10n.buy,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const Spacer(),
           IntrinsicHeight(
             child: Row(
               children: [
                 Expanded(
                   child: _buildStatColumn(
                     'Хугацаа',
-                    durationValue,
+                    data.duration,
                     theme,
                     extendedColors,
                   ),
                 ),
                 VerticalDivider(
-                  color: extendedColors.neutral200,
+                  color: extendedColors.neutral400,
                   thickness: 1,
                   width: 24,
                 ),
                 Expanded(
                   child: _buildStatColumn(
                     'Өгөөж',
-                    returnValue,
+                    data.returnRate,
                     theme,
                     extendedColors,
                   ),
                 ),
                 VerticalDivider(
-                  color: extendedColors.neutral200,
+                  color: extendedColors.neutral400,
                   thickness: 1,
                   width: 24,
                 ),
                 Expanded(
                   child: _buildStatColumn(
                     'Дүн',
-                    amountValue,
+                    data.amount,
                     theme,
                     extendedColors,
                   ),
@@ -258,4 +334,22 @@ class HomeRecommendationSection extends StatelessWidget {
       ],
     );
   }
+}
+
+class _RecommendationData {
+  final String title;
+  final String subtitle;
+  final String status;
+  final String duration;
+  final String returnRate;
+  final String amount;
+
+  const _RecommendationData({
+    required this.title,
+    required this.subtitle,
+    required this.status,
+    required this.duration,
+    required this.returnRate,
+    required this.amount,
+  });
 }

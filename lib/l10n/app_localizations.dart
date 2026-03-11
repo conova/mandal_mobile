@@ -1857,6 +1857,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Success'**
   String get success;
+
+  /// No description provided for @myStocks.
+  ///
+  /// In en, this message translates to:
+  /// **'My Stocks'**
+  String get myStocks;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @totalProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Profit'**
+  String get totalProfit;
+
+  /// No description provided for @realizedProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Realized Profit'**
+  String get realizedProfit;
+
+  /// No description provided for @unrealizedProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unrealized Profit'**
+  String get unrealizedProfit;
+
+  /// No description provided for @futureReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Future Return'**
+  String get futureReturn;
+
+  /// No description provided for @totalReturnReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Return Received'**
+  String get totalReturnReceived;
+
+  /// No description provided for @bondName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond Name'**
+  String get bondName;
+
+  /// No description provided for @amountPieces.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount | Pieces'**
+  String get amountPieces;
+
+  /// No description provided for @profitPlusMinus.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit (+ -)'**
+  String get profitPlusMinus;
+
+  /// No description provided for @historyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'History (All)'**
+  String get historyAll;
+
+  /// No description provided for @view.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get view;
+
+  /// No description provided for @pieces.
+  ///
+  /// In en, this message translates to:
+  /// **'pieces'**
+  String get pieces;
+
+  /// No description provided for @interestRateShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Interest'**
+  String get interestRateShort;
+
+  /// No description provided for @incomeMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Income Method'**
+  String get incomeMethod;
+
+  /// No description provided for @incomeMethodDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You can buy bonds or stocks with your deposited money.'**
+  String get incomeMethodDesc;
+
+  /// No description provided for @qpay.
+  ///
+  /// In en, this message translates to:
+  /// **'Qpay'**
+  String get qpay;
+
+  /// No description provided for @qpayAndCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Qpay and card'**
+  String get qpayAndCard;
+
+  /// No description provided for @recommend.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommend'**
+  String get recommend;
+
+  /// No description provided for @enterAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get enterAmount;
+
+  /// No description provided for @makeIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Make Income'**
+  String get makeIncome;
+
+  /// No description provided for @million.
+  ///
+  /// In en, this message translates to:
+  /// **'сая'**
+  String get million;
+
+  /// No description provided for @incomeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Income completed'**
+  String get incomeSuccess;
+
+  /// No description provided for @incomeSuccessDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You are ready to invest!'**
+  String get incomeSuccessDesc;
+
+  /// No description provided for @withdrawMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw Method'**
+  String get withdrawMethod;
+
+  /// No description provided for @withdrawMethodDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You can withdraw money from your account.'**
+  String get withdrawMethodDesc;
+
+  /// No description provided for @makeWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get makeWithdraw;
+
+  /// No description provided for @withdrawSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal completed'**
+  String get withdrawSuccess;
+
+  /// No description provided for @withdrawSuccessDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your withdrawal has been processed successfully!'**
+  String get withdrawSuccessDesc;
+
+  /// No description provided for @bankTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get bankTransfer;
+
+  /// No description provided for @bankTransferDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to bank account'**
+  String get bankTransferDesc;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @filterAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filterAction;
+
+  /// No description provided for @clearFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearFilter;
+
+  /// No description provided for @selectPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Select period'**
+  String get selectPeriod;
+
+  /// No description provided for @last7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get last7Days;
+
+  /// No description provided for @last1MonthFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 1 month'**
+  String get last1MonthFilter;
+
+  /// No description provided for @last3Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 3 months'**
+  String get last3Months;
+
+  /// No description provided for @last6Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 6 months'**
+  String get last6Months;
+
+  /// No description provided for @selectDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Select start and end date'**
+  String get selectDateRange;
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End date'**
+  String get endDate;
+
+  /// No description provided for @cashSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cashSection;
+
+  /// No description provided for @boughtType.
+  ///
+  /// In en, this message translates to:
+  /// **'Bought'**
+  String get boughtType;
+
+  /// No description provided for @soldType.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold'**
+  String get soldType;
+
+  /// No description provided for @bondReturnType.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond return'**
+  String get bondReturnType;
+
+  /// No description provided for @stockTransferType.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock transfer received'**
+  String get stockTransferType;
+
+  /// No description provided for @monthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'month'**
+  String get monthLabel;
+
+  /// No description provided for @approxUsd.
+  ///
+  /// In en, this message translates to:
+  /// **'≈{amount}\$'**
+  String approxUsd(String amount);
 }
 
 class _AppLocalizationsDelegate

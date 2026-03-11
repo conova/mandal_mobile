@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /c/Users/hitech/OneDrive/Documents/antigravity log --oneline -20)",
+      "Bash(git -C /c/Users/hitech/OneDrive/Documents/antigravity branch -a)",
+      "Bash(wc -l /c/Users/hitech/OneDrive/Documents/antigravity/lib/screens/*.dart /c/Users/hitech/OneDrive/Documents/antigravity/lib/screens/components/*/*.dart)",
+      "Bash(flutter analyze)",
+      "Bash(flutter gen-l10n)",
+      "Bash(xargs grep -l \"cash\\\\|currency\\\\|mnt\\\\|tugrik\\\\|dollar\\\\|forex\\\\|usd\")"
+    ]
+  }
+}

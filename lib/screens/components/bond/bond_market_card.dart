@@ -6,13 +6,9 @@ class BondMarketCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String status;
-  final Color statusBgColor;
-  final Color statusTextColor;
   final String tenure;
   final String yield;
   final String totalAmount;
-  final String currentAmount;
-  final String targetAmount;
   final double? progress;
   final String progressLabel;
   final VoidCallback onBuyPressed;
@@ -22,13 +18,9 @@ class BondMarketCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.status,
-    required this.statusBgColor,
-    required this.statusTextColor,
     required this.tenure,
     required this.yield,
     required this.totalAmount,
-    this.currentAmount = '',
-    this.targetAmount = '',
     this.progress,
     this.progressLabel = '',
     required this.onBuyPressed,
@@ -37,16 +29,11 @@ class BondMarketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+    final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(bottom: 24),
-      decoration: BoxDecoration(
-        color: extendedColors.bgBase,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: extendedColors.neutral100),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -61,34 +48,44 @@ class BondMarketCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: Theme.of(context).textTheme.titleMedium
+                          style: theme.textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           subtitle,
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(color: Colors.grey.shade400),
+                          style: theme.textTheme.labelMedium
+                              ?.copyWith(color: extendedColors.neutral300),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusBgColor,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        status,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: statusTextColor,
-                          fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: extendedColors.neutral100,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            status,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: extendedColors.bgBase,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.info_outline,
+                          size: 20,
+                          color: extendedColors.neutral300,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -109,21 +106,38 @@ class BondMarketCard extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.buy,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildMetric(Theme.of(context), l10n.tenureLabel, tenure),
-              _buildMetric(Theme.of(context), l10n.interestRate, yield),
-              _buildMetric(Theme.of(context), l10n.amountLabel, totalAmount),
-            ],
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildMetric(theme, l10n.tenureLabel, tenure),
+                ),
+                VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: extendedColors.neutral400,
+                ),
+                Expanded(
+                  child: _buildMetric(theme, l10n.interestRate, yield),
+                ),
+                VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: extendedColors.neutral400,
+                ),
+                Expanded(
+                  child: _buildMetric(theme, l10n.amountLabel, totalAmount),
+                ),
+              ],
+            ),
           ),
           if (progress != null) ...[
             const SizedBox(height: 20),
@@ -131,8 +145,10 @@ class BondMarketCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: Colors.grey.shade100,
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.black),
+                backgroundColor: extendedColors.neutral500,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  extendedColors.neutral100,
+                ),
                 minHeight: 4,
               ),
             ),
@@ -142,15 +158,15 @@ class BondMarketCard extends StatelessWidget {
               children: [
                 Text(
                   progressLabel,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: Colors.grey.shade400),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: extendedColors.neutral300,
+                  ),
                 ),
                 Text(
                   '${(progress! * 100).toInt()}%',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -161,11 +177,15 @@ class BondMarketCard extends StatelessWidget {
   }
 
   Widget _buildMetric(ThemeData theme, String label, String value) {
+    final extendedColors = theme.extension<ExtendedColors>()!;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
-          style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey),
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: extendedColors.neutral300,
+          ),
         ),
         const SizedBox(height: 6),
         Text(

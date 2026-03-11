@@ -6,7 +6,6 @@ import 'components/stock_trading/stock_trading_quantity_selector.dart';
 import 'components/stock_trading/stock_trading_percentage_selector.dart';
 import 'components/stock_trading/stock_trading_info_box.dart';
 import 'components/stock_trading/stock_trading_order_board.dart';
-import 'components/stock_trading/stock_trading_confirmation_overlay.dart';
 import 'components/stock_trading/stock_trading_bottom_bar.dart';
 
 class StockTradingScreen extends StatefulWidget {
@@ -23,7 +22,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   late FocusNode _quantityFocusNode;
 
   int _quantity = 1;
-  bool _isConfirming = false;
 
   @override
   void initState() {
@@ -44,15 +42,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   }
 
   void _showConfirmation() {
-    setState(() {
-      _isConfirming = true;
-    });
-  }
-
-  void _hideConfirmation() {
-    setState(() {
-      _isConfirming = false;
-    });
+    Navigator.pushNamed(context, '/stock_confirmation');
   }
 
   @override
@@ -212,18 +202,9 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
               ],
             ),
           ),
-          if (_isConfirming)
-            StockTradingConfirmationOverlay(
-              onConfirm: () {
-                Navigator.pushReplacementNamed(context, '/stock_success');
-              },
-              onCancel: _hideConfirmation,
-            ),
         ],
       ),
-      bottomNavigationBar: _isConfirming
-          ? null
-          : StockTradingBottomBar(
+      bottomNavigationBar: StockTradingBottomBar(
               onPlaceOrder: _showConfirmation,
               onReleaseLocked: () =>
                   Navigator.pushNamed(context, '/release_locked'),

@@ -602,7 +602,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get recommendationDesc =>
-      'Бид таны сонирхолд нийцсэн шилдэг бондуудыг санал болгож байна.';
+      'Тийм бол - Эрсдэл бага, өгөөж өндөр дараах бондуудыг танд санал болгож байна.';
 
   @override
   String get sellBond => 'Бонд зарах';
@@ -912,4 +912,154 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get success => 'Амжилттай';
+
+  @override
+  String get myStocks => 'Миний хувьцаа';
+
+  @override
+  String get statistics => 'Статистик';
+
+  @override
+  String get totalProfit => 'Нийт ашиг';
+
+  @override
+  String get realizedProfit => 'Хэрэгжсэн ашиг';
+
+  @override
+  String get unrealizedProfit => 'Хэрэгжээгүй ашиг';
+
+  @override
+  String get futureReturn => 'Ирээдүйд авах өгөөж';
+
+  @override
+  String get totalReturnReceived => 'Нийт авсан өгөөж';
+
+  @override
+  String get bondName => 'Бонд нэр';
+
+  @override
+  String get amountPieces => 'Дүн | ширхэг';
+
+  @override
+  String get profitPlusMinus => 'Ашиг (+ -)';
+
+  @override
+  String get historyAll => 'Түүх (Бүгд)';
+
+  @override
+  String get view => 'Харах';
+
+  @override
+  String get pieces => 'ш';
+
+  @override
+  String get interestRateShort => 'Хүү';
+
+  @override
+  String get incomeMethod => 'Орлогын хэлбэр';
+
+  @override
+  String get incomeMethodDesc =>
+      'Та орлого хийсэн мөнгөөрөө бонд эсвэл хувьцаа худалдан авах боломжтой.';
+
+  @override
+  String get qpay => 'Qpay';
+
+  @override
+  String get qpayAndCard => 'Qpay болон картаар';
+
+  @override
+  String get recommend => 'Санал болгох';
+
+  @override
+  String get enterAmount => 'Дүн оруулна уу';
+
+  @override
+  String get makeIncome => 'Орлого хийх';
+
+  @override
+  String get million => 'сая';
+
+  @override
+  String get incomeSuccess => 'Орлого хийгдлээ';
+
+  @override
+  String get incomeSuccessDesc => 'Та хөрөнгө оруулахад бэлэн боллоо!';
+
+  @override
+  String get withdrawMethod => 'Зарлагын хэлбэр';
+
+  @override
+  String get withdrawMethodDesc => 'Та данснаасаа мөнгө гаргах боломжтой.';
+
+  @override
+  String get makeWithdraw => 'Зарлага хийх';
+
+  @override
+  String get withdrawSuccess => 'Зарлага хийгдлээ';
+
+  @override
+  String get withdrawSuccessDesc => 'Таны зарлага амжилттай хийгдлээ!';
+
+  @override
+  String get bankTransfer => 'Банкны шилжүүлэг';
+
+  @override
+  String get bankTransferDesc => 'Банкны данс руу шилжүүлэх';
+
+  @override
+  String get filter => 'Шүүлтүүр';
+
+  @override
+  String get filterAction => 'Шүүх';
+
+  @override
+  String get clearFilter => 'Цэвэрлэх';
+
+  @override
+  String get selectPeriod => 'Хугацаа сонгоно уу';
+
+  @override
+  String get last7Days => 'Сүүлийн 7 хоног';
+
+  @override
+  String get last1MonthFilter => 'Сүүлийн 1 сар';
+
+  @override
+  String get last3Months => 'Сүүлийн 3 сар';
+
+  @override
+  String get last6Months => 'Сүүлийн 6 сар';
+
+  @override
+  String get selectDateRange => 'Эхлэх дуусах огноо сонгох';
+
+  @override
+  String get startDate => 'Эхлэх огноо';
+
+  @override
+  String get endDate => 'Дуусах огноо';
+
+  @override
+  String get cashSection => 'Бэлэн мөнгө';
+
+  @override
+  String get boughtType => 'Авсан';
+
+  @override
+  String get soldType => 'Зарсан';
+
+  @override
+  String get bondReturnType => 'Бондын өгөөж';
+
+  @override
+  String get stockTransferType => 'Хувьцаа шилжүүлэн авсан';
+
+  @override
+  String get monthLabel => 'сар';
+
+  @override
+  String approxUsd(String amount) {
+    return '≈$amount\$';
+  }
 }

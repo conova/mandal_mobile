@@ -44,7 +44,7 @@ class HomeQuickActions extends StatelessWidget {
               variant: CustomButtonVariant.tertiary,
               size: CustomButtonSize.small,
               icon: Icons.history,
-              onPressed: () {},
+              onPressed: () => Navigator.pushNamed(context, '/transaction_history'),
             ),
           ),
         ),

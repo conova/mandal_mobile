@@ -28,6 +28,7 @@ class HomeAssetBreakdown extends StatelessWidget {
           title: l10n.tugrik,
           subtitle: l10n.orderCount('2'),
           amount: '128,000.53₮',
+          onTap: () => Navigator.pushNamed(context, '/currency_detail', arguments: 'mnt'),
         ),
         AssetCard(
           icon: Icons.attach_money,
@@ -35,6 +36,7 @@ class HomeAssetBreakdown extends StatelessWidget {
           subtitle: l10n.orderCount('0'),
           amount: '0.00\$',
           isDark: true,
+          onTap: () => Navigator.pushNamed(context, '/currency_detail', arguments: 'usd'),
         ),
         AssetCard(
           icon: Icons.credit_card,
@@ -42,6 +44,7 @@ class HomeAssetBreakdown extends StatelessWidget {
           subtitle: '5 ${l10n.type}',
           amount: '50,000,000.00₮',
           iconColor: extendedColors.purple,
+          onTap: () => Navigator.pushNamed(context, '/bond_portfolio'),
         ),
         AssetCard(
           icon: Icons.pie_chart_outline,
@@ -49,6 +52,7 @@ class HomeAssetBreakdown extends StatelessWidget {
           subtitle: '3 ${l10n.type}',
           amount: '500,000.00₮',
           iconColor: extendedColors.orange,
+          onTap: () => Navigator.pushNamed(context, '/stock_portfolio'),
         ),
       ],
     );
