@@ -101,8 +101,9 @@ class _BondMainScreenState extends State<BondMainScreen>
           yield: '19.5%',
           totalAmount: '900 сая',
           progress: 0.02,
-          progressLabel: '900,000₮ /900,000,000₮',
-          onBuyPressed: () => Navigator.pushNamed(context, '/bond_detail'),
+          progressLabel: '900,000₮',
+          progressLabel2: '900,000,000₮',
+          context: context,
         ),
         Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
         BondMarketCard(
@@ -113,28 +114,17 @@ class _BondMainScreenState extends State<BondMainScreen>
           yield: '19.5%',
           totalAmount: '1 тэрбум',
           progress: 0.45,
-          progressLabel: '210,500,000₮ /500,000,000₮',
-          onBuyPressed: () {},
+          progressLabel: '210,500,000₮',
+          progressLabel2: '500,000,000₮',
+          context: context,
         ),
         const SizedBox(height: 16),
-        Container(
-          height: 3,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                extendedColors.primaryMain,
-                extendedColors.primary300,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
         const SizedBox(height: 24),
         _buildSectionHeader(
           l10n.secondaryMarket,
           extendedColors,
           theme,
-          extendedColors.neutral100,
+          extendedColors.primaryMain,
         ),
         BondMarketCard(
           title: 'Simple',
@@ -143,7 +133,7 @@ class _BondMainScreenState extends State<BondMainScreen>
           tenure: '12 сар',
           yield: '19.5%',
           totalAmount: '1 тэрбум',
-          onBuyPressed: () {},
+          context: context,
         ),
         Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
         BondMarketCard(
@@ -153,7 +143,7 @@ class _BondMainScreenState extends State<BondMainScreen>
           tenure: '12 сар',
           yield: '12.5%',
           totalAmount: '800 сая',
-          onBuyPressed: () {},
+          context: context,
         ),
         Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
         BondMarketCard(
@@ -163,7 +153,7 @@ class _BondMainScreenState extends State<BondMainScreen>
           tenure: '12 сар',
           yield: '18.2%',
           totalAmount: '420 сая',
-          onBuyPressed: () {},
+          context: context,
         ),
         Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
         BondMarketCard(
@@ -174,8 +164,9 @@ class _BondMainScreenState extends State<BondMainScreen>
           yield: '11.6%',
           totalAmount: '\$500 мянга',
           progress: 0.25,
-          progressLabel: '100,000\$ / 500,000\$',
-          onBuyPressed: () {},
+          progressLabel: '100,000\$ ',
+          progressLabel2: '500,000\$',
+          context: context,
         ),
       ],
     );
@@ -243,7 +234,7 @@ class _BondMainScreenState extends State<BondMainScreen>
       children: [
         Text(
           title,
-          style: theme.textTheme.headlineSmall?.copyWith(
+          style: theme.textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: extendedColors.neutral100,
           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_button.dart';
 
 class PledgeBondBanner extends StatelessWidget {
   const PledgeBondBanner({super.key});
@@ -38,6 +40,7 @@ class PledgeBondBanner extends StatelessWidget {
                     Text(
                       l10n.pledgeBondDesc,
                       style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: AppTextStyles.light,
                         color: extendedColors.neutral100,
                         height: 1.4,
                       ),
@@ -74,23 +77,9 @@ class PledgeBondBanner extends StatelessWidget {
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
+            child: CustomButton(
+              label: l10n.pledge,
               onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: extendedColors.primaryMain,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                l10n.pledge,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
           ),
         ],
@@ -110,7 +99,8 @@ class PledgeBondBanner extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.labelMedium?.copyWith(
-            color: extendedColors.neutral100.withOpacity(0.6),
+            fontWeight: AppTextStyles.light,
+            color: extendedColors.neutral300,
           ),
         ),
         const SizedBox(height: 6),

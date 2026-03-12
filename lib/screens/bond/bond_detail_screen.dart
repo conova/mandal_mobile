@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../components/bond/bond_progress.dart';
 import '../components/bond/bond_info_card.dart';
 import '../components/bond/bond_action_bottom_bar.dart';
@@ -33,16 +35,17 @@ class BondDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   'Net Capital',
-                  style: theme.textTheme.headlineSmall?.copyWith(
+                  style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                    color: extendedColors.neutral100,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   'Нэт Капитал',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral400,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral200,
                   ),
                 ),
               ],
@@ -71,7 +74,7 @@ class BondDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               decoration: BoxDecoration(
                 color: extendedColors.primary100,
                 borderRadius: BorderRadius.circular(16),
@@ -90,16 +93,17 @@ class BondDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           l10n.bondClosingDateLabel,
-                          style: theme.textTheme.bodySmall?.copyWith(
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: extendedColors.neutral100,
+                            fontWeight: AppTextStyles.extraLight,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '2025.12.20 16:00',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: extendedColors.neutral100,
+                            fontWeight: AppTextStyles.regular,
                           ),
                         ),
                       ],
@@ -117,22 +121,10 @@ class BondDetailScreen extends StatelessWidget {
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: TextButton(
+              child: CustomButton(
                 onPressed: () {},
-                style: TextButton.styleFrom(
-                  backgroundColor: extendedColors.bgSecondary,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Text(
-                  l10n.viewBondPresentation,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                label: l10n.viewBondPresentation,
+                variant: CustomButtonVariant.tertiary,
               ),
             ),
             const SizedBox(height: 120), // Bottom bar space
@@ -150,17 +142,16 @@ class BondDetailScreen extends StatelessWidget {
 
   Widget _buildBadge(String label, Color bgColor, Color textColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTextStyles.paragraph1.copyWith(
           color: textColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
+          fontWeight: AppTextStyles.regular,
         ),
       ),
     );

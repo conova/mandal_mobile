@@ -23,7 +23,7 @@ class OrderDetailHeader extends StatelessWidget {
                 'Net Capital',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+                  color: extendedColors.neutral100,
                 ),
               ),
               const SizedBox(width: 8),
@@ -32,7 +32,7 @@ class OrderDetailHeader extends StatelessWidget {
                 child: Text(
                   'Нэт Капитал',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: extendedColors.neutral400,
                   ),
                 ),
               ),
@@ -51,14 +51,14 @@ class OrderDetailHeader extends StatelessWidget {
               _buildBadge(
                 l10n.closed.toUpperCase(),
                 extendedColors.bgSecondary,
-                theme.colorScheme.onSurface,
+                extendedColors.neutral100,
                 theme,
               ),
               const SizedBox(width: 8),
               _buildBadge(
                 l10n.bond.toUpperCase(),
                 extendedColors.bgSecondary,
-                theme.colorScheme.onSurface,
+                extendedColors.neutral100,
                 theme,
               ),
             ],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../theme/extended_colors.dart';
 
 class BondPriceSlider extends StatefulWidget {
   final double min;
@@ -28,31 +30,33 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
     _currentValue = widget.initialValue;
   }
 
+  double get _progress =>
+      (_currentValue - widget.min) / (widget.max - widget.min);
+
   String _getProbabilityText(AppLocalizations l10n) {
-    double progress = (_currentValue - widget.min) / (widget.max - widget.min);
-    if (progress < 0.3) return l10n.high;
-    if (progress < 0.7) return l10n.medium;
+    if (_progress < 0.3) return l10n.high;
+    if (_progress < 0.7) return l10n.medium;
     return l10n.low;
   }
 
-  Color _getProbabilityColor() {
-    double progress = (_currentValue - widget.min) / (widget.max - widget.min);
-    if (progress < 0.3) return const Color(0xFF00A389); // Green
-    if (progress < 0.7) return Colors.orange;
-    return Colors.red;
+  Color _getProbabilityColor(ExtendedColors extendedColors) {
+    if (_progress < 0.3) return extendedColors.primaryMain;
+    if (_progress < 0.7) return extendedColors.orange;
+    return extendedColors.red;
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.dividerColor),
+        border: Border.all(color: extendedColors.neutral500),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,31 +67,30 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
               Text(
                 l10n.sellPrice,
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: Colors.grey,
+                  color: extendedColors.neutral300,
                 ),
               ),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Flexible(
-                    child: Text(
-                      l10n.executionProbability,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: Colors.grey,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                  Text(
+                    l10n.executionProbability,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: extendedColors.neutral300,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     _getProbabilityText(l10n),
                     style: theme.textTheme.labelMedium?.copyWith(
-                      color: _getProbabilityColor(),
+                      color: _getProbabilityColor(extendedColors),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _buildBars(),
+                  _buildBars(extendedColors),
                 ],
               ),
             ],
@@ -95,9 +98,9 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
           const SizedBox(height: 12),
           Text(
             '${_currentValue.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
-            style: theme.textTheme.displaySmall?.copyWith(
+            style: theme.textTheme.headlineLarge?.copyWith(
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+              color: extendedColors.neutral100,
             ),
           ),
           const SizedBox(height: 16),
@@ -109,8 +112,8 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
                 elevation: 2,
               ),
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
-              activeTrackColor: const Color(0xFF00A389),
-              inactiveTrackColor: theme.colorScheme.surfaceVariant,
+              activeTrackColor: extendedColors.primaryMain,
+              inactiveTrackColor: extendedColors.bgSecondary,
               thumbColor: Colors.white,
             ),
             child: Slider(
@@ -132,13 +135,15 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
               Text(
                 'Min: ${widget.min.toInt()}₮',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: Colors.grey.shade400,
+                  fontWeight: AppTextStyles.light,
+                  color: extendedColors.neutral300,
                 ),
               ),
               Text(
                 'Max: ${widget.max.toInt()}₮',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: Colors.grey.shade400,
+                  fontWeight: AppTextStyles.light,
+                  color: extendedColors.neutral300,
                 ),
               ),
             ],
@@ -148,13 +153,13 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
     );
   }
 
-  Widget _buildBars() {
-    double progress = (_currentValue - widget.min) / (widget.max - widget.min);
+  Widget _buildBars(ExtendedColors extendedColors) {
     int activeBars = 1;
-    if (progress < 0.3)
+    if (_progress < 0.3) {
       activeBars = 3;
-    else if (progress < 0.7)
+    } else if (_progress < 0.7) {
       activeBars = 2;
+    }
 
     return Row(
       children: List.generate(3, (index) {
@@ -164,8 +169,8 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
           margin: const EdgeInsets.only(left: 2),
           decoration: BoxDecoration(
             color: index < activeBars
-                ? _getProbabilityColor()
-                : Colors.grey.shade200,
+                ? _getProbabilityColor(extendedColors)
+                : extendedColors.neutral500,
             borderRadius: BorderRadius.circular(2),
           ),
         );

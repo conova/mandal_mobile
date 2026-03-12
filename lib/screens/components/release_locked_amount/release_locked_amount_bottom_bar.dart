@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../widgets/custom_button.dart';
 
 class ReleaseLockedAmountBottomBar extends StatelessWidget {
   final String projectedCashText;
@@ -25,9 +27,9 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: extendedColors.bgBase,
         border: Border(
-          top: BorderSide(color: theme.dividerColor.withOpacity(0.1)),
+          top: BorderSide(color: extendedColors.neutral500),
         ),
       ),
       child: SafeArea(
@@ -39,15 +41,14 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
               children: [
                 Text(
                   '${l10n.availableCash}: ',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: theme.colorScheme.onSurface.withOpacity(0.4),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral300,
                   ),
                 ),
                 Text(
                   projectedCashText,
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.primaryMain,
                   ),
@@ -62,39 +63,20 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant,
+                      color: extendedColors.bgSecondary,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.arrow_back,
-                      color: theme.colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton(
+                  child: CustomButton(
+                    label: l10n.cancelOrder,
                     onPressed: isCancelEnabled ? onCancel : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: !isCancelEnabled
-                          ? theme.disabledColor.withOpacity(0.1)
-                          : extendedColors.primaryMain,
-                      foregroundColor: !isCancelEnabled
-                          ? theme.disabledColor
-                          : Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      l10n.cancelOrder,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
                   ),
                 ),
               ],

@@ -56,6 +56,8 @@ import 'screens/bond/bond_success_screen.dart';
 import 'screens/bond/bond_sell_screen.dart';
 import 'screens/bond/bond_sell_confirmation_screen.dart';
 import 'screens/bond/bond_sell_success_screen.dart';
+import 'screens/watchlist_detail_screen.dart';
+import 'screens/add_watchlist_screen.dart';
 import 'screens/pep_question_screen.dart';
 import 'screens/dan_verification_screen.dart';
 import 'screens/pep_definition_screen.dart';
@@ -357,6 +359,8 @@ class MyApp extends StatelessWidget {
             '/withdraw_success': (context) => const WithdrawSuccessScreen(),
             '/transaction_history': (context) => const TransactionHistoryScreen(),
             '/release_locked': (context) => const ReleaseLockedAmountScreen(),
+            '/watchlist_detail': (context) => const WatchlistDetailScreen(),
+            '/add_watchlist': (context) => const AddWatchlistScreen(),
           },
           debugShowCheckedModeBanner: false,
         );

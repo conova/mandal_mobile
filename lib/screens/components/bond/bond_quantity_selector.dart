@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../theme/extended_colors.dart';
 
 class BondQuantitySelector extends StatefulWidget {
   final int initialQuantity;
@@ -37,20 +38,23 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.dividerColor),
+        border: Border.all(color: extendedColors.neutral500),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l10n.buyQuantity,
-            style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: extendedColors.neutral300,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -60,14 +64,22 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
                 '$_quantity',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+                  color: extendedColors.neutral100,
                 ),
               ),
               Row(
                 children: [
-                  _buildButton(Icons.remove, () => _updateQuantity(-1), theme),
+                  _buildButton(
+                    Icons.remove,
+                    () => _updateQuantity(-1),
+                    extendedColors,
+                  ),
                   const SizedBox(width: 12),
-                  _buildButton(Icons.add, () => _updateQuantity(1), theme),
+                  _buildButton(
+                    Icons.add,
+                    () => _updateQuantity(1),
+                    extendedColors,
+                  ),
                 ],
               ),
             ],
@@ -75,23 +87,29 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
           const SizedBox(height: 12),
           Text(
             '${l10n.availableQuantity}: ${widget.maxQuantity} ш',
-            style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: extendedColors.neutral300,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildButton(IconData icon, VoidCallback onPressed, ThemeData theme) {
+  Widget _buildButton(
+    IconData icon,
+    VoidCallback onPressed,
+    ExtendedColors extendedColors,
+  ) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant,
+          color: extendedColors.bgSecondary,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: 24, color: theme.colorScheme.onSurface),
+        child: Icon(icon, size: 24, color: extendedColors.neutral100),
       ),
     );
   }

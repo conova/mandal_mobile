@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../theme/extended_colors.dart';
 import 'order_detail_summary_item.dart';
 
 class OrderDetailHistory extends StatelessWidget {
@@ -9,6 +10,7 @@ class OrderDetailHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -19,6 +21,7 @@ class OrderDetailHistory extends StatelessWidget {
             l10n.executionHistory,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
+              color: extendedColors.neutral100,
             ),
           ),
         ),
@@ -30,6 +33,7 @@ class OrderDetailHistory extends StatelessWidget {
           '10 ${l10n.quantityLabel.toLowerCase()}',
           theme,
           l10n,
+          extendedColors,
         ),
         _buildHistoryItem(
           '2025.11.4 18:00',
@@ -38,6 +42,7 @@ class OrderDetailHistory extends StatelessWidget {
           '6 ${l10n.quantityLabel.toLowerCase()}',
           theme,
           l10n,
+          extendedColors,
         ),
         _buildHistoryItem(
           '2025.11.3 22:21',
@@ -46,6 +51,7 @@ class OrderDetailHistory extends StatelessWidget {
           '5 ${l10n.quantityLabel.toLowerCase()}',
           theme,
           l10n,
+          extendedColors,
         ),
       ],
     );
@@ -58,6 +64,7 @@ class OrderDetailHistory extends StatelessWidget {
     String qty,
     ThemeData theme,
     AppLocalizations l10n,
+    ExtendedColors extendedColors,
   ) {
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
@@ -66,8 +73,9 @@ class OrderDetailHistory extends StatelessWidget {
         children: [
           Text(
             date,
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: theme.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.bold,
+              color: extendedColors.neutral100,
             ),
           ),
           const SizedBox(height: 12),
@@ -90,7 +98,7 @@ class OrderDetailHistory extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          const Divider(height: 1, thickness: 1),
+          Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
         ],
       ),
     );

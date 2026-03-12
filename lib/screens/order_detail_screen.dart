@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/extended_colors.dart';
 import 'components/order_detail/order_detail_header.dart';
 import 'components/order_detail/order_detail_summary.dart';
 import 'components/order_detail/order_detail_history.dart';
@@ -9,29 +10,30 @@ class OrderDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            OrderDetailHeader(),
-            SizedBox(height: 32),
-            OrderDetailSummary(),
-            SizedBox(height: 32),
-            Divider(height: 1, thickness: 1),
-            SizedBox(height: 32),
-            OrderDetailHistory(),
-            SizedBox(height: 40),
+            const OrderDetailHeader(),
+            const SizedBox(height: 32),
+            const OrderDetailSummary(),
+            const SizedBox(height: 32),
+            Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
+            const SizedBox(height: 32),
+            const OrderDetailHistory(),
+            const SizedBox(height: 40),
           ],
         ),
       ),

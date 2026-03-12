@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../theme/extended_colors.dart';
 
 class BondActionBottomBar extends StatelessWidget {
@@ -23,10 +25,10 @@ class BondActionBottomBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: extendedColors.bgBase,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: extendedColors.neutral500,
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -41,37 +43,25 @@ class BondActionBottomBar extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: Colors.grey,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: AppTextStyles.light,
+                  color: extendedColors.neutral200,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 amount,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: AppTextStyles.regular,
+                  color: extendedColors.primaryMain,
                 ),
               ),
             ],
           ),
-          ElevatedButton(
+          CustomButton(
             onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: extendedColors.primaryMain,
-              foregroundColor: extendedColors.neutral100,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              buttonText,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            label: buttonText,
+            variant: CustomButtonVariant.primary,
           ),
         ],
       ),

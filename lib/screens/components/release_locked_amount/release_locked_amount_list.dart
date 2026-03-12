@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 class ReleaseLockedAmountList extends StatelessWidget {
@@ -23,36 +24,17 @@ class ReleaseLockedAmountList extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = items[index];
         final isSelected = selectedIndices.contains(index);
-        final isSection = item['isSection'] as bool;
-
-        if (isSection) {
-          // The original code didn't handle isSection logic explicitly in rendering except for calculating total?
-          // Wait, looking at original code:
-          /*
-                final item = _items[index];
-                final isSelected = _selectedIndices.contains(index);
-
-                return GestureDetector(...)
-            */
-          // It just renders everything as selectable rows?
-          // "item['title']" is used.
-          // Let's check the original code again.
-          // "if (!_items[index]['isSection']) { total += ... }"
-          // But in UI, isSection items are also selectable?
-          // The logic implies they are just items in the list.
-          // The subtitle might be empty.
-          // I'll render them as is.
-        }
 
         return GestureDetector(
           onTap: () => onToggle(index),
           child: Container(
             color: isSelected
-                ? extendedColors.primary100.withOpacity(0.3)
+                ? extendedColors.primary100.withValues(alpha: 0.3)
                 : Colors.transparent,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Row(
               children: [
+                // Checkbox
                 Container(
                   width: 24,
                   height: 24,
@@ -60,7 +42,7 @@ class ReleaseLockedAmountList extends StatelessWidget {
                     border: Border.all(
                       color: isSelected
                           ? extendedColors.primaryMain
-                          : theme.dividerColor,
+                          : extendedColors.neutral500,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(6),
@@ -73,44 +55,41 @@ class ReleaseLockedAmountList extends StatelessWidget {
                       : null,
                 ),
                 const SizedBox(width: 16),
+
+                // Title & subtitle
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            item['title'],
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (item['subtitle'] != null &&
-                              item['subtitle'].isNotEmpty) ...[
-                            const SizedBox(width: 8),
-                            Text(
-                              item['subtitle'],
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: theme.colorScheme.onSurface.withOpacity(
-                                  0.4,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
+                      Text(
+                        item['title'],
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: extendedColors.neutral100,
+                        ),
                       ),
+                      if (item['subtitle'] != null &&
+                          item['subtitle'].isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        Text(
+                          item['subtitle'],
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: AppTextStyles.light,
+                            color: extendedColors.neutral400,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
+
+                // Amount
                 Text(
-                  '${item['amount'].toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                  '${item['amount'].toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: AppTextStyles.regular,
+                    color: extendedColors.neutral300,
                   ),
                 ),
               ],

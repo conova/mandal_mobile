@@ -6,7 +6,15 @@
       "Bash(wc -l /c/Users/hitech/OneDrive/Documents/antigravity/lib/screens/*.dart /c/Users/hitech/OneDrive/Documents/antigravity/lib/screens/components/*/*.dart)",
       "Bash(flutter analyze)",
       "Bash(flutter gen-l10n)",
-      "Bash(xargs grep -l \"cash\\\\|currency\\\\|mnt\\\\|tugrik\\\\|dollar\\\\|forex\\\\|usd\")"
+      "Bash(xargs grep -l \"cash\\\\|currency\\\\|mnt\\\\|tugrik\\\\|dollar\\\\|forex\\\\|usd\")",
+      "Bash(xargs grep -l \"model\\\\|Model\\\\|class.*\\\\{\")",
+      "Bash(flutter analyze lib/screens/watchlist_detail_screen.dart lib/screens/add_watchlist_screen.dart lib/screens/components/home/home_watchlist_section.dart lib/main.dart)",
+      "Bash(flutter analyze lib/screens/bond/bond_buy_screen.dart lib/screens/components/bond/bond_quantity_selector.dart lib/screens/components/bond/bond_payment_details.dart)",
+      "Bash(flutter analyze lib/screens/release_locked_amount_screen.dart lib/screens/components/release_locked_amount/)",
+      "Bash(flutter analyze lib/screens/bond/bond_sell_screen.dart lib/screens/components/bond/my_bond_card.dart lib/screens/components/bond/pledge_bond_banner.dart lib/screens/bond/bond_main_screen.dart)",
+      "Bash(flutter analyze lib/screens/bond/bond_sell_screen.dart lib/screens/components/bond/bond_price_slider.dart lib/screens/components/bond/bond_order_board.dart lib/screens/components/bond/bond_quantity_selector.dart)",
+      "Bash(flutter analyze lib/screens/components/bond/ lib/screens/bond/)",
+      "Bash(flutter analyze lib/screens/order_detail_screen.dart lib/screens/components/order_detail/)"
     ]
   }
 }

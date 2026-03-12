@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class BondProgress extends StatelessWidget {
@@ -17,13 +19,17 @@ class BondProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.bondCollectionTarget,
-          style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: extendedColors.neutral200,
+            fontWeight: AppTextStyles.extraLight,
+          ),
         ),
         const SizedBox(height: 8),
         Row(
@@ -31,16 +37,17 @@ class BondProgress extends StatelessWidget {
           children: [
             RichText(
               text: TextSpan(
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: AppTextStyles.regular,
+                  color: extendedColors.neutral100,
                 ),
                 children: [
                   TextSpan(text: current),
                   TextSpan(
                     text: ' / $total',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.withOpacity(0.7),
+                      color: extendedColors.neutral200,
+                      fontWeight: AppTextStyles.light,
                     ),
                   ),
                 ],
@@ -49,15 +56,15 @@ class BondProgress extends StatelessWidget {
             Text(
               '${(percentage * 100).toInt()}%',
               style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+                fontWeight: AppTextStyles.light,
+                color: extendedColors.neutral100,
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         ClipRRect(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(2),
           child: LinearProgressIndicator(
             value: percentage,
             backgroundColor: Colors.grey.shade200,

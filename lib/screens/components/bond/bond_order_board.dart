@@ -36,13 +36,13 @@ class BondOrderBoard extends StatelessWidget {
               Text(
                 l10n.sellPrice,
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: Colors.grey,
+                  color: extendedColors.neutral300,
                 ),
               ),
               Text(
                 l10n.quantityLabel,
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: Colors.grey,
+                  color: extendedColors.neutral300,
                 ),
               ),
             ],
@@ -60,7 +60,7 @@ class BondOrderBoard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: index % 2 == 0
-                    ? theme.colorScheme.surface
+                    ? extendedColors.bgBase
                     : extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -77,8 +77,8 @@ class BondOrderBoard extends StatelessWidget {
                   Text(
                     '${order.quantity}',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                 ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -20,10 +21,10 @@ class BondInfoCard extends StatelessWidget {
     final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
@@ -63,10 +64,14 @@ class BondInfoCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.extension<ExtendedColors>()!.bgSecondary,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, size: 20, color: Colors.black),
+          child: Icon(
+            icon,
+            size: 24,
+            color: theme.extension<ExtendedColors>()!.neutral100,
+          ),
         ),
         const SizedBox(width: 16),
         Column(
@@ -74,15 +79,17 @@ class BondInfoCard extends StatelessWidget {
           children: [
             Text(
               label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.disabledColor,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.extension<ExtendedColors>()!.neutral100,
+                fontWeight: AppTextStyles.extraLight,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               value,
               style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+                color: theme.extension<ExtendedColors>()!.neutral100,
+                fontWeight: AppTextStyles.bold,
               ),
             ),
           ],

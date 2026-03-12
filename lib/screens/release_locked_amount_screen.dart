@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/extended_colors.dart';
 
 import 'components/release_locked_amount/release_locked_amount_header.dart';
 import 'components/release_locked_amount/release_locked_amount_list.dart';
@@ -50,16 +52,16 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
-    // Format projected cash
     final projectedCashText =
         '${_projectedCash.toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮';
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -68,7 +70,7 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant,
+                color: extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Row(
@@ -76,15 +78,14 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
                   Icon(
                     Icons.keyboard_arrow_down,
                     size: 20,
-                    color: theme.colorScheme.onSurface,
+                    color: extendedColors.neutral100,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     l10n.limitPrice,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.onSurface,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: AppTextStyles.bold,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                 ],
@@ -92,7 +93,7 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
             ),
           ),
         ],
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),
       body: Column(

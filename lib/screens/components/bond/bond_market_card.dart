@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
 class BondMarketCard extends StatelessWidget {
+  final BuildContext context;
   final String title;
   final String subtitle;
   final String status;
@@ -11,10 +14,11 @@ class BondMarketCard extends StatelessWidget {
   final String totalAmount;
   final double? progress;
   final String progressLabel;
-  final VoidCallback onBuyPressed;
+  final String progressLabel2;
 
   const BondMarketCard({
     super.key,
+    required this.context,
     required this.title,
     required this.subtitle,
     required this.status,
@@ -23,7 +27,7 @@ class BondMarketCard extends StatelessWidget {
     required this.totalAmount,
     this.progress,
     this.progressLabel = '',
-    required this.onBuyPressed,
+    this.progressLabel2 = '',
   });
 
   @override
@@ -33,7 +37,7 @@ class BondMarketCard extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,14 +52,17 @@ class BondMarketCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: theme.textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: extendedColors.neutral100,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           subtitle,
-                          style: theme.textTheme.labelMedium
-                              ?.copyWith(color: extendedColors.neutral300),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral200,
+                          ),
                         ),
                       ],
                     ),
@@ -67,15 +74,11 @@ class BondMarketCard extends StatelessWidget {
                             horizontal: 10,
                             vertical: 4,
                           ),
-                          decoration: BoxDecoration(
-                            color: extendedColors.neutral100,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
                           child: Text(
                             status,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: extendedColors.bgBase,
-                              fontWeight: FontWeight.bold,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: extendedColors.neutral100,
+                              fontWeight: AppTextStyles.regular,
                             ),
                           ),
                         ),
@@ -90,26 +93,10 @@ class BondMarketCard extends StatelessWidget {
                   ],
                 ),
               ),
-              ElevatedButton(
-                onPressed: onBuyPressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: extendedColors.primaryMain,
-                  foregroundColor: extendedColors.bgBase,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
-                child: Text(
-                  l10n.buy,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              CustomButton(
+                onPressed: () => Navigator.pushNamed(context, '/bond_detail'),
+                label: l10n.buy,
+                variant: CustomButtonVariant.primary,
               ),
             ],
           ),
@@ -117,17 +104,13 @@ class BondMarketCard extends StatelessWidget {
           IntrinsicHeight(
             child: Row(
               children: [
-                Expanded(
-                  child: _buildMetric(theme, l10n.tenureLabel, tenure),
-                ),
+                Expanded(child: _buildMetric(theme, l10n.tenureLabel, tenure)),
                 VerticalDivider(
                   width: 1,
                   thickness: 1,
                   color: extendedColors.neutral400,
                 ),
-                Expanded(
-                  child: _buildMetric(theme, l10n.interestRate, yield),
-                ),
+                Expanded(child: _buildMetric(theme, l10n.interestRate, yield)),
                 VerticalDivider(
                   width: 1,
                   thickness: 1,
@@ -158,14 +141,24 @@ class BondMarketCard extends StatelessWidget {
               children: [
                 Text(
                   progressLabel,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: extendedColors.neutral300,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral100,
+                    fontWeight: AppTextStyles.light,
                   ),
                 ),
                 Text(
+                  '/$progressLabel2',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                    fontWeight: AppTextStyles.light,
+                  ),
+                ),
+                Spacer(),
+                Text(
                   '${(progress! * 100).toInt()}%',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral100,
                   ),
                 ),
               ],
@@ -183,15 +176,16 @@ class BondMarketCard extends StatelessWidget {
       children: [
         Text(
           label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: extendedColors.neutral300,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: extendedColors.neutral200,
+            fontWeight: AppTextStyles.extraLight,
           ),
         ),
         const SizedBox(height: 6),
         Text(
           value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: AppTextStyles.regular,
           ),
         ),
       ],

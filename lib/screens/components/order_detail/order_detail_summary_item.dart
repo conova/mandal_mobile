@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../theme/extended_colors.dart';
 
 class OrderDetailSummaryItem extends StatelessWidget {
   final String label;
@@ -15,6 +16,7 @@ class OrderDetailSummaryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,7 +24,7 @@ class OrderDetailSummaryItem extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.5),
+            color: extendedColors.neutral300,
           ),
         ),
         const SizedBox(height: 6),
@@ -30,7 +32,7 @@ class OrderDetailSummaryItem extends StatelessWidget {
           value,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: valueColor ?? theme.colorScheme.onSurface,
+            color: valueColor ?? extendedColors.neutral100,
           ),
         ),
       ],

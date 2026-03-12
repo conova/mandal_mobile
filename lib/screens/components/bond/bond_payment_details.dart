@@ -37,7 +37,7 @@ class BondPaymentDetails extends StatelessWidget {
                 Text(
                   l10n.totalPayment,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey,
+                    color: extendedColors.neutral300,
                   ),
                 ),
                 Row(
@@ -46,13 +46,13 @@ class BondPaymentDetails extends StatelessWidget {
                       totalPayment,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
+                        color: extendedColors.neutral100,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Icon(
                       Icons.chevron_right,
-                      color: theme.colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                       size: 20,
                     ),
                   ],
@@ -66,13 +66,13 @@ class BondPaymentDetails extends StatelessWidget {
             children: [
               Text(
                 l10n.totalReturn,
-                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
               ),
               Text(
                 totalReturn,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+                  color: extendedColors.neutral100,
                 ),
               ),
             ],

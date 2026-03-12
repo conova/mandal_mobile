@@ -3,10 +3,20 @@ import '../components/bond/bond_price_slider.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_order_board.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
+import '../../widgets/custom_button.dart';
 
-class BondSellScreen extends StatelessWidget {
+class BondSellScreen extends StatefulWidget {
   const BondSellScreen({super.key});
+
+  @override
+  State<BondSellScreen> createState() => _BondSellScreenState();
+}
+
+class _BondSellScreenState extends State<BondSellScreen> {
+  int _quantity = 1;
+  double _price = 1000000;
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +25,13 @@ class BondSellScreen extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -35,7 +45,7 @@ class BondSellScreen extends StatelessWidget {
                   'Net Capital',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                    color: extendedColors.neutral100,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -52,7 +62,7 @@ class BondSellScreen extends StatelessWidget {
               '${l10n.ownedAmountLabel}: 10,000,000₮',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
-                fontWeight: FontWeight.w500,
+                fontWeight: AppTextStyles.bold,
               ),
             ),
             const SizedBox(height: 16),
@@ -67,13 +77,21 @@ class BondSellScreen extends StatelessWidget {
               min: 990000,
               max: 1010000,
               initialValue: 1000000,
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() {
+                  _price = value;
+                });
+              },
             ),
             const SizedBox(height: 24),
             BondQuantitySelector(
               maxQuantity: 10,
               initialQuantity: 1,
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() {
+                  _quantity = value;
+                });
+              },
             ),
             const SizedBox(height: 24),
             _buildProceedsCard(l10n, extendedColors, theme),
@@ -95,10 +113,10 @@ class BondSellScreen extends StatelessWidget {
       bottomSheet: Container(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: extendedColors.bgBase,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: extendedColors.neutral500,
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -106,25 +124,12 @@ class BondSellScreen extends StatelessWidget {
         ),
         child: SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () =>
-                Navigator.pushNamed(context, '/bond_sell_confirmation'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: extendedColors.neutral100,
-              foregroundColor: theme.colorScheme.onPrimary,
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              l10n.placeOrder,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onPrimary,
-              ),
-            ),
+          child: CustomButton(
+            label: l10n.placeOrder,
+            onPressed: _quantity > 0
+                ? () =>
+                    Navigator.pushNamed(context, '/bond_sell_confirmation')
+                : null,
           ),
         ),
       ),
@@ -157,13 +162,13 @@ class BondSellScreen extends StatelessWidget {
                 '998,000₮',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+                  color: extendedColors.neutral100,
                 ),
               ),
               const SizedBox(width: 8),
               Icon(
                 Icons.chevron_right,
-                color: theme.colorScheme.onSurface,
+                color: extendedColors.neutral100,
                 size: 20,
               ),
             ],
@@ -195,7 +200,8 @@ class BondSellScreen extends StatelessWidget {
           Expanded(
             child: Text(
               l10n.sellPriceDesc,
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: AppTextStyles.light,
                 color: extendedColors.neutral100,
               ),
             ),

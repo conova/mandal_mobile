@@ -25,13 +25,18 @@ class HomeWatchlistSection extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: extendedColors.primaryMain,
-                shape: BoxShape.circle,
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/add_watchlist');
+              },
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: extendedColors.primaryMain,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.add, color: Colors.white, size: 20),
               ),
-              child: Icon(Icons.add, color: Colors.white, size: 20),
             ),
           ],
         ),
@@ -103,7 +108,9 @@ class HomeWatchlistSection extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: CustomButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/watchlist_detail');
+            },
             label: '${l10n.viewAll} (12)',
             variant: CustomButtonVariant.tertiary,
           ),

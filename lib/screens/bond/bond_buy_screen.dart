@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_payment_details.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
+import '../../widgets/custom_button.dart';
 
-class BondBuyScreen extends StatelessWidget {
+class BondBuyScreen extends StatefulWidget {
   const BondBuyScreen({super.key});
+
+  @override
+  State<BondBuyScreen> createState() => _BondBuyScreenState();
+}
+
+class _BondBuyScreenState extends State<BondBuyScreen> {
+  int _quantity = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -14,13 +23,13 @@ class BondBuyScreen extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -34,7 +43,7 @@ class BondBuyScreen extends StatelessWidget {
                   'Net Capital',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                    color: extendedColors.neutral100,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -51,14 +60,16 @@ class BondBuyScreen extends StatelessWidget {
               '${l10n.availableCash}: 10,000,000₮',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
-                fontWeight: FontWeight.w500,
+                fontWeight: AppTextStyles.bold,
               ),
             ),
             const SizedBox(height: 32),
             BondQuantitySelector(
               maxQuantity: 8000,
               onChanged: (quantity) {
-                // Handle quantity change
+                setState(() {
+                  _quantity = quantity;
+                });
               },
             ),
             const SizedBox(height: 24),
@@ -69,17 +80,17 @@ class BondBuyScreen extends StatelessWidget {
                 // Show more details
               },
             ),
-            const SizedBox(height: 120), // Bottom bar space
+            const SizedBox(height: 120),
           ],
         ),
       ),
       bottomSheet: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: extendedColors.bgBase,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: extendedColors.neutral500,
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -88,58 +99,56 @@ class BondBuyScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: extendedColors.primary100,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info, color: extendedColors.neutral100, size: 24),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      '${l10n.lockedAmountLabel}: 500,000₮',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: extendedColors.neutral100,
+            GestureDetector(
+              onTap: () => Navigator.pushNamed(context, '/release_locked'),
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: extendedColors.primary100,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info,
+                      color: extendedColors.neutral100,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        '${l10n.lockedAmountLabel}: 500,000₮',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: AppTextStyles.bold,
+                          color: extendedColors.neutral100,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    l10n.release,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: extendedColors.neutral100,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      l10n.release,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: extendedColors.neutral100,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Icon(Icons.expand_less, color: extendedColors.neutral100),
-                ],
+                    Icon(
+                      Icons.expand_less,
+                      color: extendedColors.neutral100,
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, '/bond_confirmation'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: extendedColors.neutral100,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  l10n.placeOrder,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                ),
+              child: CustomButton(
+                label: l10n.placeOrder,
+                onPressed: _quantity > 0
+                    ? () =>
+                        Navigator.pushNamed(context, '/bond_confirmation')
+                    : null,
               ),
             ),
           ],
