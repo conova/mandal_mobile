@@ -56,30 +56,22 @@ class AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
-      // If we already tried to refresh once, don't keep loop refreshing
+      // Давтан refresh хийхээс сэргийлэх
       if (err.requestOptions.headers.containsKey('X-Retry')) {
+        _authService.clearSession();
         onLogout?.call();
         return super.onError(err, handler);
       }
 
-      // Try refreshing the token
-      final newToken = await _authService.refreshAccessToken(() async {
-        try {
-          // Actual implementation would be a dio.post to refresh endpoint
-          // final response = await _dio.post(ApiConfig.refreshToken, data: {'refresh_token': ...});
-          // return response.data['access_token'];
-          return null; // Mocking failure for now
-        } catch (e) {
-          return null;
-        }
-      });
+      // Refresh token ашиглан шинэ access token авах
+      final newToken = await _authService.refreshAccessToken();
 
       if (newToken != null) {
-        // Update authorization header and retry
+        // Header шинэчлэн анхны request-г дахин илгээх
         final options = err.requestOptions;
         options.headers['Authorization'] = 'Bearer $newToken';
         options.headers['X-Retry'] = 'true';
-        
+
         try {
           final response = await _dio.fetch(options);
           return handler.resolve(response);
@@ -87,7 +79,7 @@ class AuthInterceptor extends Interceptor {
           return handler.next(retryErr);
         }
       } else {
-        // Refresh failed, meaning refresh token is also expired
+        // Refresh token-ий хугацаа дууссан → session цэвэрлэх, logout
         _authService.clearSession();
         onLogout?.call();
       }

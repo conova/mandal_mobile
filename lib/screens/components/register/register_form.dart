@@ -9,6 +9,7 @@ class RegisterForm extends StatefulWidget {
   final TextEditingController phoneController;
   final TextEditingController lastNameController;
   final TextEditingController firstNameController;
+  final bool isLoading;
 
   const RegisterForm({
     super.key,
@@ -17,6 +18,7 @@ class RegisterForm extends StatefulWidget {
     required this.phoneController,
     required this.lastNameController,
     required this.firstNameController,
+    this.isLoading = false,
   });
 
   @override
@@ -87,7 +89,8 @@ class _RegisterFormState extends State<RegisterForm> {
         const SizedBox(height: 24),
         CustomButton(
           label: l10n.register,
-          onPressed: _isButtonEnabled ? widget.onRegister : null,
+          onPressed: _isButtonEnabled && !widget.isLoading ? widget.onRegister : null,
+          isLoading: widget.isLoading,
           variant: CustomButtonVariant.primary,
         ),
       ],

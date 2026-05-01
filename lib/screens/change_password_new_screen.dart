@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import 'components/shared/auth_password_form.dart';
-import '../services/api_service.dart';
-import '../config/api_config.dart';
+import '../services/auth_service.dart';
 import '../widgets/custom_snackbar.dart';
 
 class ChangePasswordNewScreen extends StatelessWidget {
@@ -15,23 +14,25 @@ class ChangePasswordNewScreen extends StatelessWidget {
     String password,
   ) async {
     try {
-      final apiService = context.read<ApiService>();
-      await apiService.post(
-        ApiConfig
-            .refreshToken, // Note: This was the endpoint in ChangePasswordForm
-        data: {'password': password},
-      );
+      final authService = context.read<AuthService>();
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final currentPassword = args?['currentPassword'] as String? ?? '';
+
+      await authService.changePassword(currentPassword, password, password);
+
       if (context.mounted) {
-        CustomSnackbar.show(context, message: 'Password changed successfully');
+        CustomSnackbar.show(context, message: 'Нууц үг амжилттай солигдлоо');
         Navigator.popUntil(context, ModalRoute.withName('/profile'));
       }
     } catch (e) {
       if (context.mounted) {
         CustomSnackbar.show(
           context,
-          message: 'Failed to change password: ${e.toString()}',
+          message: 'Алдаа: ${e.toString().replaceFirst('Exception: ', '')}',
+          type: CustomSnackbarType.error,
         );
-        rethrow; // Re-throw to let AuthPasswordForm handle loading state termination
+        rethrow;
       }
     }
   }

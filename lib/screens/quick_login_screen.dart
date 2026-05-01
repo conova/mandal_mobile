@@ -5,6 +5,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_input.dart';
+import '../widgets/custom_snackbar.dart';
 import '../widgets/language_switcher.dart';
 import '../widgets/auth/biometric_login_button.dart';
 import '../services/auth_service.dart';
@@ -26,13 +27,77 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
     super.dispose();
   }
 
+  /// Нууц үгээр нэвтрэх
   Future<void> _handleLogin() async {
-    // Implementation for login logic
+    final password = _passwordController.text;
+    if (password.isEmpty) return;
+
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1)); // Mock delay
-    if (mounted) {
-      setState(() => _isLoading = false);
-      // Navigator.pushReplacementNamed(context, '/main');
+
+    try {
+      final authService = context.read<AuthService>();
+      final userName = authService.savedUser['id'] ?? '';
+
+      final result = await authService.login(userName, password);
+
+      if (!mounted) return;
+
+      if (result.success) {
+        Navigator.pushReplacementNamed(context, '/main');
+      } else if (result.requiresOtp) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/login_verification',
+          arguments: {'sessionId': result.sessionId},
+        );
+      } else {
+        CustomSnackbar.show(
+          context,
+          message: result.message ?? 'Login failed',
+          type: CustomSnackbarType.error,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  /// Биометрик нэвтрэлт — local auth + server API
+  Future<void> _handleBiometricLogin() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final authService = context.read<AuthService>();
+
+      // 1. Төхөөрөмж дээр биометрик баталгаажуулалт
+      final localSuccess = await authService.authenticateWithBiometrics();
+      if (!localSuccess) {
+        if (mounted) {
+          CustomSnackbar.show(
+            context,
+            message: 'Биометрик баталгаажуулалт амжилтгүй',
+            type: CustomSnackbarType.error,
+          );
+        }
+        return;
+      }
+
+      // 2. Server-т биометрик нэвтрэлт хүсэлт илгээх
+      final result = await authService.biometricLogin();
+
+      if (!mounted) return;
+
+      if (result.success) {
+        Navigator.pushReplacementNamed(context, '/main');
+      } else {
+        CustomSnackbar.show(
+          context,
+          message: result.message ?? 'Biometric login failed',
+          type: CustomSnackbarType.error,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -57,10 +122,11 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                 children: [
                   TextButton.icon(
                     onPressed: () async {
+                      final nav = Navigator.of(context);
                       await authService.clearSession();
                       await authService.clearLastUser();
                       if (mounted) {
-                        Navigator.of(context).pushReplacementNamed('/login');
+                        nav.pushReplacementNamed('/login');
                       }
                     },
                     icon: const Icon(Icons.arrow_back),
@@ -148,9 +214,13 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                   const SizedBox(width: 16),
                   if (authService.isBiometricEnabled)
                     BiometricLoginButton(
-                      onAuthenticated: _handleLogin,
+                      onAuthenticated: _handleBiometricLogin,
                       onError: () {
-                        // Optional error handling
+                        CustomSnackbar.show(
+                          context,
+                          message: 'Биометрик баталгаажуулалт амжилтгүй',
+                          type: CustomSnackbarType.error,
+                        );
                       },
                     ),
                 ],

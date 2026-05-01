@@ -40,12 +40,9 @@ class _LoginFormState extends State<LoginForm>
 
   Future<void> _handleLogin() async {
     final l10n = AppLocalizations.of(context)!;
-    // Basic validation
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    // Note: In the original code, it checks both but they are in separate forms.
-    // We'll just check if the relevant field for the current tab is filled.
     if (_tabController.index == 1 && email.isEmpty) return;
     if (password.isEmpty) return;
 
@@ -58,16 +55,29 @@ class _LoginFormState extends State<LoginForm>
           ? _phoneController.text
           : _emailController.text;
 
-      // Mocking tokens as in original code
-      await authService.saveTokens(accessToken: "123", refreshToken: "312312");
+      final result = await authService.login(userName, password);
 
-      // await authService.login(userName, password);
+      if (!mounted) return;
 
-      // Save user info for Quick Login
-      await authService.saveLastUser('Өлзийдэлгэр', userName);
-
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login_verification');
+      if (result.success) {
+        // DeviceId бүртгэлтэй → шууд нэвтэрсэн
+        Navigator.pushReplacementNamed(context, '/main');
+      } else if (result.requiresOtp) {
+        // DeviceId бүртгэлгүй → OTP баталгаажуулалт руу
+        Navigator.pushReplacementNamed(
+          context,
+          '/login_verification',
+          arguments: {
+            'sessionId': result.sessionId,
+          },
+        );
+      } else {
+        // Алдаа (буруу нууц үг гэх мэт)
+        CustomSnackbar.show(
+          context,
+          message: result.message ?? l10n.loginErrorPhone,
+          type: CustomSnackbarType.error,
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -76,6 +86,7 @@ class _LoginFormState extends State<LoginForm>
           message: _tabController.index == 1
               ? l10n.loginErrorEmail
               : l10n.loginErrorPhone,
+          type: CustomSnackbarType.error,
         );
       }
     } finally {

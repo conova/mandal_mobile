@@ -14,7 +14,28 @@
       "Bash(flutter analyze lib/screens/bond/bond_sell_screen.dart lib/screens/components/bond/my_bond_card.dart lib/screens/components/bond/pledge_bond_banner.dart lib/screens/bond/bond_main_screen.dart)",
       "Bash(flutter analyze lib/screens/bond/bond_sell_screen.dart lib/screens/components/bond/bond_price_slider.dart lib/screens/components/bond/bond_order_board.dart lib/screens/components/bond/bond_quantity_selector.dart)",
       "Bash(flutter analyze lib/screens/components/bond/ lib/screens/bond/)",
-      "Bash(flutter analyze lib/screens/order_detail_screen.dart lib/screens/components/order_detail/)"
+      "Bash(flutter analyze lib/screens/order_detail_screen.dart lib/screens/components/order_detail/)",
+      "Bash(flutter analyze lib/services/auth_service.dart)",
+      "Bash(flutter analyze lib/services/)",
+      "Bash(flutter analyze lib/main.dart)",
+      "Bash(node -e \"require\\(''docx''\\)\")",
+      "Bash(npm install:*)",
+      "Bash(node generate_api_doc.js)",
+      "Bash(python \"C:\\\\Users\\\\hitech\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\8bba7dfe-cadd-4800-bb85-1f19de92a05f\\\\24a7b45b-bd3d-4fd4-beff-2f4d276b80c4\\\\skills\\\\docx\\\\scripts\\\\office\\\\validate.py\" \"C:\\\\Users\\\\hitech\\\\OneDrive\\\\Documents\\\\antigravity\\\\api_requirements.docx\")",
+      "Bash(rm -f generate_api_doc.js)",
+      "Bash(rm -rf node_modules package.json package-lock.json)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter run *)",
+      "Bash(timeout 20)",
+      "Bash(ping -n 20 127.0.0.1)",
+      "Bash(curl -s \"http://127.0.0.1:50945/zoCnWwjhXjU=/_flutter.hotReload\" -X POST -H \"Content-Type: application/json\" -d \"{}\")",
+      "Bash(curl -s \"http://127.0.0.1:50945/zoCnWwjhXjU=/ws\")",
+      "Bash(tasklist /fi \"imagename eq dart.exe\" /fo csv)",
+      "PowerShell(Get-Process -Name \"dart\" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Get-Process -Name \"chrome\" -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -eq \"\" } | Stop-Process -Force -ErrorAction SilentlyContinue)",
+      "Bash(flutter attach *)",
+      "PowerShell(Start-Process -FilePath \"flutter\" -ArgumentList \"run\",\"-d\",\"chrome\",\"--web-browser-flag=--disable-web-security\",\"--web-browser-flag=--ignore-certificate-errors\",\"--web-browser-flag=--no-referrers\" -WorkingDirectory \"C:\\\\Users\\\\hitech\\\\OneDrive\\\\Documents\\\\antigravity\" -NoNewWindow -PassThru)",
+      "PowerShell($env:Path += \";C:\\\\Users\\\\hitech\\\\AppData\\\\Local\\\\Pub\\\\Cache\\\\bin\"; firebase --version)"
     ]
   }
 }

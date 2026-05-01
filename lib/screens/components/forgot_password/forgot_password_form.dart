@@ -7,12 +7,14 @@ class ForgotPasswordForm extends StatefulWidget {
   final VoidCallback onContinue;
   final TextEditingController regNoController;
   final TextEditingController phoneController;
+  final bool isLoading;
 
   const ForgotPasswordForm({
     super.key,
     required this.onContinue,
     required this.regNoController,
     required this.phoneController,
+    this.isLoading = false,
   });
 
   @override
@@ -65,7 +67,8 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
         const SizedBox(height: 48),
         CustomButton(
           label: l10n.continueBtn,
-          onPressed: _isButtonEnabled ? widget.onContinue : null,
+          onPressed: _isButtonEnabled && !widget.isLoading ? widget.onContinue : null,
+          isLoading: widget.isLoading,
           variant: CustomButtonVariant.primary,
         ),
       ],

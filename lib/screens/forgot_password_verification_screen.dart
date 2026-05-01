@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
-import 'components/shared/auth_channel_selection_form.dart';
+import 'components/shared/auth_channel_selector.dart';
 
 class ForgotPasswordVerificationScreen extends StatelessWidget {
   const ForgotPasswordVerificationScreen({super.key});
@@ -9,14 +10,81 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final channels =
+        (args?['channels'] as List<Map<String, dynamic>>?) ?? [];
 
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: const AuthStepAppBar(stepText: '1/2'),
-      body: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24),
-        child: AuthChannelSelectionForm(nextRoute: '/forgot_password_otp'),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 40),
+            Text(
+              l10n.selectVerifyChannel,
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onBackground,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              l10n.verifyChannelPrompt,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onBackground,
+              ),
+            ),
+            const SizedBox(height: 48),
+            ...channels.map((channel) {
+              final type = channel['type'] as String? ?? '';
+              final value = channel['value'] as String? ?? '';
+              final isSms = type == 'phone' || type == 'sms';
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: AuthChannelSelector(
+                  icon: isSms
+                      ? Icons.smartphone_outlined
+                      : Icons.email_outlined,
+                  title: isSms ? l10n.sms : l10n.emailLabel,
+                  value: _maskValue(type, value),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/forgot_password_otp',
+                      arguments: {
+                        'channel': isSms ? l10n.sms : l10n.emailLabel,
+                        'value': _maskValue(type, value),
+                        'channelType': type,
+                        'channelValue': value,
+                        'regNo': args?['regNo'],
+                        'phone': args?['phone'],
+                      },
+                    );
+                  },
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
+  }
+
+  String _maskValue(String type, String value) {
+    if (value.length <= 4) return value;
+    if (type == 'phone' || type == 'sms') {
+      return '${value.substring(0, 2)}****${value.substring(value.length - 2)}';
+    }
+    final atIndex = value.indexOf('@');
+    if (atIndex > 2) {
+      return '${value.substring(0, 2)}${'*' * (atIndex - 2)}${value.substring(atIndex)}';
+    }
+    return value;
   }
 }

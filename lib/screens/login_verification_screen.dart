@@ -9,13 +9,19 @@ class LoginVerificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final sessionId = args?['sessionId'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: const AuthStepAppBar(stepText: '1/2'),
-      body: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24),
-        child: AuthChannelSelectionForm(nextRoute: '/login_otp'),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: AuthChannelSelectionForm(
+          nextRoute: '/login_otp',
+          extraArgs: {'sessionId': sessionId},
+        ),
       ),
     );
   }

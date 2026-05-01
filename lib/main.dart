@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
+import 'services/notification_service.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -73,15 +77,74 @@ import 'theme/app_state_manager.dart';
 import 'theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 
+/// Глобал navigatorKey — widget tree-ийн гаднаас navigation хийхэд ашиглана
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+/// Нэвтрэлт шаардахгүй нээлттэй route-ууд
+const Set<String> _publicRoutes = {
+  '/',
+  '/login',
+  '/quick_login',
+  '/login_verification',
+  '/login_otp',
+  '/forgot_password',
+  '/forgot_password_verification',
+  '/forgot_password_otp',
+  '/forgot_password_new',
+  '/register',
+  '/register_otp',
+  '/register_password',
+  '/register_bank_selection',
+  '/register_income_account',
+  '/register_success',
+};
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase init — бодит config байхгүй бол алдааг бариж app ажиллуулна
+  NotificationService? notificationService;
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // Background message handler бүртгэх
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+    // Notification service init
+    notificationService = NotificationService();
+    await notificationService.init();
+  } catch (e) {
+    debugPrint('[Firebase] Init алдаа (mock config?): $e');
+  }
 
   final authService = AuthService();
   await authService.init();
 
+  // FCM token → deviceId
+  if (notificationService != null) {
+    final fcmToken = notificationService.fcmToken;
+    if (fcmToken != null) {
+      await authService.setDeviceId(fcmToken);
+    }
+
+    // Token шинэчлэгдэхэд deviceId-г бас шинэчлэх
+    notificationService.onTokenRefresh = (newToken) {
+      authService.setDeviceId(newToken);
+    };
+  }
+
   final apiService = ApiService(
     authService,
-    onLogout: () => AppStateManager.instance.logout(),
+    onLogout: () {
+      // Token refresh амжилтгүй → login руу шилжүүлэх
+      authService.clearSession();
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        '/login',
+        (route) => false,
+      );
+    },
   );
 
   runApp(
@@ -90,6 +153,8 @@ void main() async {
         ChangeNotifierProvider.value(value: AppStateManager.instance),
         ChangeNotifierProvider.value(value: authService),
         Provider.value(value: apiService),
+        if (notificationService != null)
+          Provider.value(value: notificationService),
       ],
       child: const MyApp(),
     ),
@@ -107,6 +172,7 @@ class MyApp extends StatelessWidget {
         final state = AppStateManager.instance;
 
         return MaterialApp(
+          navigatorKey: navigatorKey,
           title: 'Mandal Capital',
           themeMode: state.themeMode,
           theme: ThemeData(
@@ -285,82 +351,127 @@ class MyApp extends StatelessWidget {
           supportedLocales: const [Locale('en'), Locale('mn')],
           locale: state.locale,
           home: const SplashScreen(),
-          routes: {
-            '/login': (context) => const LoginScreen(),
-            '/quick_login': (context) => const QuickLoginScreen(),
-            '/main': (context) => const MainContainer(),
-            '/home': (context) => const HomeScreen(),
-            '/settings': (context) => const SettingsScreen(),
-            '/components': (context) => const ComponentsScreen(),
-            '/theme_colors': (context) => const ThemeColorsScreen(),
-            '/profile': (context) => const ProfileScreen(),
-            '/notifications': (context) => const NotificationScreen(),
-            '/my_info': (context) => const MyInfoScreen(),
-            '/income_account': (context) => const IncomeAccountScreen(),
-            '/add_income_account': (context) => const AddIncomeAccountScreen(),
-            '/summary_report': (context) => const SummaryReportScreen(),
-            '/connected_devices': (context) => const ConnectedDevicesScreen(),
-            '/change_password_verify': (context) =>
-                const ChangePasswordVerifyScreen(),
-            '/change_password_code': (context) =>
-                const ChangePasswordCodeScreen(),
-            '/change_password_new': (context) =>
-                const ChangePasswordNewScreen(),
-            '/income_account_detail': (context) =>
-                const IncomeAccountDetailScreen(),
-            '/login_verification': (context) => const LoginVerificationScreen(),
-            '/login_otp': (context) => const LoginOtpScreen(),
-            '/forgot_password': (context) => const ForgotPasswordScreen(),
-            '/forgot_password_verification': (context) =>
-                const ForgotPasswordVerificationScreen(),
-            '/forgot_password_otp': (context) =>
-                const ForgotPasswordOtpScreen(),
-            '/forgot_password_new': (context) =>
-                const ForgotPasswordNewScreen(),
-            '/register': (context) => const RegisterScreen(),
-            '/pep_question': (context) => const PepQuestionScreen(),
-            '/pep_definition': (context) => const PepDefinitionScreen(),
-            '/securities_agreement': (context) =>
-                const SecuritiesAgreementScreen(),
-            '/document_verification': (context) =>
-                const DocumentVerificationScreen(),
-            '/camera_overlay': (context) => const CameraOverlayScreen(),
-            '/onboarding_success': (context) => const OnboardingSuccessScreen(),
-            '/dan_verification': (context) => const DanVerificationScreen(),
-            '/register_otp': (context) => const RegisterOtpScreen(),
-            '/register_password': (context) => const RegisterPasswordScreen(),
-            '/register_bank_selection': (context) =>
-                const RegisterBankSelectionScreen(),
-            '/register_income_account': (context) =>
-                const RegisterIncomeAccountScreen(),
-            '/register_success': (context) => const RegisterSuccessScreen(),
-            '/bond_detail': (context) => const BondDetailScreen(),
-            '/bond_main': (context) => const BondMainScreen(),
-            '/bond_buy': (context) => const BondBuyScreen(),
-            '/bond_confirmation': (context) => const BondConfirmationScreen(),
-            '/bond_success': (context) => const BondSuccessScreen(),
-            '/bond_sell': (context) => const BondSellScreen(),
-            '/bond_sell_confirmation': (context) =>
-                const BondSellConfirmationScreen(),
-            '/bond_sell_success': (context) => const BondSellSuccessScreen(),
-            '/order_detail': (context) => const OrderDetailScreen(),
-            '/stock_detail': (context) => const StockDetailScreen(),
-            '/stock_trading': (context) => const StockTradingScreen(),
-            '/stock_success': (context) => const StockSuccessScreen(),
-            '/stock_confirmation': (context) => const StockConfirmationScreen(),
-            '/currency_detail': (context) => const CurrencyDetailScreen(),
-            '/bond_portfolio': (context) => const BondPortfolioScreen(),
-            '/stock_portfolio': (context) => const StockPortfolioScreen(),
-            '/income_method': (context) => const IncomeMethodScreen(),
-            '/income_amount': (context) => const IncomeAmountScreen(),
-            '/income_success': (context) => const IncomeSuccessScreen(),
-            '/withdraw_method': (context) => const WithdrawMethodScreen(),
-            '/withdraw_amount': (context) => const WithdrawAmountScreen(),
-            '/withdraw_success': (context) => const WithdrawSuccessScreen(),
-            '/transaction_history': (context) => const TransactionHistoryScreen(),
-            '/release_locked': (context) => const ReleaseLockedAmountScreen(),
-            '/watchlist_detail': (context) => const WatchlistDetailScreen(),
-            '/add_watchlist': (context) => const AddWatchlistScreen(),
+          onGenerateRoute: (settings) {
+            // Route map
+            final routes = <String, WidgetBuilder>{
+              '/login': (context) => const LoginScreen(),
+              '/quick_login': (context) => const QuickLoginScreen(),
+              '/main': (context) => const MainContainer(),
+              '/home': (context) => const HomeScreen(),
+              '/settings': (context) => const SettingsScreen(),
+              '/components': (context) => const ComponentsScreen(),
+              '/theme_colors': (context) => const ThemeColorsScreen(),
+              '/profile': (context) => const ProfileScreen(),
+              '/notifications': (context) => const NotificationScreen(),
+              '/my_info': (context) => const MyInfoScreen(),
+              '/income_account': (context) => const IncomeAccountScreen(),
+              '/add_income_account': (context) =>
+                  const AddIncomeAccountScreen(),
+              '/summary_report': (context) => const SummaryReportScreen(),
+              '/connected_devices': (context) =>
+                  const ConnectedDevicesScreen(),
+              '/change_password_verify': (context) =>
+                  const ChangePasswordVerifyScreen(),
+              '/change_password_code': (context) =>
+                  const ChangePasswordCodeScreen(),
+              '/change_password_new': (context) =>
+                  const ChangePasswordNewScreen(),
+              '/income_account_detail': (context) =>
+                  const IncomeAccountDetailScreen(),
+              '/login_verification': (context) =>
+                  const LoginVerificationScreen(),
+              '/login_otp': (context) => const LoginOtpScreen(),
+              '/forgot_password': (context) => const ForgotPasswordScreen(),
+              '/forgot_password_verification': (context) =>
+                  const ForgotPasswordVerificationScreen(),
+              '/forgot_password_otp': (context) =>
+                  const ForgotPasswordOtpScreen(),
+              '/forgot_password_new': (context) =>
+                  const ForgotPasswordNewScreen(),
+              '/register': (context) => const RegisterScreen(),
+              '/pep_question': (context) => const PepQuestionScreen(),
+              '/pep_definition': (context) => const PepDefinitionScreen(),
+              '/securities_agreement': (context) =>
+                  const SecuritiesAgreementScreen(),
+              '/document_verification': (context) =>
+                  const DocumentVerificationScreen(),
+              '/camera_overlay': (context) => const CameraOverlayScreen(),
+              '/onboarding_success': (context) =>
+                  const OnboardingSuccessScreen(),
+              '/dan_verification': (context) => const DanVerificationScreen(),
+              '/register_otp': (context) => const RegisterOtpScreen(),
+              '/register_password': (context) =>
+                  const RegisterPasswordScreen(),
+              '/register_bank_selection': (context) =>
+                  const RegisterBankSelectionScreen(),
+              '/register_income_account': (context) =>
+                  const RegisterIncomeAccountScreen(),
+              '/register_success': (context) => const RegisterSuccessScreen(),
+              '/bond_detail': (context) => const BondDetailScreen(),
+              '/bond_main': (context) => const BondMainScreen(),
+              '/bond_buy': (context) => const BondBuyScreen(),
+              '/bond_confirmation': (context) =>
+                  const BondConfirmationScreen(),
+              '/bond_success': (context) => const BondSuccessScreen(),
+              '/bond_sell': (context) => const BondSellScreen(),
+              '/bond_sell_confirmation': (context) =>
+                  const BondSellConfirmationScreen(),
+              '/bond_sell_success': (context) =>
+                  const BondSellSuccessScreen(),
+              '/order_detail': (context) => const OrderDetailScreen(),
+              '/stock_detail': (context) => const StockDetailScreen(),
+              '/stock_trading': (context) => const StockTradingScreen(),
+              '/stock_success': (context) => const StockSuccessScreen(),
+              '/stock_confirmation': (context) =>
+                  const StockConfirmationScreen(),
+              '/currency_detail': (context) => const CurrencyDetailScreen(),
+              '/bond_portfolio': (context) => const BondPortfolioScreen(),
+              '/stock_portfolio': (context) => const StockPortfolioScreen(),
+              '/income_method': (context) => const IncomeMethodScreen(),
+              '/income_amount': (context) => const IncomeAmountScreen(),
+              '/income_success': (context) => const IncomeSuccessScreen(),
+              '/withdraw_method': (context) => const WithdrawMethodScreen(),
+              '/withdraw_amount': (context) => const WithdrawAmountScreen(),
+              '/withdraw_success': (context) => const WithdrawSuccessScreen(),
+              '/transaction_history': (context) =>
+                  const TransactionHistoryScreen(),
+              '/release_locked': (context) =>
+                  const ReleaseLockedAmountScreen(),
+              '/watchlist_detail': (context) => const WatchlistDetailScreen(),
+              '/add_watchlist': (context) => const AddWatchlistScreen(),
+            };
+
+            final routeName = settings.name;
+            final builder = routes[routeName];
+
+            if (builder == null) return null;
+
+            // Public route → шууд нээх
+            if (_publicRoutes.contains(routeName)) {
+              return MaterialPageRoute(
+                builder: builder,
+                settings: settings,
+              );
+            }
+
+            // Protected route → auth шалгах
+            final authService = Provider.of<AuthService>(
+              navigatorKey.currentContext!,
+              listen: false,
+            );
+
+            if (authService.isAuthenticated) {
+              return MaterialPageRoute(
+                builder: builder,
+                settings: settings,
+              );
+            }
+
+            // Нэвтрээгүй → login руу шилжүүлэх
+            return MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+              settings: const RouteSettings(name: '/login'),
+            );
           },
           debugShowCheckedModeBanner: false,
         );

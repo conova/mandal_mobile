@@ -5,14 +5,54 @@ import '../widgets/custom_button.dart';
 import '../widgets/logout_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../services/api_service.dart';
+import '../config/api_config.dart';
 import 'components/profile/profile_header.dart';
 import 'components/profile/profile_list_item.dart';
 import 'components/profile/profile_toggle_item.dart';
 import 'components/profile/profile_section_header.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String _userName = '';
+  String _userPhone = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    try {
+      final apiService = context.read<ApiService>();
+      final response = await apiService.get(ApiConfig.userInfo);
+      final body = response.data;
+
+      if (mounted && body['code']?.toString() == '0' && body['data'] != null) {
+        final data = body['data'] as Map<String, dynamic>;
+        setState(() {
+          _userName = data['firstName']?.toString() ?? '';
+          _userPhone = data['phone']?.toString() ?? '';
+        });
+      }
+    } catch (_) {
+      // Fallback: token-оос авсан нэрийг ашиглана
+      if (mounted) {
+        final authService = context.read<AuthService>();
+        setState(() {
+          _userName = authService.custName ?? '';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +110,10 @@ class ProfileScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             // Profile Header
-            // Profile Header
-            const ProfileHeader(name: 'Өлзийдэлгэр', phoneNumber: '80006272'),
+            ProfileHeader(
+              name: _userName.isNotEmpty ? _userName : 'Хэрэглэгч',
+              phoneNumber: _userPhone,
+            ),
             const SizedBox(height: 32),
 
             // Personal Information Section

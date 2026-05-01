@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../services/api_service.dart';
+import '../config/api_config.dart';
+import '../widgets/custom_snackbar.dart';
 
 class PepQuestionScreen extends StatelessWidget {
   const PepQuestionScreen({super.key});
@@ -145,10 +149,49 @@ class _PepQuestionContent extends StatelessWidget {
   }
 }
 
-class _PepActionButtons extends StatelessWidget {
+class _PepActionButtons extends StatefulWidget {
   final AppLocalizations l10n;
 
   const _PepActionButtons({required this.l10n});
+
+  @override
+  State<_PepActionButtons> createState() => _PepActionButtonsState();
+}
+
+class _PepActionButtonsState extends State<_PepActionButtons> {
+  bool _isLoading = false;
+
+  Future<void> _submitPepStatus(BuildContext context, bool isPep) async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final apiService = context.read<ApiService>();
+      await apiService.post(
+        ApiConfig.pepStatus,
+        data: {
+          'api': 'pep_status',
+          'data': {
+            'isPep': isPep.toString(),
+          },
+        },
+      );
+
+      if (context.mounted) {
+        Navigator.pushNamed(context, '/dan_verification');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        setState(() => _isLoading = false);
+        CustomSnackbar.show(
+          context,
+          message: 'Алдаа: ${e.toString()}',
+          type: CustomSnackbarType.error,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,10 +200,9 @@ class _PepActionButtons extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: CustomButton(
-            label: l10n.no,
-            onPressed: () {
-              Navigator.pushNamed(context, '/dan_verification');
-            },
+            label: widget.l10n.no,
+            onPressed: () => _submitPepStatus(context, false),
+            isLoading: _isLoading,
             variant: CustomButtonVariant.primary,
           ),
         ),
@@ -168,11 +210,8 @@ class _PepActionButtons extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: CustomButton(
-            label: l10n.yes,
-            onPressed: () {
-              Navigator.pushNamed(context, '/dan_verification');
-              Navigator.pop(context, false);
-            },
+            label: widget.l10n.yes,
+            onPressed: () => _submitPepStatus(context, true),
             variant: CustomButtonVariant.secondary,
           ),
         ),

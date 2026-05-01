@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/auth/auth_app_bar.dart';
 import '../widgets/auth/auth_footer.dart';
+import '../widgets/custom_snackbar.dart';
+import '../services/auth_service.dart';
 import 'components/register/register_form.dart';
 import 'components/register/register_contact_info.dart';
 
@@ -17,6 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,13 +31,68 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _handleRegister() {
-    // Navigate to OTP verification
-    Navigator.pushNamed(
-      context,
-      '/register_otp',
-      arguments: {'phone': _phoneController.text},
-    );
+  Future<void> _handleRegister() async {
+    if (_isLoading) return;
+
+    final regNo = _regNoController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    if (regNo.isEmpty || phone.isEmpty) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final authService = context.read<AuthService>();
+      final result = await authService.registerValidate(regNo, phone);
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+
+        if (result['canRegister'] == true) {
+          // 404 → бүртгэлгүй → утас руу OTP илгээх
+          final otpData = await authService.sendRegisterOtp(phone);
+          final sessionId = otpData['sessionId'] as String?;
+
+          // TEST: OTP код харуулах
+          final otp = otpData['otp']?.toString();
+          if (otp != null && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('OTP код: $otp')),
+            );
+          }
+
+          if (mounted) {
+            Navigator.pushNamed(
+              context,
+              '/register_otp',
+              arguments: {
+                'phone': phone,
+                'regNo': regNo,
+                'lastName': _lastNameController.text.trim(),
+                'firstName': _firstNameController.text.trim(),
+                'sessionId': sessionId,
+              },
+            );
+          }
+        } else {
+          // 200/400 → бүртгэлтэй → анхааруулга
+          CustomSnackbar.show(
+            context,
+            message: result['message'] ?? 'Та бүртгэлтэй байна',
+            type: CustomSnackbarType.error,
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        CustomSnackbar.show(
+          context,
+          message: e.toString().replaceFirst('Exception: ', ''),
+          type: CustomSnackbarType.error,
+        );
+      }
+    }
   }
 
   @override
@@ -72,6 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               phoneController: _phoneController,
               lastNameController: _lastNameController,
               firstNameController: _firstNameController,
+              isLoading: _isLoading,
             ),
             const SizedBox(height: 24),
             const RegisterContactInfo(),

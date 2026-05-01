@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
+import '../widgets/custom_snackbar.dart';
+import '../services/auth_service.dart';
 import 'components/forgot_password/forgot_password_form.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -14,6 +17,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _regNoController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -22,9 +26,43 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _handleContinue() {
-    // Navigate to verification screen
-    Navigator.pushNamed(context, '/forgot_password_verification');
+  Future<void> _handleContinue() async {
+    if (_isLoading) return;
+
+    final regNo = _regNoController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    if (regNo.isEmpty || phone.isEmpty) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final authService = context.read<AuthService>();
+      final channels = await authService.forgotPassword(regNo, phone, '');
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+        // channels → [{type: "phone", value: "99054583"}, {type: "email", value: "..."}]
+        Navigator.pushNamed(
+          context,
+          '/forgot_password_verification',
+          arguments: {
+            'channels': channels,
+            'regNo': regNo,
+            'phone': phone,
+          },
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        CustomSnackbar.show(
+          context,
+          message: e.toString().replaceFirst('Exception: ', ''),
+          type: CustomSnackbarType.error,
+        );
+      }
+    }
   }
 
   @override
@@ -62,6 +100,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               onContinue: _handleContinue,
               regNoController: _regNoController,
               phoneController: _phoneController,
+              isLoading: _isLoading,
             ),
             const SizedBox(height: 40),
           ],
