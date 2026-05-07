@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_channel_selector.dart';
 
 class ForgotPasswordVerificationScreen extends StatelessWidget {
@@ -53,7 +56,28 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                       : Icons.email_outlined,
                   title: isSms ? l10n.sms : l10n.emailLabel,
                   value: _maskValue(type, value),
-                  onTap: () {
+                  onTap: () async {
+                    final sessionId = args?['sessionId'] as String?;
+                    // Сонгосон сувгаар OTP илгээх (sms эсвэл email)
+                    if (sessionId != null) {
+                      try {
+                        await context.read<AuthService>().sendOtp(
+                              sessionId,
+                              isSms ? 'sms' : 'email',
+                            );
+                      } catch (e) {
+                        if (context.mounted) {
+                          CustomSnackbar.show(
+                            context,
+                            message:
+                                e.toString().replaceFirst('Exception: ', ''),
+                            type: CustomSnackbarType.error,
+                          );
+                        }
+                        return;
+                      }
+                    }
+                    if (!context.mounted) return;
                     Navigator.pushNamed(
                       context,
                       '/forgot_password_otp',
@@ -64,6 +88,7 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                         'channelValue': value,
                         'regNo': args?['regNo'],
                         'phone': args?['phone'],
+                        'sessionId': sessionId,
                       },
                     );
                   },

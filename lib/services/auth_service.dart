@@ -269,6 +269,20 @@ class AuthService with ChangeNotifier {
     ),
   );
 
+  /// Authentication header-тай Dio (`Authorization: Bearer <token>`).
+  /// Нэвтэрсэн хэрэглэгчийн API дуудлагуудад ашиглана.
+  Dio get _authedDio => Dio(
+    BaseOptions(
+      baseUrl: ApiConfig.baseUrl,
+      connectTimeout: ApiConfig.connectTimeout,
+      receiveTimeout: ApiConfig.receiveTimeout,
+      headers: {
+        'Content-Type': 'application/json',
+        if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
+      },
+    ),
+  );
+
   /// Хариунаас token задлан хадгалах (login, biometric, OTP verify-д ашиглана)
   Future<void> _handleAuthResponse(Map<String, dynamic> data) async {
     final String accessToken = data['token'];
@@ -296,7 +310,7 @@ class AuthService with ChangeNotifier {
           'api': 'login',
           'userName': userName,
           'userPass': password,
-          'deviceId': _deviceId ?? '123456',
+          'deviceId': _deviceId ?? '1234562',
         },
       );
 
@@ -343,7 +357,11 @@ class AuthService with ChangeNotifier {
     try {
       final response = await _dio.post(
         ApiConfig.login,
-        data: {'api': 'biometric_login', 'deviceId': _deviceId ?? '123456', 'uid': _uid},
+        data: {
+          'api': 'biometric_login',
+          'deviceId': _deviceId ?? '123456',
+          'uid': _uid,
+        },
       );
 
       if (response.statusCode == 200) {
@@ -424,33 +442,218 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  /// Бүртгэл шалгах — регистрийн дугаар, утас ашиглан
-  /// 404 → бүртгэлгүй → OTP руу шилжих (шинэ бүртгэл)
-  /// 200/400 → бүртгэлтэй → анхааруулга харуулах
-  /// Returns: {'canRegister': true/false, 'message': '...'}
-  Future<Map<String, dynamic>> registerValidate(
-    String registerNumber,
-    String phone,
-  ) async {
+  /// Бүртгэл эхлүүлэх — регистр + утас + овог + нэр илгээж OTP авна.
+  /// Хариу: { success, msg, custId, sessionId, otp (test only) }
+  /// Throws: бүртгэлтэй харилцагч (400) эсвэл бусад алдаа үед Exception
+  Future<Map<String, dynamic>> registerInitiate({
+    required String registerNumber,
+    required String phone,
+    required String lastName,
+    required String firstName,
+  }) async {
     try {
-      await _dio.post(
-        ApiConfig.registerValidate,
+      final response = await _dio.post(
+        ApiConfig.registerInitiate,
         data: {
-          'api': 'register/validate',
-          'data': {'registerNumber': registerNumber, 'phone': phone},
+          'api': 'register_initiate',
+          'data': {
+            'registerNumber': registerNumber,
+            'phone': phone,
+            'lastName': lastName,
+            'firstName': firstName,
+          },
         },
       );
-      // 200 → бүртгэлтэй customer
-      return {'canRegister': false, 'message': 'Та бүртгэлтэй байна'};
+
+      final body = response.data as Map<String, dynamic>;
+      final code = body['code']?.toString() ?? '';
+      final data = body['data'];
+
+      if (code == '0' && data is Map && data['success'] == true) {
+        final dataResult = await sendOtp(data['sessionId'], 'sms');
+        return Map<String, dynamic>.from(dataResult);
+      }
+
+      // Сервер код 0 биш, эсвэл data.success != true → алдааны мессеж
+      final msg =
+          (data is Map ? data['msg']?.toString() : null) ??
+          body['message']?.toString() ??
+          'Бүртгэл амжилтгүй боллоо';
+      throw Exception(msg);
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        // 404 → бүртгэлгүй → шинээр бүртгүүлэх боломжтой
-        return {'canRegister': true};
+      // 400 → бүртгэлтэй харилцагч; сервер msg илгээдэг
+      final data = e.response?.data;
+      if (data is Map) {
+        final msg =
+            data['message']?.toString() ??
+            (data['data'] is Map ? data['data']['msg']?.toString() : null);
+        if (msg != null && msg.isNotEmpty) {
+          throw Exception(msg);
+        }
       }
-      if (e.response?.statusCode == 400) {
-        // 400 → бүртгэлтэй
-        return {'canRegister': false, 'message': 'Та бүртгэлтэй байна'};
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Бүртгэлийн нууц үг үүсгэх — sessionId + шинэ нууц үг.
+  /// register_initiate → OTP verify-ийн дараах алхам.
+  /// Returns: server message
+  Future<String> setPassword({
+    required String sessionId,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConfig.registerSetPassword,
+        data: {
+          'api': 'set_password',
+          'data': {
+            'sessionId': sessionId,
+            'password': password,
+            'confirmPassword': confirmPassword,
+          },
+        },
+      );
+
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return body['message']?.toString() ?? 'Нууц үг амжилттай үүсгэгдлээ';
       }
+      throw Exception(body['message'] ?? 'Нууц үг үүсгэхэд алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Бүртгэлийн орлого авах данс холбох — sessionId + банк + IBAN + нэр.
+  /// Returns: server message
+  Future<String> addAccount({
+    required String sessionId,
+    required String bankCode,
+    required String iban,
+    required String accountName,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConfig.registerAddAccount,
+        data: {
+          'api': 'add_account',
+          'data': {
+            'sessionId': sessionId,
+            'bankCode': bankCode,
+            'iban': iban,
+            'accountName': accountName,
+          },
+        },
+      );
+
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return body['message']?.toString() ??
+            'Дансны мэдээлэл амжилттай хадгалагдлаа';
+      }
+      throw Exception(body['message'] ?? 'Данс холбоход алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Нууц үг сэргээх (forgot_password урсгалын төгсгөл).
+  /// sessionId-г /auth/forgot_password → verify_otp-оор баталгаажсан байх ёстой.
+  Future<String> resetPassword({
+    required String sessionId,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConfig.registerReset,
+        data: {
+          'api': 'reset',
+          'data': {
+            'sessionId': sessionId,
+            'password': password,
+            'confirmPassword': confirmPassword,
+          },
+        },
+      );
+
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return body['message']?.toString() ?? 'Нууц үг амжилттай үүсгэгдлээ';
+      }
+      throw Exception(body['message'] ?? 'Нууц үг сэргээхэд алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Банкны жагсаалт татах. Хариу: список (банк бүр Map).
+  Future<List<Map<String, dynamic>>> getBanksList() async {
+    try {
+      final response = await _dio.get(ApiConfig.banksList);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((b) => Map<String, dynamic>.from(b as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Нэвтэрсэн хэрэглэгчийн дэлгэрэнгүй мэдээлэл (uid, нэр, имэйл, утас, ...).
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<Map<String, dynamic>> getUserInfo() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.userInfo);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is Map) {
+        return Map<String, dynamic>.from(body['data'] as Map);
+      }
+      throw Exception(body['message'] ?? 'Failed to fetch user info');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Нэвтэрсэн хэрэглэгчийн бүртгэлтэй төхөөрөмжүүд.
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<List<Map<String, dynamic>>> getDevices() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.devices);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// PEP (Politically Exposed Person) төлөв илгээх.
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<String> setPepStatus(bool isPep) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.pepStatus,
+        data: {
+          'api': 'pep_status',
+          'data': {'isPep': isPep.toString()},
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return body['message']?.toString() ?? 'PEP төлөв хадгалагдлаа';
+      }
+      throw Exception(body['message'] ?? 'PEP төлөв илгээхэд алдаа гарлаа');
+    } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
   }
@@ -516,28 +719,6 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  /// Бүртгэлийн OTP илгээх — утасны дугаар руу SMS илгээж sessionId үүсгэнэ
-  /// Returns: {sessionId: '...', otp: '...' (test only)}
-  Future<Map<String, dynamic>> sendRegisterOtp(String phone) async {
-    try {
-      final response = await _dio.post(
-        ApiConfig.sendOtp,
-        data: {
-          'api': 'send_otp',
-          'data': {'phone': phone, 'channel': 'sms'},
-        },
-      );
-
-      final body = response.data as Map<String, dynamic>;
-      if (body['code']?.toString() == '0') {
-        return body['data'] as Map<String, dynamic>;
-      }
-      throw Exception(body['message'] ?? 'OTP send failed');
-    } on DioException catch (e) {
-      throw Exception(_extractErrorMessage(e));
-    }
-  }
-
   /// OTP код илгээх — sessionId + channel (sms | email)
   Future<Map<String, dynamic>> sendOtp(String sessionId, String channel) async {
     try {
@@ -584,27 +765,26 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  /// Нууц үг мартсан — регистрийн дугаар, утас, имэйл → сувгуудыг буцаана
-  Future<List<Map<String, dynamic>>> forgotPassword(
-    String id1,
-    String handPhone,
-    String email,
-  ) async {
+  /// Нууц үг мартсан — регистрийн дугаар + утас илгээж sessionId + сувгууд авна.
+  /// Returns: { sessionId, otp (test only), channels: [{type, value}, ...] }
+  Future<Map<String, dynamic>> forgotPassword({
+    required String registerNumber,
+    required String phone,
+  }) async {
     try {
       final response = await _dio.post(
-        ApiConfig.login,
+        ApiConfig.forgotPassword,
         data: {
-          'api': 'forgotPass',
-          'data': {'id1': id1, 'handPhone': handPhone, 'email': email},
+          'api': 'forgot_password',
+          'data': {'registerNumber': registerNumber, 'phone': phone},
         },
       );
 
       final body = response.data as Map<String, dynamic>;
-      if (body['code']?.toString() == '0') {
-        final channels = body['data'] as List;
-        return channels.map((c) => Map<String, dynamic>.from(c)).toList();
+      if (body['code']?.toString() == '0' && body['data'] is Map) {
+        return Map<String, dynamic>.from(body['data'] as Map);
       }
-      throw Exception(body['message'] ?? 'Failed');
+      throw Exception(body['message'] ?? 'Харилцагч олдсонгүй');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }

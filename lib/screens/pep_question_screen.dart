@@ -4,8 +4,7 @@ import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
-import '../services/api_service.dart';
-import '../config/api_config.dart';
+import '../services/auth_service.dart';
 import '../widgets/custom_snackbar.dart';
 
 class PepQuestionScreen extends StatelessWidget {
@@ -167,17 +166,7 @@ class _PepActionButtonsState extends State<_PepActionButtons> {
     setState(() => _isLoading = true);
 
     try {
-      final apiService = context.read<ApiService>();
-      await apiService.post(
-        ApiConfig.pepStatus,
-        data: {
-          'api': 'pep_status',
-          'data': {
-            'isPep': isPep.toString(),
-          },
-        },
-      );
-
+      await context.read<AuthService>().setPepStatus(isPep);
       if (context.mounted) {
         Navigator.pushNamed(context, '/dan_verification');
       }
@@ -186,7 +175,7 @@ class _PepActionButtonsState extends State<_PepActionButtons> {
         setState(() => _isLoading = false);
         CustomSnackbar.show(
           context,
-          message: 'Алдаа: ${e.toString()}',
+          message: e.toString().replaceFirst('Exception: ', ''),
           type: CustomSnackbarType.error,
         );
       }

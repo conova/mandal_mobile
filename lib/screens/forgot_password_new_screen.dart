@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_password_form.dart';
 
 class ForgotPasswordNewScreen extends StatelessWidget {
@@ -11,6 +14,10 @@ class ForgotPasswordNewScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            const {};
+    final sessionId = args['sessionId'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -31,10 +38,35 @@ class ForgotPasswordNewScreen extends StatelessWidget {
             const SizedBox(height: 48),
             AuthPasswordForm(
               onContinue: (password) async {
-                // Mock API call or just navigate
-                await Future.delayed(const Duration(seconds: 1));
-                if (context.mounted) {
-                  Navigator.pushReplacementNamed(context, '/main');
+                if (sessionId == null) {
+                  CustomSnackbar.show(
+                    context,
+                    message: 'Session ID олдсонгүй. Дахин эхэлнэ үү.',
+                    type: CustomSnackbarType.error,
+                  );
+                  return;
+                }
+                try {
+                  await context.read<AuthService>().resetPassword(
+                        sessionId: sessionId,
+                        password: password,
+                        confirmPassword: password,
+                      );
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/login',
+                      (route) => false,
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    CustomSnackbar.show(
+                      context,
+                      message: e.toString().replaceFirst('Exception: ', ''),
+                      type: CustomSnackbarType.error,
+                    );
+                  }
                 }
               },
             ),

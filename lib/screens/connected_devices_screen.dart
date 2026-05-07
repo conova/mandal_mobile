@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import '../config/api_config.dart';
 import '../widgets/custom_snackbar.dart';
@@ -27,21 +28,13 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
 
   Future<void> _fetchDevices() async {
     try {
-      final apiService = context.read<ApiService>();
-      final response = await apiService.get(ApiConfig.devices);
-      final body = response.data;
-
-      if (mounted && body['code']?.toString() == '0' && body['data'] != null) {
-        final devicesData = body['data'] as List;
-        setState(() {
-          _devices = devicesData
-              .map((d) => Map<String, dynamic>.from(d))
-              .toList();
-          _isLoading = false;
-        });
-      } else {
-        setState(() => _isLoading = false);
-      }
+      final auth = context.read<AuthService>();
+      final list = await auth.getDevices();
+      if (!mounted) return;
+      setState(() {
+        _devices = list;
+        _isLoading = false;
+      });
     } catch (_) {
       if (mounted) {
         setState(() => _isLoading = false);

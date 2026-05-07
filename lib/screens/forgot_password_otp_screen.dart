@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_otp_form.dart';
 
 class ForgotPasswordOtpScreen extends StatelessWidget {
@@ -14,6 +17,8 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final value = args['value'] as String;
+    final sessionId = args['sessionId'] as String?;
+    final channelType = args['channelType'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -40,10 +45,35 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             AuthOtpForm(
-              onSuccess: () =>
-                  Navigator.pushNamed(context, '/forgot_password_new'),
-              onResend: () {
-                // Handle resend logic
+              sessionId: sessionId,
+              onSuccess: () => Navigator.pushNamed(
+                context,
+                '/forgot_password_new',
+                arguments: args,
+              ),
+              onResend: () async {
+                if (sessionId == null || channelType == null) return;
+                try {
+                  await context.read<AuthService>().sendOtp(
+                        sessionId,
+                        channelType == 'phone' ? 'sms' : channelType,
+                      );
+                  if (context.mounted) {
+                    CustomSnackbar.show(
+                      context,
+                      message: 'Кодыг дахин илгээлээ',
+                      type: CustomSnackbarType.info,
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    CustomSnackbar.show(
+                      context,
+                      message: e.toString().replaceFirst('Exception: ', ''),
+                      type: CustomSnackbarType.error,
+                    );
+                  }
+                }
               },
             ),
           ],

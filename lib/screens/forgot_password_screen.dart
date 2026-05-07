@@ -38,11 +38,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       final authService = context.read<AuthService>();
-      final channels = await authService.forgotPassword(regNo, phone, '');
+      final data = await authService.forgotPassword(
+        registerNumber: regNo,
+        phone: phone,
+      );
 
       if (mounted) {
         setState(() => _isLoading = false);
-        // channels → [{type: "phone", value: "99054583"}, {type: "email", value: "..."}]
+        final channels = (data['channels'] as List? ?? [])
+            .map((c) => Map<String, dynamic>.from(c as Map))
+            .toList();
+        // TEST: дамжуулсан OTP
+        final otp = data['otp']?.toString();
+        if (otp != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('OTP код: $otp')),
+          );
+        }
         Navigator.pushNamed(
           context,
           '/forgot_password_verification',
@@ -50,6 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             'channels': channels,
             'regNo': regNo,
             'phone': phone,
+            'sessionId': data['sessionId']?.toString(),
           },
         );
       }

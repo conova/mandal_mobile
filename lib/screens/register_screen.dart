@@ -36,53 +36,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final regNo = _regNoController.text.trim();
     final phone = _phoneController.text.trim();
+    final lastName = _lastNameController.text.trim();
+    final firstName = _firstNameController.text.trim();
 
-    if (regNo.isEmpty || phone.isEmpty) return;
+    if (regNo.isEmpty || phone.isEmpty || lastName.isEmpty || firstName.isEmpty) {
+      return;
+    }
 
     setState(() => _isLoading = true);
 
     try {
       final authService = context.read<AuthService>();
-      final result = await authService.registerValidate(regNo, phone);
+      final data = await authService.registerInitiate(
+        registerNumber: regNo,
+        phone: phone,
+        lastName: lastName,
+        firstName: firstName,
+      );
 
-      if (mounted) {
-        setState(() => _isLoading = false);
+      if (!mounted) return;
+      setState(() => _isLoading = false);
 
-        if (result['canRegister'] == true) {
-          // 404 → бүртгэлгүй → утас руу OTP илгээх
-          final otpData = await authService.sendRegisterOtp(phone);
-          final sessionId = otpData['sessionId'] as String?;
+      final sessionId = data['sessionId']?.toString();
+      final custId = data['custId']?.toString();
 
-          // TEST: OTP код харуулах
-          final otp = otpData['otp']?.toString();
-          if (otp != null && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('OTP код: $otp')),
-            );
-          }
-
-          if (mounted) {
-            Navigator.pushNamed(
-              context,
-              '/register_otp',
-              arguments: {
-                'phone': phone,
-                'regNo': regNo,
-                'lastName': _lastNameController.text.trim(),
-                'firstName': _firstNameController.text.trim(),
-                'sessionId': sessionId,
-              },
-            );
-          }
-        } else {
-          // 200/400 → бүртгэлтэй → анхааруулга
-          CustomSnackbar.show(
-            context,
-            message: result['message'] ?? 'Та бүртгэлтэй байна',
-            type: CustomSnackbarType.error,
-          );
-        }
+      // TEST: OTP код харуулах (бодит сервер илгээхгүй болгоно)
+      final otp = data['otp']?.toString();
+      if (otp != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('OTP код: $otp')),
+        );
       }
+
+      Navigator.pushNamed(
+        context,
+        '/register_otp',
+        arguments: {
+          'phone': phone,
+          'regNo': regNo,
+          'lastName': lastName,
+          'firstName': firstName,
+          'sessionId': sessionId,
+          'custId': custId,
+        },
+      );
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);

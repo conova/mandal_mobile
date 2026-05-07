@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
-import '../services/api_service.dart';
-import '../config/api_config.dart';
+import '../services/auth_service.dart';
 
 import 'components/my_info/info_card.dart';
 import 'components/my_info/my_info_back_button.dart';
@@ -27,18 +26,13 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 
   Future<void> _fetchUserInfo() async {
     try {
-      final apiService = context.read<ApiService>();
-      final response = await apiService.get(ApiConfig.userInfo);
-      final body = response.data;
-
-      if (mounted && body['code']?.toString() == '0' && body['data'] != null) {
-        setState(() {
-          _userInfo = body['data'] as Map<String, dynamic>;
-          _isLoading = false;
-        });
-      } else {
-        setState(() => _isLoading = false);
-      }
+      final auth = context.read<AuthService>();
+      final info = await auth.getUserInfo();
+      if (!mounted) return;
+      setState(() {
+        _userInfo = info;
+        _isLoading = false;
+      });
     } catch (_) {
       if (mounted) {
         setState(() => _isLoading = false);

@@ -5,11 +5,16 @@ class ApiConfig {
 
   // ─── Auth ───
   static const String login = '/bdc/api/auth/login.php';
-  static const String registerValidate = '/bdc/api/auth/register/validate';
+  static const String registerInitiate = '/bdc/api/register/initiate';
+  static const String registerSetPassword = '/bdc/api/register/set_password';
+  static const String registerAddAccount = '/bdc/api/register/add_account';
+  static const String registerReset = '/bdc/api/register/reset';
+  static const String forgotPassword = '/bdc/api/auth/forgot_password';
   static const String changePassword = '/bdc/api/auth/change_password';
 
   // ─── OTP ───
-  static const String verificationChannels = '/bdc/api/auth/verification_channels';
+  static const String verificationChannels =
+      '/bdc/api/auth/verification_channels';
   static const String sendOtp = '/bdc/api/auth/send_otp';
   static const String verifyOtp = '/bdc/api/auth/verify_otp';
 

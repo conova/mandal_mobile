@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_otp_form.dart';
 
 class RegisterOtpScreen extends StatelessWidget {
@@ -14,6 +17,7 @@ class RegisterOtpScreen extends StatelessWidget {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final phone = args['phone'] as String;
+    final sessionId = args['sessionId'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -40,10 +44,35 @@ class RegisterOtpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             AuthOtpForm(
-              onSuccess: () =>
-                  Navigator.pushNamed(context, '/register_password'),
-              onResend: () {
-                // Handle resend logic
+              sessionId: sessionId,
+              onSuccess: () => Navigator.pushNamed(
+                context,
+                '/register_password',
+                arguments: args,
+              ),
+              onResend: () async {
+                if (sessionId == null) return;
+                try {
+                  final auth = context.read<AuthService>();
+                  final data = await auth.sendOtp(sessionId, 'sms');
+                  // TEST: дахин илгээсэн OTP-г харуулах
+                  final otp = data['otp']?.toString();
+                  if (otp != null && context.mounted) {
+                    CustomSnackbar.show(
+                      context,
+                      message: 'OTP код: $otp',
+                      type: CustomSnackbarType.info,
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    CustomSnackbar.show(
+                      context,
+                      message: e.toString().replaceFirst('Exception: ', ''),
+                      type: CustomSnackbarType.error,
+                    );
+                  }
+                }
               },
             ),
           ],
