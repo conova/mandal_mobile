@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../widgets/custom_input.dart';
 import '../../../../widgets/custom_button.dart';
+import '../../../../common/validators.dart';
 
 class RegisterForm extends StatefulWidget {
   final VoidCallback onRegister;
@@ -22,10 +24,11 @@ class RegisterForm extends StatefulWidget {
   });
 
   @override
-  State<RegisterForm> createState() => _RegisterFormState();
+  State<RegisterForm> createState() => RegisterFormState();
 }
 
-class _RegisterFormState extends State<RegisterForm> {
+class RegisterFormState extends State<RegisterForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isButtonEnabled = false;
 
   @override
@@ -47,53 +50,81 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   void _checkFields() {
-    setState(() {
-      _isButtonEnabled =
-          widget.regNoController.text.isNotEmpty &&
-          widget.phoneController.text.isNotEmpty &&
-          widget.lastNameController.text.isNotEmpty &&
-          widget.firstNameController.text.isNotEmpty;
-    });
+    final filled = widget.regNoController.text.trim().isNotEmpty &&
+        widget.phoneController.text.trim().isNotEmpty &&
+        widget.lastNameController.text.trim().isNotEmpty &&
+        widget.firstNameController.text.trim().isNotEmpty;
+    if (filled != _isButtonEnabled) {
+      setState(() => _isButtonEnabled = filled);
+    }
+  }
+
+  void _handleSubmit() {
+    if (widget.isLoading) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    widget.onRegister();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Column(
-      children: [
-        CustomInput(
-          label: l10n.registrationNumber,
-          hint: '',
-          controller: widget.regNoController,
-        ),
-        const SizedBox(height: 16),
-        CustomInput(
-          label: l10n.phoneNumber,
-          hint: '',
-          controller: widget.phoneController,
-          keyboardType: TextInputType.phone,
-        ),
-        const SizedBox(height: 16),
-        CustomInput(
-          label: l10n.lastName,
-          hint: '',
-          controller: widget.lastNameController,
-        ),
-        const SizedBox(height: 16),
-        CustomInput(
-          label: l10n.firstName,
-          hint: '',
-          controller: widget.firstNameController,
-        ),
-        const SizedBox(height: 24),
-        CustomButton(
-          label: l10n.register,
-          onPressed: _isButtonEnabled && !widget.isLoading ? widget.onRegister : null,
-          isLoading: widget.isLoading,
-          variant: CustomButtonVariant.primary,
-        ),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          CustomInput(
+            label: l10n.registrationNumber,
+            hint: 'УБ12345678',
+            controller: widget.regNoController,
+            keyboardType: TextInputType.text,
+            inputFormatters: [
+              // 10 оронгоор хязгаарлах: 2 үсэг + 8 хүртэл тоо
+              LengthLimitingTextInputFormatter(10),
+              FilteringTextInputFormatter.allow(
+                RegExp(r'[А-ЯӨҮЁа-яөүёA-Za-z0-9]'),
+              ),
+            ],
+            validator: Validators.validateMongolianRegister,
+          ),
+          const SizedBox(height: 16),
+          CustomInput(
+            label: l10n.phoneNumber,
+            hint: '99000000',
+            controller: widget.phoneController,
+            keyboardType: TextInputType.phone,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(8),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            validator: Validators.validateMongolianPhone,
+          ),
+          const SizedBox(height: 16),
+          CustomInput(
+            label: l10n.lastName,
+            hint: '',
+            controller: widget.lastNameController,
+            validator: (v) =>
+                Validators.validateName(v, fieldName: l10n.lastName),
+          ),
+          const SizedBox(height: 16),
+          CustomInput(
+            label: l10n.firstName,
+            hint: '',
+            controller: widget.firstNameController,
+            validator: (v) =>
+                Validators.validateName(v, fieldName: l10n.firstName),
+          ),
+          const SizedBox(height: 24),
+          CustomButton(
+            label: l10n.register,
+            onPressed:
+                _isButtonEnabled && !widget.isLoading ? _handleSubmit : null,
+            isLoading: widget.isLoading,
+            variant: CustomButtonVariant.primary,
+          ),
+        ],
+      ),
     );
   }
 }

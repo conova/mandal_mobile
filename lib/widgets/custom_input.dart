@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 
@@ -20,6 +21,7 @@ class CustomInput extends StatefulWidget {
   final bool enabled;
   final TextAlign textAlign;
   final bool showCounter;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomInput({
     super.key,
@@ -39,6 +41,7 @@ class CustomInput extends StatefulWidget {
     this.enabled = true,
     this.textAlign = TextAlign.start,
     this.showCounter = true,
+    this.inputFormatters,
   });
 
   @override
@@ -133,6 +136,7 @@ class _CustomInputState extends State<CustomInput> {
               onChanged: widget.onChanged,
               textAlign: widget.textAlign,
               maxLength: widget.maxLength,
+              inputFormatters: widget.inputFormatters,
               validator: (value) {
                 // Run the custom validator
                 final result = widget.validator?.call(value);
