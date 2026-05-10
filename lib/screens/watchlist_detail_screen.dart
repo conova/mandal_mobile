@@ -280,6 +280,8 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   item.name,
@@ -287,29 +289,38 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                     fontWeight: AppTextStyles.light,
                     color: extendedColors.neutral200,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
+          const SizedBox(width: 8),
 
           // Price & change
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                item.price,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  item.price,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Text(
-                '$changePrefix${item.change}',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: changeColor,
-                  fontWeight: FontWeight.w500,
+                Text(
+                  '$changePrefix${item.change}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: changeColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

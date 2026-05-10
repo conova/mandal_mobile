@@ -183,19 +183,27 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                           Expanded(
                             child: Row(
                               children: [
-                                Text(
-                                  stock.symbol,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: extendedColors.neutral100,
+                                Flexible(
+                                  child: Text(
+                                    stock.symbol,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: extendedColors.neutral100,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  stock.name,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: AppTextStyles.light,
-                                    color: extendedColors.neutral200,
+                                Flexible(
+                                  child: Text(
+                                    stock.name,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: AppTextStyles.light,
+                                      color: extendedColors.neutral200,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],

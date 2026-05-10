@@ -34,28 +34,41 @@ class BondPaymentDetails extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  l10n.totalPayment,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral300,
+                Flexible(
+                  child: Text(
+                    l10n.totalPayment,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral300,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Row(
-                  children: [
-                    Text(
-                      totalPayment,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: extendedColors.neutral100,
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          totalPayment,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.neutral100,
+                          ),
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.chevron_right,
-                      color: extendedColors.neutral100,
-                      size: 20,
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.chevron_right,
+                        color: extendedColors.neutral100,
+                        size: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -64,15 +77,25 @@ class BondPaymentDetails extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.totalReturn,
-                style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
+              Flexible(
+                child: Text(
+                  l10n.totalReturn,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Text(
-                totalReturn,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  totalReturn,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                  textAlign: TextAlign.right,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

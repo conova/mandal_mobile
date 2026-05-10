@@ -27,42 +27,51 @@ class RegistrationProgressBanner extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.khurSystem,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.onBackground,
-                      fontWeight: FontWeight.bold,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.khurSystem,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: theme.colorScheme.onBackground,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        l10n.registrationProgress(percent.toString()),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral200,
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            l10n.registrationProgress(percent.toString()),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral200,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      Text(
-                        percent.toString() + "%",
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w400,
+                        Text(
+                          percent.toString() + "%",
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral100,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        size: 16,
-                        color: extendedColors.yellow,
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          size: 16,
+                          color: extendedColors.yellow,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 12),
               ElevatedButton(
                 onPressed: onStartPressed,
                 style: ElevatedButton.styleFrom(

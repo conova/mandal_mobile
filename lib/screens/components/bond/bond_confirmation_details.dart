@@ -67,17 +67,27 @@ class BondConfirmationDetails extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n.totalPayment,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral300,
+            Flexible(
+              child: Text(
+                l10n.totalPayment,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: extendedColors.neutral300,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              total,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: extendedColors.neutral100,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                total,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
+                textAlign: TextAlign.right,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -95,17 +105,27 @@ class BondConfirmationDetails extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: extendedColors.neutral300,
+        Flexible(
+          child: Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral300,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        Text(
-          value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: extendedColors.neutral100,
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: extendedColors.neutral100,
+            ),
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

@@ -15,29 +15,16 @@ class MyInfoScreen extends StatefulWidget {
 }
 
 class _MyInfoScreenState extends State<MyInfoScreen> {
-  Map<String, dynamic>? _userInfo;
-  bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _fetchUserInfo();
-  }
-
-  Future<void> _fetchUserInfo() async {
-    try {
-      final auth = context.read<AuthService>();
-      final info = await auth.getUserInfo();
+    // Дэлгэц нээгдэхэд background-д шинэчилнэ.
+    // Хэрэв cache байхгүй бол build()-д loader харагдана; мэдээлэл ирэхэд
+    // notifyListeners()-р дамжаад автомат шинэчлэгдэнэ.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      setState(() {
-        _userInfo = info;
-        _isLoading = false;
-      });
-    } catch (_) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+      context.read<AuthService>().refreshUserInfo();
+    });
   }
 
   @override
@@ -47,6 +34,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
 
+    // Cache-аас шууд авах. Хоосон бол loader харагдана.
+    final userInfo = context.watch<AuthService>().userInfo;
+    final isLoading = userInfo == null;
+
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: AppBar(
@@ -54,7 +45,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         elevation: 0,
         leading: const MyInfoBackButton(),
       ),
-      body: _isLoading
+      body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -71,23 +62,23 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   const SizedBox(height: 32),
                   InfoCard(
                     label: l10n.surname,
-                    value: _userInfo?['lastName']?.toString() ?? '-',
+                    value: userInfo['lastName']?.toString() ?? '-',
                   ),
                   InfoCard(
                     label: l10n.firstName,
-                    value: _userInfo?['firstName']?.toString() ?? '-',
+                    value: userInfo['firstName']?.toString() ?? '-',
                   ),
                   InfoCard(
                     label: l10n.regNo,
-                    value: _userInfo?['registerNumber']?.toString() ?? '-',
+                    value: userInfo['registerNumber']?.toString() ?? '-',
                   ),
                   InfoCard(
                     label: l10n.email,
-                    value: _userInfo?['email']?.toString() ?? '-',
+                    value: userInfo['email']?.toString() ?? '-',
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (_userInfo?['emailVerified'] == true)
+                        if (userInfo['emailVerified'] == true)
                           Icon(
                             Icons.verified_user_outlined,
                             color: extendedColors.primaryMain,
@@ -110,7 +101,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   ),
                   InfoCard(
                     label: l10n.phoneNumber,
-                    value: _userInfo?['phone']?.toString() ?? '-',
+                    value: userInfo['phone']?.toString() ?? '-',
                     trailing: Icon(
                       Icons.edit_outlined,
                       color: extendedColors.primaryMain,
@@ -119,7 +110,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   ),
                   InfoCard(
                     label: l10n.address,
-                    value: _userInfo?['address']?.toString() ?? '-',
+                    value: userInfo['address']?.toString() ?? '-',
                     trailing: Icon(
                       Icons.edit_outlined,
                       color: extendedColors.primaryMain,

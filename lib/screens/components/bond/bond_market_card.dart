@@ -50,18 +50,26 @@ class BondMarketCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: extendedColors.neutral100,
-                            fontWeight: FontWeight.bold,
+                        Flexible(
+                          child: Text(
+                            title,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: extendedColors.neutral100,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          subtitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: extendedColors.neutral200,
+                        Flexible(
+                          child: Text(
+                            subtitle,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral200,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

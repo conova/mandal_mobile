@@ -113,15 +113,24 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                     ..._devices.asMap().entries.map((entry) {
                       final device = entry.value;
                       final deviceId = device['DEVICEID']?.toString() ?? '';
+                      final deviceInfo = device['DEVICEINFO']?.toString() ?? '';
                       final lastUpdate = device['LASTUPDATE']?.toString() ?? '';
                       final status = device['STATUS']?.toString() ?? '0';
                       final statusName = device['STATUSNAME']?.toString() ?? '';
                       final isActive = status == '1';
 
+                      // Хүн уншихад тохиромжтой нэр: DEVICEINFO байвал тэр,
+                      // үгүй бол DEVICEID-ыг товчилж харуулна
+                      final deviceName = deviceInfo.isNotEmpty
+                          ? deviceInfo
+                          : (deviceId.length > 12
+                              ? 'Device ${deviceId.substring(0, 8)}…'
+                              : 'Device $deviceId');
+
                       return Column(
                         children: [
                           DeviceItem(
-                            deviceName: 'Device $deviceId',
+                            deviceName: deviceName,
                             status: statusName.isNotEmpty
                                 ? statusName
                                 : (isActive ? l10n.active : l10n.inactive),

@@ -198,20 +198,28 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      'MNDL',
-                                      style: theme.textTheme.headlineSmall
-                                          ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: extendedColors.neutral100,
+                                    Flexible(
+                                      child: Text(
+                                        'MNDL',
+                                        style: theme.textTheme.headlineSmall
+                                            ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: extendedColors.neutral100,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     const SizedBox(width: 12),
-                                    Text(
-                                      'Мандал даатгал ХК',
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                        color: extendedColors.neutral300,
+                                    Flexible(
+                                      child: Text(
+                                        'Мандал даатгал ХК',
+                                        style:
+                                            theme.textTheme.bodyMedium?.copyWith(
+                                          color: extendedColors.neutral300,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                   ],
@@ -337,17 +345,27 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n.totalPaymentLabel,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral300,
+            Flexible(
+              child: Text(
+                l10n.totalPaymentLabel,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: extendedColors.neutral300,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              '65,520.23₮',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: extendedColors.neutral100,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                '65,520.23₮',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
+                textAlign: TextAlign.right,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -365,17 +383,27 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: extendedColors.neutral300,
+        Flexible(
+          child: Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral300,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        Text(
-          value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: extendedColors.neutral100,
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: extendedColors.neutral100,
+            ),
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

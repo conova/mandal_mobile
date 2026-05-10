@@ -39,18 +39,26 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
           children: [
             Row(
               children: [
-                Text(
-                  'Net Capital',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
+                Flexible(
+                  child: Text(
+                    'Net Capital',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Нэт Капитал',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral400,
+                Flexible(
+                  child: Text(
+                    'Нэт Капитал',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral400,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

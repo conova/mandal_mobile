@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:flutter/foundation.dart'
+    show kIsWeb, defaultTargetPlatform, TargetPlatform, debugPrint;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:dio/dio.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import '../config/api_config.dart';
 
 /// Login хариуны төрөл
@@ -40,6 +44,8 @@ class AuthService with ChangeNotifier {
   static const String _custNameKey = 'user_cust_name';
   static const String _rolesKey = 'user_roles';
   static const String _deviceIdKey = 'device_id';
+  static const String _fallbackDeviceIdKey = 'fallback_device_id';
+  static const String _userInfoKey = 'user_info';
 
   final LocalAuthentication _localAuth = LocalAuthentication();
 
@@ -53,6 +59,9 @@ class AuthService with ChangeNotifier {
   String? _custName;
   Map<String, String> _roles = {};
   String? _deviceId;
+  String? _fallbackDeviceId;
+  String _manufacturer = '';
+  Map<String, dynamic>? _userInfo;
 
   String? get accessToken => _accessToken;
   bool get hasShownStory => _storyShown;
@@ -62,6 +71,18 @@ class AuthService with ChangeNotifier {
   String? get custName => _custName;
   Map<String, String> get roles => _roles;
   String? get deviceId => _deviceId;
+
+  /// Нэвтэрсэн хэрэглэгчийн дэлгэрэнгүй мэдээлэл (lastName, firstName,
+  /// registerNumber, email, phone, address г.м.). Login амжилттай болоход
+  /// автоматаар татаж кэшэлнэ. App дахин нээхэд SharedPreferences-аас
+  /// уншина.
+  Map<String, dynamic>? get userInfo => _userInfo;
+
+  /// Login API-д илгээх deviceId. FCM token байгаа бол түүнийг, үгүй бол
+  /// төхөөрөмж тус бүрд анх ажиллахад үүсгэсэн UUID-г буцаана. Энэ нь
+  /// hardcoded fallback-аас зайлсхийж, төхөөрөмж бүр өвөрмөц утгатай байхыг
+  /// баталгаажуулна.
+  String get effectiveDeviceId => _deviceId ?? _fallbackDeviceId ?? 'unknown';
 
   Map<String, String?> get savedUser => {
     'name': _lastUserName,
@@ -84,8 +105,83 @@ class AuthService with ChangeNotifier {
       _roles = Map<String, String>.from(jsonDecode(rolesJson));
     }
 
+    final userInfoJson = prefs.getString(_userInfoKey);
+    if (userInfoJson != null) {
+      _userInfo = Map<String, dynamic>.from(jsonDecode(userInfoJson));
+    }
+
     // DeviceId: FCM token ашиглана (main.dart-аас setDeviceId дуудна)
     _deviceId = prefs.getString(_deviceIdKey);
+
+    // Fallback deviceId: FCM-гүй төхөөрөмжид зориулсан UUID v4 (анх 1 удаа үүсгэж
+    // байнгын хадгална). Login дуудлагууд `effectiveDeviceId`-г ашиглана.
+    _fallbackDeviceId = prefs.getString(_fallbackDeviceIdKey);
+    if (_fallbackDeviceId == null) {
+      _fallbackDeviceId = _generateUuidV4();
+      await prefs.setString(_fallbackDeviceIdKey, _fallbackDeviceId!);
+      debugPrint('[Auth] Generated fallback deviceId: $_fallbackDeviceId');
+    }
+
+    // Төхөөрөмжийн ялгаагч нэр (login API-ийн `manufacturer` талбарт илгээх).
+    // Жишээ: "Samsung SM-S928B", "iPhone iPhone17,1", "Chrome 147"
+    _manufacturer = await _detectManufacturer();
+    debugPrint('[Auth] Manufacturer: $_manufacturer');
+  }
+
+  /// Платформ тус бүрд харгалзах хүн уншихад тааруу нэр буцаана.
+  /// Алдаа гарвал хоосон string буцаана (login зогсохгүй).
+  Future<String> _detectManufacturer() async {
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      if (kIsWeb) {
+        final web = await deviceInfo.webBrowserInfo;
+        final name = web.browserName.name; // "chrome", "safari", ...
+        return '${_capitalize(name)} ${web.appVersion ?? ''}'.trim();
+      }
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          final a = await deviceInfo.androidInfo;
+          // manufacturer = "samsung", model = "SM-S928B" → "Samsung SM-S928B"
+          return '${_capitalize(a.manufacturer)} ${a.model}'.trim();
+        case TargetPlatform.iOS:
+          final i = await deviceInfo.iosInfo;
+          // utsname.machine = "iPhone17,1" — серверт марк/моделод mapping хийнэ
+          final machine = i.utsname.machine;
+          return '${i.model} $machine'.trim();
+        case TargetPlatform.windows:
+          final w = await deviceInfo.windowsInfo;
+          return '${w.computerName} (Windows)';
+        case TargetPlatform.macOS:
+          final m = await deviceInfo.macOsInfo;
+          return '${m.model} (macOS)';
+        case TargetPlatform.linux:
+          final l = await deviceInfo.linuxInfo;
+          return '${l.prettyName} (Linux)';
+        default:
+          return 'Unknown';
+      }
+    } catch (e) {
+      debugPrint('[Auth] Manufacturer detect алдаа: $e');
+      return '';
+    }
+  }
+
+  String _capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+  }
+
+  /// UUID v4 (random) үүсгэх. Сэтгэл алддаггүй хувийн санамсаргүй тооноос.
+  /// Жишээ: `f47ac10b-58cc-4372-a567-0e02b2c3d479`
+  String _generateUuidV4() {
+    final rng = Random.secure();
+    final bytes = List<int>.generate(16, (_) => rng.nextInt(256));
+    // RFC 4122 v4: байт 6-ын дээд 4 бит = 0100, байт 8-ын дээд 2 бит = 10
+    bytes[6] = (bytes[6] & 0x0F) | 0x40;
+    bytes[8] = (bytes[8] & 0x3F) | 0x80;
+    String hex(int b) => b.toRadixString(16).padLeft(2, '0');
+    final h = bytes.map(hex).join();
+    return '${h.substring(0, 8)}-${h.substring(8, 12)}-${h.substring(12, 16)}-${h.substring(16, 20)}-${h.substring(20, 32)}';
   }
 
   /// FCM token-г deviceId болгож хадгалах
@@ -288,8 +384,24 @@ class AuthService with ChangeNotifier {
     final String accessToken = data['token'];
     final String refreshToken = data['refreshToken'] ?? '';
 
+    // Өмнөх saved user-ийг шинэ нэвтрэлтийн өмнө цээжлэх (saveLastUser нь
+    // _lastUserId-г дарж бичих учир)
+    final previousUserId = _lastUserId;
+
     await saveTokens(accessToken: accessToken, refreshToken: refreshToken);
     await _saveUserInfoFromToken(accessToken);
+
+    // Шинэ хэрэглэгч өөр (өмнөх биометрик идэвхжсэн user-ийнх биш) бол
+    // биометрик тохиргоог автоматаар унтрааж аюулгүй болгоно.
+    if (previousUserId != null &&
+        _uid != null &&
+        previousUserId != _uid &&
+        _isBiometricEnabled) {
+      await setBiometricEnabled(false);
+      debugPrint(
+        '[Auth] Биометрик тохиргоо унтраав ($previousUserId → $_uid)',
+      );
+    }
 
     if (_custName != null && _uid != null) {
       await saveLastUser(_custName!, _uid!);
@@ -297,6 +409,27 @@ class AuthService with ChangeNotifier {
 
     // Login амжилттай → FCM token серверт бүртгэх
     registerFcmToken();
+
+    // Хэрэглэгчийн дэлгэрэнгүй мэдээллийг татаж кэшэлнэ
+    // (нэвтрэх процессыг хойшлуулахгүйн тулд async асаав)
+    refreshUserInfo();
+  }
+
+  /// `/user/info` API-аас хэрэглэгчийн мэдээлэл татаж кэш + persistence
+  /// шинэчилнэ. Алдаа гарвал чимээгүй (хуучин cache үлддэг).
+  /// Login + my_info screen-аас дуудаж болно.
+  Future<Map<String, dynamic>?> refreshUserInfo() async {
+    try {
+      final info = await getUserInfo();
+      _userInfo = info;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_userInfoKey, jsonEncode(info));
+      notifyListeners();
+      return info;
+    } catch (e) {
+      debugPrint('[Auth] refreshUserInfo алдаа: $e');
+      return null;
+    }
   }
 
   /// Нэвтрэх — deviceId илгээнэ.
@@ -310,7 +443,8 @@ class AuthService with ChangeNotifier {
           'api': 'login',
           'userName': userName,
           'userPass': password,
-          'deviceId': _deviceId ?? '1234562',
+          'deviceId': effectiveDeviceId,
+          'manufacturer': _manufacturer,
         },
       );
 
@@ -350,7 +484,10 @@ class AuthService with ChangeNotifier {
   /// Биометрик нэвтрэлт — deviceId + uid ашиглана.
   /// Зөвхөн deviceId бүртгэлтэй үед ажиллана.
   Future<LoginResult> biometricLogin() async {
-    if (_uid == null) {
+    // Logout-ын дараа _uid цэвэрлэгдэх боловч _lastUserId үлдэнэ.
+    // Quick login дэлгэцэд биометрикээр нэвтрэхэд энийг ашиглана.
+    final uidToUse = _uid ?? _lastUserId;
+    if (uidToUse == null) {
       return const LoginResult(message: 'No saved user');
     }
 
@@ -359,8 +496,9 @@ class AuthService with ChangeNotifier {
         ApiConfig.login,
         data: {
           'api': 'biometric_login',
-          'deviceId': _deviceId ?? '123456',
-          'uid': _uid,
+          'deviceId': effectiveDeviceId,
+          'uid': uidToUse,
+          'manufacturer': _manufacturer,
         },
       );
 
@@ -415,7 +553,8 @@ class AuthService with ChangeNotifier {
         data: {
           'api': 'register_device',
           'sessionId': sessionId,
-          'deviceId': _deviceId ?? '123456',
+          'deviceId': effectiveDeviceId,
+          'manufacturer': _manufacturer,
         },
       );
 
@@ -804,6 +943,7 @@ class AuthService with ChangeNotifier {
     _uid = null;
     _custName = null;
     _roles = {};
+    _userInfo = null;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_accessTokenKey);
@@ -811,6 +951,7 @@ class AuthService with ChangeNotifier {
     await prefs.remove(_uidKey);
     await prefs.remove(_custNameKey);
     await prefs.remove(_rolesKey);
+    await prefs.remove(_userInfoKey);
   }
 
   bool get isAuthenticated => _accessToken != null;

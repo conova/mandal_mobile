@@ -62,27 +62,13 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
     }
   }
 
-  /// Биометрик нэвтрэлт — local auth + server API
+  /// Биометрик нэвтрэлт — товч өөрөө биометрикийг шалгаж дуудсан учир
+  /// энд зөвхөн серверийн API-г дуудна.
   Future<void> _handleBiometricLogin() async {
     setState(() => _isLoading = true);
 
     try {
       final authService = context.read<AuthService>();
-
-      // 1. Төхөөрөмж дээр биометрик баталгаажуулалт
-      final localSuccess = await authService.authenticateWithBiometrics();
-      if (!localSuccess) {
-        if (mounted) {
-          CustomSnackbar.show(
-            context,
-            message: 'Биометрик баталгаажуулалт амжилтгүй',
-            type: CustomSnackbarType.error,
-          );
-        }
-        return;
-      }
-
-      // 2. Server-т биометрик нэвтрэлт хүсэлт илгээх
       final result = await authService.biometricLogin();
 
       if (!mounted) return;

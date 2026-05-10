@@ -39,41 +39,46 @@ class StockPriceRow extends StatelessWidget {
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  price,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (change != '0.00%')
-                      Icon(
-                        isGrowing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                        color: isGrowing
-                            ? theme.primaryColor
-                            : colorScheme.error,
-                        size: 20,
-                      ),
-                    Text(
-                      change,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: change == '0.00%'
-                            ? theme.textTheme.bodySmall?.color ?? Colors.grey
-                            : (isGrowing
-                                  ? theme.primaryColor
-                                  : colorScheme.error),
-                      ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    price,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
-              ],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (change != '0.00%')
+                        Icon(
+                          isGrowing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                          color: isGrowing
+                              ? theme.primaryColor
+                              : colorScheme.error,
+                          size: 20,
+                        ),
+                      Text(
+                        change,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: change == '0.00%'
+                              ? theme.textTheme.bodySmall?.color ?? Colors.grey
+                              : (isGrowing
+                                    ? theme.primaryColor
+                                    : colorScheme.error),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

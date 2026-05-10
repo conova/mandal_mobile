@@ -85,26 +85,32 @@ class _StockTradingConfirmationOverlayState
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'MNDL',
-                                      style: theme.textTheme.headlineLarge
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: theme.colorScheme.onSurface,
-                                          ),
-                                    ),
-                                    Text(
-                                      'Мандал даатгал ХК',
-                                      style: theme.textTheme.bodyLarge
-                                          ?.copyWith(
-                                            color: theme.colorScheme.onSurface
-                                                .withOpacity(0.5),
-                                          ),
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'MNDL',
+                                        style: theme.textTheme.headlineLarge
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: theme.colorScheme.onSurface,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        'Мандал даатгал ХК',
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                              color: theme.colorScheme.onSurface
+                                                  .withOpacity(0.5),
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.star_border),
@@ -138,17 +144,27 @@ class _StockTradingConfirmationOverlayState
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  l10n.totalPaymentLabel,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color: theme.colorScheme.onSurface
-                                        .withOpacity(0.5),
+                                Flexible(
+                                  child: Text(
+                                    l10n.totalPaymentLabel,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.5),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                Text(
-                                  '65,520.23₮',
-                                  style: theme.textTheme.headlineMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    '65,520.23₮',
+                                    style: theme.textTheme.headlineMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.right,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
                             ),
@@ -172,16 +188,26 @@ class _StockTradingConfirmationOverlayState
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.4),
+        Flexible(
+          child: Text(
+            label,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.4),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        Text(
-          value,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "277383964750",
+    "project_id": "mandalcapital-f1884",
+    "storage_bucket": "mandalcapital-f1884.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277383964750:android:e85928fa8d1b48cfc63b1f",
+        "android_client_info": {
+          "package_name": "mn.mandal.capital.markets"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDa3I8kP5AHykl30ipYoxH6hXU4fBJQHqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

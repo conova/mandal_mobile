@@ -52,19 +52,27 @@ class MyBondCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          title,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: extendedColors.neutral100,
+                        Flexible(
+                          child: Text(
+                            title,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: extendedColors.neutral100,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          subtitle,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            fontWeight: AppTextStyles.light,
-                            color: extendedColors.neutral300,
+                        Flexible(
+                          child: Text(
+                            subtitle,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: AppTextStyles.light,
+                              color: extendedColors.neutral300,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

@@ -41,18 +41,26 @@ class _BondSellScreenState extends State<BondSellScreen> {
           children: [
             Row(
               children: [
-                Text(
-                  'Net Capital',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
+                Flexible(
+                  child: Text(
+                    'Net Capital',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Нэт Капитал',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral400,
+                Flexible(
+                  child: Text(
+                    'Нэт Капитал',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral400,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -150,28 +158,41 @@ class _BondSellScreenState extends State<BondSellScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            l10n.receivableAmountLabel,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.neutral400,
+          Flexible(
+            child: Text(
+              l10n.receivableAmountLabel,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral400,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Row(
-            children: [
-              Text(
-                '998,000₮',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    '998,000₮',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right,
-                color: extendedColors.neutral100,
-                size: 20,
-              ),
-            ],
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.chevron_right,
+                  color: extendedColors.neutral100,
+                  size: 20,
+                ),
+              ],
+            ),
           ),
         ],
       ),

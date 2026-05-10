@@ -1,4 +1,4 @@
-package com.example.antigravity
+package mn.mandal.capital.markets
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

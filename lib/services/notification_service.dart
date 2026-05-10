@@ -99,9 +99,11 @@ class NotificationService {
     if (settings.authorizationStatus == AuthorizationStatus.authorized ||
         settings.authorizationStatus == AuthorizationStatus.provisional) {
       // FCM token авах
+      // Web push-д VAPID key шаардлагатай — Firebase Console → Project Settings →
+      // Cloud Messaging → Web configuration → Web Push certificates
       _fcmToken = await _messaging.getToken(
         vapidKey: kIsWeb
-            ? 'YOUR-VAPID-KEY' // Web push-д VAPID key шаардлагатай
+            ? 'BEb-ahqOqkHywzlILnxM5_rpMDIMbncCJw4E5c2IspRf7Pbrs-1EqwP9G8J8-5BV9vuP7VbebIryqMGyQFskeJM'
             : null,
       );
       debugPrint('[FCM] Token: $_fcmToken');

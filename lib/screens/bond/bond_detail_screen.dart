@@ -33,19 +33,27 @@ class BondDetailScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(
-                  'Net Capital',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
+                Flexible(
+                  child: Text(
+                    'Net Capital',
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Нэт Капитал',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: AppTextStyles.light,
-                    color: extendedColors.neutral200,
+                Flexible(
+                  child: Text(
+                    'Нэт Капитал',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: AppTextStyles.light,
+                      color: extendedColors.neutral200,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

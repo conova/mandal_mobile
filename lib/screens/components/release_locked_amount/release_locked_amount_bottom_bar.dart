@@ -39,18 +39,26 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  '${l10n.availableCash}: ',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: AppTextStyles.light,
-                    color: extendedColors.neutral300,
+                Flexible(
+                  child: Text(
+                    '${l10n.availableCash}: ',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: AppTextStyles.light,
+                      color: extendedColors.neutral300,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text(
-                  projectedCashText,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.primaryMain,
+                Flexible(
+                  child: Text(
+                    projectedCashText,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.primaryMain,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

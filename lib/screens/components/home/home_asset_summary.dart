@@ -68,11 +68,15 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
-                  Text(
-                    _totalAssets,
-                    style: theme.textTheme.displayLarge?.copyWith(
-                      fontWeight: AppTextStyles.semiBold,
-                      color: theme.colorScheme.onBackground,
+                  Flexible(
+                    child: Text(
+                      _totalAssets,
+                      style: theme.textTheme.displayLarge?.copyWith(
+                        fontWeight: AppTextStyles.semiBold,
+                        color: theme.colorScheme.onBackground,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Text(

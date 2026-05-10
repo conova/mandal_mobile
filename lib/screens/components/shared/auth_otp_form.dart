@@ -183,11 +183,15 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
         const SizedBox(height: 32),
         Row(
           children: [
-            Text(
-              l10n.noCodeReceived,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onBackground,
-                fontWeight: FontWeight.w200,
+            Flexible(
+              child: Text(
+                l10n.noCodeReceived,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onBackground,
+                  fontWeight: FontWeight.w200,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             TextButton(

@@ -32,10 +32,14 @@ class RegisterContactInfo extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            Text(
-              'хаягт хүсэлтээ илгээнэ үү.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral500,
+            Flexible(
+              child: Text(
+                'хаягт хүсэлтээ илгээнэ үү.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

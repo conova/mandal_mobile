@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_state_manager.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_snackbar.dart';
 import '../widgets/logout_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -23,11 +24,74 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String _userName = '';
   String _userPhone = '';
+  bool _biometricBusy = false;
 
   @override
   void initState() {
     super.initState();
     _loadUserInfo();
+  }
+
+  Future<void> _handleBiometricToggle(bool requested) async {
+    if (_biometricBusy) return;
+    final auth = context.read<AuthService>();
+    final l10n = AppLocalizations.of(context)!;
+
+    setState(() => _biometricBusy = true);
+    try {
+      if (requested) {
+        // Идэвхжүүлэхээс өмнө биометрикийг шалгах
+        final available = await auth.getAvailableBiometrics();
+        if (available.isEmpty) {
+          if (mounted) {
+            CustomSnackbar.show(
+              context,
+              message: 'Биометрик уншигч олдсонгүй',
+              type: CustomSnackbarType.error,
+            );
+          }
+          return;
+        }
+        final ok = await auth.authenticateWithBiometrics();
+        if (!ok) {
+          if (mounted) {
+            CustomSnackbar.show(
+              context,
+              message: 'Биометрик баталгаажуулалт амжилтгүй',
+              type: CustomSnackbarType.error,
+            );
+          }
+          return;
+        }
+        await auth.setBiometricEnabled(true);
+        if (mounted) {
+          CustomSnackbar.show(
+            context,
+            message: '${l10n.biometric} ${l10n.active.toLowerCase()}',
+            type: CustomSnackbarType.success,
+          );
+        }
+      } else {
+        await auth.setBiometricEnabled(false);
+        if (mounted) {
+          CustomSnackbar.show(
+            context,
+            message: '${l10n.biometric} ${l10n.inactive.toLowerCase()}',
+            type: CustomSnackbarType.info,
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        CustomSnackbar.show(
+          context,
+          message: 'Алдаа: $e',
+          type: CustomSnackbarType.error,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _biometricBusy = false);
+    }
   }
 
   Future<void> _loadUserInfo() async {
@@ -60,6 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final biometricEnabled = context.watch<AuthService>().isBiometricEnabled;
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -166,9 +231,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileToggleItem(
               icon: Icons.fingerprint,
               title: l10n.biometric,
-              subtitle: l10n.inactive,
-              value: false,
-              onChanged: (val) {},
+              subtitle: biometricEnabled ? l10n.active : l10n.inactive,
+              value: biometricEnabled,
+              onChanged: _handleBiometricToggle,
             ),
             ProfileListItem(
               icon: Icons.lock_outline,

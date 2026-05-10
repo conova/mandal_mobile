@@ -358,19 +358,27 @@ class StockPortfolioScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(
-                item.symbol,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+              Flexible(
+                child: Text(
+                  item.symbol,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (item.name.isNotEmpty) ...[
                 const SizedBox(width: 8),
-                Text(
-                  item.name,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: extendedColors.neutral300,
+                Flexible(
+                  child: Text(
+                    item.name,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: extendedColors.neutral300,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

@@ -311,18 +311,26 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               children: [
                 Row(
                   children: [
-                    Text(
-                      bond.name,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: extendedColors.neutral100,
+                    Flexible(
+                      child: Text(
+                        bond.name,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: extendedColors.neutral100,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      bond.subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: extendedColors.neutral300,
+                    Flexible(
+                      child: Text(
+                        bond.subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: extendedColors.neutral300,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -345,24 +353,31 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                bond.amount,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  bond.amount,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${l10n.interestRateShort} - ${bond.interestRate} | ${bond.pieces}${l10n.pieces}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: extendedColors.neutral300,
+                const SizedBox(height: 4),
+                Text(
+                  '${l10n.interestRateShort} - ${bond.interestRate} | ${bond.pieces}${l10n.pieces}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: extendedColors.neutral300,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

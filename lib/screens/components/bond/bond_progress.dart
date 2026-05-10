@@ -35,24 +35,29 @@ class BondProgress extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            RichText(
-              text: TextSpan(
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: AppTextStyles.regular,
-                  color: extendedColors.neutral100,
-                ),
-                children: [
-                  TextSpan(text: current),
-                  TextSpan(
-                    text: ' / $total',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                      fontWeight: AppTextStyles.light,
-                    ),
+            Flexible(
+              child: RichText(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                text: TextSpan(
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: AppTextStyles.regular,
+                    color: extendedColors.neutral100,
                   ),
-                ],
+                  children: [
+                    TextSpan(text: current),
+                    TextSpan(
+                      text: ' / $total',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral200,
+                        fontWeight: AppTextStyles.light,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+            const SizedBox(width: 8),
             Text(
               '${(percentage * 100).toInt()}%',
               style: theme.textTheme.bodyLarge?.copyWith(

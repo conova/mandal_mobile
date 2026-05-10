@@ -134,46 +134,59 @@ class HomeWatchlistSection extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                symbol,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  symbol,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Text(
-                name,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: AppTextStyles.light,
-                  color: extendedColors.neutral200,
+                Text(
+                  name,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral200,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                price,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  price,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Text(
-                change,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isPositive == null
-                      ? extendedColors.neutral200
-                      : (isPositive
-                            ? extendedColors.primaryMain
-                            : extendedColors.red),
-                  fontWeight: FontWeight.w500,
+                Text(
+                  change,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isPositive == null
+                        ? extendedColors.neutral200
+                        : (isPositive
+                              ? extendedColors.primaryMain
+                              : extendedColors.red),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

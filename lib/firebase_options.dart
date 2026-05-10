@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-/// Firebase тохиргоо — flutterfire configure ажиллуулахад автоматаар солигдоно.
-/// Одоогоор mock утгатай.
+/// Firebase тохиргоо — Firebase Console-оос татсан google-services.json
+/// (Android) болон GoogleService-Info.plist (iOS)-ын утгуудтай нийцэнэ.
+///
+/// Project: mandalcapital-f1884
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -21,34 +23,30 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // ┌──────────────────────────────────────────────────────┐
-  // │  MOCK CONFIG — flutterfire configure хийхэд солигдоно │
-  // │  Firebase Console-оос бодит утгуудыг оруулна уу       │
-  // └──────────────────────────────────────────────────────┘
-
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR-WEB-API-KEY',
-    appId: '1:000000000000:web:0000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'mandal-capital',
-    authDomain: 'mandal-capital.firebaseapp.com',
-    storageBucket: 'mandal-capital.appspot.com',
+    apiKey: 'AIzaSyAhBJ2ZRv5XS6loM3nUsbYiQwH9vfogmXw',
+    appId: '1:277383964750:web:185315da0593f06ac63b1f',
+    messagingSenderId: '277383964750',
+    projectId: 'mandalcapital-f1884',
+    authDomain: 'mandalcapital-f1884.firebaseapp.com',
+    storageBucket: 'mandalcapital-f1884.firebasestorage.app',
+    measurementId: 'G-5EKCC6NWRC',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR-ANDROID-API-KEY',
-    appId: '1:000000000000:android:0000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'mandal-capital',
-    storageBucket: 'mandal-capital.appspot.com',
+    apiKey: 'AIzaSyDa3I8kP5AHykl30ipYoxH6hXU4fBJQHqs',
+    appId: '1:277383964750:android:e85928fa8d1b48cfc63b1f',
+    messagingSenderId: '277383964750',
+    projectId: 'mandalcapital-f1884',
+    storageBucket: 'mandalcapital-f1884.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR-IOS-API-KEY',
-    appId: '1:000000000000:ios:0000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'mandal-capital',
-    storageBucket: 'mandal-capital.appspot.com',
-    iosBundleId: 'com.example.antigravity',
+    apiKey: 'AIzaSyAz_Jh1tKOAe-WALP3QIqRUVA5RD-w7wvM',
+    appId: '1:277383964750:ios:7dd7743b3b70bbf7c63b1f',
+    messagingSenderId: '277383964750',
+    projectId: 'mandalcapital-f1884',
+    storageBucket: 'mandalcapital-f1884.firebasestorage.app',
+    iosBundleId: 'mn.mandal.capital.markets',
   );
 }

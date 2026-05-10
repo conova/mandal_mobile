@@ -62,27 +62,36 @@ class ReleaseLockedAmountList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Text(
-                        item['title'],
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: extendedColors.neutral100,
+                      Flexible(
+                        child: Text(
+                          item['title'],
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.neutral100,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (item['subtitle'] != null &&
                           item['subtitle'].isNotEmpty) ...[
                         const SizedBox(width: 8),
-                        Text(
-                          item['subtitle'],
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: AppTextStyles.light,
-                            color: extendedColors.neutral400,
+                        Flexible(
+                          child: Text(
+                            item['subtitle'],
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: AppTextStyles.light,
+                              color: extendedColors.neutral400,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
 
                 // Amount
                 Text(

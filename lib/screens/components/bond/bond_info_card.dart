@@ -74,25 +74,31 @@ class BondInfoCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.extension<ExtendedColors>()!.neutral100,
-                fontWeight: AppTextStyles.extraLight,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.extension<ExtendedColors>()!.neutral100,
+                  fontWeight: AppTextStyles.extraLight,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.extension<ExtendedColors>()!.neutral100,
-                fontWeight: AppTextStyles.bold,
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.extension<ExtendedColors>()!.neutral100,
+                  fontWeight: AppTextStyles.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );

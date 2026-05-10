@@ -67,18 +67,28 @@ class BondOrderBoard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${order.price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.red,
-                      fontWeight: FontWeight.bold,
+                  Flexible(
+                    child: Text(
+                      '${order.price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Text(
-                    '${order.quantity}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      '${order.quantity}',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

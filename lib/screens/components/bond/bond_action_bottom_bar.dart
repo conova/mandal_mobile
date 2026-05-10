@@ -37,27 +37,34 @@ class BondActionBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: AppTextStyles.light,
-                  color: extendedColors.neutral200,
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral200,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                amount,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: AppTextStyles.regular,
-                  color: extendedColors.primaryMain,
+                const SizedBox(height: 4),
+                Text(
+                  amount,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: AppTextStyles.regular,
+                    color: extendedColors.primaryMain,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          const SizedBox(width: 12),
           CustomButton(
             onPressed: onPressed,
             label: buttonText,
