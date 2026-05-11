@@ -776,6 +776,28 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Бүртгэлтэй төхөөрөмжийг устгах.
+  /// POST /security/devices  body: { api: "devices_delete", data: { deviceId } }
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<String> deleteDevice(String deviceId) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.devices,
+        data: {
+          'api': 'devices_delete',
+          'data': {'deviceId': deviceId},
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return body['message']?.toString() ?? 'Төхөөрөмж устгагдлаа';
+      }
+      throw Exception(body['message'] ?? 'Төхөөрөмж устгахад алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// PEP (Politically Exposed Person) төлөв илгээх.
   /// `Authorization: Bearer <token>` шаардана.
   Future<String> setPepStatus(bool isPep) async {

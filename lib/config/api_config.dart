@@ -1,5 +1,8 @@
 class ApiConfig {
   static const String baseUrl = 'https://bds.techfi.mn';
+  // Payment Gateway микросервис (NEGDI integration)
+  // Production-д өөрийн домэйнд солих ёстой
+  static const String paymentGatewayUrl = 'http://10.0.2.2:3002';
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 15);
 

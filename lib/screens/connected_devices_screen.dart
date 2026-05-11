@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../services/auth_service.dart';
-import '../services/api_service.dart';
-import '../config/api_config.dart';
 import '../widgets/custom_snackbar.dart';
 
 import 'components/connected_devices/device_item.dart';
@@ -44,18 +42,16 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
 
   Future<void> _removeDevice(String deviceId) async {
     try {
-      final apiService = context.read<ApiService>();
-      await apiService.delete('${ApiConfig.devices}/$deviceId');
-
-      if (mounted) {
-        CustomSnackbar.show(context, message: 'Төхөөрөмж устгагдлаа');
-        _fetchDevices(); // Refresh list
-      }
+      final auth = context.read<AuthService>();
+      final message = await auth.deleteDevice(deviceId);
+      if (!mounted) return;
+      CustomSnackbar.show(context, message: message);
+      _fetchDevices(); // refresh
     } catch (e) {
       if (mounted) {
         CustomSnackbar.show(
           context,
-          message: 'Устгахад алдаа: ${e.toString()}',
+          message: e.toString().replaceFirst('Exception: ', ''),
           type: CustomSnackbarType.error,
         );
       }

@@ -69,8 +69,11 @@ import 'screens/securities_agreement_screen.dart';
 import 'screens/document_verification_screen.dart';
 import 'screens/camera_overlay_screen.dart';
 import 'screens/onboarding_success_screen.dart';
+import 'screens/payment_qpay_screen.dart';
+import 'screens/payment_result_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
+import 'services/payment_service.dart';
 import 'theme/app_colors.dart';
 import 'theme/extended_colors.dart';
 import 'theme/app_state_manager.dart';
@@ -147,12 +150,16 @@ void main() async {
     },
   );
 
+  // Payment Gateway microservice client
+  final paymentService = PaymentService(authService);
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: AppStateManager.instance),
         ChangeNotifierProvider.value(value: authService),
         Provider.value(value: apiService),
+        Provider.value(value: paymentService),
         if (notificationService != null)
           Provider.value(value: notificationService),
       ],
@@ -407,6 +414,8 @@ class MyApp extends StatelessWidget {
               '/register_income_account': (context) =>
                   const RegisterIncomeAccountScreen(),
               '/register_success': (context) => const RegisterSuccessScreen(),
+              '/payment_qpay': (context) => const PaymentQpayScreen(),
+              '/payment_result': (context) => const PaymentResultScreen(),
               '/bond_detail': (context) => const BondDetailScreen(),
               '/bond_main': (context) => const BondMainScreen(),
               '/bond_buy': (context) => const BondBuyScreen(),
