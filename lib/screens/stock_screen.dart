@@ -39,128 +39,142 @@ class _StockScreenState extends State<StockScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      body: CustomScrollView(
-        slivers: [
-          // Scrollable Search Bar and Promo Banner
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  // Search Bar
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceVariant,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: locale.searchByName,
-                        hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.disabledColor,
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            // Scrollable Search Bar and Promo Banner
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    // Search Bar
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceVariant,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: locale.searchByName,
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.disabledColor,
+                          ),
+                          border: InputBorder.none,
+                          icon: Icon(Icons.search, color: theme.disabledColor),
                         ),
-                        border: InputBorder.none,
-                        icon: Icon(Icons.search, color: theme.disabledColor),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Promo Banner
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: theme.primaryColor.withOpacity(0.11),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                locale.dividendPortfolio,
-                                style: theme.textTheme.displaySmall?.copyWith(
-                                  height: 1.2,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Container(
-                                width: 40,
-                                height: 4,
-                                decoration: BoxDecoration(
-                                  color: theme.primaryColor,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                locale.recommendedStocks,
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              const SizedBox(height: 24),
-                              CustomButton(
-                                label: locale.viewPortfolio,
-                                onPressed: () {},
-                                size: CustomButtonSize.small,
-                              ),
-                            ],
-                          ),
+                    const SizedBox(height: 8),
+                    // Promo Banner
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            extendedColors.primary100,
+                            extendedColors.bgBase,
+                          ],
                         ),
-                        Expanded(
-                          flex: 2,
-                          child: Image.asset(
-                            'assets/images/briefcase.png',
-                            height: 120,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) => Icon(
-                              Icons.account_balance_wallet,
-                              size: 80,
-                              color: theme.primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Stack(
+                        children: [
+                          // Briefcase image — banner-ийн top-right-д тогтсон
+                          Positioned(
+                            top: -12,
+                            right: -16,
+                            child: SizedBox(
+                              width: 99,
+                              height: 128,
+                              child: Image.asset(
+                                'assets/images/briefcase.png',
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          // Текстийн контент — image-аас зайтай үлдэхийн тулд
+                          // баруун padding 128 болгосон
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 24, 100, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  locale.dividendPortfolio,
+                                  style: theme.textTheme.headlineMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 28,
+                                        height: 1.1,
+                                        color: extendedColors.neutral100,
+                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  width: 48,
+                                  height: 3,
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryColor,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  locale.recommendedStocks,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: extendedColors.neutral200,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                SizedBox(
+                                  width: 120,
+                                  child: CustomButton(
+                                    label: locale.viewPortfolio,
+                                    onPressed: () {},
+                                    size: CustomButtonSize.small,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          // Sticky FilterChipBar
-          SliverAppBar(
-            pinned: true,
-            floating: false,
-            automaticallyImplyLeading: false,
-            backgroundColor: extendedColors.bgBase,
-            surfaceTintColor: extendedColors.bgBase,
-            elevation: 0,
-            toolbarHeight: 60,
-            titleSpacing: 0,
-            title: FilterChipBar(
-              filters: filters,
-              selectedFilter: _selectedFilter!,
-              onFilterSelected: (selected) {
-                setState(() {
-                  _selectedFilter = selected;
-                });
-              },
-              horizontalPadding: 16,
-            ),
-          ),
-          // Scrollable Stock List Header and Content
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: 8),
-                // List Headers
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+            // Sticky FilterChipBar + List Headers
+            SliverAppBar(
+              pinned: true,
+              floating: false,
+              automaticallyImplyLeading: false,
+              surfaceTintColor: extendedColors.bgBase,
+              elevation: 0,
+              toolbarHeight: 52,
+              titleSpacing: 0,
+              title: FilterChipBar(
+                filters: filters,
+                selectedFilter: _selectedFilter!,
+                onFilterSelected: (selected) {
+                  setState(() {
+                    _selectedFilter = selected;
+                  });
+                },
+                horizontalPadding: 16,
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(40),
+                child: Container(
+                  color: extendedColors.bgBase,
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -170,7 +184,6 @@ class _StockScreenState extends State<StockScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(width: 40), // Spacer for narrow screens
                       Text(
                         locale.lastPrice24h,
                         style: theme.textTheme.labelMedium?.copyWith(
@@ -180,52 +193,96 @@ class _StockScreenState extends State<StockScreen> {
                     ],
                   ),
                 ),
-                const Divider(height: 32),
-                // Stock List
-                StockPriceRow(
-                  symbol: 'MNDL',
-                  name: 'Мандал даатгал ХК',
-                  price: '65.62₮',
-                  change: '9.72%',
-                  isGrowing: true,
-                  onTap: () => Navigator.pushNamed(context, '/stock_detail'),
-                ),
-                StockPriceRow(
-                  symbol: 'APU',
-                  name: 'АПУ ХХК',
-                  price: '957.01₮',
-                  change: '0.24%',
-                  isGrowing: false,
-                  onTap: () => Navigator.pushNamed(context, '/stock_detail'),
-                ),
-                StockPriceRow(
-                  symbol: 'GLMT',
-                  name: 'Голомт банк',
-                  price: '1,124.00₮',
-                  change: '0.00%',
-                  onTap: () => Navigator.pushNamed(context, '/stock_detail'),
-                ),
-                StockPriceRow(
-                  symbol: 'KHAN',
-                  name: 'Хаан банк',
-                  price: '1,348.24₮',
-                  change: '4.02%',
-                  isGrowing: false,
-                  onTap: () => Navigator.pushNamed(context, '/stock_detail'),
-                ),
-                StockPriceRow(
-                  symbol: 'LEND',
-                  name: 'Lend mn',
-                  price: '170.00₮',
-                  change: '3.43%',
-                  isGrowing: false,
-                  onTap: () => Navigator.pushNamed(context, '/stock_detail'),
-                ),
-                const SizedBox(height: 100),
-              ]),
+              ),
             ),
-          ),
-        ],
+            // Scrollable Stock List
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  StockPriceRow(
+                    symbol: 'MNDL',
+                    name: 'Мандал даатгал ХК',
+                    price: '65.62₮',
+                    change: '9.72%',
+                    isGrowing: true,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'APU',
+                    name: 'АПУ ХХК',
+                    price: '957.01₮',
+                    change: '0.24%',
+                    isGrowing: false,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'GLMT',
+                    name: 'Голомт банк',
+                    price: '1,124.00₮',
+                    change: '0.00%',
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'KHAN',
+                    name: 'Хаан банк',
+                    price: '1,348.24₮',
+                    change: '4.02%',
+                    isGrowing: false,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'LEND',
+                    name: 'Lend mn',
+                    price: '170.00₮',
+                    change: '3.43%',
+                    isGrowing: false,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'MNDL',
+                    name: 'Мандал даатгал ХК',
+                    price: '65.62₮',
+                    change: '9.72%',
+                    isGrowing: true,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'APU',
+                    name: 'АПУ ХХК',
+                    price: '957.01₮',
+                    change: '0.24%',
+                    isGrowing: false,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'GLMT',
+                    name: 'Голомт банк',
+                    price: '1,124.00₮',
+                    change: '0.00%',
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'KHAN',
+                    name: 'Хаан банк',
+                    price: '1,348.24₮',
+                    change: '4.02%',
+                    isGrowing: false,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                  StockPriceRow(
+                    symbol: 'LEND',
+                    name: 'Lend mn',
+                    price: '170.00₮',
+                    change: '3.43%',
+                    isGrowing: false,
+                    onTap: () => Navigator.pushNamed(context, '/stock_detail'),
+                  ),
+                ]),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

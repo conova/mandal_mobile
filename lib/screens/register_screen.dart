@@ -39,7 +39,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final lastName = _lastNameController.text.trim();
     final firstName = _firstNameController.text.trim();
 
-    if (regNo.isEmpty || phone.isEmpty || lastName.isEmpty || firstName.isEmpty) {
+    if (regNo.isEmpty ||
+        phone.isEmpty ||
+        lastName.isEmpty ||
+        firstName.isEmpty) {
       return;
     }
 
@@ -63,9 +66,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // TEST: OTP код харуулах (бодит сервер илгээхгүй болгоно)
       final otp = data['otp']?.toString();
       if (otp != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('OTP код: $otp')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('OTP код: $otp')));
       }
 
       Navigator.pushNamed(
@@ -109,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 40),
             Text(
               l10n.registerTitle,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: theme.textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
@@ -117,8 +120,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 12),
             Text(
               l10n.registerSubtitle,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.disabledColor,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 48),
@@ -130,8 +133,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               firstNameController: _firstNameController,
               isLoading: _isLoading,
             ),
-            const SizedBox(height: 24),
-            const RegisterContactInfo(),
             const SizedBox(height: 48),
             AuthFooter(
               questionText: 'Нэвтрэх хаяг байгаа?',

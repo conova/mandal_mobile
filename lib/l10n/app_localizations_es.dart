@@ -420,7 +420,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get verifyChannelPrompt =>
-      'A 4-digit code will be sent to your selected phone number or email address.';
+      'A 6-digit code will be sent to your selected phone number or email address.';
 
   @override
   String get sms => 'SMS';
@@ -429,7 +429,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get emailLabel => 'Email';
 
   @override
-  String get enterCodeTitle => 'Enter 4-digit code';
+  String get enterCodeTitle => 'Enter 6-digit code';
 
   @override
   String codeSentTo(Object value) {

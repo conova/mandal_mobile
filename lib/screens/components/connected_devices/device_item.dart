@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -44,24 +45,12 @@ class DeviceItem extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             SizedBox(
-              height: 40,
-              child: ElevatedButton(
+              child: CustomButton(
                 onPressed: onRemove,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.error.withOpacity(0.1),
-                  foregroundColor: colorScheme.error,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Text(
-                  l10n.remove,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                label: l10n.remove,
+                isLoading: false,
+                variant: CustomButtonVariant.error,
+                size: CustomButtonSize.small,
               ),
             ),
           ],
@@ -72,16 +61,16 @@ class DeviceItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: isActive
                 ? extendedColors.primary100
-                : extendedColors.neutral100,
+                : extendedColors.bgSecondary,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             status,
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: theme.textTheme.labelLarge?.copyWith(
               color: isActive
                   ? extendedColors.primaryMain
-                  : extendedColors.neutral300,
-              fontWeight: FontWeight.bold,
+                  : extendedColors.neutral100,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),
@@ -95,11 +84,16 @@ class DeviceItem extends StatelessWidget {
                   Text(
                     l10n.date,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: extendedColors.neutral500,
+                      color: extendedColors.neutral200,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(date, style: theme.textTheme.bodyMedium),
+                  Text(
+                    date,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -110,11 +104,16 @@ class DeviceItem extends StatelessWidget {
                   Text(
                     l10n.ipAddress,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: extendedColors.neutral500,
+                      color: extendedColors.neutral200,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(ip, style: theme.textTheme.bodyMedium),
+                  Text(
+                    ip,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
                 ],
               ),
             ),

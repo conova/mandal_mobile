@@ -109,22 +109,21 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         'MNDL - ${l10n.buyTab}',
                         style: theme.textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
+                          color: extendedColors.neutral100,
                         ),
                       ),
                       const SizedBox(height: 8),
                       RichText(
                         text: TextSpan(
                           text: '${l10n.availableCash}: ',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral100,
                           ),
                           children: [
                             TextSpan(
                               text: '142,000.53₮',
-                              style: TextStyle(
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 color: extendedColors.primaryMain,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
@@ -133,8 +132,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       const SizedBox(height: 4),
                       Text(
                         '1 MNDL = 65.62₮',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral100,
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -205,11 +204,10 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         ],
       ),
       bottomNavigationBar: StockTradingBottomBar(
-              onPlaceOrder: _showConfirmation,
-              onReleaseLocked: () =>
-                  Navigator.pushNamed(context, '/release_locked'),
-              lockedAmount: '129,341.30₮',
-            ),
+        onPlaceOrder: _showConfirmation,
+        onReleaseLocked: () => Navigator.pushNamed(context, '/release_locked'),
+        lockedAmount: '129,341.30₮',
+      ),
     );
   }
 }

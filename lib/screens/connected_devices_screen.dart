@@ -84,7 +84,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                 children: [
                   Text(
                     l10n.connectedDevices,
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -92,7 +92,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                   Text(
                     l10n.connectedDevicesDesc,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral500,
+                      color: extendedColors.neutral200,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -101,7 +101,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                       child: Text(
                         'Бүртгэлтэй төхөөрөмж байхгүй',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral500,
+                          color: extendedColors.neutral100,
                         ),
                       ),
                     )
@@ -120,8 +120,8 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                       final deviceName = deviceInfo.isNotEmpty
                           ? deviceInfo
                           : (deviceId.length > 12
-                              ? 'Device ${deviceId.substring(0, 8)}…'
-                              : 'Device $deviceId');
+                                ? 'Device ${deviceId.substring(0, 8)}…'
+                                : 'Device $deviceId');
 
                       return Column(
                         children: [

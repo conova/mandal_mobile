@@ -9,6 +9,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
   final Color primary300;
   final Color primary200;
   final Color primary100;
+  final Color footerColor;
 
   // Neutral
   final Color neutral100;
@@ -38,6 +39,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
     required this.primary300,
     required this.primary200,
     required this.primary100,
+    required this.footerColor,
     required this.neutral100,
     required this.neutral200,
     required this.neutral300,
@@ -61,6 +63,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
     Color? primary300,
     Color? primary200,
     Color? primary100,
+    Color? footerColor,
     Color? neutral100,
     Color? neutral200,
     Color? neutral300,
@@ -82,6 +85,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
       primary300: primary300 ?? this.primary300,
       primary200: primary200 ?? this.primary200,
       primary100: primary100 ?? this.primary100,
+      footerColor: footerColor ?? this.footerColor,
       neutral100: neutral100 ?? this.neutral100,
       neutral200: neutral200 ?? this.neutral200,
       neutral300: neutral300 ?? this.neutral300,
@@ -110,6 +114,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
       primary300: Color.lerp(primary300, other.primary300, t)!,
       primary200: Color.lerp(primary200, other.primary200, t)!,
       primary100: Color.lerp(primary100, other.primary100, t)!,
+      footerColor: Color.lerp(footerColor, other.footerColor, t)!,
       neutral100: Color.lerp(neutral100, other.neutral100, t)!,
       neutral200: Color.lerp(neutral200, other.neutral200, t)!,
       neutral300: Color.lerp(neutral300, other.neutral300, t)!,

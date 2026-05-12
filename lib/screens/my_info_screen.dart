@@ -52,10 +52,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
                   Text(
                     l10n.myInfo,
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),

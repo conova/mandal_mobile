@@ -40,7 +40,7 @@ class StockDetailScreen extends StatelessWidget {
             StockDetailGeneralInfo(),
             SizedBox(height: 48),
             StockDetailDividendHistory(),
-            SizedBox(height: 120),
+            SizedBox(height: 32),
           ],
         ),
       ),

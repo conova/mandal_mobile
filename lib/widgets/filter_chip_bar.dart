@@ -28,6 +28,10 @@ class FilterChipBar extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: ChoiceChip(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               label: Text(filter),
               selected: isSelected,
               onSelected: (selected) {
@@ -36,15 +40,15 @@ class FilterChipBar extends StatelessWidget {
                 }
               },
               selectedColor: theme.primaryColor,
-              backgroundColor: colorScheme.surfaceVariant,
+              side: BorderSide.none,
+              backgroundColor: colorScheme.secondary,
               labelStyle: theme.textTheme.labelLarge?.copyWith(
                 color: isSelected
                     ? colorScheme.onPrimary
                     : colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(8),
                 side: BorderSide.none,
               ),
               showCheckmark: false,

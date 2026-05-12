@@ -26,8 +26,9 @@ class StockDetailDividendHistory extends StatelessWidget {
         children: [
           Text(
             l10n.pastDividends,
-            style: theme.textTheme.headlineSmall?.copyWith(
+            style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: extendedColors.neutral100,
             ),
           ),
           const SizedBox(height: 32),
@@ -38,12 +39,17 @@ class StockDetailDividendHistory extends StatelessWidget {
               return IntrinsicHeight(
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: 60,
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 24,
+                        right: 24,
+                        top: 0,
+                      ),
                       child: Text(
                         item['year']!,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.normal,
+                          color: extendedColors.neutral100,
                         ),
                       ),
                     ),
@@ -62,9 +68,7 @@ class StockDetailDividendHistory extends StatelessWidget {
                             child: Container(
                               width: 1,
                               margin: const EdgeInsets.symmetric(vertical: 4),
-                              color: extendedColors.primaryMain.withOpacity(
-                                0.3,
-                              ),
+                              color: extendedColors.primaryMain,
                             ),
                           ),
                       ],
@@ -74,9 +78,9 @@ class StockDetailDividendHistory extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 24),
                       child: Text(
                         item['amount']!,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           color: extendedColors.primaryMain,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
                     ),

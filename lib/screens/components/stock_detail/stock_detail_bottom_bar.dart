@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 
 class StockDetailBottomBar extends StatelessWidget {
@@ -14,6 +15,7 @@ class StockDetailBottomBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
+      height: 100,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -32,14 +34,13 @@ class StockDetailBottomBar extends StatelessWidget {
                   Text(
                     l10n.tugrik,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.4),
+                      color: extendedColors.neutral200,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '142,000.53₮',
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: extendedColors.primaryMain,
                     ),
                   ),
@@ -49,24 +50,10 @@ class StockDetailBottomBar extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               flex: 2,
-              child: ElevatedButton(
+              child: CustomButton(
+                label: l10n.trade,
                 onPressed: onTrade,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: extendedColors.primaryMain,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  l10n.trade,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                size: CustomButtonSize.large,
               ),
             ),
           ],

@@ -345,7 +345,7 @@ class AuthService with ChangeNotifier {
   // │  MOCK MODE — туршилтын mock response                │
   // │  Бодит API холбоход энийг false болго               │
   // └──────────────────────────────────────────────────────┘
-  static const bool _useMock = true;
+  static const bool _useMock = false;
 
   /// DioException-с алдааны мессеж задлах (data нь String эсвэл Map байж болно)
   String _extractErrorMessage(DioException e) {
@@ -398,9 +398,7 @@ class AuthService with ChangeNotifier {
         previousUserId != _uid &&
         _isBiometricEnabled) {
       await setBiometricEnabled(false);
-      debugPrint(
-        '[Auth] Биометрик тохиргоо унтраав ($previousUserId → $_uid)',
-      );
+      debugPrint('[Auth] Биометрик тохиргоо унтраав ($previousUserId → $_uid)');
     }
 
     if (_custName != null && _uid != null) {
@@ -609,8 +607,7 @@ class AuthService with ChangeNotifier {
       final data = body['data'];
 
       if (code == '0' && data is Map && data['success'] == true) {
-        final dataResult = await sendOtp(data['sessionId'], 'sms');
-        return Map<String, dynamic>.from(dataResult);
+        return Map<String, dynamic>.from(data);
       }
 
       // Сервер код 0 биш, эсвэл data.success != true → алдааны мессеж
@@ -901,8 +898,12 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  /// OTP код шалгах — sessionId + otpCode
-  /// Амжилттай бол deviceId буцаана
+  /// OTP код шалгах — sessionId + otpCode.
+  ///
+  /// Амжилттай үеийн хариу 2 төрөл байна:
+  ///   1) Device/Customer register: data.token + data.refreshToken — энэ үед
+  ///      tokens-ыг хадгална + JWT-аас uid/custName-г decode хийж кэшэлнэ.
+  ///   2) Forgot password (token буцахгүй) — зүгээр л data-ыг буцаана.
   Future<Map<String, dynamic>> verifyOtp(
     String sessionId,
     String otpCode,
@@ -918,7 +919,12 @@ class AuthService with ChangeNotifier {
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['data'] as Map<String, dynamic>;
+        final data = (body['data'] as Map<String, dynamic>?) ?? {};
+        // Token буцсан бол хэрэглэгчийг "нэвтэрсэн" болгож хадгална
+        if (data['token'] is String) {
+          await _handleAuthResponse(data);
+        }
+        return data;
       }
       throw Exception(body['message'] ?? 'OTP verification failed');
     } on DioException catch (e) {

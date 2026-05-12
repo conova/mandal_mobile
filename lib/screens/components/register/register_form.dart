@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mandal_capital/screens/components/register/register_contact_info.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../widgets/custom_input.dart';
 import '../../../../widgets/custom_button.dart';
@@ -50,7 +51,8 @@ class RegisterFormState extends State<RegisterForm> {
   }
 
   void _checkFields() {
-    final filled = widget.regNoController.text.trim().isNotEmpty &&
+    final filled =
+        widget.regNoController.text.trim().isNotEmpty &&
         widget.phoneController.text.trim().isNotEmpty &&
         widget.lastNameController.text.trim().isNotEmpty &&
         widget.firstNameController.text.trim().isNotEmpty;
@@ -75,7 +77,6 @@ class RegisterFormState extends State<RegisterForm> {
         children: [
           CustomInput(
             label: l10n.registrationNumber,
-            hint: 'УБ12345678',
             controller: widget.regNoController,
             keyboardType: TextInputType.text,
             inputFormatters: [
@@ -90,7 +91,6 @@ class RegisterFormState extends State<RegisterForm> {
           const SizedBox(height: 16),
           CustomInput(
             label: l10n.phoneNumber,
-            hint: '99000000',
             controller: widget.phoneController,
             keyboardType: TextInputType.phone,
             inputFormatters: [
@@ -116,10 +116,13 @@ class RegisterFormState extends State<RegisterForm> {
                 Validators.validateName(v, fieldName: l10n.firstName),
           ),
           const SizedBox(height: 24),
+          const RegisterContactInfo(),
+          const SizedBox(height: 24),
           CustomButton(
             label: l10n.register,
-            onPressed:
-                _isButtonEnabled && !widget.isLoading ? _handleSubmit : null,
+            onPressed: _isButtonEnabled && !widget.isLoading
+                ? _handleSubmit
+                : null,
             isLoading: widget.isLoading,
             variant: CustomButtonVariant.primary,
           ),

@@ -136,7 +136,9 @@ class StockPortfolioScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             // Stock rows
-            ..._holdings.map((stock) => _buildStockRow(stock, theme, extendedColors)),
+            ..._holdings.map(
+              (stock) => _buildStockRow(stock, theme, extendedColors),
+            ),
             const SizedBox(height: 16),
             Divider(height: 1, color: extendedColors.neutral500),
             const SizedBox(height: 24),
@@ -223,7 +225,11 @@ class StockPortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountText(String amount, ThemeData theme, ExtendedColors extendedColors) {
+  Widget _buildAmountText(
+    String amount,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+  ) {
     final dotIndex = amount.indexOf('.');
     if (dotIndex == -1) {
       return Text(
@@ -265,7 +271,9 @@ class StockPortfolioScreen extends StatelessWidget {
     ThemeData theme,
     ExtendedColors extendedColors,
   ) {
-    final profitColor = stock.isPositive ? extendedColors.primaryMain : extendedColors.red;
+    final profitColor = stock.isPositive
+        ? extendedColors.primaryMain
+        : extendedColors.red;
     final arrow = stock.isPositive ? '▲' : '▼';
 
     return Padding(

@@ -177,10 +177,20 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _hasValue
-                      ? () => Navigator.pushReplacementNamed(
+                      ? () {
+                          final amount = double.tryParse(
+                                _amount.replaceAll(',', ''),
+                              ) ??
+                              0.0;
+                          Navigator.pushNamed(
                             context,
-                            '/income_success',
-                          )
+                            '/payment_qpay',
+                            arguments: {
+                              'amount': amount,
+                              'description': 'Орлого нэмэх',
+                            },
+                          );
+                        }
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _hasValue

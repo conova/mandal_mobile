@@ -28,7 +28,7 @@ class StockTradingInputBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+          border: Border.all(color: extendedColors.neutral100.withOpacity(0.1)),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -36,8 +36,8 @@ class StockTradingInputBox extends StatelessWidget {
           children: [
             Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.3),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral200,
               ),
             ),
             const SizedBox(height: 4),
@@ -51,8 +51,11 @@ class StockTradingInputBox extends StatelessWidget {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: focusNode.hasFocus
+                          ? extendedColors.primaryMain
+                          : extendedColors.neutral100,
                     ),
                     decoration: const InputDecoration(
                       border: InputBorder.none,

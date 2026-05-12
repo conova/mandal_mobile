@@ -10,23 +10,24 @@ class RegisterContactInfo extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           'Та байгууллагаар бүртгүүлэх бол',
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: extendedColors.neutral500,
+            color: extendedColors.neutral200,
           ),
         ),
         const SizedBox(height: 4),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
               onTap: () {},
               child: Text(
                 'info@mandal.capital',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.primaryMain,
+                  color: extendedColors.neutral100,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -36,7 +37,7 @@ class RegisterContactInfo extends StatelessWidget {
               child: Text(
                 'хаягт хүсэлтээ илгээнэ үү.',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral500,
+                  color: extendedColors.neutral200,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

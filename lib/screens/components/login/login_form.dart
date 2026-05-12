@@ -67,9 +67,7 @@ class _LoginFormState extends State<LoginForm>
         Navigator.pushReplacementNamed(
           context,
           '/login_verification',
-          arguments: {
-            'sessionId': result.sessionId,
-          },
+          arguments: {'sessionId': result.sessionId},
         );
       } else {
         // Алдаа (буруу нууц үг гэх мэт)
@@ -160,14 +158,12 @@ class _LoginFormState extends State<LoginForm>
         children: [
           CustomInput(
             label: l10n.phoneNumber,
-            hint: '99101294',
             keyboardType: TextInputType.phone,
             controller: _phoneController,
           ),
           const SizedBox(height: 16),
           CustomInput(
             label: l10n.password,
-            hint: 'Qwerty123#',
             isPassword: true,
             controller: _passwordController,
           ),
@@ -217,7 +213,6 @@ class _LoginFormState extends State<LoginForm>
           const SizedBox(height: 16),
           CustomInput(
             label: l10n.password,
-            hint: '********',
             isPassword: true,
             controller: _passwordController,
           ),

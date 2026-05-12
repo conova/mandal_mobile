@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 import '../l10n/app_localizations.dart';
 import 'home_screen.dart';
 import 'bond/bond_main_screen.dart';
@@ -40,13 +42,11 @@ class _MainContainerState extends State<MainContainer> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.extension<ExtendedColors>()!.footerColor,
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: theme.disabledColor,
         showUnselectedLabels: true,
-        selectedLabelStyle: theme.textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
+        selectedLabelStyle: theme.textTheme.labelSmall,
         unselectedLabelStyle: theme.textTheme.labelSmall,
         items: [
           BottomNavigationBarItem(

@@ -417,7 +417,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get verifyChannelPrompt =>
-      '4 оронтой кодыг таны сонгосон утасны дугаар эсвэл и-мэйл рүү илгээх болно.';
+      '6 оронтой кодыг таны сонгосон утасны дугаар эсвэл и-мэйл рүү илгээх болно.';
 
   @override
   String get sms => 'SMS';
@@ -426,7 +426,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get emailLabel => 'И-мэйл';
 
   @override
-  String get enterCodeTitle => '4 оронтой код оруулна уу';
+  String get enterCodeTitle => '6 оронтой код оруулна уу';
 
   @override
   String codeSentTo(Object value) {

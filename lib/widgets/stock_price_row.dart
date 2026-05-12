@@ -28,6 +28,7 @@ class StockPriceRow extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Column(
@@ -35,11 +36,14 @@ class StockPriceRow extends StatelessWidget {
                 children: [
                   Text(symbol, style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 4),
-                  Text(name, style: theme.textTheme.bodyMedium),
+                  Text(
+                    name,
+                    style: theme.textTheme.bodyMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
             Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -58,7 +62,9 @@ class StockPriceRow extends StatelessWidget {
                     children: [
                       if (change != '0.00%')
                         Icon(
-                          isGrowing ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                          isGrowing
+                              ? Icons.arrow_drop_up
+                              : Icons.arrow_drop_down,
                           color: isGrowing
                               ? theme.primaryColor
                               : colorScheme.error,

@@ -907,7 +907,7 @@ abstract class AppLocalizations {
   /// No description provided for @verifyChannelPrompt.
   ///
   /// In en, this message translates to:
-  /// **'A 4-digit code will be sent to your selected phone number or email address.'**
+  /// **'A 6-digit code will be sent to your selected phone number or email address.'**
   String get verifyChannelPrompt;
 
   /// No description provided for @sms.
@@ -925,7 +925,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterCodeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter 4-digit code'**
+  /// **'Enter 6-digit code'**
   String get enterCodeTitle;
 
   /// No description provided for @codeSentTo.

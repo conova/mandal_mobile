@@ -15,6 +15,7 @@ import 'screens/main_container.dart';
 import 'screens/profile_screen.dart';
 import 'screens/quick_login_screen.dart';
 import 'screens/notification_screen.dart';
+import 'screens/notification_detail_screen.dart';
 import 'screens/order_detail_screen.dart';
 import 'screens/stock_detail_screen.dart';
 import 'screens/stock_trading_screen.dart';
@@ -249,6 +250,7 @@ class MyApp extends StatelessWidget {
                 primary300: AppColors.primary300,
                 primary200: AppColors.primary200,
                 primary100: AppColors.primary100,
+                footerColor: Color(0xCCF1F1F1),
                 neutral100: AppColors.neutral100,
                 neutral200: AppColors.neutral200,
                 neutral300: AppColors.neutral300,
@@ -333,6 +335,7 @@ class MyApp extends StatelessWidget {
                 primary300: AppColors.dpPrimary300,
                 primary200: AppColors.dpPrimary200,
                 primary100: AppColors.dpPrimary100,
+                footerColor: Color(0x991E1E1E),
                 neutral100: AppColors.dpNeutral100,
                 neutral200: AppColors.dpNeutral200,
                 neutral300: AppColors.dpNeutral300,
@@ -370,13 +373,14 @@ class MyApp extends StatelessWidget {
               '/theme_colors': (context) => const ThemeColorsScreen(),
               '/profile': (context) => const ProfileScreen(),
               '/notifications': (context) => const NotificationScreen(),
+              '/notification_detail': (context) =>
+                  const NotificationDetailScreen(),
               '/my_info': (context) => const MyInfoScreen(),
               '/income_account': (context) => const IncomeAccountScreen(),
               '/add_income_account': (context) =>
                   const AddIncomeAccountScreen(),
               '/summary_report': (context) => const SummaryReportScreen(),
-              '/connected_devices': (context) =>
-                  const ConnectedDevicesScreen(),
+              '/connected_devices': (context) => const ConnectedDevicesScreen(),
               '/change_password_verify': (context) =>
                   const ChangePasswordVerifyScreen(),
               '/change_password_code': (context) =>
@@ -407,8 +411,7 @@ class MyApp extends StatelessWidget {
                   const OnboardingSuccessScreen(),
               '/dan_verification': (context) => const DanVerificationScreen(),
               '/register_otp': (context) => const RegisterOtpScreen(),
-              '/register_password': (context) =>
-                  const RegisterPasswordScreen(),
+              '/register_password': (context) => const RegisterPasswordScreen(),
               '/register_bank_selection': (context) =>
                   const RegisterBankSelectionScreen(),
               '/register_income_account': (context) =>
@@ -419,14 +422,12 @@ class MyApp extends StatelessWidget {
               '/bond_detail': (context) => const BondDetailScreen(),
               '/bond_main': (context) => const BondMainScreen(),
               '/bond_buy': (context) => const BondBuyScreen(),
-              '/bond_confirmation': (context) =>
-                  const BondConfirmationScreen(),
+              '/bond_confirmation': (context) => const BondConfirmationScreen(),
               '/bond_success': (context) => const BondSuccessScreen(),
               '/bond_sell': (context) => const BondSellScreen(),
               '/bond_sell_confirmation': (context) =>
                   const BondSellConfirmationScreen(),
-              '/bond_sell_success': (context) =>
-                  const BondSellSuccessScreen(),
+              '/bond_sell_success': (context) => const BondSellSuccessScreen(),
               '/order_detail': (context) => const OrderDetailScreen(),
               '/stock_detail': (context) => const StockDetailScreen(),
               '/stock_trading': (context) => const StockTradingScreen(),
@@ -444,8 +445,7 @@ class MyApp extends StatelessWidget {
               '/withdraw_success': (context) => const WithdrawSuccessScreen(),
               '/transaction_history': (context) =>
                   const TransactionHistoryScreen(),
-              '/release_locked': (context) =>
-                  const ReleaseLockedAmountScreen(),
+              '/release_locked': (context) => const ReleaseLockedAmountScreen(),
               '/watchlist_detail': (context) => const WatchlistDetailScreen(),
               '/add_watchlist': (context) => const AddWatchlistScreen(),
             };
@@ -457,10 +457,7 @@ class MyApp extends StatelessWidget {
 
             // Public route → шууд нээх
             if (_publicRoutes.contains(routeName)) {
-              return MaterialPageRoute(
-                builder: builder,
-                settings: settings,
-              );
+              return MaterialPageRoute(builder: builder, settings: settings);
             }
 
             // Protected route → auth шалгах
@@ -470,10 +467,7 @@ class MyApp extends StatelessWidget {
             );
 
             if (authService.isAuthenticated) {
-              return MaterialPageRoute(
-                builder: builder,
-                settings: settings,
-              );
+              return MaterialPageRoute(builder: builder, settings: settings);
             }
 
             // Нэвтрээгүй → login руу шилжүүлэх
