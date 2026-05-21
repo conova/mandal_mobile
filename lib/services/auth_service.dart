@@ -46,6 +46,7 @@ class AuthService with ChangeNotifier {
   static const String _deviceIdKey = 'device_id';
   static const String _fallbackDeviceIdKey = 'fallback_device_id';
   static const String _userInfoKey = 'user_info';
+  static const String _watchlistOrderKey = 'watchlist_order';
 
   final LocalAuthentication _localAuth = LocalAuthentication();
 
@@ -77,6 +78,51 @@ class AuthService with ChangeNotifier {
   /// автоматаар татаж кэшэлнэ. App дахин нээхэд SharedPreferences-аас
   /// уншина.
   Map<String, dynamic>? get userInfo => _userInfo;
+
+  // ── KYC + verification helpers ─────────────────────────────────────────
+  // Сервэр нь boolean утгуудыг "true" / "false" string-аар буцаадаг учир
+  // _parseBool() helper ашиглана.
+
+  bool _parseBool(dynamic v) {
+    if (v is bool) return v;
+    if (v is String) return v.toLowerCase() == 'true';
+    if (v is num) return v != 0;
+    return false;
+  }
+
+  Map<String, dynamic>? get _kyc =>
+      _userInfo == null ? null : _userInfo!['kyc'] as Map<String, dynamic>?;
+
+  /// Үнэт цаасны гэрээ зурсан эсэх
+  bool get hasAgreement => _parseBool(_kyc?['agreement']);
+
+  /// DAN баталгаажуулалт хийгдсэн эсэх
+  bool get isDanVerified => _parseBool(_kyc?['dan']);
+
+  /// PEP төлөв тодорхойлсон эсэх
+  bool get isPepDeclared => _parseBool(_kyc?['ispep']);
+
+  /// 3 алхмын хэдийг гүйцэтгэсэнг 0.0..1.0 хязгаарт буцаана
+  double get kycProgress {
+    if (_kyc == null) return 0.0;
+    final done = [hasAgreement, isDanVerified, isPepDeclared]
+        .where((b) => b)
+        .length;
+    return done / 3;
+  }
+
+  /// Бүх KYC алхам гүйцэтгэсэн эсэх
+  bool get isKycComplete =>
+      hasAgreement && isDanVerified && isPepDeclared;
+
+  /// Утас баталгаажуулсан эсэх
+  bool get isPhoneVerified => _parseBool(_userInfo?['phoneVerified']);
+
+  /// Имэйл баталгаажуулсан эсэх
+  bool get isEmailVerified => _parseBool(_userInfo?['emailVerified']);
+
+  /// Хэрэглэгчийн статусын нэр (Идэвхтэй / Идэвхгүй г.м.)
+  String? get statusName => _userInfo?['statusName'] as String?;
 
   /// Login API-д илгээх deviceId. FCM token байгаа бол түүнийг, үгүй бол
   /// төхөөрөмж тус бүрд анх ажиллахад үүсгэсэн UUID-г буцаана. Энэ нь
@@ -598,6 +644,8 @@ class AuthService with ChangeNotifier {
             'phone': phone,
             'lastName': lastName,
             'firstName': firstName,
+            'deviceId': effectiveDeviceId,
+            'manufacturer': _manufacturer,
           },
         },
       );
@@ -773,6 +821,76 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Watchlist — хэрэглэгчийн хадгалсан хувьцаа авна.
+  /// `Authorization: Bearer <token>` шаардана.
+  /// Локалд хадгалагдсан дарааллыг автоматаар хэрэглэнэ.
+  Future<List<Map<String, dynamic>>> getWatchlist() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.watchlistList);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        final raw = (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+        final order = await getSavedWatchlistOrder();
+        return sortWatchlistByOrder(raw, order);
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Хэрэглэгчийн өөрчилсөн дарааллыг локалд хадгалах
+  Future<void> saveWatchlistOrder(List<String> symbols) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_watchlistOrderKey, symbols);
+  }
+
+  /// Локалд хадгалагдсан watchlist-ийн дараалал (хоосон бол [])
+  Future<List<String>> getSavedWatchlistOrder() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_watchlistOrderKey) ?? const [];
+  }
+
+  /// API-аас ирсэн жагсаалтыг хадгалагдсан дарааллаар sort хийнэ.
+  /// Дарааллд байгаа SYMBOL-ууд эхлээд (хадгалсан index-ийн дагуу),
+  /// үлдсэн нь араас (API-ийн анхдагч дарааллаар).
+  static List<Map<String, dynamic>> sortWatchlistByOrder(
+    List<Map<String, dynamic>> items,
+    List<String> savedOrder,
+  ) {
+    if (savedOrder.isEmpty) return items;
+    final indexOf = {
+      for (var i = 0; i < savedOrder.length; i++) savedOrder[i]: i,
+    };
+    final sorted = [...items];
+    sorted.sort((a, b) {
+      final symA = a['SYMBOL']?.toString() ?? '';
+      final symB = b['SYMBOL']?.toString() ?? '';
+      final ia = indexOf[symA] ?? 1 << 30; // байхгүй бол хамгийн сүүлд
+      final ib = indexOf[symB] ?? 1 << 30;
+      return ia.compareTo(ib);
+    });
+    return sorted;
+  }
+
+  /// Watchlist-д хувьцаа нэмэх.
+  /// POST /watchlist/watchlist/{symbol}
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<String> addToWatchlist(String symbol) async {
+    try {
+      final response = await _authedDio.post(ApiConfig.watchlistAdd(symbol));
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return body['message']?.toString() ?? 'Амжилттай нэмэгдлээ';
+      }
+      throw Exception(body['message'] ?? 'Watchlist нэмэхэд алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Бүртгэлтэй төхөөрөмжийг устгах.
   /// POST /security/devices  body: { api: "devices_delete", data: { deviceId } }
   /// `Authorization: Bearer <token>` шаардана.
@@ -877,20 +995,38 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  /// OTP код илгээх — sessionId + channel (sms | email)
-  Future<Map<String, dynamic>> sendOtp(String sessionId, String channel) async {
+  /// OTP код илгээх — channel (sms | email).
+  ///
+  /// 2 горим:
+  ///   1) **Нэвтэрсэн** (`_accessToken != null`) — `Authorization: Bearer`
+  ///      header илгээж, body-д `sessionId` оруулахгүй. Сервер token-аас
+  ///      хэрэглэгчийг таних.
+  ///   2) **Нэвтрээгүй** — `sessionId` заавал шаардлагатай (forgot password,
+  ///      register flow г.м.).
+  Future<Map<String, dynamic>> sendOtp(
+    String channel, {
+    String? sessionId,
+  }) async {
     try {
-      final response = await _dio.post(
+      final dio = isAuthenticated ? _authedDio : _dio;
+      final Map<String, dynamic> bodyData = {'channel': channel};
+      if (!isAuthenticated) {
+        if (sessionId == null || sessionId.isEmpty) {
+          throw Exception(
+            'sessionId шаардлагатай (нэвтэрсэн хэрэглэгч биш үед)',
+          );
+        }
+        bodyData['sessionId'] = sessionId;
+      }
+
+      final response = await dio.post(
         ApiConfig.sendOtp,
-        data: {
-          'api': 'send_otp',
-          'data': {'sessionId': sessionId, 'channel': channel},
-        },
+        data: {'api': 'send_otp', 'data': bodyData},
       );
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['data'] as Map<String, dynamic>;
+        return (body['data'] as Map<String, dynamic>?) ?? {};
       }
       throw Exception(body['message'] ?? 'OTP send failed');
     } on DioException catch (e) {
@@ -919,12 +1055,15 @@ class AuthService with ChangeNotifier {
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        final data = (body['data'] as Map<String, dynamic>?) ?? {};
-        // Token буцсан бол хэрэглэгчийг "нэвтэрсэн" болгож хадгална
-        if (data['token'] is String) {
-          await _handleAuthResponse(data);
+        if (body['data'] is Map<String, dynamic>) {
+          final data = (body['data'] as Map<String, dynamic>?) ?? {};
+          // Token буцсан бол хэрэглэгчийг "нэвтэрсэн" болгож хадгална
+          if (data['token'] is String) {
+            await _handleAuthResponse(data);
+          }
+          return data;
         }
-        return data;
+        return {};
       }
       throw Exception(body['message'] ?? 'OTP verification failed');
     } on DioException catch (e) {
@@ -943,7 +1082,12 @@ class AuthService with ChangeNotifier {
         ApiConfig.forgotPassword,
         data: {
           'api': 'forgot_password',
-          'data': {'registerNumber': registerNumber, 'phone': phone},
+          'data': {
+            'registerNumber': registerNumber,
+            'phone': phone,
+            'deviceId': effectiveDeviceId,
+            'manufacturer': _manufacturer,
+          },
         },
       );
 

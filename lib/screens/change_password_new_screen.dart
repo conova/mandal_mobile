@@ -17,9 +17,19 @@ class ChangePasswordNewScreen extends StatelessWidget {
       final authService = context.read<AuthService>();
       final args =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      final currentPassword = args?['currentPassword'] as String? ?? '';
+      final sessionId = args?['sessionId'] as String?;
 
-      await authService.changePassword(currentPassword, password, password);
+      if (sessionId == null || sessionId.isEmpty) {
+        throw Exception('Session ID байхгүй байна');
+      }
+
+      // OTP-аар хэрэглэгчийг баталгаажуулсан тул resetPassword-аар шинэ нууц
+      // үг тавьна (change_password биш, register/reset endpoint).
+      await authService.resetPassword(
+        sessionId: sessionId,
+        password: password,
+        confirmPassword: password,
+      );
 
       if (context.mounted) {
         CustomSnackbar.show(context, message: 'Нууц үг амжилттай солигдлоо');

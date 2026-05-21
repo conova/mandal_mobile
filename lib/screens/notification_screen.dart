@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
-import '../widgets/mark_read_bottom_sheet.dart';
-
+import '../services/notification_api_service.dart';
+import '../widgets/custom_snackbar.dart';
 import '../widgets/filter_chip_bar.dart';
+import '../widgets/mark_read_bottom_sheet.dart';
 import '../widgets/notification_item.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -15,46 +17,126 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   String _selectedCategory = 'All';
+  List<ApiNotification> _items = [];
+  bool _isLoading = true;
+  String? _error;
 
-  // Mock notifications — production-д server-ээс татна
-  static const List<Map<String, Object>> _mockNotifications = [
-    {
-      'title': 'Шинэ мэдээ',
-      'subtitle':
-          'Тайлбар текст урт байж болох ба энэ урт нь 2-с илүү мөр бичигдэхгүй байна. 3 дах мөр...',
-      'body':
-          'Ямар мэдээллүүд дээр мэдэгдэл өгөх эсэхээ ярилцаж шийдвэрлээ. Энд дэлгэрэнгүй текст байх ба дарж хармагц unread status арилах болно.\n\nЕрөнхий мэдэгдлийн дэлгэрэнгүй ингэж харагдах юмшүү',
-      'time': '2025.10.30 19:32',
-      'isUnread': true,
-    },
-    {
-      'title': 'Unread messages',
-      'subtitle':
-          'Here’s description text for users to notify what happened in Mandal',
-      'body':
-          'Here’s description text for users to notify what happened in Mandal. This is the full body of the notification.',
-      'time': '2025.10.30 19:32',
-      'isUnread': true,
-    },
-    {
-      'title': 'Мэдээ',
-      'subtitle':
-          'Ямар мэдээллүүд дээр мэдэгдэл өгөх эсэхээ ярилцаж шийдвэрлээ.',
-      'body':
-          'Ямар мэдээллүүд дээр мэдэгдэл өгөх эсэхээ ярилцаж шийдвэрлээ. Дэлгэрэнгүй мэдээллийг дараа авах боломжтой.',
-      'time': '2025.10.30 19:32',
-      'isUnread': false,
-    },
-    {
-      'title': 'Simple бонд - Захиалга биелэлээ',
-      'subtitle':
-          'Таны 10,000,000₮ захиалга биелэлээ. Бондын мөнгө 2025.10.30-нд орох болно.',
-      'body':
-          'Таны 10,000,000₮ хэмжээтэй Simple бонд-ийн захиалга амжилттай биелэгдлээ. Бондын төлөв 2025.10.30-нд танай дансанд орох болно.',
-      'time': '2025.10.30 19:32',
-      'isUnread': false,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetch();
+  }
+
+  Future<void> _fetch() async {
+    try {
+      final service = context.read<NotificationApiService>();
+      final feed = await service.list(limit: 100);
+      if (!mounted) return;
+      setState(() {
+        _items = feed.items;
+        _isLoading = false;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+  }
+
+  Future<void> _onItemTap(ApiNotification n) async {
+    // Дэлгэрэнгүй харах + read болгох
+    final wasUnread = !n.isRead;
+    await Navigator.pushNamed(
+      context,
+      '/notification_detail',
+      arguments: {
+        'title': n.title,
+        'body': n.body.isNotEmpty ? n.body : null,
+        'time': n.formattedTime,
+        'icon': Icons.notifications_none_outlined,
+      },
+    );
+
+    if (wasUnread) {
+      try {
+        await context.read<NotificationApiService>().markRead(n.id);
+        // Локалд тэмдэглээд UI-г шинэчилнэ — server-аас дахин татах хэрэггүй
+        if (!mounted) return;
+        setState(() {
+          final idx = _items.indexWhere((x) => x.id == n.id);
+          if (idx >= 0) {
+            final orig = _items[idx];
+            _items[idx] = ApiNotification(
+              id: orig.id,
+              type: orig.type,
+              title: orig.title,
+              body: orig.body,
+              data: orig.data,
+              targetKind: orig.targetKind,
+              isRead: true,
+              createdAt: orig.createdAt,
+            );
+          }
+        });
+      } catch (_) {
+        // алдаа гарвал чимээгүй (хэрэглэгчийн UX-д хүчтэй нөлөөлөхгүй)
+      }
+    }
+  }
+
+  Future<void> _markAllRead() async {
+    try {
+      await context.read<NotificationApiService>().markAllRead();
+      if (!mounted) return;
+      setState(() {
+        _items = _items
+            .map((n) => ApiNotification(
+                  id: n.id,
+                  type: n.type,
+                  title: n.title,
+                  body: n.body,
+                  data: n.data,
+                  targetKind: n.targetKind,
+                  isRead: true,
+                  createdAt: n.createdAt,
+                ))
+            .toList();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      CustomSnackbar.show(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: CustomSnackbarType.error,
+      );
+    }
+  }
+
+  /// Сонгосон categorist-аар filter хийх (одоо type field ашиглана)
+  List<ApiNotification> get _filtered {
+    if (_selectedCategory == 'All') return _items;
+    return _items.where((n) {
+      switch (_selectedCategory) {
+        case 'Trading':
+          return n.type == 'order' || n.type == 'trading';
+        case 'News':
+          return n.type == 'news' || n.type == 'promo';
+        case 'Others':
+          return n.type == 'system' ||
+              (n.type != 'order' &&
+                  n.type != 'trading' &&
+                  n.type != 'news' &&
+                  n.type != 'promo');
+        default:
+          return true;
+      }
+    }).toList();
+  }
+
+  int get _unreadCount => _items.where((n) => !n.isRead).length;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +164,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton.icon(
-              onPressed: () => _showMarkReadPopup(context),
+              onPressed: _unreadCount > 0 ? () => _showMarkReadPopup() : null,
               icon: Icon(
                 Icons.check,
                 size: 18,
@@ -119,24 +201,26 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.error,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '2',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
+                if (_unreadCount > 0) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.error,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      _unreadCount.toString(),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -156,26 +240,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
           const SizedBox(height: 10),
           const Divider(height: 1),
           Expanded(
-            child: ListView(
-              children: _mockNotifications.map((n) {
-                return NotificationItem(
-                  title: n['title']! as String,
-                  subtitle: n['subtitle']! as String,
-                  time: n['time']! as String,
-                  isUnread: n['isUnread']! as bool,
-                  icon: Icons.notifications_none_outlined,
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    '/notification_detail',
-                    arguments: {
-                      'title': n['title'],
-                      'body': n['body'] ?? n['subtitle'],
-                      'time': n['time'],
-                      'icon': Icons.notifications_none_outlined,
-                    },
-                  ),
-                );
-              }).toList(),
+            child: RefreshIndicator(
+              onRefresh: _fetch,
+              child: _isLoading && _items.isEmpty
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error != null && _items.isEmpty
+                      ? _buildErrorState(theme, extendedColors)
+                      : _buildList(),
             ),
           ),
         ],
@@ -183,7 +254,51 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  void _showMarkReadPopup(BuildContext context) async {
+  Widget _buildErrorState(ThemeData theme, ExtendedColors c) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        const SizedBox(height: 120),
+        Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+        const SizedBox(height: 16),
+        Text(
+          _error ?? '',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(color: c.neutral200),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildList() {
+    final list = _filtered;
+    if (list.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: const [
+          SizedBox(height: 120),
+          Center(child: Text('Мэдэгдэл байхгүй')),
+        ],
+      );
+    }
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: list.length,
+      itemBuilder: (context, i) {
+        final n = list[i];
+        return NotificationItem(
+          title: n.title,
+          subtitle: n.body,
+          time: n.formattedTime,
+          isUnread: !n.isRead,
+          icon: Icons.notifications_none_outlined,
+          onTap: () => _onItemTap(n),
+        );
+      },
+    );
+  }
+
+  void _showMarkReadPopup() async {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -192,8 +307,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
 
     if (result == true) {
-      // Logic to mark all as read
-      print('Marked all as read');
+      await _markAllRead();
     }
   }
 }

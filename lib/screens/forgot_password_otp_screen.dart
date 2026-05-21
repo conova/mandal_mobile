@@ -6,19 +6,69 @@ import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_otp_form.dart';
 
-class ForgotPasswordOtpScreen extends StatelessWidget {
+class ForgotPasswordOtpScreen extends StatefulWidget {
   const ForgotPasswordOtpScreen({super.key});
+
+  @override
+  State<ForgotPasswordOtpScreen> createState() =>
+      _ForgotPasswordOtpScreenState();
+}
+
+class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
+  String? _sessionId;
+  String? _channelType;
+  late String _value;
+  late Map<String, dynamic> _args;
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+    _args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    _value = _args['value'] as String;
+    _sessionId = _args['sessionId'] as String?;
+    _channelType = _args['channelType'] as String?;
+  }
+
+  Future<void> _handleResend() async {
+    if (_sessionId == null || _channelType == null) return;
+    try {
+      final auth = context.read<AuthService>();
+      final normalized = _channelType == 'phone' ? 'sms' : _channelType!;
+      final data = await auth.sendOtp(normalized, sessionId: _sessionId);
+
+      // Шинэ sessionId ирвэл шинэчилнэ
+      final newSessionId = data['sessionId'] as String?;
+      if (newSessionId != null && newSessionId.isNotEmpty) {
+        setState(() => _sessionId = newSessionId);
+      }
+
+      final otp = data['otp']?.toString();
+      if (context.mounted) {
+        CustomSnackbar.show(
+          context,
+          message: otp != null ? 'OTP код: $otp' : 'Кодыг дахин илгээлээ',
+          type: CustomSnackbarType.info,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        CustomSnackbar.show(
+          context,
+          message: e.toString().replaceFirst('Exception: ', ''),
+          type: CustomSnackbarType.error,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final value = args['value'] as String;
-    final sessionId = args['sessionId'] as String?;
-    final channelType = args['channelType'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -37,7 +87,7 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
               ),
             ),
             Text(
-              l10n.codeSentTo(value),
+              l10n.codeSentTo(_value),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onBackground,
                 fontWeight: FontWeight.w300,
@@ -45,36 +95,14 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             AuthOtpForm(
-              sessionId: sessionId,
+              key: ValueKey(_sessionId ?? 'no-session'),
+              sessionId: _sessionId,
               onSuccess: () => Navigator.pushNamed(
                 context,
                 '/forgot_password_new',
-                arguments: args,
+                arguments: {..._args, 'sessionId': _sessionId},
               ),
-              onResend: () async {
-                if (sessionId == null || channelType == null) return;
-                try {
-                  await context.read<AuthService>().sendOtp(
-                        sessionId,
-                        channelType == 'phone' ? 'sms' : channelType,
-                      );
-                  if (context.mounted) {
-                    CustomSnackbar.show(
-                      context,
-                      message: 'Кодыг дахин илгээлээ',
-                      type: CustomSnackbarType.info,
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    CustomSnackbar.show(
-                      context,
-                      message: e.toString().replaceFirst('Exception: ', ''),
-                      type: CustomSnackbarType.error,
-                    );
-                  }
-                }
-              },
+              onResend: _handleResend,
             ),
           ],
         ),

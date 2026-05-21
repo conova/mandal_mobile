@@ -62,8 +62,8 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                     if (sessionId != null) {
                       try {
                         await context.read<AuthService>().sendOtp(
-                              sessionId,
                               isSms ? 'sms' : 'email',
+                              sessionId: sessionId,
                             );
                       } catch (e) {
                         if (context.mounted) {

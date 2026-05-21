@@ -32,31 +32,58 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
 
   Future<void> _fetchChannels() async {
     final sessionId = widget.extraArgs?['sessionId'] as String?;
-    if (sessionId == null) {
-      setState(() {
-        _isLoading = false;
-        _error = 'Session ID байхгүй байна';
-      });
+    final authService = context.read<AuthService>();
+
+    // 1) sessionId бий → forgot password / register flow (нэвтрээгүй)
+    if (sessionId != null) {
+      try {
+        final channels = await authService.getVerificationChannels(sessionId);
+        if (mounted) {
+          setState(() {
+            _channels = channels;
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _error = e.toString().replaceFirst('Exception: ', '');
+          });
+        }
+      }
       return;
     }
 
-    try {
-      final authService = context.read<AuthService>();
-      final channels = await authService.getVerificationChannels(sessionId);
+    // 2) Нэвтэрсэн (нууц үг солих, төхөөрөмж бүртгэх г.м.) — userInfo-аас авна
+    if (authService.isAuthenticated) {
+      final info = authService.userInfo ?? await authService.refreshUserInfo();
+      final List<Map<String, dynamic>> channels = [];
+      final phone = info?['phone']?.toString();
+      final email = info?['email']?.toString();
+      if (phone != null && phone.isNotEmpty) {
+        channels.add({'type': 'sms', 'value': phone});
+      }
+      if (email != null && email.isNotEmpty) {
+        channels.add({'type': 'email', 'value': email});
+      }
       if (mounted) {
         setState(() {
           _channels = channels;
           _isLoading = false;
+          if (channels.isEmpty) {
+            _error = 'Бүртгэлтэй утас эсвэл и-мэйл олдсонгүй';
+          }
         });
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _error = e.toString().replaceFirst('Exception: ', '');
-        });
-      }
+      return;
     }
+
+    // 3) sessionId-гүй, бас нэвтрээгүй — алдаа
+    setState(() {
+      _isLoading = false;
+      _error = 'Session ID байхгүй бөгөөд нэвтрээгүй байна';
+    });
   }
 
   @override
@@ -152,60 +179,52 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
     final isPhone = type == 'sms' || type == 'phone';
     final channelLabel = isPhone ? 'SMS' : 'Email';
     final maskedValue = _maskValue(type, value);
+    final normalizedChannel = _normalizeChannelType(type);
 
-    if (sessionId != null) {
-      // OTP илгээх
-      setState(() => _isSending = true);
-      try {
-        final otpData = await authService.sendOtp(
-          sessionId,
-          _normalizeChannelType(type),
+    setState(() => _isSending = true);
+    try {
+      // Нэвтэрсэн → sendOtp нь auth header илгээж sessionId автомат буцаана
+      // Нэвтрээгүй → sessionId-г bodi-д оруулах ёстой
+      final otpData = await authService.sendOtp(
+        normalizedChannel,
+        sessionId: sessionId,
+      );
+      if (!mounted) return;
+
+      // Хариунаас sessionId — хэрэв ирвэл шинэ, эс бөгөөс өмнөх
+      final newSessionId =
+          otpData['sessionId'] as String? ?? sessionId;
+
+      // TEST: OTP код харуулах (бодит горимд устгах)
+      final otp = otpData['otp']?.toString();
+      if (otp != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('OTP код: $otp')),
         );
-        if (mounted) {
-          // send_otp хариунаас шинэ sessionId авна
-          final newSessionId = otpData['sessionId'] as String? ?? sessionId;
-
-          // TEST: OTP код харуулах (бодит горимд устгах)
-          final otp = otpData['otp']?.toString();
-          if (otp != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('OTP код: $otp')),
-            );
-          }
-
-          Navigator.pushNamed(
-            context,
-            widget.nextRoute,
-            arguments: {
-              'channel': channelLabel,
-              'value': maskedValue,
-              'sessionId': newSessionId,
-              ...?widget.extraArgs,
-            },
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('OTP илгээхэд алдаа: ${e.toString().replaceFirst("Exception: ", "")}'),
-            ),
-          );
-        }
-      } finally {
-        if (mounted) setState(() => _isSending = false);
       }
-    } else {
-      // sessionId байхгүй бол шууд шилжих (хуучин flow)
+
       Navigator.pushNamed(
         context,
         widget.nextRoute,
         arguments: {
           'channel': channelLabel,
           'value': maskedValue,
+          'sessionId': newSessionId,
           ...?widget.extraArgs,
         },
       );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'OTP илгээхэд алдаа: ${e.toString().replaceFirst("Exception: ", "")}',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSending = false);
     }
   }
 }

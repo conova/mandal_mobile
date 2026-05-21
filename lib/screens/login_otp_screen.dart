@@ -6,18 +6,69 @@ import '../widgets/custom_snackbar.dart';
 import '../services/auth_service.dart';
 import 'components/shared/auth_otp_form.dart';
 
-class LoginOtpScreen extends StatelessWidget {
+class LoginOtpScreen extends StatefulWidget {
   const LoginOtpScreen({super.key});
+
+  @override
+  State<LoginOtpScreen> createState() => _LoginOtpScreenState();
+}
+
+class _LoginOtpScreenState extends State<LoginOtpScreen> {
+  String? _sessionId;
+  String? _channel;
+  late String _value;
+  Map<String, dynamic>? _args;
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+    _args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    _value = _args?['value'] as String? ?? '';
+    _sessionId = _args?['sessionId'] as String?;
+    _channel = _args?['channel'] as String?;
+  }
+
+  Future<void> _handleResend() async {
+    if (_sessionId == null) return;
+    try {
+      final channelType =
+          (_channel?.toLowerCase() == 'email') ? 'email' : 'sms';
+      final data = await context.read<AuthService>().sendOtp(
+            channelType,
+            sessionId: _sessionId,
+          );
+
+      // Шинэ sessionId ирвэл шинэчилнэ
+      final newSessionId = data['sessionId'] as String?;
+      if (newSessionId != null && newSessionId.isNotEmpty) {
+        setState(() => _sessionId = newSessionId);
+      }
+
+      if (context.mounted) {
+        CustomSnackbar.show(
+          context,
+          message: 'OTP код дахин илгээлээ',
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        CustomSnackbar.show(
+          context,
+          message: 'OTP илгээхэд алдаа: ${e.toString().replaceFirst("Exception: ", "")}',
+          type: CustomSnackbarType.error,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final value = args?['value'] as String? ?? '';
-    final sessionId = args?['sessionId'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -36,7 +87,7 @@ class LoginOtpScreen extends StatelessWidget {
               ),
             ),
             Text(
-              l10n.codeSentTo(value),
+              l10n.codeSentTo(_value),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onBackground,
                 fontWeight: FontWeight.w300,
@@ -44,59 +95,12 @@ class LoginOtpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             AuthOtpForm(
-              sessionId: sessionId,
-              onSuccess: () async {
-                // OTP амжилттай → deviceId бүртгэж token авах
-                if (sessionId != null) {
-                  final authService = context.read<AuthService>();
-                  final nav = Navigator.of(context);
-                  // final result = await authService.registerDevice(sessionId);
-                  final result = LoginResult(success: true);
-
-                  if (context.mounted) {
-                    if (result.success) {
-                      nav.pushReplacementNamed('/main');
-                    } else {
-                      CustomSnackbar.show(
-                        context,
-                        message: result.message ?? 'Device registration failed',
-                        type: CustomSnackbarType.error,
-                      );
-                    }
-                  }
-                } else {
-                  Navigator.pushReplacementNamed(context, '/main');
-                }
+              key: ValueKey(_sessionId ?? 'no-session'),
+              sessionId: _sessionId,
+              onSuccess: () {
+                Navigator.pushReplacementNamed(context, '/main');
               },
-              onResend: () {
-                // OTP дахин илгээх
-                if (sessionId != null) {
-                  final authService = context.read<AuthService>();
-                  final channel = args?['channel'] as String? ?? 'sms';
-                  final channelType = channel.toLowerCase() == 'email'
-                      ? 'email'
-                      : 'sms';
-                  authService
-                      .sendOtp(sessionId, channelType)
-                      .then((_) {
-                        if (context.mounted) {
-                          CustomSnackbar.show(
-                            context,
-                            message: 'OTP код дахин илгээлээ',
-                          );
-                        }
-                      })
-                      .catchError((e) {
-                        if (context.mounted) {
-                          CustomSnackbar.show(
-                            context,
-                            message: 'OTP илгээхэд алдаа: ${e.toString()}',
-                            type: CustomSnackbarType.error,
-                          );
-                        }
-                      });
-                }
-              },
+              onResend: _handleResend,
             ),
           ],
         ),

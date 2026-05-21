@@ -74,6 +74,7 @@ import 'screens/payment_qpay_screen.dart';
 import 'screens/payment_result_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
+import 'services/notification_api_service.dart';
 import 'services/payment_service.dart';
 import 'theme/app_colors.dart';
 import 'theme/extended_colors.dart';
@@ -154,6 +155,9 @@ void main() async {
   // Payment Gateway microservice client
   final paymentService = PaymentService(authService);
 
+  // Notification Gateway microservice client
+  final notificationApiService = NotificationApiService(authService);
+
   runApp(
     MultiProvider(
       providers: [
@@ -161,6 +165,7 @@ void main() async {
         ChangeNotifierProvider.value(value: authService),
         Provider.value(value: apiService),
         Provider.value(value: paymentService),
+        Provider.value(value: notificationApiService),
         if (notificationService != null)
           Provider.value(value: notificationService),
       ],

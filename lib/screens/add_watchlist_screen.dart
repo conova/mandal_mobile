@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_snackbar.dart';
 
 class _AvailableStock {
   final String symbol;
@@ -20,23 +23,37 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  // All available stocks
+  // Монголын Хөрөнгийн Биржийн (МХБ) гол хувьцаанууд
+  // TODO: production-д бодит API endpoint-аас (жишээ /stocks/list)
+  // авахаар сольж болно.
   final List<_AvailableStock> _allStocks = const [
-    _AvailableStock(symbol: 'NVDA', name: 'NVIDIA'),
-    _AvailableStock(symbol: 'AAPL', name: 'Apple Inc'),
-    _AvailableStock(symbol: 'AMZN', name: 'Amazon.com'),
-    _AvailableStock(symbol: 'TSLA', name: 'Tesla'),
-    _AvailableStock(symbol: 'MSFT', name: 'Microsoft Inc'),
-    _AvailableStock(symbol: 'META', name: 'Facebook'),
-    _AvailableStock(symbol: 'NVDA', name: 'NVIDIA'),
-    _AvailableStock(symbol: 'AAPL', name: 'Apple Inc'),
-    _AvailableStock(symbol: 'MSFT', name: 'Microsoft Inc'),
-    _AvailableStock(symbol: 'META', name: 'Facebook'),
-    _AvailableStock(symbol: 'NVDA', name: 'NVIDIA'),
+    _AvailableStock(symbol: 'APU', name: 'А.П.У'),
+    _AvailableStock(symbol: 'GOV', name: 'ГОВЬ'),
+    _AvailableStock(symbol: 'TTL', name: 'Таван толгой'),
+    _AvailableStock(symbol: 'ETT', name: 'Эрдэнэс Таван толгой'),
+    _AvailableStock(symbol: 'MNDL', name: 'Мандал даатгал'),
+    _AvailableStock(symbol: 'KHAN', name: 'Хаан банк'),
+    _AvailableStock(symbol: 'GLMT', name: 'Голомт банк'),
+    _AvailableStock(symbol: 'TDB', name: 'Худалдаа хөгжлийн банк'),
+    _AvailableStock(symbol: 'STBM', name: 'Төрийн банк'),
+    _AvailableStock(symbol: 'LEND', name: 'Lend.mn'),
+    _AvailableStock(symbol: 'AARD', name: 'Ард Капитал'),
+    _AvailableStock(symbol: 'ITLS', name: 'Итүлс'),
+    _AvailableStock(symbol: 'BNGM', name: 'Багануур'),
+    _AvailableStock(symbol: 'MMX', name: 'Монгол шуудан'),
+    _AvailableStock(symbol: 'TCK', name: 'Тавантолгой Кокс'),
+    _AvailableStock(symbol: 'SUL', name: 'Сүлжмэлзэ'),
+    _AvailableStock(symbol: 'MIK', name: 'МИК Холдинг'),
+    _AvailableStock(symbol: 'AIC', name: 'Ай Си Эс'),
+    _AvailableStock(symbol: 'ULZ', name: 'Улаанбаатар захиргаа'),
+    _AvailableStock(symbol: 'BUK', name: 'Бууцагаан'),
   ];
 
   // Track selected indices
   final Set<int> _selectedIndices = {};
+
+  /// Аль хэдийн watchlist-д нэмэгдсэн хувьцааны SYMBOL-ууд
+  final Set<String> _alreadyAddedSymbols = {};
 
   @override
   void initState() {
@@ -46,6 +63,24 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
         _searchQuery = _searchController.text.toLowerCase();
       });
     });
+    _loadExisting();
+  }
+
+  Future<void> _loadExisting() async {
+    try {
+      final auth = context.read<AuthService>();
+      final list = await auth.getWatchlist();
+      if (!mounted) return;
+      setState(() {
+        _alreadyAddedSymbols
+          ..clear()
+          ..addAll(list
+              .map((row) => row['SYMBOL']?.toString() ?? '')
+              .where((s) => s.isNotEmpty));
+      });
+    } catch (_) {
+      // алгасна — хоосон set-тэй явсаар сонголт хийгдэнэ
+    }
   }
 
   @override
@@ -66,6 +101,52 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
   }
 
   int get _totalSelected => _selectedIndices.length;
+
+  bool _isSaving = false;
+
+  Future<void> _handleSave() async {
+    if (_isSaving || _selectedIndices.isEmpty) return;
+    setState(() => _isSaving = true);
+    final auth = context.read<AuthService>();
+    final selectedSymbols =
+        _selectedIndices.map((i) => _allStocks[i].symbol).toList();
+
+    final errors = <String>[];
+    for (final symbol in selectedSymbols) {
+      try {
+        await auth.addToWatchlist(symbol);
+      } catch (e) {
+        errors.add(
+          '$symbol: ${e.toString().replaceFirst('Exception: ', '')}',
+        );
+      }
+    }
+
+    if (!mounted) return;
+    setState(() => _isSaving = false);
+
+    if (errors.isEmpty) {
+      CustomSnackbar.show(
+        context,
+        message: '${selectedSymbols.length} хувьцаа нэмэгдлээ',
+      );
+      Navigator.pop(context, true);
+    } else if (errors.length == selectedSymbols.length) {
+      CustomSnackbar.show(
+        context,
+        message: 'Алдаа: ${errors.first}',
+        type: CustomSnackbarType.error,
+      );
+    } else {
+      CustomSnackbar.show(
+        context,
+        message:
+            '${selectedSymbols.length - errors.length} нэмэгдлээ, ${errors.length} алдаатай',
+        type: CustomSnackbarType.info,
+      );
+      Navigator.pop(context, true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,17 +240,21 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                   final stockIndex = filteredIndices[index];
                   final stock = _allStocks[stockIndex];
                   final isSelected = _selectedIndices.contains(stockIndex);
+                  final isAlreadyAdded =
+                      _alreadyAddedSymbols.contains(stock.symbol);
 
                   return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (isSelected) {
-                          _selectedIndices.remove(stockIndex);
-                        } else {
-                          _selectedIndices.add(stockIndex);
-                        }
-                      });
-                    },
+                    onTap: isAlreadyAdded
+                        ? null
+                        : () {
+                            setState(() {
+                              if (isSelected) {
+                                _selectedIndices.remove(stockIndex);
+                              } else {
+                                _selectedIndices.add(stockIndex);
+                              }
+                            });
+                          },
                     child: Container(
                       color: isSelected
                           ? extendedColors.primary100
@@ -188,7 +273,9 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                                     stock.symbol,
                                     style: theme.textTheme.bodyLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color: extendedColors.neutral100,
+                                      color: isAlreadyAdded
+                                          ? extendedColors.neutral300
+                                          : extendedColors.neutral100,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -200,7 +287,9 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                                     stock.name,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       fontWeight: AppTextStyles.light,
-                                      color: extendedColors.neutral200,
+                                      color: isAlreadyAdded
+                                          ? extendedColors.neutral300
+                                          : extendedColors.neutral200,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -209,7 +298,38 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                               ],
                             ),
                           ),
-                          if (isSelected)
+                          if (isAlreadyAdded)
+                            // Аль хэдийн нэмэгдсэн → "Нэмэгдсэн" пилл
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: extendedColors.bgSecondary,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.check_rounded,
+                                    color: extendedColors.primaryMain,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Нэмэгдсэн',
+                                    style:
+                                        theme.textTheme.labelSmall?.copyWith(
+                                      color: extendedColors.neutral200,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else if (isSelected)
                             Icon(
                               Icons.check,
                               color: extendedColors.primaryMain,
@@ -241,11 +361,13 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                       : extendedColors.bgTertiary,
                   borderRadius: BorderRadius.circular(26),
                   child: InkWell(
-                    onTap: hasSelections ? () => Navigator.pop(context) : null,
+                    onTap: (hasSelections && !_isSaving) ? _handleSave : null,
                     borderRadius: BorderRadius.circular(26),
                     child: Center(
                       child: Text(
-                        'Хадгалах ($_totalSelected)',
+                        _isSaving
+                            ? 'Хадгалж байна...'
+                            : 'Хадгалах ($_totalSelected)',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: AppTextStyles.regular,
                           color: hasSelections

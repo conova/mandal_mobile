@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 
+/// API row: { TAGID, SYMBOL, STOCKNAME, CLOSEPRICE, OPENPRICE, PRICECHANGE,
+///            STOCKTYPE, TYPENAME, BOARDNAME }
 class WatchlistStock {
   final String symbol;
   final String name;
@@ -16,6 +20,48 @@ class WatchlistStock {
     required this.change,
     this.isPositive,
   });
+
+  factory WatchlistStock.fromApi(Map<String, dynamic> row) {
+    final closePrice = row['CLOSEPRICE'];
+    final priceChange = row['PRICECHANGE'];
+
+    final priceStr = closePrice == null
+        ? '-'
+        : '${_formatNumber(closePrice.toString())}₮';
+
+    String changeStr = '-';
+    bool? positive;
+    if (priceChange != null) {
+      final pct = double.tryParse(priceChange.toString()) ?? 0;
+      changeStr = '${pct.abs().toStringAsFixed(2)}%';
+      if (pct > 0) {
+        positive = true;
+      } else if (pct < 0) {
+        positive = false;
+      } else {
+        positive = null;
+      }
+    }
+
+    return WatchlistStock(
+      symbol: row['SYMBOL']?.toString() ?? '',
+      name: row['STOCKNAME']?.toString() ?? '',
+      price: priceStr,
+      change: changeStr,
+      isPositive: positive,
+    );
+  }
+
+  static String _formatNumber(String s) {
+    final n = num.tryParse(s);
+    if (n == null) return s;
+    return n
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]},',
+        );
+  }
 }
 
 class WatchlistDetailScreen extends StatefulWidget {
@@ -26,43 +72,41 @@ class WatchlistDetailScreen extends StatefulWidget {
 }
 
 class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
-  List<WatchlistStock> _watchlistItems = [
-    const WatchlistStock(
-      symbol: 'AARD',
-      name: 'Ард капитал',
-      price: '3,299.02₮',
-      change: '9.72%',
-      isPositive: true,
-    ),
-    const WatchlistStock(
-      symbol: 'APU',
-      name: 'АПУ ХХК',
-      price: '957.01₮',
-      change: '0.24%',
-      isPositive: false,
-    ),
-    const WatchlistStock(
-      symbol: 'GLMT',
-      name: 'Голомт банк',
-      price: '1,124.00₮',
-      change: '0.00%',
-      isPositive: null,
-    ),
-    const WatchlistStock(
-      symbol: 'KHAN',
-      name: 'Хаан банк',
-      price: '1,348.24₮',
-      change: '4.02%',
-      isPositive: false,
-    ),
-    const WatchlistStock(
-      symbol: 'LEND',
-      name: 'Lend.mn',
-      price: '170.00₮',
-      change: '3.43%',
-      isPositive: false,
-    ),
-  ];
+  List<WatchlistStock> _watchlistItems = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWatchlist();
+  }
+
+  Future<void> _fetchWatchlist() async {
+    try {
+      final auth = context.read<AuthService>();
+      final list = await auth.getWatchlist();
+      if (!mounted) return;
+      setState(() {
+        _watchlistItems = list.map(WatchlistStock.fromApi).toList();
+        _isLoading = false;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+  }
+
+  Future<void> _openAddScreen() async {
+    final result = await Navigator.pushNamed(context, '/add_watchlist');
+    if (result == true) {
+      await _fetchWatchlist();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +118,6 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // App bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
@@ -89,17 +132,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.pushNamed(
-                        context,
-                        '/add_watchlist',
-                      );
-                      if (result != null && result is List<WatchlistStock>) {
-                        setState(() {
-                          _watchlistItems = result;
-                        });
-                      }
-                    },
+                    onTap: _openAddScreen,
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -116,128 +149,154 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                 ],
               ),
             ),
-
-            // Content
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 24),
-
-                    // App icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: extendedColors.neutral100,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        color: extendedColors.primaryMain,
-                        size: 36,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Title
-                    Text(
-                      'Хадгалсан',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-
-                    // Subtitle
-                    Text(
-                      '${_watchlistItems.length} ширхэг хувьцаа',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral300,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Divider
-                    Divider(
-                      color: extendedColors.neutral500,
-                      height: 1,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Column headers
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 40),
-                            child: Text(
-                              'Хувьцаа',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: extendedColors.neutral200,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Сүүлийн ханш (24 цаг)',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: extendedColors.neutral200,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Reorderable list
-                    ReorderableListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      proxyDecorator: (child, index, animation) {
-                        return AnimatedBuilder(
-                          animation: animation,
-                          builder: (context, child) {
-                            final elevation = Tween<double>(
-                              begin: 0,
-                              end: 4,
-                            ).animate(animation).value;
-                            return Material(
-                              elevation: elevation,
-                              color: extendedColors.bgBase,
-                              borderRadius: BorderRadius.circular(8),
-                              child: child,
-                            );
-                          },
-                          child: child,
-                        );
-                      },
-                      itemCount: _watchlistItems.length,
-                      onReorder: (oldIndex, newIndex) {
-                        setState(() {
-                          if (newIndex > oldIndex) newIndex--;
-                          final item = _watchlistItems.removeAt(oldIndex);
-                          _watchlistItems.insert(newIndex, item);
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        final item = _watchlistItems[index];
-                        return _buildWatchlistItem(
-                          key: ValueKey(item.symbol + index.toString()),
-                          item: item,
-                          extendedColors: extendedColors,
-                          theme: theme,
-                        );
-                      },
-                    ),
-                  ],
-                ),
+              child: RefreshIndicator(
+                onRefresh: _fetchWatchlist,
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error != null
+                        ? _buildErrorState(theme, extendedColors)
+                        : _buildContent(theme, extendedColors),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(ThemeData theme, ExtendedColors c) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        const SizedBox(height: 120),
+        Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+        const SizedBox(height: 16),
+        Text(
+          _error ?? '',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(color: c.neutral200),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(ThemeData theme, ExtendedColors extendedColors) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: extendedColors.neutral100,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.bookmark_outline,
+              color: extendedColors.primaryMain,
+              size: 36,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Хадгалсан',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${_watchlistItems.length} ширхэг хувьцаа',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral300,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Divider(color: extendedColors.neutral500, height: 1),
+          const SizedBox(height: 16),
+          if (_watchlistItems.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Text(
+                'Жагсаалт хоосон байна',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral300,
+                ),
+              ),
+            )
+          else ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 40),
+                    child: Text(
+                      'Хувьцаа',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Сүүлийн ханш (24 цаг)',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral200,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            ReorderableListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              proxyDecorator: (child, index, animation) {
+                return AnimatedBuilder(
+                  animation: animation,
+                  builder: (context, child) {
+                    final elevation =
+                        Tween<double>(begin: 0, end: 4).animate(animation).value;
+                    return Material(
+                      elevation: elevation,
+                      color: extendedColors.bgBase,
+                      borderRadius: BorderRadius.circular(8),
+                      child: child,
+                    );
+                  },
+                  child: child,
+                );
+              },
+              itemCount: _watchlistItems.length,
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) newIndex--;
+                  final item = _watchlistItems.removeAt(oldIndex);
+                  _watchlistItems.insert(newIndex, item);
+                });
+                // Шинэ дарааллыг локалд хадгална
+                final symbols =
+                    _watchlistItems.map((s) => s.symbol).toList();
+                context.read<AuthService>().saveWatchlistOrder(symbols);
+              },
+              itemBuilder: (context, index) {
+                final item = _watchlistItems[index];
+                return _buildWatchlistItem(
+                  key: ValueKey('${item.symbol}_$index'),
+                  item: item,
+                  extendedColors: extendedColors,
+                  theme: theme,
+                );
+              },
+            ),
+          ],
+          const SizedBox(height: 40),
+        ],
       ),
     );
   }
@@ -250,7 +309,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
   }) {
     final changePrefix = item.isPositive == null
         ? ''
-        : (item.isPositive! ? '\u25B2 ' : '\u25BC ');
+        : (item.isPositive! ? '▲ ' : '▼ ');
     final changeColor = item.isPositive == null
         ? extendedColors.neutral200
         : (item.isPositive! ? extendedColors.primaryMain : extendedColors.red);
@@ -261,15 +320,8 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       color: extendedColors.bgBase,
       child: Row(
         children: [
-          // Drag handle
-          Icon(
-            Icons.drag_handle,
-            color: extendedColors.neutral300,
-            size: 24,
-          ),
+          Icon(Icons.drag_handle, color: extendedColors.neutral300, size: 24),
           const SizedBox(width: 12),
-
-          // Stock info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,8 +348,6 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
             ),
           ),
           const SizedBox(width: 8),
-
-          // Price & change
           Flexible(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,

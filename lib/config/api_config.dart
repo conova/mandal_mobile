@@ -3,6 +3,8 @@ class ApiConfig {
   // Payment Gateway микросервис (NEGDI integration)
   // Production-д өөрийн домэйнд солих ёстой
   static const String paymentGatewayUrl = 'http://10.0.2.2:3002';
+  // Notification Gateway микросервис (FCM + DB)
+  static const String notificationGatewayUrl = 'http://10.0.2.2:3001';
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 15);
 
@@ -33,6 +35,12 @@ class ApiConfig {
   static const String devices = '/bdc/api/security/devices';
   static const String customerCreate = '/bdc/api/customer/create.php';
   static const String customerUpdate = '/bdc/api/customer/update.php';
+
+  // ─── Watchlist ───
+  static const String watchlistList = '/bdc/api/watchlist/list';
+  /// Add to watchlist — path includes symbol: `/watchlist/{SYMBOL}`
+  static String watchlistAdd(String symbol) =>
+      '/bdc/api/watchlist/$symbol';
 
   // ─── Order ───
   static const String orderCreate = '/bdc/api/order/create.php';

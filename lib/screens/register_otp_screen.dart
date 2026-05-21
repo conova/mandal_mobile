@@ -6,18 +6,65 @@ import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_otp_form.dart';
 
-class RegisterOtpScreen extends StatelessWidget {
+class RegisterOtpScreen extends StatefulWidget {
   const RegisterOtpScreen({super.key});
+
+  @override
+  State<RegisterOtpScreen> createState() => _RegisterOtpScreenState();
+}
+
+class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
+  String? _sessionId;
+  late Map<String, dynamic> _args;
+  late String _phone;
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+    _args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    _phone = _args['phone'] as String;
+    _sessionId = _args['sessionId'] as String?;
+  }
+
+  Future<void> _handleResend() async {
+    if (_sessionId == null) return;
+    try {
+      final auth = context.read<AuthService>();
+      final data = await auth.sendOtp('sms', sessionId: _sessionId);
+
+      // Шинэ sessionId ирвэл шинэчилнэ
+      final newSessionId = data['sessionId'] as String?;
+      if (newSessionId != null && newSessionId.isNotEmpty) {
+        setState(() => _sessionId = newSessionId);
+      }
+
+      final otp = data['otp']?.toString();
+      if (context.mounted) {
+        CustomSnackbar.show(
+          context,
+          message: otp != null ? 'OTP код: $otp' : 'Кодыг дахин илгээлээ',
+          type: CustomSnackbarType.info,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        CustomSnackbar.show(
+          context,
+          message: e.toString().replaceFirst('Exception: ', ''),
+          type: CustomSnackbarType.error,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final phone = args['phone'] as String;
-    final sessionId = args['sessionId'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -36,7 +83,7 @@ class RegisterOtpScreen extends StatelessWidget {
               ),
             ),
             Text(
-              l10n.codeSentTo(phone),
+              l10n.codeSentTo(_phone),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onBackground,
                 fontWeight: FontWeight.w300,
@@ -44,36 +91,14 @@ class RegisterOtpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             AuthOtpForm(
-              sessionId: sessionId,
+              key: ValueKey(_sessionId ?? 'no-session'),
+              sessionId: _sessionId,
               onSuccess: () => Navigator.pushNamed(
                 context,
                 '/register_password',
-                arguments: args,
+                arguments: {..._args, 'sessionId': _sessionId},
               ),
-              onResend: () async {
-                if (sessionId == null) return;
-                try {
-                  final auth = context.read<AuthService>();
-                  final data = await auth.sendOtp(sessionId, 'sms');
-                  // TEST: дахин илгээсэн OTP-г харуулах
-                  final otp = data['otp']?.toString();
-                  if (otp != null && context.mounted) {
-                    CustomSnackbar.show(
-                      context,
-                      message: 'OTP код: $otp',
-                      type: CustomSnackbarType.info,
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    CustomSnackbar.show(
-                      context,
-                      message: e.toString().replaceFirst('Exception: ', ''),
-                      type: CustomSnackbarType.error,
-                    );
-                  }
-                }
-              },
+              onResend: _handleResend,
             ),
           ],
         ),
