@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../widgets/custom_snackbar.dart';
 
 class DocumentVerificationScreen extends StatefulWidget {
   const DocumentVerificationScreen({super.key});
@@ -21,6 +24,9 @@ class _DocumentVerificationScreenState
   String? _idBackPath;
   String? _selfiePath;
   bool _initialized = false;
+  bool _uploadingIdFront = false;
+  bool _uploadingIdBack = false;
+  bool _uploadingSelfie = false;
 
   bool get _isIdFrontDone => _idFrontPath != null;
   bool get _isIdBackDone => _idBackPath != null;
@@ -43,6 +49,54 @@ class _DocumentVerificationScreenState
       if (auth.isIdBackUploaded) _idBackPath = 'done';
       if (auth.isSelfieUploaded) _selfiePath = 'done';
     });
+  }
+
+  /// Камераас буцаж ирсэн path-аас base64 string үүсгээд upload_document API дуудна.
+  /// Web дээр File API ажиллахгүй учир алдаа барина.
+  Future<void> _uploadDocument({
+    required String type,
+    required dynamic cameraResult,
+  }) async {
+    // 'done' эсвэл null → upload алгасах
+    if (cameraResult is! String || cameraResult == 'done') return;
+
+    // BuildContext-аас async-н өмнө шууд авах
+    final auth = context.read<AuthService>();
+
+    setState(() {
+      if (type == 'id_front') _uploadingIdFront = true;
+      if (type == 'id_back') _uploadingIdBack = true;
+      if (type == 'selfie') _uploadingSelfie = true;
+    });
+
+    try {
+      String base64Image;
+      if (kIsWeb) {
+        // Web flow: cameraResult аль хэдийн base64 байх ёстой
+        base64Image = cameraResult;
+      } else {
+        final bytes = await File(cameraResult).readAsBytes();
+        base64Image = base64Encode(bytes);
+      }
+
+      await auth.uploadKycDocument(type: type, image: base64Image);
+    } catch (e) {
+      if (mounted) {
+        CustomSnackbar.show(
+          context,
+          message: e.toString().replaceFirst('Exception: ', ''),
+          type: CustomSnackbarType.error,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          if (type == 'id_front') _uploadingIdFront = false;
+          if (type == 'id_back') _uploadingIdBack = false;
+          if (type == 'selfie') _uploadingSelfie = false;
+        });
+      }
+    }
   }
 
   @override
@@ -71,16 +125,20 @@ class _DocumentVerificationScreenState
                 idFrontPath: _idFrontPath,
                 idBackPath: _idBackPath,
                 selfiePath: _selfiePath,
+                isUploadingIdFront: _uploadingIdFront,
+                isUploadingIdBack: _uploadingIdBack,
+                isUploadingSelfie: _uploadingSelfie,
                 onIdFrontTap: () async {
                   final result = await Navigator.pushNamed(
                     context,
                     '/camera_overlay',
                     arguments: 'id',
                   );
-                  if (result != null) {
+                  if (result != null && mounted) {
                     setState(() {
                       _idFrontPath = result is String ? result : 'done';
                     });
+                    await _uploadDocument(type: 'id_front', cameraResult: result);
                   }
                 },
                 onIdBackTap: () async {
@@ -89,10 +147,11 @@ class _DocumentVerificationScreenState
                     '/camera_overlay',
                     arguments: 'id',
                   );
-                  if (result != null) {
+                  if (result != null && mounted) {
                     setState(() {
                       _idBackPath = result is String ? result : 'done';
                     });
+                    await _uploadDocument(type: 'id_back', cameraResult: result);
                   }
                 },
                 onSelfieTap: () async {
@@ -101,10 +160,11 @@ class _DocumentVerificationScreenState
                     '/camera_overlay',
                     arguments: 'selfie',
                   );
-                  if (result != null) {
+                  if (result != null && mounted) {
                     setState(() {
                       _selfiePath = result is String ? result : 'done';
                     });
+                    await _uploadDocument(type: 'selfie', cameraResult: result);
                   }
                 },
               ),
@@ -208,6 +268,9 @@ class _DocItemList extends StatelessWidget {
   final String? idFrontPath;
   final String? idBackPath;
   final String? selfiePath;
+  final bool isUploadingIdFront;
+  final bool isUploadingIdBack;
+  final bool isUploadingSelfie;
   final VoidCallback onIdFrontTap;
   final VoidCallback onIdBackTap;
   final VoidCallback onSelfieTap;
@@ -220,6 +283,9 @@ class _DocItemList extends StatelessWidget {
     this.idFrontPath,
     this.idBackPath,
     this.selfiePath,
+    this.isUploadingIdFront = false,
+    this.isUploadingIdBack = false,
+    this.isUploadingSelfie = false,
     required this.onIdFrontTap,
     required this.onIdBackTap,
     required this.onSelfieTap,
@@ -233,18 +299,21 @@ class _DocItemList extends StatelessWidget {
           title: l10n.idFront,
           isDone: isIdFrontDone,
           imagePath: idFrontPath,
+          isUploading: isUploadingIdFront,
           onTap: onIdFrontTap,
         ),
         _DocItem(
           title: l10n.idBack,
           isDone: isIdBackDone,
           imagePath: idBackPath,
+          isUploading: isUploadingIdBack,
           onTap: onIdBackTap,
         ),
         _DocItem(
           title: l10n.selfiePhoto,
           isDone: isSelfieDone,
           imagePath: selfiePath,
+          isUploading: isUploadingSelfie,
           onTap: onSelfieTap,
         ),
       ],
@@ -256,12 +325,14 @@ class _DocItem extends StatelessWidget {
   final String title;
   final bool isDone;
   final String? imagePath;
+  final bool isUploading;
   final VoidCallback onTap;
 
   const _DocItem({
     required this.title,
     required this.isDone,
     this.imagePath,
+    this.isUploading = false,
     required this.onTap,
   });
 
@@ -272,7 +343,7 @@ class _DocItem extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return InkWell(
-      onTap: onTap,
+      onTap: isUploading ? null : onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
@@ -285,12 +356,20 @@ class _DocItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               clipBehavior: Clip.antiAlias,
-              child: isDone && imagePath != null && imagePath != 'done'
-                  ? Image.file(File(imagePath!), fit: BoxFit.cover)
-                  : Icon(
-                      Icons.camera_alt_outlined,
-                      color: extendedColors.neutral300,
-                    ),
+              child: isUploading
+                  ? const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : (isDone && imagePath != null && imagePath != 'done' && !kIsWeb
+                      ? Image.file(File(imagePath!), fit: BoxFit.cover)
+                      : Icon(
+                          Icons.camera_alt_outlined,
+                          color: extendedColors.neutral300,
+                        )),
             ),
             const SizedBox(width: 16),
             Expanded(

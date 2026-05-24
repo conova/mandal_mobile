@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:provider/provider.dart';
@@ -26,14 +27,18 @@ class _StockScreenState extends State<StockScreen> {
   String? _error;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(() {
-      final q = _searchController.text.trim().toLowerCase();
+      final q = _searchController.text.trim();
       if (q != _searchQuery) {
-        setState(() => _searchQuery = q);
+        _searchQuery = q;
+        _debounce?.cancel();
+        // 350ms-ийн дараа API дуудна
+        _debounce = Timer(const Duration(milliseconds: 350), _fetch);
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _fetch());
@@ -41,20 +46,27 @@ class _StockScreenState extends State<StockScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
 
-  /// Хайлтын дүнгээр шүүгдсэн жагсаалт
-  List<Map<String, dynamic>> get _filteredStocks {
-    if (_searchQuery.isEmpty) return _stocks;
-    return _stocks.where((row) {
-      final symbol = (row['SYMBOL']?.toString() ?? '').toLowerCase();
-      final name =
-          ((row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '')
-              .toLowerCase();
-      return symbol.contains(_searchQuery) || name.contains(_searchQuery);
-    }).toList();
+  /// Хайлт оруулсан тохиолдолд API хариу шууд орно
+  List<Map<String, dynamic>> get _filteredStocks => _stocks;
+
+  /// Идэвхтэй filter-ийг search API-руу type болгож шилжүүлэх
+  String? _typeForActiveFilter() {
+    switch (_activeFilter) {
+      case _StockFilter.gainers:
+        return 'gainers';
+      case _StockFilter.losers:
+        return 'losers';
+      case _StockFilter.ipo:
+        return 'ipo';
+      case _StockFilter.all:
+      case _StockFilter.market:
+        return null;
+    }
   }
 
   Future<void> _fetch() async {
@@ -64,13 +76,24 @@ class _StockScreenState extends State<StockScreen> {
     });
     try {
       final auth = context.read<AuthService>();
-      final list = await switch (_activeFilter) {
-        _StockFilter.ipo => auth.getIpoStocks(),
-        _StockFilter.gainers => auth.getGainers(),
-        _StockFilter.losers => auth.getLosers(),
-        _StockFilter.all || _StockFilter.market =>
-          auth.getAvailableStocks(),
-      };
+      List<Map<String, dynamic>> list;
+
+      if (_searchQuery.isNotEmpty) {
+        // Хайлт идэвхтэй → /stocks/search
+        list = await auth.searchStocks(
+          _searchQuery,
+          type: _typeForActiveFilter(),
+        );
+      } else {
+        list = await switch (_activeFilter) {
+          _StockFilter.ipo => auth.getIpoStocks(),
+          _StockFilter.gainers => auth.getGainers(),
+          _StockFilter.losers => auth.getLosers(),
+          _StockFilter.all || _StockFilter.market =>
+            auth.getAvailableStocks(),
+        };
+      }
+
       if (!mounted) return;
       setState(() {
         _stocks = list;

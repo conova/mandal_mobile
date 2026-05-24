@@ -52,7 +52,7 @@ class StockDetailScreen extends StatelessWidget {
               isGrowing: isGrowing,
             ),
             const SizedBox(height: 32),
-            const StockDetailChart(),
+            StockDetailChart(symbol: symbol),
             const SizedBox(height: 32),
             const StockDetailGeneralInfo(),
             const SizedBox(height: 48),

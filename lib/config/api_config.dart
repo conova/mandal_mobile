@@ -27,8 +27,10 @@ class ApiConfig {
   static const String verifyOtp = '/bdc/api/auth/verify_otp';
 
   // ─── KYC ───
-  static const String banksList = '/bdc/api/auth/banks/list';
+  static const String banksList = '/bdc/api/banks/list';
   static const String pepStatus = '/bdc/api/kyc/pep_status';
+  static const String kycUploadDocument = '/bdc/api/kyc/upload_document';
+  static const String kycAcceptAgreement = '/bdc/api/kyc/accept_agreement';
 
   // ─── Device / FCM ───
   static const String registerFcmToken = '/bdc/api/security/fcm_token';
@@ -52,6 +54,11 @@ class ApiConfig {
   static const String stocksGainers = '/bdc/api/stocks/gainers';
   static const String stocksLosers = '/bdc/api/stocks/losers';
   static const String stocksIpo = '/bdc/api/stocks/ipo';
+  static const String stocksSearch = '/bdc/api/stocks/search';
+
+  /// Symbol-ийн график — `/stocks/{SYMBOL}/chart`
+  /// Query: start=YYYY/MM/DD&end=YYYY/MM/DD
+  static String stockChart(String symbol) => '/bdc/api/stocks/$symbol/chart';
 
   // ─── Order ───
   static const String orderCreate = '/bdc/api/order/create.php';

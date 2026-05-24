@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../widgets/custom_snackbar.dart';
 
 class SecuritiesAgreementScreen extends StatefulWidget {
   const SecuritiesAgreementScreen({super.key});
@@ -14,9 +17,26 @@ class SecuritiesAgreementScreen extends StatefulWidget {
 
 class _SecuritiesAgreementScreenState extends State<SecuritiesAgreementScreen> {
   bool _isAccepted = false;
+  bool _isSubmitting = false;
 
-  void _handleAgree() {
-    Navigator.pop(context, true);
+  Future<void> _handleAgree() async {
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
+    try {
+      final auth = context.read<AuthService>();
+      await auth.acceptKycAgreement();
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      CustomSnackbar.show(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: CustomSnackbarType.error,
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override
@@ -50,6 +70,7 @@ class _SecuritiesAgreementScreenState extends State<SecuritiesAgreementScreen> {
               _AgreementActionButtons(
                 l10n: l10n,
                 isAccepted: _isAccepted,
+                isSubmitting: _isSubmitting,
                 onAgree: _handleAgree,
               ),
               const SizedBox(height: 24),
@@ -204,11 +225,13 @@ class _AcceptTermsCheckbox extends StatelessWidget {
 class _AgreementActionButtons extends StatelessWidget {
   final AppLocalizations l10n;
   final bool isAccepted;
+  final bool isSubmitting;
   final VoidCallback onAgree;
 
   const _AgreementActionButtons({
     required this.l10n,
     required this.isAccepted,
+    required this.isSubmitting,
     required this.onAgree,
   });
 
@@ -218,7 +241,8 @@ class _AgreementActionButtons extends StatelessWidget {
       width: double.infinity,
       child: CustomButton(
         label: l10n.agree,
-        onPressed: isAccepted ? onAgree : null,
+        onPressed: (isAccepted && !isSubmitting) ? onAgree : null,
+        isLoading: isSubmitting,
         variant: CustomButtonVariant.primary,
       ),
     );

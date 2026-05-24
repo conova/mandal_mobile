@@ -35,7 +35,9 @@
       "PowerShell(Get-Process -Name \"dart\" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Get-Process -Name \"chrome\" -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -eq \"\" } | Stop-Process -Force -ErrorAction SilentlyContinue)",
       "Bash(flutter attach *)",
       "PowerShell(Start-Process -FilePath \"flutter\" -ArgumentList \"run\",\"-d\",\"chrome\",\"--web-browser-flag=--disable-web-security\",\"--web-browser-flag=--ignore-certificate-errors\",\"--web-browser-flag=--no-referrers\" -WorkingDirectory \"C:\\\\Users\\\\hitech\\\\OneDrive\\\\Documents\\\\antigravity\" -NoNewWindow -PassThru)",
-      "PowerShell($env:Path += \";C:\\\\Users\\\\hitech\\\\AppData\\\\Local\\\\Pub\\\\Cache\\\\bin\"; firebase --version)"
+      "PowerShell($env:Path += \";C:\\\\Users\\\\hitech\\\\AppData\\\\Local\\\\Pub\\\\Cache\\\\bin\"; firebase --version)",
+      "Bash(powershell -Command ' *)",
+      "Bash(Sort-Object -Unique)"
     ]
   }
 }

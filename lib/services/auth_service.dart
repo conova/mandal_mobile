@@ -732,19 +732,23 @@ class AuthService with ChangeNotifier {
 
   /// Бүртгэлийн орлого авах данс холбох — sessionId + банк + IBAN + нэр.
   /// Returns: server message
+  /// Данс холбох — sessionId эсвэл нэвтэрсэн token хоёрын аль нэгийг шаардана.
+  ///   • sessionId дамжуулсан → register flow (нэвтрээгүй)
+  ///   • sessionId null → нэвтэрсэн → Bearer token автомат явна
   Future<String> addAccount({
-    required String sessionId,
+    String? sessionId,
     required String bankCode,
     required String iban,
     required String accountName,
   }) async {
+    final dio = sessionId != null ? _dio : _authedDio;
     try {
-      final response = await _dio.post(
+      final response = await dio.post(
         ApiConfig.registerAddAccount,
         data: {
           'api': 'add_account',
           'data': {
-            'sessionId': sessionId,
+            if (sessionId != null) 'sessionId': sessionId,
             'bankCode': bankCode,
             'iban': iban,
             'accountName': accountName,
@@ -758,6 +762,73 @@ class AuthService with ChangeNotifier {
             'Дансны мэдээлэл амжилттай хадгалагдлаа';
       }
       throw Exception(body['message'] ?? 'Данс холбоход алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// KYC: бичиг баримтын зураг илгээх
+  /// type: id_front | id_back | selfie г.м.
+  /// image: base64 encoded string
+  Future<String> uploadKycDocument({
+    required String type,
+    required String image,
+  }) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.kycUploadDocument,
+        data: {
+          'api': 'upload_document',
+          'data': {'type': type, 'image': image},
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        // Кэшэлсэн userInfo дотрох document талбарыг шинэчлэх
+        if (_userInfo != null) {
+          final doc = Map<String, dynamic>.from(
+            (_userInfo!['document'] as Map?) ?? const {},
+          );
+          doc[type] = 'true';
+          _userInfo!['document'] = doc;
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
+          notifyListeners();
+        }
+        return body['message']?.toString() ?? 'Амжилттай илгээгдлээ';
+      }
+      throw Exception(body['message'] ?? 'Бичиг баримт илгээхэд алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// KYC: үнэт цаасны гэрээ зөвшөөрөх
+  Future<String> acceptKycAgreement() async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.kycAcceptAgreement,
+        data: {
+          'api': 'accept_agreement',
+          'data': {'isAgreement': 'true'},
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        // Кэшэлсэн userInfo дотрох kyc.agreement шинэчлэх
+        if (_userInfo != null) {
+          final kyc = Map<String, dynamic>.from(
+            (_userInfo!['kyc'] as Map?) ?? const {},
+          );
+          kyc['agreement'] = 'true';
+          _userInfo!['kyc'] = kyc;
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
+          notifyListeners();
+        }
+        return body['message']?.toString() ?? 'Гэрээ амжилттай зөвшөөрөгдлөө';
+      }
+      throw Exception(body['message'] ?? 'Гэрээ зөвшөөрөхөд алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -922,6 +993,64 @@ class AuthService with ChangeNotifier {
   /// IPO хувьцаанууд
   Future<List<Map<String, dynamic>>> getIpoStocks() =>
       _fetchStockList(ApiConfig.stocksIpo);
+
+  /// Хувьцаа хайх
+  /// POST /stocks/search?q=...&type=...
+  /// type: optional (gainers | losers | ipo)
+  Future<List<Map<String, dynamic>>> searchStocks(String query, {String? type}) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.stocksSearch,
+        queryParameters: {
+          'q': query,
+          if (type != null) 'type': type,
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Хувьцааны үнийн график
+  /// POST /stocks/{SYMBOL}/chart?start=YYYY/MM/DD&end=YYYY/MM/DD
+  /// Default: сүүлийн 1 жил
+  Future<List<Map<String, dynamic>>> getStockChart(
+    String symbol, {
+    String? start,
+    String? end,
+  }) async {
+    final now = DateTime.now();
+    final s = start ?? _formatChartDate(DateTime(now.year - 1, now.month, now.day));
+    final e = end ?? _formatChartDate(now);
+
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.stockChart(symbol),
+        queryParameters: {'start': s, 'end': e},
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (err) {
+      throw Exception(_extractErrorMessage(err));
+    }
+  }
+
+  String _formatChartDate(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}/'
+      '${d.month.toString().padLeft(2, '0')}/'
+      '${d.day.toString().padLeft(2, '0')}';
 
   /// Watchlist-д нэмж болох бүх хувьцаа.
   /// GET /watchlist/available
