@@ -76,6 +76,8 @@ import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'services/notification_api_service.dart';
 import 'services/payment_service.dart';
+import 'services/dan_service.dart';
+import 'screens/webview_screen.dart';
 import 'theme/app_colors.dart';
 import 'theme/extended_colors.dart';
 import 'theme/app_state_manager.dart';
@@ -158,6 +160,9 @@ void main() async {
   // Notification Gateway microservice client
   final notificationApiService = NotificationApiService(authService);
 
+  // DAN (E-Mongolia) verification microservice client
+  final danService = DanService(authService);
+
   runApp(
     MultiProvider(
       providers: [
@@ -166,6 +171,7 @@ void main() async {
         Provider.value(value: apiService),
         Provider.value(value: paymentService),
         Provider.value(value: notificationApiService),
+        Provider.value(value: danService),
         if (notificationService != null)
           Provider.value(value: notificationService),
       ],
@@ -453,6 +459,7 @@ class MyApp extends StatelessWidget {
               '/release_locked': (context) => const ReleaseLockedAmountScreen(),
               '/watchlist_detail': (context) => const WatchlistDetailScreen(),
               '/add_watchlist': (context) => const AddWatchlistScreen(),
+              '/webview': (context) => const WebViewScreen(),
             };
 
             final routeName = settings.name;

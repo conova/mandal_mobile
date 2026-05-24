@@ -3,6 +3,7 @@ import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_snackbar.dart';
 
 /// API row: { TAGID, SYMBOL, STOCKNAME, CLOSEPRICE, OPENPRICE, PRICECHANGE,
 ///            STOCKTYPE, TYPENAME, BOARDNAME }
@@ -105,6 +106,58 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
     final result = await Navigator.pushNamed(context, '/add_watchlist');
     if (result == true) {
       await _fetchWatchlist();
+    }
+  }
+
+  /// Хувьцааг хасахын өмнө баталгаажуулах + сервэрт хүсэлт илгээх.
+  /// `true` бол Dismissible элементийг устгана, `false` бол буцаана.
+  Future<bool> _confirmRemove(
+    WatchlistStock item,
+    ExtendedColors c,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('${item.symbol} устгах'),
+        content: Text(
+          '${item.name} хувьцааг хадгалсан жагсаалтаас хасах уу?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Болих'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: c.red),
+            child: const Text('Устгах'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return false;
+
+    try {
+      final auth = context.read<AuthService>();
+      await auth.removeFromWatchlist(item.symbol);
+      // Локал state-ээс хасч, шинэ дарааллыг хадгална
+      if (!mounted) return true;
+      setState(() {
+        _watchlistItems.removeWhere((s) => s.symbol == item.symbol);
+      });
+      final symbols = _watchlistItems.map((s) => s.symbol).toList();
+      await auth.saveWatchlistOrder(symbols);
+      if (!mounted) return true;
+      CustomSnackbar.show(context, message: '${item.symbol} устгагдлаа');
+      return true;
+    } catch (e) {
+      if (!mounted) return false;
+      CustomSnackbar.show(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: CustomSnackbarType.error,
+      );
+      return false;
     }
   }
 
@@ -286,11 +339,29 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
               },
               itemBuilder: (context, index) {
                 final item = _watchlistItems[index];
-                return _buildWatchlistItem(
-                  key: ValueKey('${item.symbol}_$index'),
-                  item: item,
-                  extendedColors: extendedColors,
-                  theme: theme,
+                final key = ValueKey('${item.symbol}_$index');
+                return Dismissible(
+                  key: key,
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    color: extendedColors.red.withOpacity(0.1),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: extendedColors.red,
+                      size: 28,
+                    ),
+                  ),
+                  confirmDismiss: (_) async {
+                    return await _confirmRemove(item, extendedColors);
+                  },
+                  child: _buildWatchlistItem(
+                    key: const ValueKey('inner'),
+                    item: item,
+                    extendedColors: extendedColors,
+                    theme: theme,
+                  ),
                 );
               },
             ),
@@ -314,14 +385,27 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
         ? extendedColors.neutral200
         : (item.isPositive! ? extendedColors.primaryMain : extendedColors.red);
 
-    return Container(
+    return Material(
       key: key,
-      padding: const EdgeInsets.symmetric(vertical: 14),
       color: extendedColors.bgBase,
-      child: Row(
-        children: [
-          Icon(Icons.drag_handle, color: extendedColors.neutral300, size: 24),
-          const SizedBox(width: 12),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(
+          context,
+          '/stock_detail',
+          arguments: {
+            'symbol': item.symbol,
+            'name': item.name,
+            'price': item.price,
+            'change': item.change,
+            'isGrowing': item.isPositive,
+          },
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          child: Row(
+            children: [
+              Icon(Icons.drag_handle, color: extendedColors.neutral300, size: 24),
+              const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,6 +457,8 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }

@@ -5,7 +5,7 @@ class StockPriceRow extends StatelessWidget {
   final String name;
   final String price;
   final String change;
-  final bool isGrowing;
+  final bool? isGrowing;
   final VoidCallback? onTap;
 
   const StockPriceRow({
@@ -14,7 +14,7 @@ class StockPriceRow extends StatelessWidget {
     required this.name,
     required this.price,
     required this.change,
-    this.isGrowing = true,
+    this.isGrowing,
     this.onTap,
   });
 
@@ -60,12 +60,12 @@ class StockPriceRow extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (change != '0.00%')
+                      if (isGrowing != null && change != '0.00%')
                         Icon(
-                          isGrowing
+                          isGrowing!
                               ? Icons.arrow_drop_up
                               : Icons.arrow_drop_down,
-                          color: isGrowing
+                          color: isGrowing!
                               ? theme.primaryColor
                               : colorScheme.error,
                           size: 20,
@@ -74,9 +74,9 @@ class StockPriceRow extends StatelessWidget {
                         change,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: change == '0.00%'
+                          color: isGrowing == null || change == '0.00%'
                               ? theme.textTheme.bodySmall?.color ?? Colors.grey
-                              : (isGrowing
+                              : (isGrowing!
                                     ? theme.primaryColor
                                     : colorScheme.error),
                         ),

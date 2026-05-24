@@ -152,7 +152,19 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
     BuildContext context,
   ) {
     final theme = Theme.of(context);
-    return Padding(
+    return InkWell(
+      onTap: () => Navigator.pushNamed(
+        context,
+        '/stock_detail',
+        arguments: {
+          'symbol': s.symbol,
+          'name': s.name,
+          'price': s.price,
+          'change': s.change,
+          'isGrowing': s.isPositive,
+        },
+      ),
+      child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -214,6 +226,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

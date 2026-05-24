@@ -3,7 +3,20 @@ import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class StockDetailHeader extends StatelessWidget {
-  const StockDetailHeader({super.key});
+  final String symbol;
+  final String name;
+  final String price;
+  final String change;
+  final bool? isGrowing;
+
+  const StockDetailHeader({
+    super.key,
+    this.symbol = '',
+    this.name = '',
+    this.price = '-',
+    this.change = '-',
+    this.isGrowing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,27 +24,32 @@ class StockDetailHeader extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
 
+    final changeColor = isGrowing == null
+        ? extendedColors.neutral200
+        : (isGrowing! ? extendedColors.primaryMain : theme.colorScheme.error);
+    final showArrow = isGrowing != null && change != '0.00%' && change != '-';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'MNDL',
+            symbol,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: extendedColors.neutral100,
             ),
           ),
           Text(
-            'Мандал даатгал ХК',
+            name,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: extendedColors.neutral200,
             ),
           ),
           const SizedBox(height: 16),
           Text(
-            '65.62₮',
+            price,
             style: theme.textTheme.headlineLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: extendedColors.neutral100,
@@ -39,15 +57,18 @@ class StockDetailHeader extends StatelessWidget {
           ),
           Row(
             children: [
-              Icon(
-                Icons.arrow_drop_up,
-                color: extendedColors.primaryMain,
-                size: 24,
-              ),
+              if (showArrow)
+                Icon(
+                  isGrowing!
+                      ? Icons.arrow_drop_up
+                      : Icons.arrow_drop_down,
+                  color: changeColor,
+                  size: 24,
+                ),
               Text(
-                '0.65% (-2.07)',
+                change,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.primaryMain,
+                  color: changeColor,
                   fontWeight: FontWeight.w300,
                 ),
               ),

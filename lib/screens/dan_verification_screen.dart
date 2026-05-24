@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:provider/provider.dart';
+import '../config/api_config.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
+import '../services/dan_service.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
 
@@ -15,19 +19,75 @@ class _DanVerificationScreenState extends State<DanVerificationScreen> {
   bool _isLoading = false;
   bool _isApproved = false;
 
-  void _handleVerify() async {
+  Future<void> _handleVerify() async {
     setState(() {
       _isLoading = true;
     });
 
-    // Simulate DAN verification process
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final dan = context.read<DanService>();
+      final auth = context.read<AuthService>();
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _isApproved = true;
-      });
+      // unique — энэ хэрэглэгчийн identifier (uid). Backend session-аа
+      // үүсгэх ба бид webview хаагдсаны дараа `isDanVerified` flag-ийг
+      // дахин unfo татаж шинэчилнэ.
+      final unique = auth.uid ?? '';
+      // callback — DAN gateway хэрэглэгчийг redirect хийх URL.
+      // Production-д жинхэнэ домэйнд солих ёстой.
+      final callback =
+          '${ApiConfig.danServiceUrl}/api/e/callback';
+
+      final result = await dan.startEMongolia(
+        unique: unique,
+        callback: callback,
+        serviceCodes: const [
+          'CITIZEN_ID_CARD_INFO',
+          'CITIZEN_ADDRESS_INFO',
+        ],
+      );
+
+      if (!mounted) return;
+
+      // WebView нээх, callback URL руу redirect болоход pop хийнэ
+      final returned = await Navigator.pushNamed(
+        context,
+        '/webview',
+        arguments: {
+          'url': result.uri,
+          'title': 'E-Mongolia',
+          'callbackPrefix': callback,
+        },
+      );
+
+      if (!mounted) return;
+
+      if (returned != null) {
+        // User мэдээллийг шинэчилж DAN flag-ийг дахин шалгана
+        try {
+          await auth.refreshUserInfo();
+        } catch (_) {
+          // info татах амжилтгүй ч UI-аа approved болгоё
+        }
+        setState(() {
+          _isLoading = false;
+          _isApproved = true;
+        });
+      } else {
+        // Хэрэглэгч цуцалсан
+        setState(() => _isLoading = false);
+      }
+    } on DanException catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
   }
 

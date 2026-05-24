@@ -115,6 +115,26 @@ class AuthService with ChangeNotifier {
   bool get isKycComplete =>
       hasAgreement && isDanVerified && isPepDeclared;
 
+  // ── Document upload статус ────────────────────────────────────────────
+  // `userInfo.document` объект — `kyc`-ийн гадна, тусдаа irне.
+  // Жишээ: { idFront: "true", idBack: "true", selfie: "false" }
+  Map<String, dynamic>? get _document => _userInfo == null
+      ? null
+      : _userInfo!['document'] as Map<String, dynamic>?;
+
+  /// Иргэний үнэмлэхний урд талын зураг илгээсэн эсэх
+  bool get isIdFrontUploaded => _parseBool(_document?['idFront']);
+
+  /// Иргэний үнэмлэхний ар талын зураг илгээсэн эсэх
+  bool get isIdBackUploaded => _parseBool(_document?['idBack']);
+
+  /// Selfie зураг илгээсэн эсэх
+  bool get isSelfieUploaded => _parseBool(_document?['selfie']);
+
+  /// 3 баримтын аль аль нь илгээгдсэн эсэх
+  bool get areAllDocumentsUploaded =>
+      isIdFrontUploaded && isIdBackUploaded && isSelfieUploaded;
+
   /// Утас баталгаажуулсан эсэх
   bool get isPhoneVerified => _parseBool(_userInfo?['phoneVerified']);
 
@@ -875,8 +895,56 @@ class AuthService with ChangeNotifier {
     return sorted;
   }
 
+  /// Stock list-ийн ерөнхий уншигч — GET <path>, `data` array буцаана.
+  Future<List<Map<String, dynamic>>> _fetchStockList(String path) async {
+    try {
+      final response = await _authedDio.get(path);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Өсөлттэй хувьцаанууд
+  Future<List<Map<String, dynamic>>> getGainers() =>
+      _fetchStockList(ApiConfig.stocksGainers);
+
+  /// Уналттай хувьцаанууд
+  Future<List<Map<String, dynamic>>> getLosers() =>
+      _fetchStockList(ApiConfig.stocksLosers);
+
+  /// IPO хувьцаанууд
+  Future<List<Map<String, dynamic>>> getIpoStocks() =>
+      _fetchStockList(ApiConfig.stocksIpo);
+
+  /// Watchlist-д нэмж болох бүх хувьцаа.
+  /// GET /watchlist/available
+  /// Row: { STOCKCODE, SYMBOL, STOCKNAME, COMPNAME, CLOSEPRICE, OPENPRICE,
+  ///        STOCKTYPE, TYPENAME, BOARDNAME }
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<List<Map<String, dynamic>>> getAvailableStocks() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.watchlistAvailable);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Watchlist-д хувьцаа нэмэх.
-  /// POST /watchlist/watchlist/{symbol}
+  /// POST /watchlist/{symbol}
   /// `Authorization: Bearer <token>` шаардана.
   Future<String> addToWatchlist(String symbol) async {
     try {
@@ -886,6 +954,28 @@ class AuthService with ChangeNotifier {
         return body['message']?.toString() ?? 'Амжилттай нэмэгдлээ';
       }
       throw Exception(body['message'] ?? 'Watchlist нэмэхэд алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Watchlist-аас хувьцаа устгах.
+  /// POST /watchlist/{symbol}   body: { api: "watchlist_delete", data: { symbol } }
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<String> removeFromWatchlist(String symbol) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.watchlistAdd(symbol),
+        data: {
+          'api': 'watchlist_delete',
+          'data': {'symbol': symbol},
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return body['message']?.toString() ?? 'Амжилттай устгагдлаа';
+      }
+      throw Exception(body['message'] ?? 'Watchlist устгахад алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }

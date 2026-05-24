@@ -5,6 +5,9 @@ class ApiConfig {
   static const String paymentGatewayUrl = 'http://10.0.2.2:3002';
   // Notification Gateway микросервис (FCM + DB)
   static const String notificationGatewayUrl = 'http://10.0.2.2:3001';
+  // DAN (E-Mongolia) service base URL
+  static const String danServiceUrl = 'https://mandalcapital.mn/dan';
+  static const String danEUri = '/api/e/uri';
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 15);
 
@@ -38,9 +41,17 @@ class ApiConfig {
 
   // ─── Watchlist ───
   static const String watchlistList = '/bdc/api/watchlist/list';
-  /// Add to watchlist — path includes symbol: `/watchlist/{SYMBOL}`
-  static String watchlistAdd(String symbol) =>
-      '/bdc/api/watchlist/$symbol';
+  static const String watchlistAvailable = '/bdc/api/watchlist/available';
+
+  /// Add/remove watchlist — path includes symbol: `/watchlist/{SYMBOL}`
+  /// add: POST no body
+  /// delete: POST body `{api: "watchlist_delete", data: {symbol}}`
+  static String watchlistAdd(String symbol) => '/bdc/api/watchlist/$symbol';
+
+  // ─── Stocks ───
+  static const String stocksGainers = '/bdc/api/stocks/gainers';
+  static const String stocksLosers = '/bdc/api/stocks/losers';
+  static const String stocksIpo = '/bdc/api/stocks/ipo';
 
   // ─── Order ───
   static const String orderCreate = '/bdc/api/order/create.php';

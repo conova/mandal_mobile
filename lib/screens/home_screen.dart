@@ -74,8 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
               isCompleted: auth.isDanVerified,
               onTap: () async {
                 if (auth.isDanVerified) return;
-                final result =
-                    await Navigator.pushNamed(ctx, '/dan_verification');
+                final result = await Navigator.pushNamed(ctx, '/pep_question');
                 if (result == true) await _onStepFinished();
               },
             ),
@@ -86,8 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
               isCompleted: auth.hasAgreement,
               onTap: () async {
                 if (auth.hasAgreement) return;
-                final result =
-                    await Navigator.pushNamed(ctx, '/securities_agreement');
+                final result = await Navigator.pushNamed(
+                  ctx,
+                  '/securities_agreement',
+                );
                 if (result == true) await _onStepFinished();
               },
             ),
@@ -98,7 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
               isCompleted: auth.isPepDeclared,
               onTap: () async {
                 if (auth.isPepDeclared) return;
-                final result = await Navigator.pushNamed(ctx, '/pep_question');
+                final result = await Navigator.pushNamed(
+                  ctx,
+                  '/document_verification',
+                );
                 if (result == true) await _onStepFinished();
               },
             ),

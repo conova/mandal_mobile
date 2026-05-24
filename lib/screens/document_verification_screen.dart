@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
 
@@ -18,12 +20,30 @@ class _DocumentVerificationScreenState
   String? _idFrontPath;
   String? _idBackPath;
   String? _selfiePath;
+  bool _initialized = false;
 
   bool get _isIdFrontDone => _idFrontPath != null;
   bool get _isIdBackDone => _idBackPath != null;
   bool get _isSelfieDone => _selfiePath != null;
 
   bool get _isAllDone => _isIdFrontDone && _isIdBackDone && _isSelfieDone;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+    // `userInfo.document` доторх статусаар анх дүүргэнэ. Сервэрт аль хэдийн
+    // илгээгдсэн баримтуудыг 'done' sentinel-ээр тэмдэглэнэ — энэ нь UI-д
+    // галерийн thumbnail биш `Icons.camera_alt` иконыг бус,
+    // `editPhoto` шошготой "хийгдсэн" төлөвт харагдана.
+    final auth = context.read<AuthService>();
+    setState(() {
+      if (auth.isIdFrontUploaded) _idFrontPath = 'done';
+      if (auth.isIdBackUploaded) _idBackPath = 'done';
+      if (auth.isSelfieUploaded) _selfiePath = 'done';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

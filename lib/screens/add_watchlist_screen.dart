@@ -23,31 +23,9 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  // Монголын Хөрөнгийн Биржийн (МХБ) гол хувьцаанууд
-  // TODO: production-д бодит API endpoint-аас (жишээ /stocks/list)
-  // авахаар сольж болно.
-  final List<_AvailableStock> _allStocks = const [
-    _AvailableStock(symbol: 'APU', name: 'А.П.У'),
-    _AvailableStock(symbol: 'GOV', name: 'ГОВЬ'),
-    _AvailableStock(symbol: 'TTL', name: 'Таван толгой'),
-    _AvailableStock(symbol: 'ETT', name: 'Эрдэнэс Таван толгой'),
-    _AvailableStock(symbol: 'MNDL', name: 'Мандал даатгал'),
-    _AvailableStock(symbol: 'KHAN', name: 'Хаан банк'),
-    _AvailableStock(symbol: 'GLMT', name: 'Голомт банк'),
-    _AvailableStock(symbol: 'TDB', name: 'Худалдаа хөгжлийн банк'),
-    _AvailableStock(symbol: 'STBM', name: 'Төрийн банк'),
-    _AvailableStock(symbol: 'LEND', name: 'Lend.mn'),
-    _AvailableStock(symbol: 'AARD', name: 'Ард Капитал'),
-    _AvailableStock(symbol: 'ITLS', name: 'Итүлс'),
-    _AvailableStock(symbol: 'BNGM', name: 'Багануур'),
-    _AvailableStock(symbol: 'MMX', name: 'Монгол шуудан'),
-    _AvailableStock(symbol: 'TCK', name: 'Тавантолгой Кокс'),
-    _AvailableStock(symbol: 'SUL', name: 'Сүлжмэлзэ'),
-    _AvailableStock(symbol: 'MIK', name: 'МИК Холдинг'),
-    _AvailableStock(symbol: 'AIC', name: 'Ай Си Эс'),
-    _AvailableStock(symbol: 'ULZ', name: 'Улаанбаатар захиргаа'),
-    _AvailableStock(symbol: 'BUK', name: 'Бууцагаан'),
-  ];
+  // API-аас татна (initState-д). Анхны state хоосон.
+  List<_AvailableStock> _allStocks = const [];
+  bool _isLoadingStocks = true;
 
   // Track selected indices
   final Set<int> _selectedIndices = {};
@@ -63,24 +41,34 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
         _searchQuery = _searchController.text.toLowerCase();
       });
     });
-    _loadExisting();
+    _loadAll();
   }
 
-  Future<void> _loadExisting() async {
-    try {
-      final auth = context.read<AuthService>();
-      final list = await auth.getWatchlist();
-      if (!mounted) return;
-      setState(() {
-        _alreadyAddedSymbols
-          ..clear()
-          ..addAll(list
-              .map((row) => row['SYMBOL']?.toString() ?? '')
-              .where((s) => s.isNotEmpty));
-      });
-    } catch (_) {
-      // алгасна — хоосон set-тэй явсаар сонголт хийгдэнэ
-    }
+  Future<void> _loadAll() async {
+    // Available stocks + одоогийн watchlist parallel татах
+    final auth = context.read<AuthService>();
+    final results = await Future.wait([
+      auth.getAvailableStocks().catchError((_) => <Map<String, dynamic>>[]),
+      auth.getWatchlist().catchError((_) => <Map<String, dynamic>>[]),
+    ]);
+    if (!mounted) return;
+    final available = results[0];
+    final current = results[1];
+    setState(() {
+      _allStocks = available
+          .map((row) => _AvailableStock(
+                symbol: row['SYMBOL']?.toString() ?? '',
+                name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
+              ))
+          .where((s) => s.symbol.isNotEmpty)
+          .toList();
+      _alreadyAddedSymbols
+        ..clear()
+        ..addAll(current
+            .map((row) => row['SYMBOL']?.toString() ?? '')
+            .where((s) => s.isNotEmpty));
+      _isLoadingStocks = false;
+    });
   }
 
   @override
@@ -227,7 +215,18 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
 
             // Stock list
             Expanded(
-              child: ListView.separated(
+              child: _isLoadingStocks
+                  ? const Center(child: CircularProgressIndicator())
+                  : _allStocks.isEmpty
+                      ? Center(
+                          child: Text(
+                            'Жагсаалт хоосон байна',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral300,
+                            ),
+                          ),
+                        )
+                      : ListView.separated(
                 padding: const EdgeInsets.only(bottom: 80),
                 itemCount: filteredIndices.length,
                 separatorBuilder: (context, index) => Divider(

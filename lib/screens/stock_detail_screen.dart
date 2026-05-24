@@ -5,12 +5,23 @@ import 'components/stock_detail/stock_detail_general_info.dart';
 import 'components/stock_detail/stock_detail_dividend_history.dart';
 import 'components/stock_detail/stock_detail_bottom_bar.dart';
 
+/// Route args:
+///   { symbol: String, name: String, price: String, change: String,
+///     isGrowing: bool? }
 class StockDetailScreen extends StatelessWidget {
   const StockDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            const {};
+    final symbol = (args['symbol'] as String?) ?? '';
+    final name = (args['name'] as String?) ?? '';
+    final price = (args['price'] as String?) ?? '-';
+    final change = (args['change'] as String?) ?? '-';
+    final isGrowing = args['isGrowing'] as bool?;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -29,23 +40,33 @@ class StockDetailScreen extends StatelessWidget {
         backgroundColor: theme.colorScheme.surface,
         elevation: 0,
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            StockDetailHeader(),
-            SizedBox(height: 32),
-            StockDetailChart(),
-            SizedBox(height: 32),
-            StockDetailGeneralInfo(),
-            SizedBox(height: 48),
-            StockDetailDividendHistory(),
-            SizedBox(height: 32),
+            StockDetailHeader(
+              symbol: symbol,
+              name: name,
+              price: price,
+              change: change,
+              isGrowing: isGrowing,
+            ),
+            const SizedBox(height: 32),
+            const StockDetailChart(),
+            const SizedBox(height: 32),
+            const StockDetailGeneralInfo(),
+            const SizedBox(height: 48),
+            const StockDetailDividendHistory(),
+            const SizedBox(height: 32),
           ],
         ),
       ),
       bottomNavigationBar: StockDetailBottomBar(
-        onTrade: () => Navigator.pushNamed(context, '/stock_trading'),
+        onTrade: () => Navigator.pushNamed(
+          context,
+          '/stock_trading',
+          arguments: args,
+        ),
       ),
     );
   }

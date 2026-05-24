@@ -24,11 +24,13 @@ class AuthOtpForm extends StatefulWidget {
 }
 
 class _AuthOtpFormState extends State<AuthOtpForm> {
+  static const int _otpLength = 4;
   final List<TextEditingController> _controllers = List.generate(
-    6,
+    _otpLength,
     (_) => TextEditingController(),
   );
-  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+  final List<FocusNode> _focusNodes =
+      List.generate(_otpLength, (_) => FocusNode());
   int _attemptCount = 0;
   bool _isBlocked = false;
   bool _isVerifying = false;
@@ -62,7 +64,7 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
       _errorMessage = null;
     });
 
-    if (value.length == 1 && index < 5) {
+    if (value.length == 1 && index < _otpLength - 1) {
       _focusNodes[index + 1].requestFocus();
     }
     if (value.isEmpty && index > 0) {
@@ -153,11 +155,11 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: List.generate(
-            6,
+            _otpLength,
             (index) => Row(
               children: [
                 _buildCodeField(index, theme, extendedColors),
-                if (index < 5) const SizedBox(width: 8),
+                if (index < _otpLength - 1) const SizedBox(width: 8),
               ],
             ),
           ),
