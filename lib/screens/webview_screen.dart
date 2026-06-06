@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../theme/extended_colors.dart';
+import '../common/url_opener_stub.dart'
+    if (dart.library.html) '../common/url_opener_web.dart';
 
 /// Үндсэн WebView дэлгэц — гадаад нэвтрэх / баталгаажуулах URL-уудыг
 /// харуулахад ашиглана (жнь: E-Mongolia DAN).
@@ -42,6 +45,16 @@ class _WebViewScreenState extends State<WebViewScreen> {
       setState(() {
         _isLoading = false;
         _error = 'URL хоосон байна';
+      });
+      return;
+    }
+
+    // Web дээр webview_flutter дэмжихгүй учир URL-ыг шинэ tab-д нээгээд
+    // дэлгэцийг шууд буцаана. Mobile дээр WebViewController ашиглана.
+    if (kIsWeb) {
+      openUrlInNewTab(url);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.of(context).pop();
       });
       return;
     }
