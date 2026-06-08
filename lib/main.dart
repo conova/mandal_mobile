@@ -43,6 +43,7 @@ import 'screens/change_password_new_screen.dart';
 import 'screens/income_account_detail_screen.dart';
 import 'screens/login_verification_screen.dart';
 import 'screens/login_otp_screen.dart';
+import 'screens/new_device_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/forgot_password_verification_screen.dart';
 import 'screens/forgot_password_otp_screen.dart';
@@ -94,6 +95,7 @@ const Set<String> _publicRoutes = {
   '/quick_login',
   '/login_verification',
   '/login_otp',
+  '/new_device',
   '/forgot_password',
   '/forgot_password_verification',
   '/forgot_password_otp',
@@ -403,6 +405,7 @@ class MyApp extends StatelessWidget {
               '/login_verification': (context) =>
                   const LoginVerificationScreen(),
               '/login_otp': (context) => const LoginOtpScreen(),
+              '/new_device': (context) => const NewDeviceScreen(),
               '/forgot_password': (context) => const ForgotPasswordScreen(),
               '/forgot_password_verification': (context) =>
                   const ForgotPasswordVerificationScreen(),

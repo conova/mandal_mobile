@@ -24,8 +24,15 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     final authService = Provider.of<AuthService>(context, listen: false);
-    final bool isLoggedIn = authService.isAuthenticated;
+
+    // Token хүчинтэй эсэхийг шалгана. Хугацаа дууссан бол refresh оролдоно,
+    // тэр нь бас амжилтгүй бол session-ыг арилгана (→ false буцна).
+    // Иймд app удаан хугацаагаар хаалттай байсан үед хэрэглэгчийг
+    // portfolio-руу биш login-руу шууд хөтөлнө.
+    final bool isLoggedIn = await authService.ensureValidSession();
     final bool hasShownStory = authService.hasShownStory;
+
+    if (!mounted) return;
 
     if (isLoggedIn) {
       Navigator.pushReplacementNamed(context, '/main');

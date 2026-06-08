@@ -300,6 +300,8 @@
     "no": "No",
     "yes": "Yes",
     "verify": "Verify",
+    "newDeviceTitle": "New device",
+    "newDeviceDesc": "You are logging in from this device for the first time. To keep your account secure, please complete verification to continue.",
     "danVerificationDesc": "Verify your personal information using the system.",
     "success": "Success",
     "myStocks": "My Stocks",

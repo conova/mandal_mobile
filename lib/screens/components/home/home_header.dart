@@ -17,6 +17,9 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: extendedColors.bgBase,
       elevation: 0,
       centerTitle: true,
+      // Зүүн талын leading icon байхгүй — `Icons.book` placeholder
+      // нь өмнө empty onPressed-тэй сууж байсныг устгав.
+      automaticallyImplyLeading: false,
       title: Opacity(
         opacity: showSummaryOpacity,
         child: Column(
@@ -52,10 +55,6 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
             ),
           ],
         ),
-      ),
-      leading: IconButton(
-        icon: Icon(Icons.book, color: colorScheme.onSurface),
-        onPressed: () {},
       ),
       actions: [
         Stack(

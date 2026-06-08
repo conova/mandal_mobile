@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../services/api_service.dart';
-import '../../../config/api_config.dart';
+import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
 
 class HomeAssetSummary extends StatefulWidget {
@@ -14,32 +13,54 @@ class HomeAssetSummary extends StatefulWidget {
 }
 
 class _HomeAssetSummaryState extends State<HomeAssetSummary> {
-  bool _isLoading = false;
-  String _totalAssets = '50,628,000';
-  String _totalAssetsDec = '.21₮';
-  String _assetChange = '+210,351.52₮';
-  String _assetChangePercent = '9.71%';
+  PortfolioSummary _summary = PortfolioSummary.empty;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _fetchAssetData());
+    // Background fetch — UI блоклохгүй. PortfolioSummary.empty (0₮) утгаараа
+    // шууд рендерлэгдэх ба API ирэхэд аяндаа шинэчилнэ.
+    Future.microtask(_fetch);
   }
 
-  Future<void> _fetchAssetData() async {
+  Future<void> _fetch() async {
     if (!mounted) return;
-    setState(() => _isLoading = true);
     try {
-      final apiService = context.read<ApiService>();
-      final dynamic response = await apiService.get(ApiConfig.profile);
-      debugPrint('Asset data: $response');
+      final auth = context.read<AuthService>();
+      final summary = await auth.getPortfolioSummary();
+      if (!mounted) return;
+      setState(() => _summary = summary);
     } catch (e) {
-      // Handle error
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      // Silent fail — UI default утгаараа үлдэнэ
+      debugPrint('[HomeAssetSummary] алдаа: $e');
     }
+  }
+
+  /// 50,628,000.21 → ('50,628,000', '.21')
+  (String, String) _splitAmount(double value) {
+    final str = value.toStringAsFixed(2);
+    final dotIdx = str.indexOf('.');
+    final wholePart = str.substring(0, dotIdx);
+    final decPart = str.substring(dotIdx); // includes '.'
+    final wholeWithCommas = wholePart.replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
+    return (wholeWithCommas, '$decPart₮');
+  }
+
+  /// 210351.52 → '+210,351.52₮' / '-210,351.52₮'
+  String _formatChange(double value) {
+    final sign = value >= 0 ? '+' : '-';
+    final absStr = value.abs().toStringAsFixed(2);
+    final dotIdx = absStr.indexOf('.');
+    final whole = absStr
+        .substring(0, dotIdx)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]},',
+        );
+    return '$sign$whole${absStr.substring(dotIdx)}₮';
   }
 
   @override
@@ -47,6 +68,13 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
+
+    final (whole, decimal) = _splitAmount(_summary.totalAssets);
+    final changeStr = _formatChange(_summary.totalChange);
+    final percentStr = '${_summary.changePercent.abs().toStringAsFixed(2)}%';
+    final isUp = _summary.totalChange >= 0;
+    final changeColor =
+        isUp ? extendedColors.primaryMain : extendedColors.red;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,55 +87,50 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
           ),
         ),
         const SizedBox(height: 4),
-        _isLoading
-            ? const SizedBox(
-                height: 48,
-                child: Center(child: CircularProgressIndicator()),
-              )
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Flexible(
-                    child: Text(
-                      _totalAssets,
-                      style: theme.textTheme.displayLarge?.copyWith(
-                        fontWeight: AppTextStyles.semiBold,
-                        color: theme.colorScheme.onBackground,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Text(
-                    _totalAssetsDec,
-                    style: theme.textTheme.displayLarge?.copyWith(
-                      fontWeight: AppTextStyles.semiBold,
-                      color: extendedColors.neutral300,
-                    ),
-                  ),
-                ],
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Flexible(
+              child: Text(
+                whole,
+                style: theme.textTheme.displayLarge?.copyWith(
+                  fontWeight: AppTextStyles.semiBold,
+                  color: theme.colorScheme.onBackground,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
+            ),
+            Text(
+              decimal,
+              style: theme.textTheme.displayLarge?.copyWith(
+                fontWeight: AppTextStyles.semiBold,
+                color: extendedColors.neutral300,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 4),
         Row(
           children: [
             Text(
-              _assetChange,
+              changeStr,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.primaryMain,
+                color: changeColor,
                 fontWeight: AppTextStyles.light,
               ),
             ),
             const SizedBox(width: 4),
             Icon(
-              Icons.arrow_drop_up,
-              color: extendedColors.primaryMain,
+              isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+              color: changeColor,
               size: 18,
             ),
             Text(
-              '$_assetChangePercent ',
+              '$percentStr ',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.primaryMain,
+                color: changeColor,
                 fontWeight: AppTextStyles.light,
               ),
             ),

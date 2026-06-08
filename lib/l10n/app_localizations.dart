@@ -1846,6 +1846,18 @@ abstract class AppLocalizations {
   /// **'Verify'**
   String get verify;
 
+  /// No description provided for @newDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New device'**
+  String get newDeviceTitle;
+
+  /// No description provided for @newDeviceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You are logging in from this device for the first time. To keep your account secure, please complete verification to continue.'**
+  String get newDeviceDesc;
+
   /// No description provided for @danVerificationDesc.
   ///
   /// In en, this message translates to:

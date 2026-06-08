@@ -3,6 +3,7 @@ import '../l10n/app_localizations.dart';
 import '../theme/app_state_manager.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/language_switcher.dart';
 import '../widgets/logout_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -131,42 +132,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
+        // M3 default-аар scroll болоход AppBar нь surfaceTint өнгөөр өнгөрсөн
+        // tint авдаг — энэ нь bgBase-тай ялгаатай харагдана. Бид tint-ийг
+        // унтрааж, scrolledUnderElevation-ыг 0 болгож scroll-ын явцад
+        // background bgBase-аараа үлдэхийг баталгаажуулна.
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              // Toggle language mn/en
-              final current = AppStateManager.instance.locale.languageCode;
-              AppStateManager.instance.setLocale(
-                Locale(current == 'mn' ? 'en' : 'mn'),
-              );
-            },
-            icon: CircleAvatar(
-              radius: 10,
-              backgroundColor: colorScheme.surfaceVariant,
-              child: Text(
-                AppStateManager.instance.locale.languageCode == 'mn'
-                    ? 'MN'
-                    : 'EN',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-            label: Text(
-              AppStateManager.instance.locale.languageCode == 'mn'
-                  ? 'MNG'
-                  : 'ENG',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface,
-              ),
-            ),
+        actions: const [
+          // Login дэлгэцтэй ижил pill switcher (flag + MN/ENG).
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Center(child: LanguageSwitcher()),
           ),
-          const SizedBox(width: 8),
         ],
         centerTitle: true,
       ),

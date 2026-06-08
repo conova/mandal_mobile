@@ -63,10 +63,13 @@ class _LoginFormState extends State<LoginForm>
         // DeviceId бүртгэлтэй → шууд нэвтэрсэн
         Navigator.pushReplacementNamed(context, '/main');
       } else if (result.requiresOtp) {
-        // DeviceId бүртгэлгүй → OTP баталгаажуулалт руу
-        Navigator.pushReplacementNamed(
+        // DeviceId бүртгэлгүй → "Шинэ төхөөрөмж" introductory screen-ээр
+        // оруулаад, тэндээс OTP суваг сонгох flow руу үргэлжилнэ.
+        // `pushNamed` (pushReplacement биш) — Буцах товч /login руу
+        // ажиллахын тулд login screen-ийг back stack-д үлдээнэ.
+        Navigator.pushNamed(
           context,
-          '/login_verification',
+          '/new_device',
           arguments: {'sessionId': result.sessionId},
         );
       } else {

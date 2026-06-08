@@ -910,6 +910,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get verify => 'Verify';
 
   @override
+  String get newDeviceTitle => 'New device';
+
+  @override
+  String get newDeviceDesc =>
+      'You are logging in from this device for the first time. To keep your account secure, please complete verification to continue.';
+
+  @override
   String get danVerificationDesc =>
       'Verify your personal information using the system.';
 

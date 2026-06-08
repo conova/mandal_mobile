@@ -87,6 +87,7 @@ flutter:
     - assets/images/finger_print.png
     - assets/images/ready_trade.png
     - assets/images/vault.png
+    - assets/images/lock.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

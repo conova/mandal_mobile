@@ -105,15 +105,16 @@ class AuthService with ChangeNotifier {
   /// 3 алхмын хэдийг гүйцэтгэсэнг 0.0..1.0 хязгаарт буцаана
   double get kycProgress {
     if (_kyc == null) return 0.0;
-    final done = [hasAgreement, isDanVerified, isPepDeclared]
-        .where((b) => b)
-        .length;
+    final done = [
+      hasAgreement,
+      isDanVerified,
+      isPepDeclared,
+    ].where((b) => b).length;
     return done / 3;
   }
 
   /// Бүх KYC алхам гүйцэтгэсэн эсэх
-  bool get isKycComplete =>
-      hasAgreement && isDanVerified && isPepDeclared;
+  bool get isKycComplete => hasAgreement && isDanVerified && isPepDeclared;
 
   // ── Document upload статус ────────────────────────────────────────────
   // `userInfo.document` объект — `kyc`-ийн гадна, тусдаа irне.
@@ -413,6 +414,51 @@ class AuthService with ChangeNotifier {
   // └──────────────────────────────────────────────────────┘
   static const bool _useMock = false;
 
+  /// Login дуудлагын mock хувилбар.
+  ///   - true  → server: code "2" (deviceId бүртгэлгүй → "Шинэ төхөөрөмж"
+  ///                                 screen + OTP flow)
+  ///   - false → server: code "0" (шууд success, token буцаасан мэт)
+  /// `_useMock = true` үед л үйлчилнэ.
+  static const bool _mockNewDevice = false;
+
+  /// Login flow-н mock-д ашиглах хуурамч хэрэглэгч.
+  static const String _mockUid = 'mock-uid-001';
+  static const String _mockCustName = 'Тэст Хэрэглэгч';
+
+  /// Mock login (deviceId бүртгэлтэй → success). registerDevice болон
+  /// biometricLogin-ийн хооронд хуваалцаж ашиглана.
+  Future<LoginResult> _mockLoginSuccess() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    await saveTokens(
+      accessToken: 'mock-access-token-${DateTime.now().millisecondsSinceEpoch}',
+      refreshToken: 'mock-refresh-token',
+    );
+    _uid = _mockUid;
+    _custName = _mockCustName;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_uidKey, _uid!);
+    await prefs.setString(_custNameKey, _custName!);
+    await saveLastUser(_custName!, _uid!);
+    // Default mock userInfo (KYC аль хэдийн дууссан хувилбар)
+    _userInfo = {
+      'uid': _mockUid,
+      'lastName': 'Тэст',
+      'firstName': 'Хэрэглэгч',
+      'registerNumber': 'РД 0000000',
+      'email': 'test@mock.mn',
+      'emailVerified': true,
+      'phone': '99000000',
+      'phoneVerified': true,
+      'address': null,
+      'statusName': 'Идэвхтэй',
+      'kyc': {'agreement': 'true', 'dan': 'true', 'ispep': 'true'},
+      'document': {'idFront': 'true', 'idBack': 'true', 'selfie': 'true'},
+    };
+    await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
+    notifyListeners();
+    return const LoginResult(success: true);
+  }
+
   /// DioException-с алдааны мессеж задлах (data нь String эсвэл Map байж болно)
   String _extractErrorMessage(DioException e) {
     final data = e.response?.data;
@@ -500,6 +546,30 @@ class AuthService with ChangeNotifier {
   /// deviceId бүртгэлтэй → шууд token буцаана (success: true)
   /// deviceId бүртгэлгүй → OTP шаардана (requiresOtp: true, sessionId)
   Future<LoginResult> login(String userName, String password) async {
+    // ── MOCK ──
+    if (_useMock) {
+      await Future.delayed(const Duration(milliseconds: 600));
+      // 1) Хоосон оролттой бол алдаа
+      if (userName.trim().isEmpty || password.isEmpty) {
+        return const LoginResult(message: 'Утас/нууц үг хоосон байна');
+      }
+      // 2) "wrong" нууц үг өгсөн бол алдаа (UX тестлэхэд хэрэгтэй)
+      if (password == 'wrong') {
+        return const LoginResult(message: 'Нэвтрэх нэр эсвэл нууц үг буруу');
+      }
+      // 3) Default scenario
+      if (_mockNewDevice) {
+        // code "2" — "Шинэ төхөөрөмж" intro + OTP flow
+        return LoginResult(
+          requiresOtp: true,
+          sessionId: 'mock-session-${DateTime.now().millisecondsSinceEpoch}',
+        );
+      }
+      // code "0" — шууд амжилттай
+      return _mockLoginSuccess();
+    }
+    // ── END MOCK ──
+
     try {
       final response = await _dio.post(
         ApiConfig.login,
@@ -555,6 +625,14 @@ class AuthService with ChangeNotifier {
       return const LoginResult(message: 'No saved user');
     }
 
+    // ── MOCK ──
+    // Биометрик нэвтрэлт нь deviceId бүртгэлтэй хэрэглэгчид зориулагдсан тул
+    // mock үед үргэлж success ажиллана ("Шинэ төхөөрөмж" flow орохгүй).
+    if (_useMock) {
+      return _mockLoginSuccess();
+    }
+    // ── END MOCK ──
+
     try {
       final response = await _dio.post(
         ApiConfig.login,
@@ -593,21 +671,9 @@ class AuthService with ChangeNotifier {
   /// sessionId нь login-с буцсан sessionId.
   Future<LoginResult> registerDevice(String sessionId) async {
     // ── MOCK ──
+    // OTP амжилттай → token буцаагдсан мэтээр хадгална.
     if (_useMock) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      // Mock token хадгалах
-      await saveTokens(
-        accessToken:
-            'mock-access-token-${DateTime.now().millisecondsSinceEpoch}',
-        refreshToken: 'mock-refresh-token',
-      );
-      _uid = 'mock-uid-001';
-      _custName = 'Тэст Хэрэглэгч';
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_uidKey, _uid!);
-      await prefs.setString(_custNameKey, _custName!);
-      await saveLastUser(_custName!, _uid!);
-      return const LoginResult(success: true);
+      return _mockLoginSuccess();
     }
     // ── END MOCK ──
 
@@ -883,6 +949,14 @@ class AuthService with ChangeNotifier {
   /// Нэвтэрсэн хэрэглэгчийн дэлгэрэнгүй мэдээлэл (uid, нэр, имэйл, утас, ...).
   /// `Authorization: Bearer <token>` шаардана.
   Future<Map<String, dynamic>> getUserInfo() async {
+    // ── MOCK ──
+    // Login mock-ийн дараа `_userInfo` хадгалагдсан байна — түүгээр буцаана.
+    if (_useMock) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      return _userInfo ?? const {};
+    }
+    // ── END MOCK ──
+
     try {
       final response = await _authedDio.get(ApiConfig.userInfo);
       final body = response.data as Map<String, dynamic>;
@@ -997,14 +1071,14 @@ class AuthService with ChangeNotifier {
   /// Хувьцаа хайх
   /// POST /stocks/search?q=...&type=...
   /// type: optional (gainers | losers | ipo)
-  Future<List<Map<String, dynamic>>> searchStocks(String query, {String? type}) async {
+  Future<List<Map<String, dynamic>>> searchStocks(
+    String query, {
+    String? type,
+  }) async {
     try {
       final response = await _authedDio.post(
         ApiConfig.stocksSearch,
-        queryParameters: {
-          'q': query,
-          if (type != null) 'type': type,
-        },
+        queryParameters: {'q': query, if (type != null) 'type': type},
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0' && body['data'] is List) {
@@ -1027,7 +1101,8 @@ class AuthService with ChangeNotifier {
     String? end,
   }) async {
     final now = DateTime.now();
-    final s = start ?? _formatChartDate(DateTime(now.year - 1, now.month, now.day));
+    final s =
+        start ?? _formatChartDate(DateTime(now.year - 1, now.month, now.day));
     final e = end ?? _formatChartDate(now);
 
     try {
@@ -1051,6 +1126,81 @@ class AuthService with ChangeNotifier {
       '${d.year.toString().padLeft(4, '0')}/'
       '${d.month.toString().padLeft(2, '0')}/'
       '${d.day.toString().padLeft(2, '0')}';
+
+  // ─── Portfolio ───────────────────────────────────────────────────────
+
+  /// Нийт хөрөнгийн товч мэдээлэл.
+  /// GET /portfolio/summary
+  /// Response: { totalAssets, totalChange, changePercent, cashBalance }
+  Future<PortfolioSummary> getPortfolioSummary() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.portfolioSummary);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() != '0') {
+        throw Exception(
+          body['message']?.toString() ?? 'Portfolio summary алдаа',
+        );
+      }
+      final data = (body['data'] as Map?) ?? const {};
+      double toDouble(dynamic v) => v == null
+          ? 0.0
+          : (v is num ? v.toDouble() : double.tryParse(v.toString()) ?? 0.0);
+      return PortfolioSummary(
+        totalAssets: toDouble(data['totalAssets']),
+        totalChange: toDouble(data['totalChange']),
+        changePercent: toDouble(data['changePercent']),
+        cashBalance: toDouble(data['cashBalance']),
+      );
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Equity (нийт хөрөнгө) график.
+  /// GET /portfolio/chart_data?period=1D|1W|1M|3M|1Y|ALL
+  /// Default period: '1Y'
+  /// Response: { points: [{date, value}], period }
+  Future<EquityChart> getEquityChart({String period = '1Y'}) async {
+    try {
+      final response = await _authedDio.get(
+        ApiConfig.portfolioChartData,
+        queryParameters: {'period': period},
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() != '0') {
+        throw Exception(body['message']?.toString() ?? 'Chart data алдаа');
+      }
+      final data = (body['data'] as Map?) ?? const {};
+      final rawPoints = (data['points'] as List?) ?? const [];
+      final points = rawPoints
+          .map((p) => EquityPoint.fromJson(Map<String, dynamic>.from(p as Map)))
+          .toList();
+      return EquityChart(
+        period: (data['period'] as String?) ?? period,
+        points: points,
+      );
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Хөрөнгийн хуваарилалт (asset breakdown).
+  /// GET /portfolio/breakdown
+  /// Response: `data: [{type, name, amount, count, ...}]`
+  Future<List<Map<String, dynamic>>> getAssetBreakdown() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.portfolioBreakdown);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
 
   /// Watchlist-д нэмж болох бүх хувьцаа.
   /// GET /watchlist/available
@@ -1194,6 +1344,16 @@ class AuthService with ChangeNotifier {
   Future<List<Map<String, dynamic>>> getVerificationChannels(
     String sessionId,
   ) async {
+    // ── MOCK ──
+    if (_useMock) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      return const [
+        {'type': 'sms', 'value': '*****0000'},
+        {'type': 'email', 'value': 't***@mock.mn'},
+      ];
+    }
+    // ── END MOCK ──
+
     try {
       final response = await _dio.get(
         ApiConfig.verificationChannels,
@@ -1226,6 +1386,14 @@ class AuthService with ChangeNotifier {
     String channel, {
     String? sessionId,
   }) async {
+    // ── MOCK ──
+    if (_useMock) {
+      await Future.delayed(const Duration(milliseconds: 400));
+      // Mock дээр OTP код "1234" (UI testing-д бичих кодыг хялбарчлав)
+      return {'sessionId': sessionId ?? 'mock-session', 'otp': '1234'};
+    }
+    // ── END MOCK ──
+
     try {
       final dio = isAuthenticated ? _authedDio : _dio;
       final Map<String, dynamic> bodyData = {'channel': channel};
@@ -1263,6 +1431,19 @@ class AuthService with ChangeNotifier {
     String sessionId,
     String otpCode,
   ) async {
+    // ── MOCK ──
+    if (_useMock) {
+      await Future.delayed(const Duration(milliseconds: 400));
+      // "1234" → OK, бусад код → буруу
+      if (otpCode != '1234') {
+        throw Exception('OTP код буруу байна');
+      }
+      // Forgot password flow-д token буцаах шаардлагагүй — calling code өөрөө
+      // дараагийн алхамд `registerDevice`-г дуудна.
+      return {'sessionId': sessionId};
+    }
+    // ── END MOCK ──
+
     try {
       final response = await _dio.post(
         ApiConfig.verifyOtp,
@@ -1347,6 +1528,53 @@ class AuthService with ChangeNotifier {
 
   bool get isAuthenticated => _accessToken != null;
 
+  /// JWT `exp` claim-аас тооцоолж token хүчингүй болсон эсэхийг буцаана.
+  /// `exp` байхгүй эсвэл задлахад алдаа гарвал false (expired биш гэж тооцно).
+  ///
+  /// Энэ нь зөвхөн төлвийг шалгана — refresh оролдохгүй. Splash flow болон
+  /// бусад дуудлагуудын өмнө шалгахад зориулагдсан.
+  bool _isTokenExpired(String? token) {
+    if (token == null || token.isEmpty) return true;
+    final payload = _decodeJwtPayload(token);
+    if (payload == null) return false;
+    final exp = payload['exp'];
+    if (exp is! num) return false;
+    final expSec = exp.toInt();
+    final nowSec = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    return nowSec >= expSec;
+  }
+
+  /// Access token хугацаа дууссан эсэх (JWT `exp`-аас).
+  bool get isAccessTokenExpired => _isTokenExpired(_accessToken);
+
+  /// Refresh token бас хугацаа дууссан эсэх.
+  bool get isRefreshTokenExpired => _isTokenExpired(_refreshToken);
+
+  /// App нээх үед — token expired бол refresh оролдоно, амжилтгүй бол
+  /// session-ыг бүрэн арилгана. Буцаах: хэрэглэгч нэвтэрсэн төлөвтэй эсэх
+  /// (UI-н routing шийдэхэд ашиглана).
+  ///
+  /// • Token аль ч бус null + access valid → true (шууд нэвтэрсэн)
+  /// • Access expired, refresh valid → refresh оролдох → амжилттай бол true
+  /// • Хоёул хугацаа дууссан → clearSession + false
+  Future<bool> ensureValidSession() async {
+    if (_accessToken == null) return false;
+
+    // Access still valid → just continue
+    if (!isAccessTokenExpired) return true;
+
+    // Access expired — refresh token-той бол сэргээх оролдох
+    if (_refreshToken != null && !isRefreshTokenExpired) {
+      final newToken = await refreshAccessToken();
+      if (newToken != null) return true;
+    }
+
+    // Refresh бас амжилтгүй → session-ыг арилгах
+    await clearSession();
+    notifyListeners();
+    return false;
+  }
+
   bool _isRefreshing = false;
 
   /// Token expire болсон үед refresh token ашиглан шинэ token авна.
@@ -1400,4 +1628,67 @@ class AuthService with ChangeNotifier {
     }
     return null;
   }
+}
+
+// ─── Portfolio data models ─────────────────────────────────────────────
+
+/// Нийт хөрөнгийн товч мэдээлэл.
+class PortfolioSummary {
+  /// Нийт хөрөнгийн дүн (₮)
+  final double totalAssets;
+
+  /// Хугацааны туршид гарсан өөрчлөлт (₮)
+  final double totalChange;
+
+  /// Өөрчлөлт хувиар (%)
+  final double changePercent;
+
+  /// Чөлөөт мөнгөн үлдэгдэл (₮)
+  final double cashBalance;
+
+  const PortfolioSummary({
+    required this.totalAssets,
+    required this.totalChange,
+    required this.changePercent,
+    required this.cashBalance,
+  });
+
+  /// Хоосон summary — алдаа гарсан үеийн default.
+  static const PortfolioSummary empty = PortfolioSummary(
+    totalAssets: 0,
+    totalChange: 0,
+    changePercent: 0,
+    cashBalance: 0,
+  );
+}
+
+/// Equity графикийн нэг цэг.
+class EquityPoint {
+  final DateTime date;
+  final double value;
+
+  const EquityPoint({required this.date, required this.value});
+
+  factory EquityPoint.fromJson(Map<String, dynamic> json) {
+    final dateStr = json['date']?.toString() ?? '';
+    final v = json['value'];
+    final value = v == null
+        ? 0.0
+        : (v is num ? v.toDouble() : double.tryParse(v.toString()) ?? 0.0);
+    return EquityPoint(
+      date: DateTime.tryParse(dateStr) ?? DateTime.now(),
+      value: value,
+    );
+  }
+}
+
+/// Equity графикийн бүх цэгүүд + сонгосон period.
+class EquityChart {
+  /// '1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL'
+  final String period;
+  final List<EquityPoint> points;
+
+  const EquityChart({required this.period, required this.points});
+
+  static const EquityChart empty = EquityChart(period: '1Y', points: []);
 }

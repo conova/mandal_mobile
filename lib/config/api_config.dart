@@ -60,6 +60,16 @@ class ApiConfig {
   /// Query: start=YYYY/MM/DD&end=YYYY/MM/DD
   static String stockChart(String symbol) => '/bdc/api/stocks/$symbol/chart';
 
+  // ─── Portfolio ───
+  /// GET /portfolio/summary → { totalAssets, totalChange, changePercent, cashBalance }
+  static const String portfolioSummary = '/bdc/api/portfolio/summary';
+
+  /// GET /portfolio/chart_data?period=1D|1W|1M|3M|1Y|ALL → { points: [{date, value}], period }
+  static const String portfolioChartData = '/bdc/api/portfolio/chart_data';
+
+  /// GET /portfolio/breakdown → [{type, name, amount, count, ...}]
+  static const String portfolioBreakdown = '/bdc/api/portfolio/breakdown';
+
   // ─── Order ───
   static const String orderCreate = '/bdc/api/order/create.php';
 

@@ -41,7 +41,7 @@ class CustomButton extends StatelessWidget {
         foregroundColor = theme.colorScheme.onPrimary;
         break;
       case CustomButtonVariant.secondary:
-        backgroundColor = extendedColors.primary200;
+        backgroundColor = extendedColors.primary100;
         foregroundColor = theme.primaryColor;
         break;
       case CustomButtonVariant.tertiary:
@@ -71,7 +71,7 @@ class CustomButton extends StatelessWidget {
     final double height = size == CustomButtonSize.large ? 52 : 40;
     final EdgeInsets padding = size == CustomButtonSize.large
         ? const EdgeInsets.symmetric(horizontal: 24, vertical: 16)
-        : const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
+        : const EdgeInsets.symmetric(horizontal: 0, vertical: 10);
     final double iconSize = size == CustomButtonSize.large ? 20 : 20;
     final double borderRadius = size == CustomButtonSize.large ? 26 : 20;
 
@@ -84,14 +84,14 @@ class CustomButton extends StatelessWidget {
             width: iconSize,
             height: iconSize,
             child: CircularProgressIndicator(
-              strokeWidth: 2,
+              strokeWidth: 1,
               valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
             ),
           )
         else if (icon != null)
           Icon(icon, size: iconSize, color: foregroundColor),
 
-        if (isLoading || icon != null) const SizedBox(width: 6),
+        if (isLoading || icon != null) const SizedBox(width: 4),
 
         Flexible(
           child: Text(

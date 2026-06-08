@@ -907,6 +907,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get verify => 'Баталгаажуулах';
 
   @override
+  String get newDeviceTitle => 'Шинэ төхөөрөмж';
+
+  @override
+  String get newDeviceDesc =>
+      'Та энэ төхөөрөмжөөс анх удаа нэвтэрч байна. Мэдээллийн аюулгүй байдлыг хангаж баталгаажуулалт хийж үргэлжлүүлээрэй.';
+
+  @override
   String get danVerificationDesc =>
       'Систем ашиглан өөрийн хувийн мэдээллээ баталгаажуулаарай.';
 

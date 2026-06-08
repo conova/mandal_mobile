@@ -1,11 +1,137 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
-import '../../../widgets/asset_card.dart';
+import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/asset_card.dart';
 
-class HomeAssetBreakdown extends StatelessWidget {
+class HomeAssetBreakdown extends StatefulWidget {
   const HomeAssetBreakdown({super.key});
+
+  @override
+  State<HomeAssetBreakdown> createState() => _HomeAssetBreakdownState();
+}
+
+class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
+  /// API хариу хүртэлх default — UI шууд харагдахын тулд хоосон тулсан
+  /// asset-уудыг нүдэнд харагдуулна (₮ + $ + бонд + хувьцаа).
+  static const List<Map<String, dynamic>> _placeholderItems = [
+    {'type': 'mnt', 'amount': 0, 'count': 0},
+    {'type': 'usd', 'amount': 0, 'count': 0},
+    {'type': 'bond', 'amount': 0, 'count': 0},
+    {'type': 'stock', 'amount': 0, 'count': 0},
+  ];
+
+  /// Дата ирсэн эсэх — true бол `_items`-ийг харуулна, false бол placeholder.
+  bool _loaded = false;
+  List<Map<String, dynamic>> _items = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Background fetch — UI блоклохгүй.
+    Future.microtask(_fetch);
+  }
+
+  Future<void> _fetch() async {
+    if (!mounted) return;
+    try {
+      final auth = context.read<AuthService>();
+      final items = await auth.getAssetBreakdown();
+      if (!mounted) return;
+      setState(() {
+        _items = items;
+        _loaded = true;
+      });
+    } catch (e) {
+      debugPrint('[HomeAssetBreakdown] алдаа: $e');
+      // Алдаа гарсан ч placeholder харагдсаар үлдэнэ
+    }
+  }
+
+  /// type/symbol → (icon, fallback route, fallback iconColor)
+  ({IconData icon, String route, Color? color}) _meta(
+    String? type,
+    ExtendedColors extendedColors,
+  ) {
+    final t = (type ?? '').toLowerCase();
+    switch (t) {
+      case 'mnt':
+      case 'cash':
+      case 'tugrik':
+        return (
+          icon: Icons.currency_ruble,
+          route: '/currency_detail',
+          color: null,
+        );
+      case 'usd':
+      case 'dollar':
+        return (icon: Icons.attach_money, route: '/currency_detail', color: null);
+      case 'bond':
+      case 'bonds':
+        return (
+          icon: Icons.credit_card,
+          route: '/bond_portfolio',
+          color: extendedColors.purple,
+        );
+      case 'stock':
+      case 'stocks':
+      case 'equity':
+        return (
+          icon: Icons.pie_chart_outline,
+          route: '/stock_portfolio',
+          color: extendedColors.orange,
+        );
+      default:
+        return (
+          icon: Icons.account_balance_wallet_outlined,
+          route: '/stock_portfolio',
+          color: extendedColors.neutral300,
+        );
+    }
+  }
+
+  String _formatAmount(num n, String currency) {
+    final str = n.toStringAsFixed(2);
+    final dotIdx = str.indexOf('.');
+    final whole = str
+        .substring(0, dotIdx)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]},',
+        );
+    return '$whole${str.substring(dotIdx)}$currency';
+  }
+
+  /// API хариугаас хамаарч дэлгэцэн дээр render хийх жагсаалт буцаана:
+  ///   • Хариу ирээгүй / ирсэн ч хоосон → placeholder (4 нэр төрөл)
+  ///   • Хариу ирсэн, дата бий → жинхэнэ дата
+  List<Map<String, dynamic>> _renderItems() {
+    if (_loaded && _items.isNotEmpty) return _items;
+    return _placeholderItems;
+  }
+
+  /// type → орчуулагдсан default нэр
+  String _defaultName(String? type, AppLocalizations l10n) {
+    switch ((type ?? '').toLowerCase()) {
+      case 'usd':
+      case 'dollar':
+        return l10n.dollar;
+      case 'bond':
+      case 'bonds':
+        return l10n.bonds;
+      case 'stock':
+      case 'stocks':
+      case 'equity':
+        return l10n.stocks;
+      case 'mnt':
+      case 'cash':
+      case 'tugrik':
+      default:
+        return l10n.tugrik;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,37 +149,39 @@ class HomeAssetBreakdown extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        AssetCard(
-          icon: Icons.currency_ruble,
-          title: l10n.tugrik,
-          subtitle: l10n.orderCount('2'),
-          amount: '128,000.53₮',
-          onTap: () => Navigator.pushNamed(context, '/currency_detail', arguments: 'mnt'),
-        ),
-        AssetCard(
-          icon: Icons.attach_money,
-          title: l10n.dollar,
-          subtitle: l10n.orderCount('0'),
-          amount: '0.00\$',
-          isDark: true,
-          onTap: () => Navigator.pushNamed(context, '/currency_detail', arguments: 'usd'),
-        ),
-        AssetCard(
-          icon: Icons.credit_card,
-          title: l10n.bonds,
-          subtitle: '5 ${l10n.type}',
-          amount: '50,000,000.00₮',
-          iconColor: extendedColors.purple,
-          onTap: () => Navigator.pushNamed(context, '/bond_portfolio'),
-        ),
-        AssetCard(
-          icon: Icons.pie_chart_outline,
-          title: l10n.stocks,
-          subtitle: '3 ${l10n.type}',
-          amount: '500,000.00₮',
-          iconColor: extendedColors.orange,
-          onTap: () => Navigator.pushNamed(context, '/stock_portfolio'),
-        ),
+        // 1) API хариу ирээгүй → placeholder asset-уудыг шууд харуулна
+        // 2) API хариу ирсэн, гэхдээ хоосон → "бүртгэлгүй" мессеж
+        // 3) API хариу ирсэн, дата бий → жинхэнэ item-уудыг харуулна
+        ..._renderItems().map((item) {
+            final type = item['type']?.toString();
+            final name = item['name']?.toString() ?? _defaultName(type, l10n);
+            final amount = (item['amount'] as num?) ?? 0;
+            final count = (item['count'] as num?)?.toInt() ?? 0;
+            final currency = item['currency']?.toString() ??
+                (type?.toLowerCase() == 'usd' ? '\$' : '₮');
+            final meta = _meta(type, extendedColors);
+            final subtitle = type?.toLowerCase() == 'mnt' ||
+                    type?.toLowerCase() == 'usd' ||
+                    type?.toLowerCase() == 'cash' ||
+                    type?.toLowerCase() == 'tugrik' ||
+                    type?.toLowerCase() == 'dollar'
+                ? l10n.orderCount(count.toString())
+                : '$count ${l10n.type}';
+
+            return AssetCard(
+              icon: meta.icon,
+              title: name,
+              subtitle: subtitle,
+              amount: _formatAmount(amount, currency),
+              iconColor: meta.color,
+              isDark: type?.toLowerCase() == 'usd',
+              onTap: () => Navigator.pushNamed(
+                context,
+                meta.route,
+                arguments: type?.toLowerCase(),
+              ),
+            );
+          }),
       ],
     );
   }
