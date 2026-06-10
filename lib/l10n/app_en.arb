@@ -96,6 +96,10 @@
     "markAllReadDesc": "Are you sure you want to mark all notifications as read and remove the unread indicators?",
     "confirm": "Yes, mark as read",
     "back": "Back",
+    "notificationRelatedInfo": "Related details",
+    "@notificationRelatedInfo": {
+      "description": "Section title on notification detail screen showing the data payload"
+    },
     "surname": "Surname",
     "firstName": "Name",
     "regNo": "Registration No",

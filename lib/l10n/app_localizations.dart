@@ -682,6 +682,12 @@ abstract class AppLocalizations {
   /// **'Back'**
   String get back;
 
+  /// Section title on notification detail screen showing the data payload
+  ///
+  /// In en, this message translates to:
+  /// **'Related details'**
+  String get notificationRelatedInfo;
+
   /// No description provided for @surname.
   ///
   /// In en, this message translates to:

@@ -4,7 +4,22 @@ class ApiConfig {
   // Production-д өөрийн домэйнд солих ёстой
   static const String paymentGatewayUrl = 'http://10.0.2.2:3002';
   // Notification Gateway микросервис (FCM + DB)
-  static const String notificationGatewayUrl = 'http://10.0.2.2:3001';
+  // Production: https://notification.mandalcapital.mn
+  // Local dev (Android emulator): http://10.0.2.2:3001
+  static const String notificationGatewayUrl =
+      'https://notification.mandalcapital.mn';
+
+  // ─── Notification Gateway endpoints ───
+  /// GET /v1/notifications?unread_only={bool}&limit={1..200}&offset={int}
+  ///   Хэрэглэгчийн feed (user-target + broadcast). Bearer JWT шаардана.
+  ///   Response: { data: [...], count }
+  static const String notificationsList = '/v1/notifications';
+
+  /// POST /v1/notifications/{id}/read → 204 No Content
+  static String notificationMarkRead(int id) => '/v1/notifications/$id/read';
+
+  /// POST /v1/notifications/read-all → 204 No Content
+  static const String notificationsMarkAllRead = '/v1/notifications/read-all';
   // DAN (E-Mongolia) service base URL
   static const String danServiceUrl = 'https://mandalcapital.mn/dan';
   static const String danEUri = '/api/e/uri';
@@ -43,7 +58,7 @@ class ApiConfig {
 
   // ─── Watchlist ───
   static const String watchlistList = '/bdc/api/watchlist/list';
-  static const String watchlistAvailable = '/bdc/api/watchlist/available';
+  static const String watchlistAvailable = '/bdc/api/stocks/available';
 
   /// Add/remove watchlist — path includes symbol: `/watchlist/{SYMBOL}`
   /// add: POST no body
@@ -67,7 +82,13 @@ class ApiConfig {
   /// GET /portfolio/chart_data?period=1D|1W|1M|3M|1Y|ALL → { points: [{date, value}], period }
   static const String portfolioChartData = '/bdc/api/portfolio/chart_data';
 
-  /// GET /portfolio/breakdown → [{type, name, amount, count, ...}]
+  /// GET /portfolio/breakdown
+  ///   Response data row: { TYPE, AMOUNT, AMOUNTMNT, COUNT, CODENAME, CODEORDER }
+  ///   TYPE: 'mnt' | 'usd' | 'bond' | 'stock'
+  ///   AMOUNT: өөрийн нэгжээр (cash → валют, bond/stock → ширхэг)
+  ///   AMOUNTMNT: MNT эквивалент
+  ///   CODENAME: Монгол нэр (Төгрөг/Доллар/Бонд/Хувьцаа)
+  ///   CODEORDER: эрэмбэ (1..4)
   static const String portfolioBreakdown = '/bdc/api/portfolio/breakdown';
 
   // ─── Order ───

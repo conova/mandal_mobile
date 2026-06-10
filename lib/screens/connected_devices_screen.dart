@@ -113,6 +113,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                       final lastUpdate = device['LASTUPDATE']?.toString() ?? '';
                       final status = device['STATUS']?.toString() ?? '0';
                       final statusName = device['STATUSNAME']?.toString() ?? '';
+                      final ipAddress = device['IPADDRESS']?.toString() ?? '';
                       final isActive = status == '1';
 
                       // Хүн уншихад тохиромжтой нэр: DEVICEINFO байвал тэр,
@@ -132,7 +133,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                                 : (isActive ? l10n.active : l10n.inactive),
                             isActive: isActive,
                             date: lastUpdate,
-                            ip: '',
+                            ip: ipAddress,
                             onRemove: () => _removeDevice(deviceId),
                           ),
                           if (entry.key < _devices.length - 1)

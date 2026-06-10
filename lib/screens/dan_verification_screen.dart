@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../services/dan_service.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import 'webview_screen.dart';
 
 class DanVerificationScreen extends StatefulWidget {
   const DanVerificationScreen({super.key});
@@ -45,7 +46,10 @@ class _DanVerificationScreenState extends State<DanVerificationScreen> {
 
       if (!mounted) return;
 
-      // WebView нээх, callback URL руу redirect болоход pop хийнэ
+      // WebView нээх, callback URL руу redirect болоход pop хийнэ.
+      // `homeRoute` дамжуулж, e-Mongolia хуудас доторх JS / scheme
+      // (`mandalapp://home` эсвэл `MandalApp.postMessage('navigate_home')`)
+      // ажиллахад шууд home tab руу шилжих боломжтой.
       final returned = await Navigator.pushNamed(
         context,
         '/webview',
@@ -53,10 +57,18 @@ class _DanVerificationScreenState extends State<DanVerificationScreen> {
           'url': result.uri,
           'title': 'E-Mongolia',
           'callbackPrefix': callback,
+          'homeRoute': '/home',
         },
       );
 
       if (!mounted) return;
+
+      // WebView дотроос "home руу шилжих" action ажилласан тохиолдолд
+      // WebView нь өөрөө pushNamedAndRemoveUntil('/home') хийсэн ба
+      // энэ дэлгэц ч мөн стекээс хасагдсан байгаа болохоор юу ч хийхгүй.
+      if (returned == WebViewScreen.popResultHome) {
+        return;
+      }
 
       if (returned != null) {
         // User мэдээллийг шинэчилж DAN flag-ийг дахин шалгана

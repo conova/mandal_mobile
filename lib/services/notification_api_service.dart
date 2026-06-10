@@ -31,6 +31,7 @@ class NotificationApiService {
   }
 
   /// GET /v1/notifications?unread_only=true&limit=50&offset=0
+  /// limit: 1..200 (default 50), offset: ≥0 (default 0)
   Future<NotificationFeed> list({
     bool unreadOnly = false,
     int limit = 50,
@@ -38,7 +39,7 @@ class NotificationApiService {
   }) async {
     try {
       final response = await _dio.get(
-        '/v1/notifications',
+        ApiConfig.notificationsList,
         queryParameters: {
           if (unreadOnly) 'unread_only': 'true',
           'limit': limit,
@@ -59,19 +60,19 @@ class NotificationApiService {
     }
   }
 
-  /// POST /v1/notifications/:id/read → 204
+  /// POST /v1/notifications/:id/read → 204 No Content
   Future<void> markRead(int id) async {
     try {
-      await _dio.post('/v1/notifications/$id/read');
+      await _dio.post(ApiConfig.notificationMarkRead(id));
     } on DioException catch (e) {
       throw NotificationApiException(_extractError(e));
     }
   }
 
-  /// POST /v1/notifications/read-all → 204
+  /// POST /v1/notifications/read-all → 204 No Content
   Future<void> markAllRead() async {
     try {
-      await _dio.post('/v1/notifications/read-all');
+      await _dio.post(ApiConfig.notificationsMarkAllRead);
     } on DioException catch (e) {
       throw NotificationApiException(_extractError(e));
     }
@@ -142,4 +143,17 @@ class ApiNotification {
     String two(int n) => n.toString().padLeft(2, '0');
     return '${d.year}.${two(d.month)}.${two(d.day)} ${two(d.hour)}:${two(d.minute)}';
   }
+
+  /// Detail screen-д шилжихэд ашиглах route args. JSON serialize боломжтой
+  /// бүх талбарыг (data Map, target_kind, type) дамжуулна.
+  Map<String, dynamic> toDetailArgs() => {
+        'id': id,
+        'type': type,
+        'title': title,
+        'body': body,
+        'time': formattedTime,
+        'targetKind': targetKind,
+        'isRead': isRead,
+        if (data != null) 'data': data,
+      };
 }

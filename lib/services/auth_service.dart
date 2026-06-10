@@ -1186,20 +1186,70 @@ class AuthService with ChangeNotifier {
 
   /// Хөрөнгийн хуваарилалт (asset breakdown).
   /// GET /portfolio/breakdown
-  /// Response: `data: [{type, name, amount, count, ...}]`
+  /// Response (server): `data: [{TYPE, AMOUNT, AMOUNTMNT, COUNT, CODENAME, CODEORDER}]`
+  /// Normalize → `[{type, name, amount, amountMnt, amountRaw, count, order}]`
+  ///   • mnt / usd → `amount` = AMOUNT (өөрийн валютаар)
+  ///   • bond / stock → `amount` = AMOUNTMNT (MNT эквивалент)
   Future<List<Map<String, dynamic>>> getAssetBreakdown() async {
     try {
       final response = await _authedDio.get(ApiConfig.portfolioBreakdown);
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0' && body['data'] is List) {
-        return (body['data'] as List)
+        final list = (body['data'] as List)
             .map((d) => Map<String, dynamic>.from(d as Map))
+            .map(_normalizeBreakdownItem)
             .toList();
+        // CODEORDER-ээр эрэмбэлнэ (1=mnt, 2=usd, 3=bond, 4=stock)
+        list.sort((a, b) {
+          final ao = (a['order'] as num?)?.toInt() ?? 999;
+          final bo = (b['order'] as num?)?.toInt() ?? 999;
+          return ao.compareTo(bo);
+        });
+        return list;
       }
       return [];
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
+  }
+
+  /// Backend uppercase + string утгуудыг UI-д хэрэглэдэг lowercase + num
+  /// руу хөрвүүлнэ. Хуучин (lowercase түлхүүртэй) хариулттай ч нийцтэй.
+  Map<String, dynamic> _normalizeBreakdownItem(Map<String, dynamic> raw) {
+    double toDouble(dynamic v) {
+      if (v == null) return 0;
+      if (v is num) return v.toDouble();
+      return double.tryParse(v.toString()) ?? 0;
+    }
+
+    int toInt(dynamic v) {
+      if (v == null) return 0;
+      if (v is num) return v.toInt();
+      return int.tryParse(v.toString()) ?? 0;
+    }
+
+    final type =
+        (raw['TYPE'] ?? raw['type'] ?? '').toString().toLowerCase();
+    final name = raw['CODENAME'] ?? raw['name'];
+    final amountRaw = toDouble(raw['AMOUNT'] ?? raw['amount']);
+    final amountMnt = toDouble(raw['AMOUNTMNT'] ?? raw['amountMnt']);
+    final count = toInt(raw['COUNT'] ?? raw['count']);
+    final order = toInt(raw['CODEORDER'] ?? raw['order']);
+
+    // mnt/usd-ийн хувьд өөрийн валютаар, бонд/хувьцааны хувьд MNT эквивалентаар
+    final isCash = type == 'mnt' || type == 'usd' || type == 'cash' ||
+        type == 'tugrik' || type == 'dollar';
+    final displayAmount = isCash ? amountRaw : amountMnt;
+
+    return {
+      'type': type,
+      if (name != null) 'name': name,
+      'amount': displayAmount,
+      'amountRaw': amountRaw,
+      'amountMnt': amountMnt,
+      'count': count,
+      'order': order,
+    };
   }
 
   /// Watchlist-д нэмж болох бүх хувьцаа.

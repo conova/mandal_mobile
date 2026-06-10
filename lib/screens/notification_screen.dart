@@ -3,10 +3,12 @@ import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/notification_api_service.dart';
+import '../services/notification_mocks.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/filter_chip_bar.dart';
 import '../widgets/mark_read_bottom_sheet.dart';
 import '../widgets/notification_item.dart';
+import 'notification_detail_screen.dart' show notificationIconForType;
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -20,6 +22,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   List<ApiNotification> _items = [];
   bool _isLoading = true;
   String? _error;
+  bool _usingMock = false;
 
   @override
   void initState() {
@@ -32,37 +35,54 @@ class _NotificationScreenState extends State<NotificationScreen> {
       final service = context.read<NotificationApiService>();
       final feed = await service.list(limit: 100);
       if (!mounted) return;
+      // API хариу хоосон бол dev preview-д mock fallback харуулна.
+      // Production-д backend feed-тэй болсон даруйд энэ branch ажиллахгүй.
+      if (feed.items.isEmpty) {
+        setState(() {
+          _items = mockNotifications();
+          _isLoading = false;
+          _error = null;
+          _usingMock = true;
+        });
+        return;
+      }
       setState(() {
         _items = feed.items;
         _isLoading = false;
         _error = null;
+        _usingMock = false;
       });
     } catch (e) {
       if (!mounted) return;
+      // Backend холбогдоогүй / алдаа — UI-аа preview-р mock-аар дүүргэнэ.
+      // Caller-т нь алдаа ил харагдсаар үлдэхийн тулд `_error` талбарт
+      // тэмдэглэнэ (хэдийгээр content нь mock data байсан ч).
       setState(() {
+        _items = mockNotifications();
         _isLoading = false;
         _error = e.toString().replaceFirst('Exception: ', '');
+        _usingMock = true;
       });
     }
   }
 
   Future<void> _onItemTap(ApiNotification n) async {
-    // Дэлгэрэнгүй харах + read болгох
+    // Дэлгэрэнгүй харах + read болгох — бүх холбогдох мэдээлэл (type, data,
+    // target_kind) дэлгэрэнгүй screen руу дамжина.
     final wasUnread = !n.isRead;
     await Navigator.pushNamed(
       context,
       '/notification_detail',
-      arguments: {
-        'title': n.title,
-        'body': n.body.isNotEmpty ? n.body : null,
-        'time': n.formattedTime,
-        'icon': Icons.notifications_none_outlined,
-      },
+      arguments: n.toDetailArgs(),
     );
 
     if (wasUnread) {
+      // Mock mode-д API дуудалгүй шууд local тэмдэглэгээ хийнэ.
+      Future<void> remote = _usingMock
+          ? Future.value()
+          : context.read<NotificationApiService>().markRead(n.id);
       try {
-        await context.read<NotificationApiService>().markRead(n.id);
+        await remote;
         // Локалд тэмдэглээд UI-г шинэчилнэ — server-аас дахин татах хэрэггүй
         if (!mounted) return;
         setState(() {
@@ -89,7 +109,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _markAllRead() async {
     try {
-      await context.read<NotificationApiService>().markAllRead();
+      if (!_usingMock) {
+        await context.read<NotificationApiService>().markAllRead();
+      }
       if (!mounted) return;
       setState(() {
         _items = _items
@@ -239,6 +261,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
           const SizedBox(height: 10),
           const Divider(height: 1),
+          if (_usingMock) _buildMockBanner(theme, extendedColors),
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetch,
@@ -247,6 +270,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   : _error != null && _items.isEmpty
                       ? _buildErrorState(theme, extendedColors)
                       : _buildList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Dev/preview-ийн mock notification-ууд харагдаж байгааг хэрэглэгчид
+  /// сануулах нимгэн banner. Backend ажиллах үед `_usingMock=false` бөгөөд
+  /// banner огт render хийгдэхгүй.
+  Widget _buildMockBanner(ThemeData theme, ExtendedColors c) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: c.bgSecondary,
+      child: Row(
+        children: [
+          Icon(Icons.science_outlined, size: 16, color: c.neutral300),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Жишээ мэдэгдлүүд харагдаж байна (Demo)',
+              style: theme.textTheme.labelMedium?.copyWith(color: c.neutral300),
             ),
           ),
         ],
@@ -291,7 +337,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           subtitle: n.body,
           time: n.formattedTime,
           isUnread: !n.isRead,
-          icon: Icons.notifications_none_outlined,
+          icon: notificationIconForType(n.type),
           onTap: () => _onItemTap(n),
         );
       },

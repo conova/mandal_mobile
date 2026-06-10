@@ -303,6 +303,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get back => 'Буцах';
 
   @override
+  String get notificationRelatedInfo => 'Холбогдох мэдээлэл';
+
+  @override
   String get surname => 'Овог';
 
   @override

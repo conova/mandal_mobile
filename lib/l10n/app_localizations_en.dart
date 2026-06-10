@@ -303,6 +303,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get back => 'Back';
 
   @override
+  String get notificationRelatedInfo => 'Related details';
+
+  @override
   String get surname => 'Surname';
 
   @override
