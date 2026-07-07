@@ -79,7 +79,7 @@ class _ChangePasswordCodeScreenState extends State<ChangePasswordCodeScreen> {
 
     return Scaffold(
       backgroundColor: colorScheme.background,
-      appBar: const AuthStepAppBar(stepText: '1/2'),
+      appBar: const AuthStepAppBar(stepText: '2/2'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(

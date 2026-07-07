@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import 'custom_button.dart';
 
 class DeviceItem extends StatelessWidget {
   final String deviceName;
@@ -36,26 +37,11 @@ class DeviceItem extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(
-              height: 40,
-              child: ElevatedButton(
-                onPressed: onRemove,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[50]?.withOpacity(0.5),
-                  foregroundColor: Colors.red[400],
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Text(
-                  l10n.remove,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+            CustomButton(
+              onPressed: onRemove,
+              label: l10n.remove,
+              variant: CustomButtonVariant.error,
+              size: CustomButtonSize.small,
             ),
           ],
         ),

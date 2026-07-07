@@ -31,6 +31,19 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     _channel = _args?['channel'] as String?;
   }
 
+  /// OTP амжилттай болсны дараа: төхөөрөмж дээр биометрик боломжтой бөгөөд
+  /// хараахан идэвхжээгүй бол идэвхжүүлэх дэлгэц рүү, эс бөгөөс шууд home руу.
+  Future<void> _handleOtpSuccess() async {
+    final auth = context.read<AuthService>();
+    final available = await auth.getAvailableBiometrics();
+    if (!mounted) return;
+    if (available.isNotEmpty && !auth.isBiometricEnabled) {
+      Navigator.pushReplacementNamed(context, '/biometric_enrollment');
+    } else {
+      Navigator.pushReplacementNamed(context, '/main');
+    }
+  }
+
   Future<void> _handleResend() async {
     if (_sessionId == null) return;
     try {
@@ -97,9 +110,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
             AuthOtpForm(
               key: ValueKey(_sessionId ?? 'no-session'),
               sessionId: _sessionId,
-              onSuccess: () {
-                Navigator.pushReplacementNamed(context, '/main');
-              },
+              onSuccess: _handleOtpSuccess,
               onResend: _handleResend,
             ),
           ],

@@ -25,6 +25,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String _userName = '';
   String _userPhone = '';
+  String? _passDate; // Сүүлийн нууц үг солисон огноо
+  int? _deviceCount; // Холбогдсон төхөөрөмжийн тоо
   bool _biometricBusy = false;
 
   @override
@@ -106,6 +108,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           _userName = data['firstName']?.toString() ?? '';
           _userPhone = data['phone']?.toString() ?? '';
+          _passDate = _formatPassDate(data['passDate']?.toString());
+          _deviceCount = int.tryParse(data['deviceCount']?.toString() ?? '');
         });
       }
     } catch (_) {
@@ -117,6 +121,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     }
+  }
+
+  /// passDate-г "2025.10.20" форматад хөрвүүлнэ.
+  /// Сервер "2025-10-20", "2025-10-20 14:30:00" гэх мэт форматаар илгээж
+  /// болзошгүй тул зөвхөн огнооны хэсгийг авч цэгээр форматлана.
+  String? _formatPassDate(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    final datePart = raw.split(RegExp(r'[ T]')).first;
+    return datePart.replaceAll('-', '.');
   }
 
   @override
@@ -219,13 +232,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileListItem(
               icon: Icons.lock_outline,
               title: l10n.changePassword,
-              subtitle: l10n.lastChanged,
+              subtitle: _passDate != null
+                  ? l10n.passwordChangedOn(_passDate!)
+                  : null,
               onTap: () =>
                   Navigator.pushNamed(context, '/change_password_verify'),
             ),
             ProfileListItem(
               icon: Icons.devices_outlined,
               title: l10n.connectedDevices,
+              subtitle: _deviceCount != null
+                  ? l10n.deviceCountLabel(_deviceCount!)
+                  : null,
               onTap: () => Navigator.pushNamed(context, '/connected_devices'),
             ),
 

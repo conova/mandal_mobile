@@ -24,6 +24,55 @@ class AppLocalizationsMn extends AppLocalizations {
   String get loginErrorEmail => 'И-мэйл эсвэл нууц үг буруу байна.';
 
   @override
+  String get connectionError => 'Алдаа гарлаа. Дахин оролдоно уу.';
+
+  @override
+  String get tryAgain => 'Дахин оролдох';
+
+  @override
+  String attemptsRemaining(Object count) {
+    return 'Утасны дугаар эсвэл нууц үг буруу байна. \n$count удаагийн эрх үлдлээ.';
+  }
+
+  @override
+  String attemptsRemainingEmail(Object count) {
+    return 'И-мэйл эсвэл нууц үг буруу байна. \n$count удаагийн эрх үлдлээ.';
+  }
+
+  @override
+  String get validationEmailRequired => 'И-мэйл оруулна уу';
+
+  @override
+  String get validationInvalidFormat => 'Бичиглэл буруу эсвэл дутуу байна';
+
+  @override
+  String get validationThisField => 'Энэ талбар';
+
+  @override
+  String validationRequired(Object field) {
+    return '$field хоосон байна';
+  }
+
+  @override
+  String get validationRegisterRequired => 'Регистрийн дугаар оруулна уу';
+
+  @override
+  String get validationRegisterInvalid => 'Регистрийн дугаар буруу байна';
+
+  @override
+  String get validationPhoneRequired => 'Утасны дугаар оруулна уу';
+
+  @override
+  String validationEnterField(Object field) {
+    return '$field оруулна уу';
+  }
+
+  @override
+  String validationLettersOnly(Object field) {
+    return '$field зөвхөн үсэг байна';
+  }
+
+  @override
   String get phoneNumber => 'Утасны дугаар';
 
   @override
@@ -263,10 +312,36 @@ class AppLocalizationsMn extends AppLocalizations {
   String get lastChanged => '2025.10.20-нд сольсон';
 
   @override
+  String passwordChangedOn(Object date) {
+    return '$date-нд сольсон';
+  }
+
+  @override
   String get connectedDevices => 'Холбогдсон төхөөрөмж';
 
   @override
   String get devicesCount => '2 төхөөрөмж';
+
+  @override
+  String deviceCountLabel(Object count) {
+    return '$count төхөөрөмж';
+  }
+
+  @override
+  String get biometricFaceTitle => 'Царай таниулах уу';
+
+  @override
+  String get biometricFingerprintTitle => 'Хурууны хээ таниулах уу';
+
+  @override
+  String get biometricEnrollDesc =>
+      'Ингэснээр та цаашид биометрик ашиглан хялбар нэвтрэх боломжтой болно.';
+
+  @override
+  String get biometricEnrollConfirm => 'Тэгье';
+
+  @override
+  String get skip => 'Алгасах';
 
   @override
   String get logout => 'Апп-с гарах';

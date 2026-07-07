@@ -130,6 +130,84 @@ abstract class AppLocalizations {
   /// **'Email or password is incorrect.'**
   String get loginErrorEmail;
 
+  /// No description provided for @connectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get connectionError;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// No description provided for @attemptsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect phone number or password. \n{count} attempt(s) remaining.'**
+  String attemptsRemaining(Object count);
+
+  /// No description provided for @attemptsRemainingEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password. \n{count} attempt(s) remaining.'**
+  String attemptsRemainingEmail(Object count);
+
+  /// No description provided for @validationEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get validationEmailRequired;
+
+  /// No description provided for @validationInvalidFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or incomplete format'**
+  String get validationInvalidFormat;
+
+  /// No description provided for @validationThisField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field'**
+  String get validationThisField;
+
+  /// No description provided for @validationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} is empty'**
+  String validationRequired(Object field);
+
+  /// No description provided for @validationRegisterRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter registration number'**
+  String get validationRegisterRequired;
+
+  /// No description provided for @validationRegisterInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration number is invalid'**
+  String get validationRegisterInvalid;
+
+  /// No description provided for @validationPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter phone number'**
+  String get validationPhoneRequired;
+
+  /// No description provided for @validationEnterField.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter {field}'**
+  String validationEnterField(Object field);
+
+  /// No description provided for @validationLettersOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} must contain only letters'**
+  String validationLettersOnly(Object field);
+
   /// No description provided for @phoneNumber.
   ///
   /// In en, this message translates to:
@@ -604,6 +682,12 @@ abstract class AppLocalizations {
   /// **'Changed on 2025.10.20'**
   String get lastChanged;
 
+  /// No description provided for @passwordChangedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed on {date}'**
+  String passwordChangedOn(Object date);
+
   /// No description provided for @connectedDevices.
   ///
   /// In en, this message translates to:
@@ -615,6 +699,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'2 devices'**
   String get devicesCount;
+
+  /// No description provided for @deviceCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} devices'**
+  String deviceCountLabel(Object count);
+
+  /// No description provided for @biometricFaceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Face ID?'**
+  String get biometricFaceTitle;
+
+  /// No description provided for @biometricFingerprintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Fingerprint?'**
+  String get biometricFingerprintTitle;
+
+  /// No description provided for @biometricEnrollDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This lets you log in quickly using biometrics next time.'**
+  String get biometricEnrollDesc;
+
+  /// No description provided for @biometricEnrollConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get biometricEnrollConfirm;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
 
   /// No description provided for @logout.
   ///

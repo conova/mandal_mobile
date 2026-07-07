@@ -25,11 +25,24 @@ class LoginResult {
   /// Алдааны мессеж
   final String? message;
 
+  /// Одоо хийсэн буруу оролдлогын тоо
+  final int? counter;
+
+  /// Зөвшөөрөгдөх дээд оролдлогын тоо
+  final int? attempt;
+
+  /// Сүлжээ/техникийн алдаа эсэх — UI-д raw мессеж бус, ерөнхий
+  /// мессеж (connectionError) харуулна.
+  final bool isConnectionError;
+
   const LoginResult({
     this.success = false,
     this.requiresOtp = false,
     this.sessionId,
     this.message,
+    this.counter,
+    this.attempt,
+    this.isConnectionError = false,
   });
 }
 
@@ -451,6 +464,8 @@ class AuthService with ChangeNotifier {
       'phoneVerified': true,
       'address': null,
       'statusName': 'Идэвхтэй',
+      'passDate': '2025-10-20',
+      'deviceCount': 2,
       'kyc': {'agreement': 'true', 'dan': 'true', 'ispep': 'true'},
       'document': {'idFront': 'true', 'idBack': 'true', 'selfie': 'true'},
     };
@@ -537,7 +552,6 @@ class AuthService with ChangeNotifier {
       notifyListeners();
       return info;
     } catch (e) {
-      debugPrint('[Auth] refreshUserInfo алдаа: $e');
       return null;
     }
   }
@@ -585,7 +599,6 @@ class AuthService with ChangeNotifier {
       if (response.statusCode == 200) {
         final body = response.data;
         final String code = body['code']?.toString() ?? '';
-
         // code "0" → deviceId бүртгэлтэй, шууд нэвтэрсэн
         if (code == '0') {
           await _handleAuthResponse(body['data']);
@@ -601,18 +614,40 @@ class AuthService with ChangeNotifier {
             sessionId: data is Map ? data['sessionId']?.toString() : null,
           );
         }
-
-        // Бусад → алдаа (буруу нууц үг гэх мэт)
-        return LoginResult(message: body['message'] ?? 'Login failed');
       }
-
-      return const LoginResult(message: 'Login failed');
+      // Бусад → алдаа (буруу нууц үг гэх мэт)
+      return _loginErrorFromBody(response.data);
+    } on DioException catch (e) {
+      // Буруу нэвтрэлт нь 401 статустай ирдэг тул Dio exception шиднэ.
+      // Гэхдээ response body-д code/message/attempt/counter байгаа тул
+      // үүнийг credential алдаа болгож задална.
+      final body = e.response?.data;
+      if (body is Map) {
+        return _loginErrorFromBody(body);
+      }
+      // Response огт байхгүй (timeout, холболт тасарсан гэх мэт) → техникийн алдаа
+      debugPrint('[Auth] login сүлжээний алдаа: ${e.message}');
+      return const LoginResult(isConnectionError: true);
     } catch (e) {
-      if (e is DioException) {
-        return LoginResult(message: 'Network error: ${e.message}');
-      }
-      return LoginResult(message: e.toString());
+      // Техникийн алдааны raw мессежийг UI-д харуулахгүй.
+      debugPrint('[Auth] login алдаа: $e');
+      return const LoginResult(isConnectionError: true);
     }
+  }
+
+  /// Login-ний алдааны body-г LoginResult болгож задлана.
+  /// body Map биш бол (HTML гэх мэт) техникийн алдаа гэж үзнэ.
+  /// counter — одоо хийсэн буруу оролдлогын тоо
+  /// attempt — зөвшөөрөгдөх дээд оролдлогын тоо
+  LoginResult _loginErrorFromBody(dynamic body) {
+    if (body is Map) {
+      return LoginResult(
+        message: body['message']?.toString() ?? 'Login failed',
+        counter: int.tryParse(body['counter']?.toString() ?? ''),
+        attempt: int.tryParse(body['attempt']?.toString() ?? ''),
+      );
+    }
+    return const LoginResult(isConnectionError: true);
   }
 
   /// Биометрик нэвтрэлт — deviceId + uid ашиглана.
@@ -1228,8 +1263,7 @@ class AuthService with ChangeNotifier {
       return int.tryParse(v.toString()) ?? 0;
     }
 
-    final type =
-        (raw['TYPE'] ?? raw['type'] ?? '').toString().toLowerCase();
+    final type = (raw['TYPE'] ?? raw['type'] ?? '').toString().toLowerCase();
     final name = raw['CODENAME'] ?? raw['name'];
     final amountRaw = toDouble(raw['AMOUNT'] ?? raw['amount']);
     final amountMnt = toDouble(raw['AMOUNTMNT'] ?? raw['amountMnt']);
@@ -1237,8 +1271,12 @@ class AuthService with ChangeNotifier {
     final order = toInt(raw['CODEORDER'] ?? raw['order']);
 
     // mnt/usd-ийн хувьд өөрийн валютаар, бонд/хувьцааны хувьд MNT эквивалентаар
-    final isCash = type == 'mnt' || type == 'usd' || type == 'cash' ||
-        type == 'tugrik' || type == 'dollar';
+    final isCash =
+        type == 'mnt' ||
+        type == 'usd' ||
+        type == 'cash' ||
+        type == 'tugrik' ||
+        type == 'dollar';
     final displayAmount = isCash ? amountRaw : amountMnt;
 
     return {

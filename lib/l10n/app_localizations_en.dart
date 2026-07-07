@@ -24,6 +24,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginErrorEmail => 'Email or password is incorrect.';
 
   @override
+  String get connectionError => 'Something went wrong. Please try again.';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String attemptsRemaining(Object count) {
+    return 'Incorrect phone number or password. \n$count attempt(s) remaining.';
+  }
+
+  @override
+  String attemptsRemainingEmail(Object count) {
+    return 'Incorrect email or password. \n$count attempt(s) remaining.';
+  }
+
+  @override
+  String get validationEmailRequired => 'Email is required';
+
+  @override
+  String get validationInvalidFormat => 'Invalid or incomplete format';
+
+  @override
+  String get validationThisField => 'This field';
+
+  @override
+  String validationRequired(Object field) {
+    return '$field is empty';
+  }
+
+  @override
+  String get validationRegisterRequired => 'Enter registration number';
+
+  @override
+  String get validationRegisterInvalid => 'Registration number is invalid';
+
+  @override
+  String get validationPhoneRequired => 'Enter phone number';
+
+  @override
+  String validationEnterField(Object field) {
+    return 'Enter $field';
+  }
+
+  @override
+  String validationLettersOnly(Object field) {
+    return '$field must contain only letters';
+  }
+
+  @override
   String get phoneNumber => 'Phone Number';
 
   @override
@@ -263,10 +312,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastChanged => 'Changed on 2025.10.20';
 
   @override
+  String passwordChangedOn(Object date) {
+    return 'Changed on $date';
+  }
+
+  @override
   String get connectedDevices => 'Connected Devices';
 
   @override
   String get devicesCount => '2 devices';
+
+  @override
+  String deviceCountLabel(Object count) {
+    return '$count devices';
+  }
+
+  @override
+  String get biometricFaceTitle => 'Enable Face ID?';
+
+  @override
+  String get biometricFingerprintTitle => 'Enable Fingerprint?';
+
+  @override
+  String get biometricEnrollDesc =>
+      'This lets you log in quickly using biometrics next time.';
+
+  @override
+  String get biometricEnrollConfirm => 'Enable';
+
+  @override
+  String get skip => 'Skip';
 
   @override
   String get logout => 'Log Out';

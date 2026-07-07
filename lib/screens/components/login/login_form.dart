@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_input.dart';
 import '../../../widgets/auth/auth_footer.dart';
 import '../../../services/auth_service.dart';
-import '../../../widgets/custom_snackbar.dart';
 import '../../../common/validators.dart';
 
 class LoginForm extends StatefulWidget {
@@ -73,28 +73,86 @@ class _LoginFormState extends State<LoginForm>
           arguments: {'sessionId': result.sessionId},
         );
       } else {
-        // Алдаа (буруу нууц үг гэх мэт)
-        CustomSnackbar.show(
-          context,
-          message: result.message ?? l10n.loginErrorPhone,
-          type: CustomSnackbarType.error,
+        // Алдаа (буруу нууц үг гэх мэт) — alert dialog-оор мессежийг харуулна
+
+        final message = result.message ?? l10n.loginErrorPhone;
+        final remaining = (result.counter != null && result.attempt != null)
+            ? result.attempt! - result.counter!
+            : null;
+        await _showLoginErrorDialog(
+          message: message,
+          remaining: remaining,
+          isMail: _tabController.index == 1,
         );
       }
     } catch (e) {
       if (mounted) {
-        CustomSnackbar.show(
-          context,
-          message: _tabController.index == 1
-              ? l10n.loginErrorEmail
-              : l10n.loginErrorPhone,
-          type: CustomSnackbarType.error,
-        );
+        await _showLoginErrorDialog(message: l10n.connectionError);
       }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  /// Нэвтрэлтийн алдааны dialog — мессеж + үлдсэн оролдлогын тоо
+  Future<void> _showLoginErrorDialog({
+    required String message,
+    bool? isMail,
+    int? remaining,
+  }) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
+    isMail ??= false;
+    final text = remaining != null
+        ? isMail
+              ? l10n.attemptsRemainingEmail(remaining < 0 ? 0 : remaining)
+              : l10n.attemptsRemaining(remaining < 0 ? 0 : remaining)
+        : message;
+    return showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            ),
+            Divider(
+              height: 0.5,
+              thickness: 1,
+              color: extendedColors.neutral500,
+            ),
+            InkWell(
+              onTap: () => Navigator.pop(ctx),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                alignment: Alignment.center,
+                child: Text(
+                  l10n.tryAgain,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -161,6 +219,7 @@ class _LoginFormState extends State<LoginForm>
         children: [
           CustomInput(
             label: l10n.phoneNumber,
+            validator: (v) => Validators.validateMongolianPhone(v, l10n),
             keyboardType: TextInputType.phone,
             controller: _phoneController,
           ),
@@ -209,7 +268,7 @@ class _LoginFormState extends State<LoginForm>
           CustomInput(
             label: l10n.email,
             hint: l10n.emailHint,
-            validator: Validators.validateEmail,
+            validator: (v) => Validators.validateEmail(v, l10n),
             keyboardType: TextInputType.emailAddress,
             controller: _emailController,
           ),

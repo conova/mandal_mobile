@@ -86,7 +86,7 @@ class RegisterFormState extends State<RegisterForm> {
                 RegExp(r'[А-ЯӨҮЁа-яөүёA-Za-z0-9]'),
               ),
             ],
-            validator: Validators.validateMongolianRegister,
+            validator: (v) => Validators.validateMongolianRegister(v, l10n),
           ),
           const SizedBox(height: 16),
           CustomInput(
@@ -97,7 +97,7 @@ class RegisterFormState extends State<RegisterForm> {
               LengthLimitingTextInputFormatter(8),
               FilteringTextInputFormatter.digitsOnly,
             ],
-            validator: Validators.validateMongolianPhone,
+            validator: (v) => Validators.validateMongolianPhone(v, l10n),
           ),
           const SizedBox(height: 16),
           CustomInput(
@@ -105,7 +105,7 @@ class RegisterFormState extends State<RegisterForm> {
             hint: '',
             controller: widget.lastNameController,
             validator: (v) =>
-                Validators.validateName(v, fieldName: l10n.lastName),
+                Validators.validateName(v, l10n, fieldName: l10n.lastName),
           ),
           const SizedBox(height: 16),
           CustomInput(
@@ -113,7 +113,7 @@ class RegisterFormState extends State<RegisterForm> {
             hint: '',
             controller: widget.firstNameController,
             validator: (v) =>
-                Validators.validateName(v, fieldName: l10n.firstName),
+                Validators.validateName(v, l10n, fieldName: l10n.firstName),
           ),
           const SizedBox(height: 24),
           const RegisterContactInfo(),

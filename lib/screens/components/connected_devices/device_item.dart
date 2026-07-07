@@ -44,7 +44,8 @@ class DeviceItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            SizedBox(
+            ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 90),
               child: CustomButton(
                 onPressed: onRemove,
                 label: l10n.remove,
