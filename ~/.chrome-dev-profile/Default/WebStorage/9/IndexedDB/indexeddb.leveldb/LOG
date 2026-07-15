@@ -1,6 +1,0 @@
-2026/07/15-13:31:35.236 864e2 Creating DB /Users/altanshagai/Documents/antigravity/mandal_mobile/~/.chrome-dev-profile/Default/WebStorage/9/IndexedDB/indexeddb.leveldb since it was missing.
-2026/07/15-13:31:35.238 864e2 Reusing MANIFEST /Users/altanshagai/Documents/antigravity/mandal_mobile/~/.chrome-dev-profile/Default/WebStorage/9/IndexedDB/indexeddb.leveldb/MANIFEST-000001
-2026/07/15-13:40:06.213 864e4 Level-0 table #5: started
-2026/07/15-13:40:06.214 864e4 Level-0 table #5: 6205 bytes OK
-2026/07/15-13:40:06.215 864e4 Delete type=0 #3
-2026/07/15-13:40:06.215 864e4 Manual compaction at level-0 from (begin) .. (end); will stop at (end)
