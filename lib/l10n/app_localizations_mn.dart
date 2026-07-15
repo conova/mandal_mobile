@@ -660,7 +660,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get pledgeBondDesc =>
-      'Та өөрт байгаа бондоо барьцаалан зээл авах боломжтой.';
+      'Бондоо зарахгүйгээр санхүүгийн хэрэгцээгээ шийдээрэй.';
 
   @override
   String get pledge => 'Барьцаалах';
@@ -710,6 +710,63 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get buyRate => 'Авах ханш';
+
+  @override
+  String get selectPledgeBond => 'Барьцаалах бонд сонгох';
+
+  @override
+  String get pledgeBondSelectDesc =>
+      'Бондоо барьцаалаад, суллахдаа +6.0% хүү төлнө. Яг л банкны хадгаламж барьцаалсан зээл шиг.';
+
+  @override
+  String get pledgeQuantityLabel => 'Барьцаалах ширхэг';
+
+  @override
+  String availablePieces(Object count) {
+    return 'Боломжит: $count ш';
+  }
+
+  @override
+  String get receiveAmountLabel => 'Хүлээн авах дүн';
+
+  @override
+  String get sorryTitle => 'Уучлаарай';
+
+  @override
+  String get noPledgeBondDesc =>
+      'Танд одоогоор барьцаалах боломжит бонд байхгүй байна.';
+
+  @override
+  String get requestSent => 'ХҮСЭЛТ ИЛГЭЭЛЭЭ';
+
+  @override
+  String requestSentDesc(Object phone) {
+    return 'Манай брокер тун удахгүй таны $phone дугаарт холбогдох болно.';
+  }
+
+  @override
+  String get closedBondInfoTitle => 'Хаалттай бонд';
+
+  @override
+  String get closedBondInfoDesc =>
+      'Хадгаламжтай адил буюу 10%-ийн хүүгийн орлогын татвартай, биржийн бус захд арилжаалагддаг бонд.';
+
+  @override
+  String get openBondInfoTitle => 'Нээлттэй бонд';
+
+  @override
+  String get openBondInfoDesc =>
+      'Биржээр нээлттэй арилжаалагддаг, хүссэн үедээ худалдах, худалдан авах боломжтой бонд.';
+
+  @override
+  String get foreignBondInfoTitle => 'Гадаад бонд';
+
+  @override
+  String get foreignBondInfoDesc =>
+      'Гадаад валютаар, олон улсын зах зээл дээр арилжаалагддаг бонд.';
+
+  @override
+  String get close => 'Хаах';
 
   @override
   String get stockRecommendationTitle => 'Санал болгох хувьцаа';

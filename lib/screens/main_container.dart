@@ -32,7 +32,6 @@ class _MainContainerState extends State<MainContainer> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;

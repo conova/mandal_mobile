@@ -59,6 +59,9 @@ import 'screens/bond/bond_detail_screen.dart';
 import 'screens/bond/bond_main_screen.dart';
 import 'screens/bond/bond_buy_screen.dart';
 import 'screens/bond/bond_confirmation_screen.dart';
+import 'screens/bond/pledge_bond_select_screen.dart';
+import 'screens/bond/pledge_bond_order_screen.dart';
+import 'screens/bond/pledge_bond_confirmation_screen.dart';
 import 'screens/bond/bond_success_screen.dart';
 import 'screens/bond/bond_sell_screen.dart';
 import 'screens/bond/bond_sell_confirmation_screen.dart';
@@ -441,6 +444,11 @@ class MyApp extends StatelessWidget {
               '/bond_main': (context) => const BondMainScreen(),
               '/bond_buy': (context) => const BondBuyScreen(),
               '/bond_confirmation': (context) => const BondConfirmationScreen(),
+              '/pledge_bond_select': (context) =>
+                  const PledgeBondSelectScreen(),
+              '/pledge_bond_order': (context) => const PledgeBondOrderScreen(),
+              '/pledge_bond_confirmation': (context) =>
+                  const PledgeBondConfirmationScreen(),
               '/bond_success': (context) => const BondSuccessScreen(),
               '/bond_sell': (context) => const BondSellScreen(),
               '/bond_sell_confirmation': (context) =>

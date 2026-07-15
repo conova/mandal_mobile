@@ -69,41 +69,37 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
               }
             }
 
+            // Minimal popup — гарчиг, буцах товчгүй: зөвхөн талбар +
+            // хадгалах. Гадна талд дарж хаана.
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              title: Text(
-                (currentEmail == null || currentEmail.isEmpty)
-                    ? l10n.addEmail
-                    : l10n.email,
-              ),
+              contentPadding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
               content: Form(
                 key: formKey,
-                child: CustomInput(
-                  label: l10n.email,
-                  controller: controller,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) => Validators.validateEmail(v, l10n),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomInput(
+                      label: l10n.email,
+                      controller: controller,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (v) => Validators.validateEmail(v, l10n),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: CustomButton(
+                        label: l10n.save,
+                        isLoading: isSaving,
+                        onPressed: isSaving ? null : handleSave,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              actions: [
-                CustomButton(
-                  label: l10n.back,
-                  variant: CustomButtonVariant.text,
-                  size: CustomButtonSize.small,
-                  onPressed: isSaving
-                      ? null
-                      : () => Navigator.pop(dialogContext, false),
-                ),
-                CustomButton(
-                  label: l10n.save,
-                  size: CustomButtonSize.small,
-                  isLoading: isSaving,
-                  onPressed: isSaving ? null : handleSave,
-                ),
-              ],
             );
           },
         );
