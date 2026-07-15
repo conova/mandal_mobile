@@ -73,7 +73,9 @@
       "Bash(xcrun --show-sdk-version --sdk iphoneos)",
       "Bash(xcodebuild -downloadPlatform iOS)",
       "Bash(awk '{print \"Сул зай:\", $4}')",
-      "Bash(grep -E \"\\\\.dart$\")"
+      "Bash(grep -E \"\\\\.dart$\")",
+      "Bash(git rm *)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

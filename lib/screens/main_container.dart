@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import '../widgets/custom_svg_icon.dart';
 import '../l10n/app_localizations.dart';
 import 'home_screen.dart';
 import 'bond/bond_main_screen.dart';
@@ -31,6 +32,7 @@ class _MainContainerState extends State<MainContainer> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -50,8 +52,8 @@ class _MainContainerState extends State<MainContainer> {
         unselectedLabelStyle: theme.textTheme.labelSmall,
         items: [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            activeIcon: const Icon(Icons.account_balance_wallet),
+            icon: const CustomSvgIcon('wallet-01'),
+            activeIcon: const CustomSvgIcon('wallet-01'),
             label: l10n.portfolio,
           ),
           BottomNavigationBarItem(

@@ -88,6 +88,9 @@ flutter:
     - assets/images/ready_trade.png
     - assets/images/vault.png
     - assets/images/lock.png
+    # SVG icon-ууд — хавтсаар нь бүртгэсэн тул шинэ icon нэмэхэд
+    # pubspec засах шаардлагагүй (CustomSvgIcon-оор нэрээр нь дуудна)
+    - assets/images/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
