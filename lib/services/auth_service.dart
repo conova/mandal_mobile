@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:dio/dio.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../config/api_config.dart';
@@ -103,8 +102,12 @@ class AuthService with ChangeNotifier {
     return false;
   }
 
-  Map<String, dynamic>? get _kyc =>
-      _userInfo == null ? null : _userInfo!['kyc'] as Map<String, dynamic>?;
+  /// Сервэр (PHP) хоосон объектыг `[]` буюу List болгож буцаадаг тул
+  /// шууд cast хийхгүй — Map биш бол null.
+  static Map<String, dynamic>? _asMap(dynamic v) =>
+      v is Map ? Map<String, dynamic>.from(v) : null;
+
+  Map<String, dynamic>? get _kyc => _asMap(_userInfo?['kyc']);
 
   /// Үнэт цаасны гэрээ зурсан эсэх
   bool get hasAgreement => _parseBool(_kyc?['agreement']);
@@ -115,35 +118,54 @@ class AuthService with ChangeNotifier {
   /// PEP төлөв тодорхойлсон эсэх
   bool get isPepDeclared => _parseBool(_kyc?['ispep']);
 
-  /// 3 алхмын хэдийг гүйцэтгэсэнг 0.0..1.0 хязгаарт буцаана
+  /// 3 алхмын хэдийг гүйцэтгэсэнг 0.0..1.0 хязгаарт буцаана.
+  /// Баримтын алхам нь 3 зураг (id_front, id_back, selfie) бүгд true
+  /// үед гүйцсэнд тооцогдоно.
   double get kycProgress {
     if (_kyc == null) return 0.0;
     final done = [
       hasAgreement,
       isDanVerified,
-      isPepDeclared,
+      areAllDocumentsUploaded,
     ].where((b) => b).length;
     return done / 3;
   }
 
   /// Бүх KYC алхам гүйцэтгэсэн эсэх
-  bool get isKycComplete => hasAgreement && isDanVerified && isPepDeclared;
+  bool get isKycComplete =>
+      hasAgreement && isDanVerified && areAllDocumentsUploaded;
 
   // ── Document upload статус ────────────────────────────────────────────
-  // `userInfo.document` объект — `kyc`-ийн гадна, тусдаа irне.
-  // Жишээ: { idFront: "true", idBack: "true", selfie: "false" }
-  Map<String, dynamic>? get _document => _userInfo == null
-      ? null
-      : _userInfo!['document'] as Map<String, dynamic>?;
+  // Шинэ API: төлвүүд `kyc` дотор snake_case-ээр ирнэ
+  // (kyc: { id_front: "true", id_back: "true", selfie: "true" }).
+  // Хуучин формат `document: { idFront: ... }`-ийг fallback болгож дэмжинэ.
+  Map<String, dynamic>? get _document => _asMap(_userInfo?['document']);
+
+  // Өмнө илгээсэн баримтуудын зургийн URL-ууд:
+  // kycDocs: { id_front: "https://...", id_back: ..., selfie: ... }
+  Map<String, dynamic>? get _kycDocs => _asMap(_userInfo?['kycDocs']);
+
+  /// Өмнө илгээсэн KYC баримтын зургийн URL (илгээгээгүй бол null).
+  /// type: id_front | id_back | selfie
+  String? kycDocUrl(String type) {
+    final url = _kycDocs?[type]?.toString();
+    return (url == null || url.isEmpty) ? null : url;
+  }
 
   /// Иргэний үнэмлэхний урд талын зураг илгээсэн эсэх
-  bool get isIdFrontUploaded => _parseBool(_document?['idFront']);
+  bool get isIdFrontUploaded =>
+      _parseBool(_kyc?['id_front'] ?? _document?['idFront']) ||
+      kycDocUrl('id_front') != null;
 
   /// Иргэний үнэмлэхний ар талын зураг илгээсэн эсэх
-  bool get isIdBackUploaded => _parseBool(_document?['idBack']);
+  bool get isIdBackUploaded =>
+      _parseBool(_kyc?['id_back'] ?? _document?['idBack']) ||
+      kycDocUrl('id_back') != null;
 
   /// Selfie зураг илгээсэн эсэх
-  bool get isSelfieUploaded => _parseBool(_document?['selfie']);
+  bool get isSelfieUploaded =>
+      _parseBool(_kyc?['selfie'] ?? _document?['selfie']) ||
+      kycDocUrl('selfie') != null;
 
   /// 3 баримтын аль аль нь илгээгдсэн эсэх
   bool get areAllDocumentsUploaded =>
@@ -321,7 +343,8 @@ class AuthService with ChangeNotifier {
   Future<List<BiometricType>> getAvailableBiometrics() async {
     try {
       return await _localAuth.getAvailableBiometrics();
-    } on PlatformException {
+    } catch (_) {
+      // PlatformException + MissingPluginException (web дээр plugin байхгүй)
       return <BiometricType>[];
     }
   }
@@ -342,7 +365,8 @@ class AuthService with ChangeNotifier {
           biometricOnly: true,
         ),
       );
-    } on PlatformException {
+    } catch (_) {
+      // PlatformException + MissingPluginException (web дээр plugin байхгүй)
       return false;
     }
   }
@@ -532,12 +556,39 @@ class AuthService with ChangeNotifier {
       await saveLastUser(_custName!, _uid!);
     }
 
-    // Login амжилттай → FCM token серверт бүртгэх
-    registerFcmToken();
+    // // Login амжилттай → FCM token серверт бүртгэх
+    // registerFcmToken();
 
     // Хэрэглэгчийн дэлгэрэнгүй мэдээллийг татаж кэшэлнэ
     // (нэвтрэх процессыг хойшлуулахгүйн тулд async асаав)
     refreshUserInfo();
+  }
+
+  /// И-мэйл нэмэх / солих — POST /user/add_email, body: { data: { email } }
+  /// Returns: серверийн message. Амжилттай бол кэшэлсэн userInfo-ийн
+  /// email талбарыг шинэчилнэ.
+  Future<String> addEmail(String email) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.userAddEmail,
+        data: {
+          'data': {'email': email},
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        if (_userInfo != null) {
+          _userInfo!['email'] = email;
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
+          notifyListeners();
+        }
+        return body['message']?.toString() ?? 'И-мэйл амжилттай хадгалагдлаа';
+      }
+      throw Exception(body['message'] ?? 'И-мэйл хадгалахад алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
   }
 
   /// `/user/info` API-аас хэрэглэгчийн мэдээлэл татаж кэш + persistence
@@ -831,30 +882,44 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  /// Бүртгэлийн орлого авах данс холбох — sessionId + банк + IBAN + нэр.
+  /// Орлого авах данс холбох — банк + IBAN + нэр.
   /// Returns: server message
-  /// Данс холбох — sessionId эсвэл нэвтэрсэн token хоёрын аль нэгийг шаардана.
-  ///   • sessionId дамжуулсан → register flow (нэвтрээгүй)
-  ///   • sessionId null → нэвтэрсэн → Bearer token автомат явна
+  ///
+  /// sendOtp-той ижил 2 горим:
+  ///   1) **Нэвтэрсэн** (`isAuthenticated`) — `Authorization: Bearer` header
+  ///      илгээж, body-д `sessionId` оруулахгүй. Сервер token-аас хэрэглэгчийг
+  ///      таних.
+  ///   2) **Нэвтрээгүй** — `sessionId` заавал шаардлагатай (register flow).
+  ///
+  /// [isPrimary] — үндсэн (орлого авах) данс болгох үед `"1"` гэж илгээнэ.
+  /// Заавал биш — дансны жагсаалтаас данс сонгож primary болгоход ашиглана.
   Future<String> addAccount({
     String? sessionId,
     required String bankCode,
     required String iban,
     required String accountName,
+    bool isPrimary = false,
   }) async {
-    final dio = sessionId != null ? _dio : _authedDio;
+    final dio = isAuthenticated ? _authedDio : _dio;
     try {
+      final Map<String, dynamic> bodyData = {
+        'bankCode': bankCode,
+        'iban': iban,
+        'accountName': accountName,
+        if (isPrimary) 'isPrimary': '1',
+      };
+      if (!isAuthenticated) {
+        if (sessionId == null || sessionId.isEmpty) {
+          throw Exception(
+            'sessionId шаардлагатай (нэвтэрсэн хэрэглэгч биш үед)',
+          );
+        }
+        bodyData['sessionId'] = sessionId;
+      }
+
       final response = await dio.post(
         ApiConfig.registerAddAccount,
-        data: {
-          'api': 'add_account',
-          'data': {
-            if (sessionId != null) 'sessionId': sessionId,
-            'bankCode': bankCode,
-            'iban': iban,
-            'accountName': accountName,
-          },
-        },
+        data: {'api': 'add_account', 'data': bodyData},
       );
 
       final body = response.data as Map<String, dynamic>;
@@ -871,9 +936,13 @@ class AuthService with ChangeNotifier {
   /// KYC: бичиг баримтын зураг илгээх
   /// type: id_front | id_back | selfie г.м.
   /// image: base64 encoded string
-  Future<String> uploadKycDocument({
+  /// [onSendProgress] — илгээлтийн явц (sent/total байт), UI-д progress
+  /// харуулахад ашиглана
+  /// Returns: серверт хадгалагдсан зургийн URL (data.url, байхгүй бол null)
+  Future<String?> uploadKycDocument({
     required String type,
     required String image,
+    void Function(int sent, int total)? onSendProgress,
   }) async {
     try {
       final response = await _authedDio.post(
@@ -882,21 +951,29 @@ class AuthService with ChangeNotifier {
           'api': 'upload_document',
           'data': {'type': type, 'image': image},
         },
+        onSendProgress: onSendProgress,
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        // Кэшэлсэн userInfo дотрох document талбарыг шинэчлэх
+        // Хариунаас хадгалагдсан зургийн URL авна
+        final url = _asMap(body['data'])?['url']?.toString();
+
+        // Кэшэлсэн userInfo дотрох kyc төлөв + kycDocs URL-ийг шинэчлэх
+        // (type нь id_front | id_back | selfie — kyc-ийн түлхүүртэй ижил)
         if (_userInfo != null) {
-          final doc = Map<String, dynamic>.from(
-            (_userInfo!['document'] as Map?) ?? const {},
-          );
-          doc[type] = 'true';
-          _userInfo!['document'] = doc;
+          final kyc = _asMap(_userInfo!['kyc']) ?? <String, dynamic>{};
+          kyc[type] = 'true';
+          _userInfo!['kyc'] = kyc;
+          if (url != null && url.isNotEmpty) {
+            final docs = _asMap(_userInfo!['kycDocs']) ?? <String, dynamic>{};
+            docs[type] = url;
+            _userInfo!['kycDocs'] = docs;
+          }
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
           notifyListeners();
         }
-        return body['message']?.toString() ?? 'Амжилттай илгээгдлээ';
+        return url;
       }
       throw Exception(body['message'] ?? 'Бичиг баримт илгээхэд алдаа гарлаа');
     } on DioException catch (e) {
@@ -1102,6 +1179,22 @@ class AuthService with ChangeNotifier {
   /// IPO хувьцаанууд
   Future<List<Map<String, dynamic>>> getIpoStocks() =>
       _fetchStockList(ApiConfig.stocksIpo);
+
+  /// Санал болгож буй бондууд (NBO) — home carousel
+  Future<List<Map<String, dynamic>>> getNboStocks() =>
+      _fetchStockList(ApiConfig.stocksNbo);
+
+  /// Харилцагчийн эзэмшдэг хувьцаанууд
+  Future<List<Map<String, dynamic>>> getMyStocks() =>
+      _fetchStockList(ApiConfig.stocksMyStocks);
+
+  /// Харилцагчийн эзэмшдэг бондууд
+  Future<List<Map<String, dynamic>>> getMyBonds() =>
+      _fetchStockList(ApiConfig.stocksMyBonds);
+
+  /// Зах зээл дээрх бондууд (бонд авах tab)
+  Future<List<Map<String, dynamic>>> getBondList() =>
+      _fetchStockList(ApiConfig.stocksBondList);
 
   /// Хувьцаа хайх
   /// POST /stocks/search?q=...&type=...

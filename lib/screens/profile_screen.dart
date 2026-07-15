@@ -25,6 +25,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String _userName = '';
   String _userPhone = '';
+  String? _photoUrl; // Харилцагчийн зургийн URL (null бол default icon)
   String? _passDate; // Сүүлийн нууц үг солисон огноо
   int? _deviceCount; // Холбогдсон төхөөрөмжийн тоо
   bool _biometricBusy = false;
@@ -108,6 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           _userName = data['firstName']?.toString() ?? '';
           _userPhone = data['phone']?.toString() ?? '';
+          _photoUrl = data['photo']?.toString();
           _passDate = _formatPassDate(data['passDate']?.toString());
           _deviceCount = int.tryParse(data['deviceCount']?.toString() ?? '');
         });
@@ -172,6 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileHeader(
               name: _userName.isNotEmpty ? _userName : 'Хэрэглэгч',
               phoneNumber: _userPhone,
+              photoUrl: _photoUrl,
             ),
             const SizedBox(height: 32),
 

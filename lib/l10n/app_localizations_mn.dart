@@ -683,6 +683,42 @@ class AppLocalizationsMn extends AppLocalizations {
       'Тийм бол - Эрсдэл бага, өгөөж өндөр дараах бондуудыг танд санал болгож байна.';
 
   @override
+  String get uploading => 'Илгээж байна';
+
+  @override
+  String get noData => 'Мэдээлэл байхгүй';
+
+  @override
+  String get addEmail => 'И-мэйл нэмэх';
+
+  @override
+  String get annualYield => 'Жилийн өгөөж';
+
+  @override
+  String get nextInterestPayDate => 'Дараагийн хүү төлөгдөх өдөр';
+
+  @override
+  String get bondMaturityDate => 'Бонд дуусах өдөр';
+
+  @override
+  String daysCount(Object days) {
+    return '$days хоног';
+  }
+
+  @override
+  String get tradePlannedDate => 'Арилжаа биелэх төлөвлөгөөт огноо';
+
+  @override
+  String get buyRate => 'Авах ханш';
+
+  @override
+  String get stockRecommendationTitle => 'Санал болгох хувьцаа';
+
+  @override
+  String get stockRecommendationDesc =>
+      'Хамгийн их арилжааны дүнтэй хувьцаануудыг санал болгож байна.';
+
+  @override
   String get sellBond => 'Бонд зарах';
 
   @override

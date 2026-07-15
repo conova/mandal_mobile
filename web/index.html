@@ -67,6 +67,23 @@
         }
       }, 1000);
     });
+
+    // DAN (E-Mongolia) баталгаажуулалт — browser дээр DAN шинэ tab-д
+    // нээгддэг. Result хуудас window.opener руу postMessage илгээхэд
+    // үр дүнгийн дагуу апп руу буцаж шилжинэ.
+    window.addEventListener('message', (event) => {
+      var allowedOrigins = ['https://mandalcapital.mn', 'https://bds.techfi.mn'];
+      if (allowedOrigins.indexOf(event.origin) === -1) return;
+      if (event.data && event.data.action === 'navigate_main') {
+        // target: '/main?success' эсвэл '/main?fail' — алдааны message-ийг
+        // хамт дамжуулж Flutter талд toast-оор харуулна
+        var target = event.data.target;
+        if (event.data.message) {
+          target += '&message=' + encodeURIComponent(event.data.message);
+        }
+        window.location.href = target;
+      }
+    });
   </script>
 </body>
 

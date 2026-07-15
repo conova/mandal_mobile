@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 
 class BondPortfolioScreen extends StatefulWidget {
@@ -12,35 +15,29 @@ class BondPortfolioScreen extends StatefulWidget {
 class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   int _selectedFilter = 0;
 
-  final List<_BondHolding> _holdings = const [
-    _BondHolding(
-      name: 'Net Capital',
-      subtitle: 'Нэт Капитал',
-      status: 'ХААЛТТАЙ',
-      statusType: _StatusType.closed,
-      amount: '35,000,000.00₮',
-      interestRate: '18.00%',
-      pieces: '350',
-    ),
-    _BondHolding(
-      name: 'Lend.mn',
-      subtitle: 'Лэнд.мн',
-      status: 'НЭЭЛТТЭЙ',
-      statusType: _StatusType.open,
-      amount: '1,000,000,000.00₮',
-      interestRate: '19.20%',
-      pieces: '1,000',
-    ),
-    _BondHolding(
-      name: 'MIK',
-      subtitle: 'МИК',
-      status: 'ГАДААД',
-      statusType: _StatusType.foreign,
-      amount: '5,000.00\$',
-      interestRate: '13.00%',
-      pieces: '125',
-    ),
-  ];
+  bool _isLoading = true;
+  List<_BondHolding> _holdings = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_fetchMyBonds);
+  }
+
+  Future<void> _fetchMyBonds() async {
+    try {
+      final auth = context.read<AuthService>();
+      final rows = await auth.getMyBonds();
+      if (!mounted) return;
+      setState(() {
+        _holdings = rows.map(_BondHolding.fromApi).toList();
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +130,27 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             ),
             const SizedBox(height: 16),
             // Bond rows
-            ..._holdings.map((bond) => _buildBondRow(bond, theme, extendedColors, l10n)),
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_holdings.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    l10n.noData,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral300,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ..._holdings.map(
+                (bond) => _buildBondRow(bond, theme, extendedColors, l10n),
+              ),
             const SizedBox(height: 8),
             Divider(height: 1, color: extendedColors.neutral500),
             const SizedBox(height: 24),
@@ -343,7 +360,9 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    bond.status,
+                    bond.isForeign
+                        ? l10n.foreign
+                        : (bond.isOpen ? l10n.open : l10n.closed),
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
@@ -369,7 +388,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${l10n.interestRateShort} - ${bond.interestRate} | ${bond.pieces}${l10n.pieces}',
+                  '${l10n.interestRateShort} - ${bond.interestRate}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: extendedColors.neutral300,
                   ),
@@ -473,24 +492,36 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   }
 }
 
-enum _StatusType { open, closed, foreign }
-
 class _BondHolding {
   final String name;
   final String subtitle;
-  final String status;
-  final _StatusType statusType;
+  final bool isOpen;
+  final bool isForeign;
   final String amount;
   final String interestRate;
-  final String pieces;
 
   const _BondHolding({
     required this.name,
     required this.subtitle,
-    required this.status,
-    required this.statusType,
+    required this.isOpen,
+    required this.isForeign,
     required this.amount,
     required this.interestRate,
-    required this.pieces,
   });
+
+  /// /stocks/mybonds мөрөөс угсарна:
+  /// { STOCKNAME, COMPNAME2, TYPENAME, AMT, INTRATE, ISOPEN, ISFOREIGN }
+  factory _BondHolding.fromApi(Map<String, dynamic> row) {
+    final isForeign = row['ISFOREIGN']?.toString() == '1';
+    return _BondHolding(
+      name: (row['STOCKNAME'] ?? row['COMPNAME'] ?? row['SYMBOL'])
+              ?.toString() ??
+          '',
+      subtitle: (row['COMPNAME2'] ?? row['TYPENAME'])?.toString() ?? '',
+      isOpen: row['ISOPEN']?.toString() == '1',
+      isForeign: isForeign,
+      amount: formatStockAmount(row['AMT'], isForeign: isForeign),
+      interestRate: formatIntRate(row['INTRATE']),
+    );
+  }
 }

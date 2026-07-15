@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -188,7 +191,15 @@ class _CameraOverlayScreenState extends State<CameraOverlayScreen> {
                               _controller!.value.isInitialized) {
                             try {
                               final image = await _controller!.takePicture();
-                              if (mounted) {
+                              // Web дээр path нь blob URL тул File-ээр уншиж
+                              // болохгүй — bytes-ийг нь шууд base64 болгож
+                              // буцаана (upload_document base64 хүлээдэг)
+                              if (kIsWeb) {
+                                final bytes = await image.readAsBytes();
+                                if (mounted) {
+                                  Navigator.pop(context, base64Encode(bytes));
+                                }
+                              } else if (mounted) {
                                 Navigator.pop(context, image.path);
                               }
                             } catch (e) {

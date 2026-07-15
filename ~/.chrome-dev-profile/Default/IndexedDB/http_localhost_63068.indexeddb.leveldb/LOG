@@ -1,0 +1,22 @@
+2026/07/15-14:57:22.983 c2508 Creating DB /Users/altanshagai/Documents/antigravity/mandal_mobile/~/.chrome-dev-profile/Default/IndexedDB/http_localhost_63068.indexeddb.leveldb since it was missing.
+2026/07/15-14:57:22.985 c2508 Reusing MANIFEST /Users/altanshagai/Documents/antigravity/mandal_mobile/~/.chrome-dev-profile/Default/IndexedDB/http_localhost_63068.indexeddb.leveldb/MANIFEST-000001
+2026/07/15-14:57:22.988 c250c Level-0 table #5: started
+2026/07/15-14:57:22.989 c250c Level-0 table #5: 667 bytes OK
+2026/07/15-14:57:22.991 c250c Delete type=0 #3
+2026/07/15-14:57:22.991 c2509 Manual compaction at level-0 from '\x00\x01\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x02\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/07/15-14:57:23.120 c250c Manual compaction at level-0 from '\x00\x03\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x04\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/07/15-15:00:20.904 c250c Manual compaction at level-0 from '\x00\x06\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x07\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/07/15-15:15:58.405 c250c Level-0 table #7: started
+2026/07/15-15:15:58.412 c250c Level-0 table #7: 6575 bytes OK
+2026/07/15-15:15:58.413 c250c Delete type=0 #4
+2026/07/15-15:15:58.413 c2508 Manual compaction at level-0 from '\x00\x07\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x08\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/07/15-15:25:48.054 c2508 Level-0 table #9: started
+2026/07/15-15:25:48.065 c2508 Level-0 table #9: 656 bytes OK
+2026/07/15-15:25:48.066 c2508 Delete type=0 #6
+2026/07/15-15:25:48.067 c2508 Manual compaction at level-0 from '\x00\x08\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x09\x00\x00\x00' @ 0 : 0; will stop at '\x00\x08\x00\x00\x05' @ 275 : 1
+2026/07/15-15:25:48.067 c2508 Compacting 1@0 + 1@1 files
+2026/07/15-15:25:48.067 c2508 Generated table #10@0: 126 keys, 3403 bytes
+2026/07/15-15:25:48.067 c2508 Compacted 1@0 + 1@1 files => 3403 bytes
+2026/07/15-15:25:48.068 c2508 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/07/15-15:25:48.068 c2508 Delete type=2 #9
+2026/07/15-15:25:48.068 c2508 Manual compaction at level-0 from '\x00\x08\x00\x00\x05' @ 275 : 1 .. '\x00\x09\x00\x00\x00' @ 0 : 0; will stop at (end)

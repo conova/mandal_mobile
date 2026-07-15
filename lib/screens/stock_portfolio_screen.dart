@@ -1,39 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 
-class StockPortfolioScreen extends StatelessWidget {
+class StockPortfolioScreen extends StatefulWidget {
   const StockPortfolioScreen({super.key});
 
-  static const _holdings = [
-    _StockHolding(
-      symbol: 'AARD',
-      name: 'Ард капитал',
-      amount: '30,000,000₮',
-      pieces: '1,000',
-      profit: '1,311,110₮',
-      changePercent: '79.72%',
-      isPositive: true,
-    ),
-    _StockHolding(
-      symbol: 'APU',
-      name: 'АПУ ХХК',
-      amount: '5,000,000₮',
-      pieces: '2,500',
-      profit: '554,503₮',
-      changePercent: '32.02%',
-      isPositive: false,
-    ),
-    _StockHolding(
-      symbol: 'GLMT',
-      name: 'Голомт банк',
-      amount: '15,000,000₮',
-      pieces: '1,000',
-      profit: '2,011,110₮',
-      changePercent: '44.72%',
-      isPositive: true,
-    ),
-  ];
+  @override
+  State<StockPortfolioScreen> createState() => _StockPortfolioScreenState();
+}
+
+class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
+  bool _isLoading = true;
+  List<_StockHolding> _holdings = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_fetchMyStocks);
+  }
+
+  Future<void> _fetchMyStocks() async {
+    try {
+      final auth = context.read<AuthService>();
+      final rows = await auth.getMyStocks();
+      if (!mounted) return;
+      setState(() {
+        _holdings = rows.map(_StockHolding.fromApi).toList();
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
+  }
 
   static const _historyItems = [
     _StockHistory(
@@ -136,9 +138,27 @@ class StockPortfolioScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             // Stock rows
-            ..._holdings.map(
-              (stock) => _buildStockRow(stock, theme, extendedColors),
-            ),
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_holdings.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    l10n.noData,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral300,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ..._holdings.map(
+                (stock) => _buildStockRow(stock, theme, extendedColors),
+              ),
             const SizedBox(height: 16),
             Divider(height: 1, color: extendedColors.neutral500),
             const SizedBox(height: 24),
@@ -487,6 +507,29 @@ class _StockHolding {
     required this.changePercent,
     required this.isPositive,
   });
+
+  /// /stocks/mystocks мөрөөс угсарна:
+  /// { SYMBOL, STOCKNAME, AMT, CLOSEPRICE, OPENPRICE, PRICECHANGE, ISFOREIGN }
+  factory _StockHolding.fromApi(Map<String, dynamic> row) {
+    final isForeign = row['ISFOREIGN']?.toString() == '1';
+    final change = double.tryParse(row['PRICECHANGE']?.toString() ?? '');
+    final close = double.tryParse(row['CLOSEPRICE']?.toString() ?? '');
+    final open = double.tryParse(row['OPENPRICE']?.toString() ?? '');
+    // Ханшийн өөрчлөлт (нэгж үнээр) — OPEN/CLOSE хоёулаа байвал
+    final diff = (close != null && open != null) ? close - open : null;
+    return _StockHolding(
+      symbol: row['SYMBOL']?.toString() ?? '',
+      name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
+      amount: formatStockAmount(row['AMT'], isForeign: isForeign),
+      // Ширхэгийн мэдээлэл API-д алга — хаалтын ханшийг харуулна
+      pieces: formatStockAmount(row['CLOSEPRICE'], isForeign: isForeign),
+      profit: diff == null
+          ? '-'
+          : formatStockAmount(diff.abs(), isForeign: isForeign),
+      changePercent: change == null ? '' : '${change.abs().toStringAsFixed(2)}%',
+      isPositive: (change ?? diff ?? 0) >= 0,
+    );
+  }
 }
 
 class _StockHistory {

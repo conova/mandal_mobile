@@ -1384,6 +1384,72 @@ abstract class AppLocalizations {
   /// **'We recommend the best bonds based on your interests.'**
   String get recommendationDesc;
 
+  /// No description provided for @uploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading'**
+  String get uploading;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @addEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Add email'**
+  String get addEmail;
+
+  /// No description provided for @annualYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual yield'**
+  String get annualYield;
+
+  /// No description provided for @nextInterestPayDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Next interest payment date'**
+  String get nextInterestPayDate;
+
+  /// No description provided for @bondMaturityDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Maturity date'**
+  String get bondMaturityDate;
+
+  /// No description provided for @daysCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String daysCount(Object days);
+
+  /// No description provided for @tradePlannedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned trade execution date'**
+  String get tradePlannedDate;
+
+  /// No description provided for @buyRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy price'**
+  String get buyRate;
+
+  /// No description provided for @stockRecommendationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended stocks'**
+  String get stockRecommendationTitle;
+
+  /// No description provided for @stockRecommendationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We recommend the stocks with the highest trading value.'**
+  String get stockRecommendationDesc;
+
   /// No description provided for @sellBond.
   ///
   /// In en, this message translates to:

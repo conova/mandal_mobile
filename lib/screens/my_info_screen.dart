@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../common/validators.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../services/auth_service.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_input.dart';
+import '../widgets/custom_snackbar.dart';
 
 import 'components/my_info/info_card.dart';
 import 'components/my_info/my_info_back_button.dart';
@@ -25,6 +29,87 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       if (!mounted) return;
       context.read<AuthService>().refreshUserInfo();
     });
+  }
+
+  /// И-мэйл нэмэх/засах dialog. Хадгалахад /user/add_email API дуудна.
+  /// Амжилттай бол AuthService кэшээ шинэчилж notifyListeners хийдэг тул
+  /// энэ дэлгэцийн утга автоматаар шинэчлэгдэнэ.
+  Future<void> _showEmailDialog(String? currentEmail) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: currentEmail ?? '');
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        bool isSaving = false;
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            Future<void> handleSave() async {
+              if (isSaving) return;
+              if (!(formKey.currentState?.validate() ?? false)) return;
+              setDialogState(() => isSaving = true);
+              try {
+                final message = await context
+                    .read<AuthService>()
+                    .addEmail(controller.text.trim());
+                if (!dialogContext.mounted) return;
+                Navigator.pop(dialogContext, true);
+                if (mounted) {
+                  CustomSnackbar.show(context, message: message);
+                }
+              } catch (e) {
+                if (!dialogContext.mounted) return;
+                setDialogState(() => isSaving = false);
+                CustomSnackbar.show(
+                  dialogContext,
+                  message: e.toString().replaceFirst('Exception: ', ''),
+                  type: CustomSnackbarType.error,
+                );
+              }
+            }
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(
+                (currentEmail == null || currentEmail.isEmpty)
+                    ? l10n.addEmail
+                    : l10n.email,
+              ),
+              content: Form(
+                key: formKey,
+                child: CustomInput(
+                  label: l10n.email,
+                  controller: controller,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (v) => Validators.validateEmail(v, l10n),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+              ),
+              actions: [
+                CustomButton(
+                  label: l10n.back,
+                  variant: CustomButtonVariant.text,
+                  size: CustomButtonSize.small,
+                  onPressed: isSaving
+                      ? null
+                      : () => Navigator.pop(dialogContext, false),
+                ),
+                CustomButton(
+                  label: l10n.save,
+                  size: CustomButtonSize.small,
+                  isLoading: isSaving,
+                  onPressed: isSaving ? null : handleSave,
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+    controller.dispose();
   }
 
   @override
@@ -74,6 +159,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   InfoCard(
                     label: l10n.email,
                     value: userInfo['email']?.toString() ?? '-',
+                    onTap: () =>
+                        _showEmailDialog(userInfo['email']?.toString()),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

@@ -5,6 +5,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
 class BondMarketCard extends StatelessWidget {
+  /// /stocks/* API-ийн түүхий мөр — detail дэлгэц рүү бүхэлд нь дамжуулна
+  final Map<String, dynamic> bond;
   final BuildContext context;
   final String title;
   final String subtitle;
@@ -13,10 +15,13 @@ class BondMarketCard extends StatelessWidget {
   final String yield;
   final String totalAmount;
   final double? progress;
+  final String? payday;
+  final String? market;
   final String progressLabel;
   final String progressLabel2;
 
-  const BondMarketCard({
+  const BondMarketCard(
+    this.bond, {
     super.key,
     required this.context,
     required this.title,
@@ -26,6 +31,8 @@ class BondMarketCard extends StatelessWidget {
     required this.yield,
     required this.totalAmount,
     this.progress,
+    this.payday,
+    this.market,
     this.progressLabel = '',
     this.progressLabel2 = '',
   });
@@ -37,7 +44,7 @@ class BondMarketCard extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,7 +60,7 @@ class BondMarketCard extends StatelessWidget {
                         Flexible(
                           child: Text(
                             title,
-                            style: theme.textTheme.titleMedium?.copyWith(
+                            style: theme.textTheme.headlineSmall?.copyWith(
                               color: extendedColors.neutral100,
                               fontWeight: FontWeight.bold,
                             ),
@@ -78,12 +85,16 @@ class BondMarketCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
+                          decoration: BoxDecoration(
+                            color: extendedColors.bgSecondary,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
+                            horizontal: 8,
                             vertical: 4,
                           ),
                           child: Text(
-                            status,
+                            status.toUpperCase(),
                             style: theme.textTheme.labelMedium?.copyWith(
                               color: extendedColors.neutral100,
                               fontWeight: AppTextStyles.regular,
@@ -101,10 +112,23 @@ class BondMarketCard extends StatelessWidget {
                   ],
                 ),
               ),
-              CustomButton(
-                onPressed: () => Navigator.pushNamed(context, '/bond_detail'),
-                label: l10n.buy,
-                variant: CustomButtonVariant.primary,
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 90),
+                child: CustomButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    '/bond_detail',
+                    arguments: {
+                      'bond': bond,
+                      'languageCode': Localizations.localeOf(
+                        context,
+                      ).languageCode,
+                    },
+                  ),
+                  label: l10n.buy,
+                  size: CustomButtonSize.small,
+                  variant: CustomButtonVariant.primary,
+                ),
               ),
             ],
           ),
@@ -130,7 +154,7 @@ class BondMarketCard extends StatelessWidget {
               ],
             ),
           ),
-          if (progress != null) ...[
+          if (progress != null && market == 'primary') ...[
             const SizedBox(height: 20),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),

@@ -684,6 +684,42 @@ class AppLocalizationsEn extends AppLocalizations {
       'We recommend the best bonds based on your interests.';
 
   @override
+  String get uploading => 'Uploading';
+
+  @override
+  String get noData => 'No data';
+
+  @override
+  String get addEmail => 'Add email';
+
+  @override
+  String get annualYield => 'Annual yield';
+
+  @override
+  String get nextInterestPayDate => 'Next interest payment date';
+
+  @override
+  String get bondMaturityDate => 'Maturity date';
+
+  @override
+  String daysCount(Object days) {
+    return '$days days';
+  }
+
+  @override
+  String get tradePlannedDate => 'Planned trade execution date';
+
+  @override
+  String get buyRate => 'Buy price';
+
+  @override
+  String get stockRecommendationTitle => 'Recommended stocks';
+
+  @override
+  String get stockRecommendationDesc =>
+      'We recommend the stocks with the highest trading value.';
+
+  @override
   String get sellBond => 'Sell Bond';
 
   @override

@@ -52,6 +52,15 @@ class ApiConfig {
 
   // ─── Customer / User ───
   static const String userInfo = '/bdc/api/user/info';
+
+  /// POST /user/add_email → и-мэйл нэмэх/солих
+  ///   Body: { data: { email } }
+  static const String userAddEmail = '/bdc/api/user/add_email';
+
+  /// GET /user/acnts → харилцагчийн орлого авах дансууд
+  ///   Response data row: { TXNACNTNO, TXNACNTNAME, TXNBANKNO, BANKNAME,
+  ///   BANKNAME2, REGDATE, ISPRIMARY ("1" | "0") }
+  static const String userAccounts = '/bdc/api/user/acnts';
   static const String devices = '/bdc/api/security/devices';
   static const String customerCreate = '/bdc/api/customer/create.php';
   static const String customerUpdate = '/bdc/api/customer/update.php';
@@ -69,6 +78,23 @@ class ApiConfig {
   static const String stocksGainers = '/bdc/api/stocks/gainers';
   static const String stocksLosers = '/bdc/api/stocks/losers';
   static const String stocksIpo = '/bdc/api/stocks/ipo';
+
+  /// GET /stocks/nbo → нээлттэй/хаалттай бонд санал болголтууд (home carousel)
+  static const String stocksNbo = '/bdc/api/stocks/nbo';
+
+  /// GET /stocks/mystocks → харилцагчийн эзэмшдэг хувьцаанууд
+  ///   Row: { SYMBOL, STOCKNAME, AMT, CLOSEPRICE, PRICECHANGE, ISFOREIGN, ... }
+  static const String stocksMyStocks = '/bdc/api/stocks/mystocks';
+
+  /// GET /stocks/bondlist → зах зээл дээрх бондууд (бонд авах tab)
+  ///   Row: { SYMBOL, STOCKNAME, COMPNAME2, TYPENAME, TERM, INTRATE, AMT,
+  ///   ISOPEN, ISFOREIGN, MARKET: "Primary"|"Secondary", ... }
+  static const String stocksBondList = '/bdc/api/stocks/bondlist';
+
+  /// GET /stocks/mybonds → харилцагчийн эзэмшдэг бондууд
+  ///   Row: { SYMBOL, STOCKNAME, COMPNAME2, TYPENAME, AMT, INTRATE, ISOPEN,
+  ///   ISFOREIGN, ... }
+  static const String stocksMyBonds = '/bdc/api/stocks/mybonds';
   static const String stocksSearch = '/bdc/api/stocks/search';
 
   /// Symbol-ийн график — `/stocks/{SYMBOL}/chart`

@@ -15,8 +15,8 @@ class PaymentResultScreen extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
 
-    final args = ModalRoute.of(context)!.settings.arguments
-        as Map<String, dynamic>;
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final status = args['status'] as PaymentStatus;
 
     final (icon, color, title, subtitle) = _resolve(
@@ -25,70 +25,94 @@ class PaymentResultScreen extends StatelessWidget {
       colorScheme,
     );
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const Spacer(flex: 2),
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  shape: BoxShape.circle,
+    return PopScope(
+      // Гүйлгээ дууссан — system back-аар төлбөрийн өмнөх дэлгэц рүү
+      // буцахын оронд "Дуусгах"-тай ижил үндсэн дэлгэц рүү гарна
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _finish(context);
+      },
+      child: Scaffold(
+        backgroundColor: colorScheme.surface,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                const Spacer(flex: 2),
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 56),
                 ),
-                child: Icon(icon, color: color, size: 56),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                title,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral500,
-                ),
-              ),
-              const SizedBox(height: 32),
-              _buildDetails(status, theme, extendedColors),
-              const Spacer(flex: 3),
-              if (status.category == PaymentStatusCategory.warning ||
-                  status.category == PaymentStatusCategory.error)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: CustomButton(
-                    label: 'Дахин оролдох',
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        '/payment_qpay',
-                        arguments: {'amount': status.amount},
-                      );
-                    },
-                    variant: CustomButtonVariant.secondary,
+                const SizedBox(height: 24),
+                Text(
+                  title,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              CustomButton(
-                label: 'Дуусгах',
-                onPressed: () {
-                  Navigator.popUntil(context, ModalRoute.withName('/main'));
-                },
-                variant: CustomButtonVariant.primary,
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral500,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                _buildDetails(status, theme, extendedColors),
+                const Spacer(flex: 3),
+                if (status.category == PaymentStatusCategory.warning ||
+                    status.category == PaymentStatusCategory.error)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: CustomButton(
+                      label: 'Дахин оролдох',
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          '/payment_qpay',
+                          arguments: {'amount': status.amount},
+                        );
+                      },
+                      variant: CustomButtonVariant.secondary,
+                    ),
+                  ),
+                CustomButton(
+                  label: 'Дуусгах',
+                  onPressed: () => _finish(context),
+                  variant: CustomButtonVariant.primary,
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  /// Үндсэн дэлгэц рүү буцна. Stack-д /main байгаа бол түүн хүртэл pop
+  /// хийж төлөвийг нь хадгална, байхгүй бол шинээр нээнэ (popUntil
+  /// хоосон stack дээр гацахаас сэргийлнэ).
+  void _finish(BuildContext context) {
+    var mainFound = false;
+    Navigator.popUntil(context, (route) {
+      if (route.settings.name == '/main') {
+        mainFound = true;
+        return true;
+      }
+      return route.isFirst;
+    });
+    if (!mainFound) {
+      Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+    }
   }
 
   /// PDF section 10 + банкны нэр-ийн категори
@@ -206,7 +230,10 @@ class PaymentResultScreen extends StatelessWidget {
   String _formatAmount(double amount) {
     final formatted = amount
         .toStringAsFixed(0)
-        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]},',
+        );
     return '₮ $formatted';
   }
 }

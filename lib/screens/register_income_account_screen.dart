@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../common/iban_prefix_formatter.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
@@ -19,7 +20,9 @@ class RegisterIncomeAccountScreen extends StatefulWidget {
 
 class _RegisterIncomeAccountScreenState
     extends State<RegisterIncomeAccountScreen> {
-  final TextEditingController _ibanController = TextEditingController();
+  final TextEditingController _ibanController = TextEditingController(
+    text: IbanPrefixFormatter.prefix,
+  );
   final TextEditingController _recipientController = TextEditingController();
   String? _selectedBankCode;
   bool _isButtonEnabled = false;
@@ -29,21 +32,62 @@ class _RegisterIncomeAccountScreenState
   List<Map<String, dynamic>> _banks = const [];
   bool _banksLoading = true;
 
-  // Fallback: API амжилтгүй үед ашиглах
+  // Fallback: API амжилтгүй үед ашиглах (/banks/list-ийн бодит хуулбар,
+  // кодоор эрэмбэлсэн)
   static const List<Map<String, dynamic>> _fallbackBanks = [
-    {'code': 'KHB', 'name': 'Хаан банк'},
-    {'code': 'GLB', 'name': 'Голомт банк'},
-    {'code': 'STB', 'name': 'Төрийн банк'},
-    {'code': 'TDB', 'name': 'Худалдаа хөгжлийн банк'},
-    {'code': 'CAP', 'name': 'Капитрон банк'},
+    {'code': '01', 'name': 'Төв Монголбанк'},
+    {'code': '04', 'name': 'Худалдаа хөгжлийн банк'},
+    {'code': '05', 'name': 'ХААН Банк'},
+    {'code': '15', 'name': 'Голомт банк'},
+    {'code': '19', 'name': 'Тээвэр хөгжлийн банк'},
+    {'code': '21', 'name': 'Ариг банк'},
+    {'code': '22', 'name': 'Кредит банк'},
+    {'code': '29', 'name': 'Үндэсний хөрөнгө оруулалтын банк'},
+    {'code': '30', 'name': 'Капитрон банк'},
+    {'code': '32', 'name': 'Хас банк'},
+    {'code': '33', 'name': 'Чингис хаан банк'},
+    {'code': '34', 'name': 'Төрийн банк'},
+    {'code': '36', 'name': 'Хөгжлийн банк'},
+    {'code': '38', 'name': 'Богд банк'},
+    {'code': '39', 'name': 'М Банк'},
+    {'code': '50', 'name': 'МОБИФИНАНС ББСБ'},
+    {'code': '52', 'name': 'Ард Кредит ББСБ'},
+    {'code': '90', 'name': 'Төрийн сан'},
+    {'code': '91', 'name': 'НОАТ буцаан олголт'},
+    {'code': '94', 'name': 'Монголын үнэт цаасны клирингийн төв'},
+    {'code': '95', 'name': 'ҮЦ Төвлөрсөн Хадгаламжийн төв'},
   ];
 
   @override
   void initState() {
     super.initState();
-    _ibanController.addListener(_checkFields);
+    _ibanController.addListener(_onIbanChanged);
     _recipientController.addListener(_checkFields);
     _loadBanks();
+  }
+
+  void _onIbanChanged() {
+    _autoDetectBank();
+    _checkFields();
+  }
+
+  /// IBAN-аас банкыг автоматаар таньж сонгоно.
+  /// MN + 2 орон (check) + 2 орон (банкны код): MN97**00**15... → банк "15".
+  /// Тоон дугаараар нь харьцуулдаг тул "04" == "4" гэж таарна.
+  void _autoDetectBank() {
+    final text = _ibanController.text;
+    if (text.length < 8) return;
+    final code = int.tryParse(text.substring(6, 8));
+    if (code == null) return;
+    for (final bank in _banks) {
+      if (int.tryParse(bank['code']?.toString() ?? '') == code) {
+        final bankCode = bank['code']?.toString();
+        if (bankCode != _selectedBankCode) {
+          setState(() => _selectedBankCode = bankCode);
+        }
+        return;
+      }
+    }
   }
 
   @override
@@ -58,10 +102,18 @@ class _RegisterIncomeAccountScreenState
       final auth = context.read<AuthService>();
       final list = await auth.getBanksList();
       if (!mounted) return;
+      // Кодоор эрэмбэлнэ ("01", "04", ...)
+      list.sort(
+        (a, b) => (a['code']?.toString() ?? '').compareTo(
+          b['code']?.toString() ?? '',
+        ),
+      );
       setState(() {
         _banks = list.isNotEmpty ? list : _fallbackBanks;
         _banksLoading = false;
       });
+      // IBAN аль хэдийн бичигдсэн байвал банкыг шууд таниулна
+      _autoDetectBank();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -73,8 +125,9 @@ class _RegisterIncomeAccountScreenState
 
   void _checkFields() {
     setState(() {
+      // IBAN нь "MN" угтвараас гадна утга агуулсан байх ёстой
       _isButtonEnabled =
-          _ibanController.text.isNotEmpty &&
+          _ibanController.text.length > IbanPrefixFormatter.prefix.length &&
           _recipientController.text.isNotEmpty &&
           _selectedBankCode != null;
     });
@@ -85,7 +138,7 @@ class _RegisterIncomeAccountScreenState
 
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
-            const {};
+        const {};
     final sessionId = args['sessionId'] as String?;
     if (sessionId == null) {
       CustomSnackbar.show(
@@ -107,11 +160,7 @@ class _RegisterIncomeAccountScreenState
       );
       if (!mounted) return;
       setState(() => _isSaving = false);
-      Navigator.pushNamed(
-        context,
-        '/register_bank_selection',
-        arguments: args,
-      );
+      Navigator.pushNamed(context, '/register_bank_selection', arguments: args);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
@@ -132,7 +181,7 @@ class _RegisterIncomeAccountScreenState
 
     return Scaffold(
       backgroundColor: colorScheme.background,
-      appBar: const AuthStepAppBar(stepText: '3/5'),
+      appBar: const AuthStepAppBar(stepText: '3/4'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
@@ -141,16 +190,16 @@ class _RegisterIncomeAccountScreenState
             const SizedBox(height: 40),
             Text(
               l10n.enterIncomeAccount,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onBackground,
+                color: extendedColors.neutral100,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.enterIncomeAccountSubtitle,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral500,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral200,
               ),
             ),
             const SizedBox(height: 48),
@@ -158,6 +207,7 @@ class _RegisterIncomeAccountScreenState
               label: l10n.ibanNumber,
               hint: '',
               controller: _ibanController,
+              inputFormatters: [IbanPrefixFormatter()],
               suffix: Icon(
                 Icons.copy_outlined,
                 color: extendedColors.neutral400,
@@ -199,10 +249,10 @@ class _RegisterIncomeAccountScreenState
             Text(
               l10n.lastNameOrFirstNameNote,
               style: theme.textTheme.labelLarge?.copyWith(
-                color: extendedColors.neutral500,
+                color: extendedColors.neutral200,
               ),
             ),
-            const Spacer(),
+            const SizedBox(height: 48),
             CustomButton(
               label: l10n.save,
               onPressed: (_isButtonEnabled && !_isSaving) ? _handleSave : null,

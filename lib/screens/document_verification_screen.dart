@@ -28,6 +28,9 @@ class _DocumentVerificationScreenState
   bool _uploadingIdBack = false;
   bool _uploadingSelfie = false;
 
+  /// Илгээлтийн явц type тус бүрээр (0.0–1.0); илгээгээгүй үед байхгүй
+  final Map<String, double> _uploadProgress = {};
+
   bool get _isIdFrontDone => _idFrontPath != null;
   bool get _isIdBackDone => _idBackPath != null;
   bool get _isSelfieDone => _selfiePath != null;
@@ -39,15 +42,20 @@ class _DocumentVerificationScreenState
     super.didChangeDependencies();
     if (_initialized) return;
     _initialized = true;
-    // `userInfo.document` доторх статусаар анх дүүргэнэ. Сервэрт аль хэдийн
-    // илгээгдсэн баримтуудыг 'done' sentinel-ээр тэмдэглэнэ — энэ нь UI-д
-    // галерийн thumbnail биш `Icons.camera_alt` иконыг бус,
-    // `editPhoto` шошготой "хийгдсэн" төлөвт харагдана.
+    // Өмнө нь илгээгдсэн баримтуудыг `userInfo.kycDocs`-ийн URL-аар дүүргэж
+    // thumbnail-д нь харуулна. URL байхгүй ч илгээгдсэн гэж тэмдэглэгдсэн
+    // бол 'done' sentinel (icon-той "хийгдсэн" төлөв) ашиглана.
     final auth = context.read<AuthService>();
     setState(() {
-      if (auth.isIdFrontUploaded) _idFrontPath = 'done';
-      if (auth.isIdBackUploaded) _idBackPath = 'done';
-      if (auth.isSelfieUploaded) _selfiePath = 'done';
+      if (auth.isIdFrontUploaded) {
+        _idFrontPath = auth.kycDocUrl('id_front') ?? 'done';
+      }
+      if (auth.isIdBackUploaded) {
+        _idBackPath = auth.kycDocUrl('id_back') ?? 'done';
+      }
+      if (auth.isSelfieUploaded) {
+        _selfiePath = auth.kycDocUrl('selfie') ?? 'done';
+      }
     });
   }
 
@@ -67,6 +75,7 @@ class _DocumentVerificationScreenState
       if (type == 'id_front') _uploadingIdFront = true;
       if (type == 'id_back') _uploadingIdBack = true;
       if (type == 'selfie') _uploadingSelfie = true;
+      _uploadProgress[type] = 0;
     });
 
     try {
@@ -79,7 +88,24 @@ class _DocumentVerificationScreenState
         base64Image = base64Encode(bytes);
       }
 
-      await auth.uploadKycDocument(type: type, image: base64Image);
+      final url = await auth.uploadKycDocument(
+        type: type,
+        image: base64Image,
+        onSendProgress: (sent, total) {
+          if (!mounted || total <= 0) return;
+          setState(() => _uploadProgress[type] = sent / total);
+        },
+      );
+
+      // Сервер хадгалсан URL-аа буцаадаг — thumbnail-ийг түүгээр солино
+      // (web дээр локал path харуулж чадахгүй тул энэ нь бас чухал)
+      if (url != null && url.isNotEmpty && mounted) {
+        setState(() {
+          if (type == 'id_front') _idFrontPath = url;
+          if (type == 'id_back') _idBackPath = url;
+          if (type == 'selfie') _selfiePath = url;
+        });
+      }
     } catch (e) {
       if (mounted) {
         CustomSnackbar.show(
@@ -94,6 +120,7 @@ class _DocumentVerificationScreenState
           if (type == 'id_front') _uploadingIdFront = false;
           if (type == 'id_back') _uploadingIdBack = false;
           if (type == 'selfie') _uploadingSelfie = false;
+          _uploadProgress.remove(type);
         });
       }
     }
@@ -128,6 +155,9 @@ class _DocumentVerificationScreenState
                 isUploadingIdFront: _uploadingIdFront,
                 isUploadingIdBack: _uploadingIdBack,
                 isUploadingSelfie: _uploadingSelfie,
+                idFrontProgress: _uploadProgress['id_front'],
+                idBackProgress: _uploadProgress['id_back'],
+                selfieProgress: _uploadProgress['selfie'],
                 onIdFrontTap: () async {
                   final result = await Navigator.pushNamed(
                     context,
@@ -271,6 +301,9 @@ class _DocItemList extends StatelessWidget {
   final bool isUploadingIdFront;
   final bool isUploadingIdBack;
   final bool isUploadingSelfie;
+  final double? idFrontProgress;
+  final double? idBackProgress;
+  final double? selfieProgress;
   final VoidCallback onIdFrontTap;
   final VoidCallback onIdBackTap;
   final VoidCallback onSelfieTap;
@@ -286,6 +319,9 @@ class _DocItemList extends StatelessWidget {
     this.isUploadingIdFront = false,
     this.isUploadingIdBack = false,
     this.isUploadingSelfie = false,
+    this.idFrontProgress,
+    this.idBackProgress,
+    this.selfieProgress,
     required this.onIdFrontTap,
     required this.onIdBackTap,
     required this.onSelfieTap,
@@ -300,6 +336,7 @@ class _DocItemList extends StatelessWidget {
           isDone: isIdFrontDone,
           imagePath: idFrontPath,
           isUploading: isUploadingIdFront,
+          uploadProgress: idFrontProgress,
           onTap: onIdFrontTap,
         ),
         _DocItem(
@@ -307,6 +344,7 @@ class _DocItemList extends StatelessWidget {
           isDone: isIdBackDone,
           imagePath: idBackPath,
           isUploading: isUploadingIdBack,
+          uploadProgress: idBackProgress,
           onTap: onIdBackTap,
         ),
         _DocItem(
@@ -314,6 +352,7 @@ class _DocItemList extends StatelessWidget {
           isDone: isSelfieDone,
           imagePath: selfiePath,
           isUploading: isUploadingSelfie,
+          uploadProgress: selfieProgress,
           onTap: onSelfieTap,
         ),
       ],
@@ -326,6 +365,9 @@ class _DocItem extends StatelessWidget {
   final bool isDone;
   final String? imagePath;
   final bool isUploading;
+
+  /// Илгээлтийн явц 0.0–1.0 (null бол тодорхойгүй spinner)
+  final double? uploadProgress;
   final VoidCallback onTap;
 
   const _DocItem({
@@ -333,6 +375,7 @@ class _DocItem extends StatelessWidget {
     required this.isDone,
     this.imagePath,
     this.isUploading = false,
+    this.uploadProgress,
     required this.onTap,
   });
 
@@ -357,19 +400,19 @@ class _DocItem extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: isUploading
-                  ? const Center(
+                  ? Center(
                       child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        width: 28,
+                        height: 28,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          // Явц мэдэгдэж байвал бодит progress, үгүй бол
+                          // тодорхойгүй spinner
+                          value: uploadProgress,
+                        ),
                       ),
                     )
-                  : (isDone && imagePath != null && imagePath != 'done' && !kIsWeb
-                      ? Image.file(File(imagePath!), fit: BoxFit.cover)
-                      : Icon(
-                          Icons.camera_alt_outlined,
-                          color: extendedColors.neutral300,
-                        )),
+                  : _buildThumbnail(extendedColors),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -385,10 +428,13 @@ class _DocItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    isDone ? l10n.editPhoto : l10n.addPhoto,
+                    isUploading
+                        ? '${l10n.uploading}... '
+                            '${((uploadProgress ?? 0) * 100).round()}%'
+                        : (isDone ? l10n.editPhoto : l10n.addPhoto),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: AppTextStyles.light,
-                      color: isDone
+                      color: (isUploading || isDone)
                           ? extendedColors.primaryMain
                           : extendedColors.neutral200,
                     ),
@@ -401,6 +447,42 @@ class _DocItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Илгээгдсэн зургийн thumbnail:
+  ///   • http URL (kycDocs / upload-ийн хариу) → Image.network
+  ///   • локал path (камераас дөнгөж авсан, mobile) → Image.file
+  ///   • 'done' sentinel эсвэл зураггүй → камерын icon
+  Widget _buildThumbnail(ExtendedColors extendedColors) {
+    final placeholder = Icon(
+      Icons.camera_alt_outlined,
+      color: extendedColors.neutral300,
+    );
+
+    final path = imagePath;
+    if (!isDone || path == null || path == 'done') return placeholder;
+
+    if (path.startsWith('http')) {
+      return Image.network(
+        path,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => placeholder,
+        loadingBuilder: (context, child, progress) => progress == null
+            ? child
+            : const Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+      );
+    }
+
+    if (!kIsWeb) {
+      return Image.file(File(path), fit: BoxFit.cover);
+    }
+    return placeholder;
   }
 }
 

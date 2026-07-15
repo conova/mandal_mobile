@@ -27,6 +27,11 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
   bool _loaded = false;
   List<Map<String, dynamic>> _items = const [];
 
+  /// Эзэмшдэг бонд/хувьцааны тойм — mybonds/mystocks API-аас (null бол
+  /// хараахан ирээгүй; breakdown-ийн count-ийг ашиглана)
+  int? _myBondCount;
+  int? _myStockCount;
+
   @override
   void initState() {
     super.initState();
@@ -38,10 +43,17 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
     if (!mounted) return;
     try {
       final auth = context.read<AuthService>();
-      final items = await auth.getAssetBreakdown();
+      // 3 API-г зэрэг дуудна: breakdown + миний бонд/хувьцааны тойм
+      final results = await Future.wait([
+        auth.getAssetBreakdown(),
+        auth.getMyBonds().catchError((_) => <Map<String, dynamic>>[]),
+        auth.getMyStocks().catchError((_) => <Map<String, dynamic>>[]),
+      ]);
       if (!mounted) return;
       setState(() {
-        _items = items;
+        _items = results[0];
+        _myBondCount = results[1].length;
+        _myStockCount = results[2].length;
         _loaded = true;
       });
     } catch (e) {
@@ -156,7 +168,18 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
             final type = item['type']?.toString();
             final name = item['name']?.toString() ?? _defaultName(type, l10n);
             final amount = (item['amount'] as num?) ?? 0;
-            final count = (item['count'] as num?)?.toInt() ?? 0;
+            // Бонд/хувьцааны тоог mybonds/mystocks-ийн бодит тоймоор
+            // солино (ирээгүй бол breakdown-ийн count хэвээр)
+            final typeLower = type?.toLowerCase();
+            final overrideCount = typeLower == 'bond' || typeLower == 'bonds'
+                ? _myBondCount
+                : (typeLower == 'stock' ||
+                        typeLower == 'stocks' ||
+                        typeLower == 'equity'
+                    ? _myStockCount
+                    : null);
+            final count =
+                overrideCount ?? (item['count'] as num?)?.toInt() ?? 0;
             final currency = item['currency']?.toString() ??
                 (type?.toLowerCase() == 'usd' ? '\$' : '₮');
             final meta = _meta(type, extendedColors);

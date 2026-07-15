@@ -45,8 +45,8 @@ class _PaymentQpayScreenState extends State<PaymentQpayScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_payment == null && _isInitializing && _error == null) {
-      final args = ModalRoute.of(context)!.settings.arguments
-          as Map<String, dynamic>;
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       _amount = (args['amount'] as num).toDouble();
       _description = args['description'] as String?;
       _ordernum = args['ordernum'] as String?;
@@ -132,7 +132,13 @@ class _PaymentQpayScreenState extends State<PaymentQpayScreen> {
 
   Future<void> _handleCancel() async {
     final payment = _payment;
-    if (payment == null || _isCancelling) return;
+    if (_isCancelling) return;
+    // Гүйлгээ үүсээгүй (init алдаа г.м.) — цуцлах юмгүй тул шууд буцна
+    if (payment == null) {
+      _pollingTimer?.cancel();
+      Navigator.pop(context);
+      return;
+    }
     setState(() => _isCancelling = true);
     try {
       final service = context.read<PaymentService>();
@@ -165,21 +171,31 @@ class _PaymentQpayScreenState extends State<PaymentQpayScreen> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('QPAY төлбөр'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: _isInitializing ? null : _handleCancel,
+    return PopScope(
+      // System back нь X товчтой ижил ажиллах ёстой — шууд pop хийвэл
+      // QPay гүйлгээ сервер талд цуцлагдалгүй үлдэнэ
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_isInitializing) return;
+        _handleCancel();
+      },
+      child: Scaffold(
+        backgroundColor: colorScheme.surface,
+        appBar: AppBar(
+          title: const Text('QPAY төлбөр'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: _isInitializing ? null : _handleCancel,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: _buildBody(theme, extendedColors),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: _buildBody(theme, extendedColors),
+          ),
         ),
       ),
     );
@@ -200,8 +216,7 @@ class _PaymentQpayScreenState extends State<PaymentQpayScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline,
-              size: 64, color: theme.colorScheme.error),
+          Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
           const SizedBox(height: 16),
           Text(
             'QPAY үүсгэхэд алдаа гарлаа',
@@ -359,7 +374,10 @@ class _PaymentQpayScreenState extends State<PaymentQpayScreen> {
   String _formatAmount(double amount) {
     final formatted = amount
         .toStringAsFixed(0)
-        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]},',
+        );
     return '₮ $formatted';
   }
 }

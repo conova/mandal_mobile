@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
 
 class HomeRecommendationSection extends StatefulWidget {
@@ -14,40 +16,14 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
   final PageController _pageController = PageController(viewportFraction: 0.88);
   int _currentPage = 0;
 
-  final List<_RecommendationData> _recommendations = const [
-    _RecommendationData(
-      title: 'Net Capital',
-      subtitle: 'Нэт Капитал',
-      status: 'ХААЛТТАЙ',
-      duration: '12 сар',
-      returnRate: '19.5%',
-      amount: '900 сая',
-    ),
-    _RecommendationData(
-      title: 'MIK BOND',
-      subtitle: 'Орон сууцны бонд',
-      status: 'НЭЭЛТТЭЙ',
-      duration: '24 сар',
-      returnRate: '11.6%',
-      amount: '50 тэрбум',
-    ),
-    _RecommendationData(
-      title: 'Lend.mn',
-      subtitle: 'Лэнд.мн',
-      status: 'НЭЭЛТТЭЙ',
-      duration: '12 сар',
-      returnRate: '19.5%',
-      amount: '1 тэрбум',
-    ),
-    _RecommendationData(
-      title: 'GSB Capital',
-      subtitle: 'ЖИЭСБ капитал',
-      status: 'НЭЭЛТТЭЙ',
-      duration: '12 сар',
-      returnRate: '18.2%',
-      amount: '420 сая',
-    ),
-  ];
+  bool _isLoading = true;
+  List<_RecommendationData> _recommendations = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_fetchNbo);
+  }
 
   @override
   void dispose() {
@@ -55,11 +31,38 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     super.dispose();
   }
 
+  Future<void> _fetchNbo() async {
+    try {
+      final auth = context.read<AuthService>();
+      final rows = await auth.getNboStocks();
+      if (!mounted) return;
+      setState(() {
+        // Энэ хэсэгт зөвхөн бонд харуулна; хувьцааг
+        // HomeStockRecommendationSection харуулна. Цэгэн индикатор
+        // дэлгэцэд багтахаар эхний 10-аар хязгаарлана.
+        _recommendations = rows
+            .where((r) => r['STOCKGRP']?.toString() == 'bond')
+            .take(10)
+            .map(_RecommendationData.fromApi)
+            .toList();
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+
+    // Мэдээлэл байхгүй бол хэсгийг бүхэлд нь нуана
+    if (!_isLoading && _recommendations.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -114,26 +117,28 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
           // PageView carousel
           SizedBox(
             height: 200,
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: _recommendations.length,
-              allowImplicitScrolling: true,
-              onPageChanged: (index) {
-                setState(() => _currentPage = index);
-              },
-              itemBuilder: (context, index) {
-                final item = _recommendations[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: _buildRecommendationCard(
-                    context: context,
-                    data: item,
-                    extendedColors: extendedColors,
-                    l10n: l10n,
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : PageView.builder(
+                    controller: _pageController,
+                    itemCount: _recommendations.length,
+                    allowImplicitScrolling: true,
+                    onPageChanged: (index) {
+                      setState(() => _currentPage = index);
+                    },
+                    itemBuilder: (context, index) {
+                      final item = _recommendations[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: _buildRecommendationCard(
+                          context: context,
+                          data: item,
+                          extendedColors: extendedColors,
+                          l10n: l10n,
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
           const SizedBox(height: 16),
           // Page indicator dots
@@ -183,91 +188,109 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.end,
-                      spacing: 8,
-                      children: [
-                        Text(
-                          data.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: extendedColors.neutral100,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 2),
-                          child: Text(
-                            data.subtitle,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: extendedColors.neutral300,
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  // Контент өндөр/өргөнөөс хэтэрвэл бүхэлдээ жижигрэх тул
+                  // текстүүд ямар ч үед нэг мөрөнд багтана (overflow гарахгүй)
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topLeft,
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(maxWidth: constraints.maxWidth),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              data.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: extendedColors.neutral100,
+                              ),
                             ),
-                          ),
+                            if (data.subtitle.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                data.subtitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: extendedColors.neutral300,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: extendedColors.bgSecondary,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                data.isOpen ? 'Нээлттэй' : 'Хаалттай',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: extendedColors.neutral100,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: extendedColors.bgSecondary,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        data.status,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w500,
-                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              ElevatedButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, '/bond_detail'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: extendedColors.purple,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
                   ),
                 ),
-                child: Text(
-                  l10n.buy,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    '/bond_detail',
+                    arguments: data.raw,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: extendedColors.purple,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                  child: Text(
+                    l10n.buy,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(height: 12),
           IntrinsicHeight(
             child: Row(
               children: [
                 Expanded(
                   child: _buildStatColumn(
                     'Хугацаа',
-                    data.duration,
+                    data.formatDuration(
+                      Localizations.localeOf(context).languageCode,
+                    ),
                     theme,
                     extendedColors,
                   ),
@@ -293,7 +316,9 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 Expanded(
                   child: _buildStatColumn(
                     'Дүн',
-                    data.amount,
+                    data.formatAmount(
+                      Localizations.localeOf(context).languageCode,
+                    ),
                     theme,
                     extendedColors,
                   ),
@@ -315,21 +340,29 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: extendedColors.neutral300,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            maxLines: 1,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: extendedColors.neutral300,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
-        Text(
-          value,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: extendedColors.neutral100,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            maxLines: 1,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: extendedColors.neutral100,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -339,17 +372,96 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
 class _RecommendationData {
   final String title;
   final String subtitle;
-  final String status;
-  final String duration;
+  final bool isOpen;
   final String returnRate;
-  final String amount;
+
+  /// TERM — түүхий утга; дэлгэцэд гаргахдаа locale-ийн дагуу сар/month залгана
+  final String rawDuration;
+
+  /// AMT — түүхий тоон утга; дэлгэцэд гаргахдаа сая/тэрбум руу хөрвүүлнэ
+  final String rawAmount;
+
+  /// API-ийн түүхий мөр — detail дэлгэц рүү дамжуулна
+  final Map<String, dynamic> raw;
 
   const _RecommendationData({
     required this.title,
     required this.subtitle,
-    required this.status,
-    required this.duration,
+    required this.isOpen,
     required this.returnRate,
-    required this.amount,
+    required this.rawDuration,
+    required this.rawAmount,
+    required this.raw,
   });
+
+  /// /stocks/nbo мөрөөс угсарна:
+  /// { STOCKNAME, COMPNAME, COMPNAME2, TYPENAME, TERM, INTRATE, AMT, ISOPEN }
+  factory _RecommendationData.fromApi(Map<String, dynamic> row) {
+    String field(List<String> keys) {
+      for (final key in keys) {
+        final value = row[key];
+        if (value != null && value.toString().isNotEmpty) {
+          return value.toString();
+        }
+      }
+      return '';
+    }
+
+    final rate = field(['INTRATE']);
+
+    return _RecommendationData(
+      title: field(['COMPNAME', 'STOCKNAME', 'SYMBOL']),
+      subtitle: field(['COMPNAME2', 'TYPENAME']),
+      isOpen: field(['ISOPEN']) == '1',
+      returnRate: rate.isEmpty
+          ? '-'
+          : (num.tryParse(rate) != null ? '$rate%' : rate),
+      rawDuration: field(['TERM']),
+      rawAmount: field(['AMT']),
+      raw: row,
+    );
+  }
+
+  /// Хугацааг locale-ийн дагуу нэгжтэй харуулна:
+  ///   12 → "12 сар" (мон) / "12 month" (англи)
+  String formatDuration(String languageCode) {
+    if (rawDuration.isEmpty) return '-';
+    if (num.tryParse(rawDuration) == null) return rawDuration;
+    return languageCode == 'en'
+        ? '$rawDuration month'
+        : '$rawDuration сар';
+  }
+
+  /// Дүнг сая/тэрбум нэгжээр хөрвүүлнэ (locale-ээс хамаарч монгол/англи):
+  ///   420000000  → "420 сая"  / "420M"
+  ///   5000000000 → "5 тэрбум" / "5B"
+  String formatAmount(String languageCode) {
+    if (rawAmount.isEmpty) return '-';
+    final value = num.tryParse(rawAmount.replaceAll(',', ''));
+    if (value == null) return rawAmount;
+
+    final isEnglish = languageCode == 'en';
+    String fmt(num v) {
+      var s = v.toStringAsFixed(1);
+      if (s.endsWith('.0')) s = s.substring(0, s.length - 2);
+      return s;
+    }
+
+    if (value >= 1e12) {
+      return isEnglish
+          ? '${fmt(value / 1e12)}T'
+          : '${fmt(value / 1e12)} их наяд';
+    }
+    if (value >= 1e9) {
+      return isEnglish
+          ? '${fmt(value / 1e9)}B'
+          : '${fmt(value / 1e9)} тэрбум';
+    }
+    if (value >= 1e6) {
+      return isEnglish
+          ? '${fmt(value / 1e6)}M'
+          : '${fmt(value / 1e6)} сая';
+    }
+    return rawAmount;
+  }
 }

@@ -35,7 +35,12 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   /// хараахан идэвхжээгүй бол идэвхжүүлэх дэлгэц рүү, эс бөгөөс шууд home руу.
   Future<void> _handleOtpSuccess() async {
     final auth = context.read<AuthService>();
-    final available = await auth.getAvailableBiometrics();
+    // Биометрикийн шалгалт ямар ч шалтгаанаар унасан ч нэвтрэлт амжилттай
+    // болсон тул home руу заавал шилжинэ
+    List<Object> available = const [];
+    try {
+      available = await auth.getAvailableBiometrics();
+    } catch (_) {}
     if (!mounted) return;
     if (available.isNotEmpty && !auth.isBiometricEnabled) {
       Navigator.pushReplacementNamed(context, '/biometric_enrollment');

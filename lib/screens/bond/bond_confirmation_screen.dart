@@ -7,8 +7,7 @@ class BondConfirmationScreen extends StatefulWidget {
   const BondConfirmationScreen({super.key});
 
   @override
-  State<BondConfirmationScreen> createState() =>
-      _BondConfirmationScreenState();
+  State<BondConfirmationScreen> createState() => _BondConfirmationScreenState();
 }
 
 class _BondConfirmationScreenState extends State<BondConfirmationScreen>
@@ -71,11 +70,11 @@ class _BondConfirmationScreenState extends State<BondConfirmationScreen>
     );
     _titleSlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _successController,
-        curve: const Interval(0.25, 0.55, curve: Curves.easeOut),
-      ),
-    );
+          CurvedAnimation(
+            parent: _successController,
+            curve: const Interval(0.25, 0.55, curve: Curves.easeOut),
+          ),
+        );
 
     _descFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -85,11 +84,11 @@ class _BondConfirmationScreenState extends State<BondConfirmationScreen>
     );
     _descSlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _successController,
-        curve: const Interval(0.45, 0.75, curve: Curves.easeOut),
-      ),
-    );
+          CurvedAnimation(
+            parent: _successController,
+            curve: const Interval(0.45, 0.75, curve: Curves.easeOut),
+          ),
+        );
 
     _buttonFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -99,11 +98,11 @@ class _BondConfirmationScreenState extends State<BondConfirmationScreen>
     );
     _buttonSlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _successController,
-        curve: const Interval(0.65, 1.0, curve: Curves.easeOut),
-      ),
-    );
+          CurvedAnimation(
+            parent: _successController,
+            curve: const Interval(0.65, 1.0, curve: Curves.easeOut),
+          ),
+        );
   }
 
   @override
@@ -116,8 +115,7 @@ class _BondConfirmationScreenState extends State<BondConfirmationScreen>
   void _onDragUpdate(DragUpdateDetails details, double maxDragDistance) {
     if (_isConfirming) return;
     final delta = -details.delta.dy / maxDragDistance;
-    _expandController.value =
-        (_expandController.value + delta).clamp(0.0, 1.0);
+    _expandController.value = (_expandController.value + delta).clamp(0.0, 1.0);
   }
 
   void _onDragEnd(DragEndDetails details) {
@@ -144,153 +142,174 @@ class _BondConfirmationScreenState extends State<BondConfirmationScreen>
     const bottomSheetHeight = 120.0;
     final maxDragDistance = screenHeight - bottomSheetHeight;
 
-    return Scaffold(
-      backgroundColor: extendedColors.primaryMain,
-      body: AnimatedBuilder(
-        animation: Listenable.merge([_expandController, _successController]),
-        builder: (context, child) {
-          final expandedHeight =
-              bottomSheetHeight + maxDragDistance * _expandController.value;
+    return PopScope(
+      // Захиалга баталгаажиж эхэлсний дараа буцах боломжгүй — эс бөгөөс
+      // өмнөх дэлгэц рүү орж захиалгаа давхардуулж илгээх эрсдэлтэй
+      canPop: !_isConfirming,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_showSuccess) {
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (r) => false);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: extendedColors.primaryMain,
+        body: AnimatedBuilder(
+          animation: Listenable.merge([_expandController, _successController]),
+          builder: (context, child) {
+            final expandedHeight =
+                bottomSheetHeight + maxDragDistance * _expandController.value;
 
-          return Stack(
-            children: [
-              // White confirmation content with bottom border radius
-              Positioned.fill(
-                bottom: bottomSheetHeight,
-                child: Opacity(
-                  opacity: _contentFadeAnimation.value,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: extendedColors.bgBase,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(32),
-                        bottomRight: Radius.circular(32),
-                      ),
-                    ),
-                    child: SafeArea(
-                      bottom: false,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: extendedColors.bgSecondary,
-                                ),
-                                child: Icon(
-                                  Icons.arrow_back,
-                                  color: extendedColors.neutral100,
-                                  size: 20,
+            return Stack(
+              children: [
+                // White confirmation content with bottom border radius
+                Positioned.fill(
+                  bottom: bottomSheetHeight,
+                  // Баталгаажуулж эхэлсний дараа бүдгэрсэн контент (back товч
+                  // орно) дарагдахгүй байх ёстой
+                  child: IgnorePointer(
+                    ignoring: _isConfirming,
+                    child: Opacity(
+                      opacity: _contentFadeAnimation.value,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: extendedColors.bgBase,
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(32),
+                            bottomRight: Radius.circular(32),
+                          ),
+                        ),
+                        child: SafeArea(
+                          bottom: false,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: extendedColors.bgSecondary,
+                                    ),
+                                    child: Icon(
+                                      Icons.arrow_back,
+                                      color: extendedColors.neutral100,
+                                      size: 20,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    'Net Capital',
-                                    style: theme.textTheme.headlineSmall
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: extendedColors.neutral100,
-                                        ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
                                 ),
-                                const SizedBox(width: 12),
-                                Flexible(
-                                  child: Text(
-                                    'Нэт Капитал',
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: extendedColors.neutral300,
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        'Net Capital',
+                                        style: theme.textTheme.headlineSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: extendedColors.neutral100,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                    const SizedBox(width: 12),
+                                    Flexible(
+                                      child: Text(
+                                        'Нэт Капитал',
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: extendedColors.neutral300,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 48),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
+                                child: BondConfirmationDetails(
+                                  name: 'Net Capital',
+                                  type: l10n.closed,
+                                  quantity: '42',
+                                  unitPrice: '100,000₮',
+                                  commission: '4,200₮',
+                                  total: '42,042,000₮',
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 48),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: BondConfirmationDetails(
-                              name: 'Net Capital',
-                              type: l10n.closed,
-                              quantity: '42',
-                              unitPrice: '100,000₮',
-                              commission: '4,200₮',
-                              total: '42,042,000₮',
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              // Draggable teal overlay
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: expandedHeight,
-                child: GestureDetector(
-                  onVerticalDragUpdate: (details) =>
-                      _onDragUpdate(details, maxDragDistance),
-                  onVerticalDragEnd: _onDragEnd,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: extendedColors.primaryMain,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(
-                          32 * (1 - _expandController.value),
-                        ),
-                        topRight: Radius.circular(
-                          32 * (1 - _expandController.value),
+                // Draggable teal overlay
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: expandedHeight,
+                  child: GestureDetector(
+                    onVerticalDragUpdate: (details) =>
+                        _onDragUpdate(details, maxDragDistance),
+                    onVerticalDragEnd: _onDragEnd,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: extendedColors.primaryMain,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(
+                            32 * (1 - _expandController.value),
+                          ),
+                          topRight: Radius.circular(
+                            32 * (1 - _expandController.value),
+                          ),
                         ),
                       ),
-                    ),
-                    child: _showSuccess
-                        ? _buildSuccessContent(theme, l10n, extendedColors)
-                        : Opacity(
-                            opacity: _contentFadeAnimation.value,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.keyboard_double_arrow_up,
-                                  color: Colors.white,
-                                  size: 28,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  l10n.swipeUpToConfirm,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
+                      child: _showSuccess
+                          ? _buildSuccessContent(theme, l10n, extendedColors)
+                          : Opacity(
+                              opacity: _contentFadeAnimation.value,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.keyboard_double_arrow_up,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                    size: 28,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l10n.swipeUpToConfirm,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

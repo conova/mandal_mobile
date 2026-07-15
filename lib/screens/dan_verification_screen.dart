@@ -57,7 +57,9 @@ class _DanVerificationScreenState extends State<DanVerificationScreen> {
           'url': result.uri,
           'title': 'E-Mongolia',
           'callbackPrefix': callback,
-          'homeRoute': '/home',
+          // '/main' (bottom nav-тай контейнер) руу буулгана — нүцгэн '/home'
+          // руу буувал доод цэсгүй, back дарахад аппаас гарна
+          'homeRoute': '/main',
         },
       );
 

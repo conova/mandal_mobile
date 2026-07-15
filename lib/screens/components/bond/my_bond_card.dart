@@ -33,7 +33,7 @@ class MyBondCard extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(0),
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
@@ -108,10 +108,13 @@ class MyBondCard extends StatelessWidget {
                   ],
                 ),
               ),
-              CustomButton(
-                label: l10n.sell,
-                size: CustomButtonSize.small,
-                onPressed: onSellPressed,
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 90),
+                child: CustomButton(
+                  label: l10n.sell,
+                  size: CustomButtonSize.small,
+                  onPressed: onSellPressed,
+                ),
               ),
             ],
           ),

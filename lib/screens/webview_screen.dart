@@ -153,9 +153,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
   /// JS bridge-ийн ирсэн string-ийг "home руу шилжих" command мөн эсэхийг
   /// шалгаж парс хийнэ. Хүлээн авах формат:
   ///   • Plain string: `"navigate_home"` (case-insensitive) → success
-  ///   • JSON: `{"action":"navigate_home","result":"error","message":"..."}`
+  ///   • JSON: `{"action":"navigate_main","target":"/main?success",
+  ///            "result":"success","message":null}` (DAN result хуудас)
+  ///           эсвэл `{"action":"navigate_home","result":"error", ...}`
   ///           эсвэл `{"action":"navigate","route":"/home", ...}`
-  /// Returns `null` бол энэ navigate_home command биш.
+  /// Returns `null` бол энэ navigate command биш.
   _NavigateHomeCommand? _parseNavigateHomeMessage(String raw) {
     final trimmed = raw.trim();
     if (trimmed.toLowerCase() == 'navigate_home') {
@@ -167,13 +169,21 @@ class _WebViewScreenState extends State<WebViewScreen> {
         if (json is Map) {
           final action = json['action']?.toString().toLowerCase();
           final isHome = action == 'navigate_home' ||
+              action == 'navigate_main' ||
               (action == 'navigate' &&
                   (json['route'] == null ||
                       json['route'].toString().isEmpty ||
                       json['route'].toString() == '/home'));
           if (isHome) {
+            // result талбар байхгүй бол target-аас ('/main?success' |
+            // '/main?fail') үр дүнг тодорхойлно
+            var result = json['result']?.toString().toLowerCase();
+            if (result == null || result.isEmpty) {
+              final target = json['target']?.toString() ?? '';
+              result = target.contains('fail') ? 'error' : 'success';
+            }
             return _NavigateHomeCommand(
-              result: json['result']?.toString().toLowerCase() ?? 'success',
+              result: result,
               message: json['message']?.toString(),
             );
           }
@@ -211,8 +221,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
     // Эхлээд webview-г pop хийж (caller-т signal явуулна), дараа нь
     // root stack-аас home руу шилжинэ.
     navigator.pop(WebViewScreen.popResultHome);
-    Navigator.of(context, rootNavigator: true)
-        .pushNamedAndRemoveUntil(homeRoute, (_) => false);
+    // showOnboarding — DAN амжилттай үед home дээр onboarding sheet-ийг
+    // дахин нээлгэнэ. Алдаатай үед sheet нээхгүй, зөвхөн доорх toast гарна.
+    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+      homeRoute,
+      (_) => false,
+      arguments: {'showOnboarding': cmd.result == 'success'},
+    );
 
     // Алдаатай үед — home tab нээгдсэний дараа toast гаргана. Шинэ frame-н
     // дараа `navigatorKey.currentContext` нь home screen-ийн context болсон

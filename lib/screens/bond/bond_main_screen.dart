@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../components/bond/bond_market_card.dart';
 import '../components/bond/pledge_bond_banner.dart';
 import '../components/bond/my_bond_card.dart';
+import '../../common/stock_row_format.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
 
 class BondMainScreen extends StatefulWidget {
@@ -16,10 +19,48 @@ class _BondMainScreenState extends State<BondMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  bool _myBondsLoading = true;
+  List<Map<String, dynamic>> _myBonds = const [];
+
+  bool _bondListLoading = true;
+  List<Map<String, dynamic>> _bondList = const [];
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    Future.microtask(_fetchMyBonds);
+    Future.microtask(_fetchBondList);
+  }
+
+  Future<void> _fetchMyBonds() async {
+    try {
+      final auth = context.read<AuthService>();
+      final rows = await auth.getMyBonds();
+      if (!mounted) return;
+      setState(() {
+        _myBonds = rows;
+        _myBondsLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _myBondsLoading = false);
+    }
+  }
+
+  Future<void> _fetchBondList() async {
+    try {
+      final auth = context.read<AuthService>();
+      final rows = await auth.getBondList();
+      if (!mounted) return;
+      setState(() {
+        _bondList = rows;
+        _bondListLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _bondListLoading = false);
+    }
   }
 
   @override
@@ -83,92 +124,119 @@ class _BondMainScreenState extends State<BondMainScreen>
     ExtendedColors extendedColors,
     ThemeData theme,
   ) {
+    // /stocks/bondlist-ийг MARKET талбараар анхдагч/хоёрдогч гэж хуваана
+    final primary = _bondList
+        .where((b) => b['MARKET']?.toString().toLowerCase() == 'primary')
+        .toList();
+    final secondary = _bondList
+        .where((b) => b['MARKET']?.toString().toLowerCase() != 'primary')
+        .toList();
+
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       children: [
         const SizedBox(height: 24),
-        _buildSectionHeader(
-          l10n.primaryMarket,
-          extendedColors,
-          theme,
-          extendedColors.primaryMain,
-        ),
-        BondMarketCard(
-          title: 'Net Capital',
-          subtitle: 'Нэт Капитал',
-          status: l10n.closed,
-          tenure: '12 сар',
-          yield: '19.5%',
-          totalAmount: '900 сая',
-          progress: 0.02,
-          progressLabel: '900,000₮',
-          progressLabel2: '900,000,000₮',
-          context: context,
-        ),
-        Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
-        BondMarketCard(
-          title: 'Lend.mn',
-          subtitle: 'Лэнд.мн',
-          status: l10n.open,
-          tenure: '12 сар',
-          yield: '19.5%',
-          totalAmount: '1 тэрбум',
-          progress: 0.45,
-          progressLabel: '210,500,000₮',
-          progressLabel2: '500,000,000₮',
-          context: context,
-        ),
-        const SizedBox(height: 16),
-        const SizedBox(height: 24),
-        _buildSectionHeader(
-          l10n.secondaryMarket,
-          extendedColors,
-          theme,
-          extendedColors.primaryMain,
-        ),
-        BondMarketCard(
-          title: 'Simple',
-          subtitle: 'Симпл',
-          status: l10n.closed,
-          tenure: '12 сар',
-          yield: '19.5%',
-          totalAmount: '1 тэрбум',
-          context: context,
-        ),
-        Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
-        BondMarketCard(
-          title: 'Magna',
-          subtitle: 'Магна',
-          status: l10n.closed,
-          tenure: '12 сар',
-          yield: '12.5%',
-          totalAmount: '800 сая',
-          context: context,
-        ),
-        Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
-        BondMarketCard(
-          title: 'GSB Capital',
-          subtitle: 'ЖИЭСБ капитал',
-          status: l10n.open,
-          tenure: '12 сар',
-          yield: '18.2%',
-          totalAmount: '420 сая',
-          context: context,
-        ),
-        Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
-        BondMarketCard(
-          title: 'MIK',
-          subtitle: 'МИК',
-          status: l10n.foreign,
-          tenure: '8 сар',
-          yield: '11.6%',
-          totalAmount: '\$500 мянга',
-          progress: 0.25,
-          progressLabel: '100,000\$ ',
-          progressLabel2: '500,000\$',
-          context: context,
-        ),
+        if (_bondListLoading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 48),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_bondList.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 48),
+            child: Center(
+              child: Text(
+                l10n.noData,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral300,
+                ),
+              ),
+            ),
+          )
+        else ...[
+          if (primary.isNotEmpty) ...[
+            _buildSectionHeader(
+              l10n.primaryMarket,
+              extendedColors,
+              theme,
+              extendedColors.primaryMain,
+            ),
+            ..._buildBondCards(primary, l10n, extendedColors),
+            const SizedBox(height: 40),
+          ],
+          if (secondary.isNotEmpty) ...[
+            _buildSectionHeader(
+              l10n.secondaryMarket,
+              extendedColors,
+              theme,
+              extendedColors.primaryMain,
+            ),
+            ..._buildBondCards(secondary, l10n, extendedColors),
+          ],
+        ],
       ],
+    );
+  }
+
+  /// Бондын картуудыг хооронд нь Divider-тэй жагсаана
+  List<Widget> _buildBondCards(
+    List<Map<String, dynamic>> bonds,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+  ) {
+    final widgets = <Widget>[];
+    for (var i = 0; i < bonds.length; i++) {
+      if (i > 0) {
+        widgets.add(
+          Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
+        );
+      }
+      widgets.add(_buildBondListCard(bonds[i], l10n));
+    }
+    return widgets;
+  }
+
+  /// /stocks/bondlist мөрөөс BondMarketCard угсарна
+  Widget _buildBondListCard(Map<String, dynamic> bond, AppLocalizations l10n) {
+    final isOpen = bond['ISOPEN']?.toString() == '1';
+    final term = bond['TERM']?.toString() ?? '';
+    // Захиалгын явц: ORDEREDAMT / AMT
+    final progress = orderProgress(bond['ORDEREDAMT'], bond['AMT']);
+
+    return BondMarketCard(
+      bond,
+      title:
+          (bond['STOCKNAME'] ?? bond['COMPNAME'] ?? bond['SYMBOL'])
+              ?.toString() ??
+          '',
+      subtitle: (bond['COMPNAME2'] ?? bond['TYPENAME'])?.toString() ?? '',
+      status: isOpen ? l10n.open : l10n.closed,
+      tenure: term.isEmpty
+          ? '-'
+          : (num.tryParse(term) != null ? '$term сар' : term),
+      yield: formatIntRate(bond['INTRATE']),
+      totalAmount: formatCompactAmount(
+        bond['AMT'],
+        languageCode: Localizations.localeOf(context).languageCode,
+      ),
+      progress: progress,
+      payday: bond['PAYDAY']?.toString(),
+      market: bond['MARKET']?.toString(),
+      progressLabel: progress == null
+          ? ''
+          : formatStockAmount(
+              bond['ORDEREDAMT'],
+              isForeign: bond['ISFOREIGN']?.toString() == '1',
+              decimals: 0,
+            ),
+      progressLabel2: progress == null
+          ? ''
+          : formatStockAmount(
+              bond['AMT'],
+              isForeign: bond['ISFOREIGN']?.toString() == '1',
+              decimals: 0,
+            ),
+      context: context,
     );
   }
 
@@ -189,37 +257,60 @@ class _BondMainScreenState extends State<BondMainScreen>
           extendedColors.primaryMain,
         ),
         const SizedBox(height: 24),
-        MyBondCard(
-          title: 'Net Capital',
-          subtitle: 'Нэт Капитал',
-          status: l10n.closed,
-          statusBgColor: extendedColors.bgSecondary,
-          statusTextColor: extendedColors.neutral100,
-          ownedAmount: '10,000,000₮',
-          interestRate: '21%',
-          onSellPressed: () => Navigator.pushNamed(context, '/bond_sell'),
-        ),
-        MyBondCard(
-          title: 'Simple',
-          subtitle: 'Симпл',
-          status: l10n.open,
-          statusBgColor: extendedColors.primary100,
-          statusTextColor: extendedColors.primaryMain,
-          ownedAmount: '5,000,000₮',
-          interestRate: '20%',
-          onSellPressed: () => Navigator.pushNamed(context, '/bond_sell'),
-        ),
-        MyBondCard(
-          title: 'MIK',
-          subtitle: 'МИК',
-          status: l10n.foreign,
-          statusBgColor: extendedColors.bgSecondary,
-          statusTextColor: extendedColors.neutral100,
-          ownedAmount: '3,000\$',
-          interestRate: '11.6%',
-          onSellPressed: () => Navigator.pushNamed(context, '/bond_sell'),
-        ),
+        if (_myBondsLoading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_myBonds.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Text(
+                l10n.noData,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral300,
+                ),
+              ),
+            ),
+          )
+        else
+          ..._myBonds.map(
+            (bond) => _buildMyBondCard(bond, l10n, extendedColors),
+          ),
       ],
+    );
+  }
+
+  /// /stocks/mybonds мөрөөс MyBondCard угсарна
+  Widget _buildMyBondCard(
+    Map<String, dynamic> bond,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+  ) {
+    final isForeign = bond['ISFOREIGN']?.toString() == '1';
+    final isOpen = bond['ISOPEN']?.toString() == '1';
+    final symbol = bond['SYMBOL']?.toString() ?? '';
+    final name =
+        (bond['STOCKNAME'] ?? bond['COMPNAME'] ?? symbol)?.toString() ?? '';
+
+    return MyBondCard(
+      title: name,
+      subtitle: (bond['COMPNAME2'] ?? bond['TYPENAME'])?.toString() ?? '',
+      status: isForeign ? l10n.foreign : (isOpen ? l10n.open : l10n.closed),
+      statusBgColor: isOpen
+          ? extendedColors.primary100
+          : extendedColors.bgSecondary,
+      statusTextColor: isOpen
+          ? extendedColors.primaryMain
+          : extendedColors.neutral100,
+      ownedAmount: formatStockAmount(bond['AMT'], isForeign: isForeign),
+      interestRate: formatIntRate(bond['INTRATE']),
+      onSellPressed: () => Navigator.pushNamed(
+        context,
+        '/bond_sell',
+        arguments: {'symbol': symbol, 'name': name},
+      ),
     );
   }
 

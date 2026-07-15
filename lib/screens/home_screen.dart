@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
@@ -10,9 +11,11 @@ import 'components/home/home_asset_breakdown.dart';
 import 'components/home/home_promotion_banner.dart';
 import 'components/home/home_watchlist_section.dart';
 import 'components/home/home_recommendation_section.dart';
+import 'components/home/home_stock_recommendation_section.dart';
 import 'components/home/registration_progress_banner.dart';
 import 'components/shared/onboarding_steps_sheet.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/custom_snackbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,11 +27,61 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   double _scrollOpacity = 0.0;
+  bool _checkedDanReturn = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+  }
+
+  /// DAN баталгаажуулалтаас буцаж ирсэн эсэхийг шалгаад onboarding sheet
+  /// нээнэ. Хоёр зам бий:
+  ///   • App — webview `/main` руу `showOnboarding: true` argument-тэй буудаг
+  ///   • Browser — DAN tab `/main?success` эсвэл `/main?fail` хаягаар
+  ///     аппыг reload хийдэг (web/index.html-ийн message listener)
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_checkedDanReturn) return;
+    _checkedDanReturn = true;
+
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final fromDanApp = args is Map && args['showOnboarding'] == true;
+    final qp = Uri.base.queryParameters;
+    final fromDanWeb =
+        kIsWeb && (qp.containsKey('success') || qp.containsKey('fail'));
+
+    if (fromDanApp || fromDanWeb) {
+      // Browser зам: алдааны message-ийг URL-аас уншиж toast-оор харуулна
+      // (app/webview зам дээр webview_screen өөрөө snackbar гаргадаг)
+      final failed = fromDanWeb && qp.containsKey('fail');
+      final message = qp['message'];
+
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+
+        // Алдаатай үед зөвхөн toast — onboarding sheet нээхгүй
+        if (failed) {
+          CustomSnackbar.show(
+            context,
+            message: (message != null && message.isNotEmpty)
+                ? message
+                : 'Баталгаажуулалтын явцад алдаа гарлаа',
+            type: CustomSnackbarType.error,
+          );
+          return;
+        }
+
+        // DAN-ий үр дүнгээр kyc төлөв өөрчлөгдсөн тул эхлээд шинэчилнэ
+        try {
+          await context.read<AuthService>().refreshUserInfo();
+        } catch (_) {
+          // Шинэчлэлт амжилтгүй ч sheet-ээ кэшэлсэн төлвөөр нээнэ
+        }
+        if (mounted) _showOnboardingSheet();
+      });
+    }
   }
 
   @override
@@ -96,9 +149,10 @@ class _HomeScreenState extends State<HomeScreen> {
               title: AppLocalizations.of(ctx)!.document,
               description: AppLocalizations.of(ctx)!.documentDesc,
               icon: Icons.contact_page_rounded,
-              isCompleted: auth.isPepDeclared,
+              // 3 зураг (id_front, id_back, selfie) бүгд true бол дууссан
+              isCompleted: auth.areAllDocumentsUploaded,
               onTap: () async {
-                if (auth.isPepDeclared) return;
+                if (auth.areAllDocumentsUploaded) return;
                 final result = await Navigator.pushNamed(
                   ctx,
                   '/document_verification',
@@ -156,6 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 HomeWatchlistSection(),
                 SizedBox(height: 32),
                 HomeRecommendationSection(),
+                SizedBox(height: 32),
+                HomeStockRecommendationSection(),
               ],
             ),
           ),

@@ -78,14 +78,14 @@ class BondInfoCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Шошго болон утгыг таслахгүй — урт бол дараагийн мөрөнд
+              // бүтнээр нь харуулна
               Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.extension<ExtendedColors>()!.neutral100,
                   fontWeight: AppTextStyles.extraLight,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
               Text(
@@ -94,8 +94,6 @@ class BondInfoCard extends StatelessWidget {
                   color: theme.extension<ExtendedColors>()!.neutral100,
                   fontWeight: AppTextStyles.bold,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

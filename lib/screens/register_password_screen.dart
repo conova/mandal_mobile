@@ -16,12 +16,12 @@ class RegisterPasswordScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
-            const {};
+        const {};
     final sessionId = args['sessionId'] as String?;
 
     return Scaffold(
       backgroundColor: colorScheme.background,
-      appBar: const AuthStepAppBar(stepText: '2/5'),
+      appBar: const AuthStepAppBar(stepText: '2/4'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
