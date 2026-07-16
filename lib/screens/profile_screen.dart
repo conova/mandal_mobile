@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_state_manager.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 import '../widgets/language_switcher.dart';
 import '../widgets/logout_bottom_sheet.dart';
 import 'package:provider/provider.dart';
@@ -154,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          icon: const CustomSvgIcon('close-button', size: 24),
           onPressed: () => Navigator.pop(context),
         ),
         actions: const [
@@ -179,9 +181,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 32),
 
             // Personal Information Section
-            const ProfileSectionHeader(title: 'ХУВИЙН МЭДЭЭЛЭЛ'),
+            const ProfileSectionHeader(title: 'Хувийн мэдээлэл'),
             ProfileToggleItem(
-              icon: Icons.dark_mode_outlined,
+              icon: const CustomSvgIcon('moon-01', size: 20),
               title: l10n.darkMode,
               value: theme.brightness == Brightness.dark,
               onChanged: (val) {
@@ -189,24 +191,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ProfileListItem(
-              icon: Icons.person_outline,
+              icon: const CustomSvgIcon('user-03', size: 20,),
               title: l10n.myInfo,
               subtitle: l10n.myInfoSubtitle,
               onTap: () => Navigator.pushNamed(context, '/my_info'),
-              trailing: Icon(
-                Icons.info_outline,
-                color: extendedColors.yellow,
-                size: 20,
-              ),
+              trailing: const CustomSvgIcon('info-circle', size: 20,),
             ),
             ProfileListItem(
-              icon: Icons.account_balance_outlined,
+              icon: const CustomSvgIcon('bank', size: 20,),
               title: l10n.incomeAccount,
               subtitle: l10n.incomeAccountSubtitle,
               onTap: () => Navigator.pushNamed(context, '/income_account'),
             ),
             ProfileListItem(
-              icon: Icons.description_outlined,
+              icon: const CustomSvgIcon('file-05', size: 20,),
               title: l10n.summaryReport,
               subtitle: l10n.summaryReportSubtitle,
               onTap: () => Navigator.pushNamed(context, '/summary_report'),
@@ -216,7 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 24),
             ProfileSectionHeader(title: l10n.childAccount),
             ProfileListItem(
-              icon: Icons.add,
+              icon: const CustomSvgIcon('plus', size: 20,),
               title: l10n.createNewAccount,
               subtitle: l10n.createNewAccountSubtitle,
               onTap: () {},
@@ -226,14 +224,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 24),
             ProfileSectionHeader(title: l10n.security),
             ProfileToggleItem(
-              icon: Icons.fingerprint,
+              icon: const CustomSvgIcon('fingerprint-03', size: 20),
               title: l10n.biometric,
               subtitle: biometricEnabled ? l10n.active : l10n.inactive,
               value: biometricEnabled,
               onChanged: _handleBiometricToggle,
             ),
             ProfileListItem(
-              icon: Icons.lock_outline,
+              icon: const CustomSvgIcon('lock-04', size: 20,),
               title: l10n.changePassword,
               subtitle: _passDate != null
                   ? l10n.passwordChangedOn(_passDate!)
@@ -242,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pushNamed(context, '/change_password_verify'),
             ),
             ProfileListItem(
-              icon: Icons.devices_outlined,
+              icon: const CustomSvgIcon('phone-02', size: 20,),
               title: l10n.connectedDevices,
               subtitle: _deviceCount != null
                   ? l10n.deviceCountLabel(_deviceCount!)
