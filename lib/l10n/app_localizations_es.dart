@@ -666,7 +666,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pledgeBondDesc =>
-      'You can take a loan by pledging your existing bonds.';
+      'Solve your financial needs without selling your bonds.';
 
   @override
   String get pledge => 'Pledge';
@@ -716,6 +716,63 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get buyRate => 'Buy price';
+
+  @override
+  String get selectPledgeBond => 'Select bond to pledge';
+
+  @override
+  String get pledgeBondSelectDesc =>
+      'Pledge your bond and pay +6.0% interest when releasing it. Just like a deposit-backed bank loan.';
+
+  @override
+  String get pledgeQuantityLabel => 'Pledge quantity';
+
+  @override
+  String availablePieces(Object count) {
+    return 'Available: $count pcs';
+  }
+
+  @override
+  String get receiveAmountLabel => 'Receive amount';
+
+  @override
+  String get sorryTitle => 'Sorry';
+
+  @override
+  String get noPledgeBondDesc =>
+      'You currently have no bonds available to pledge.';
+
+  @override
+  String get requestSent => 'REQUEST SENT';
+
+  @override
+  String requestSentDesc(Object phone) {
+    return 'Our broker will contact you shortly at $phone.';
+  }
+
+  @override
+  String get closedBondInfoTitle => 'Closed bond';
+
+  @override
+  String get closedBondInfoDesc =>
+      'A bond traded over the counter with a 10% interest income tax, similar to a savings deposit.';
+
+  @override
+  String get openBondInfoTitle => 'Open bond';
+
+  @override
+  String get openBondInfoDesc =>
+      'A bond openly traded on the exchange that can be bought or sold at any time.';
+
+  @override
+  String get foreignBondInfoTitle => 'Foreign bond';
+
+  @override
+  String get foreignBondInfoDesc =>
+      'A bond denominated in foreign currency and traded on international markets.';
+
+  @override
+  String get close => 'Close';
 
   @override
   String get stockRecommendationTitle => 'Recommended stocks';

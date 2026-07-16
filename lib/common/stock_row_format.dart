@@ -20,6 +20,23 @@ String formatStockAmount(dynamic raw, {bool isForeign = false, int decimals = 2}
   return isForeign ? '$formatted\$' : '$formatted₮';
 }
 
+/// "2026/07/18", "2026.07.18", "2026-07-18" → DateTime (болохгүй бол null)
+DateTime? parseStockDate(dynamic raw) {
+  final s = raw?.toString() ?? '';
+  if (s.isEmpty) return null;
+  final parts = s.split(RegExp(r'[/.\-]'));
+  if (parts.length < 3) return null;
+  final y = int.tryParse(parts[0]);
+  final m = int.tryParse(parts[1]);
+  final d = int.tryParse(parts[2]);
+  if (y == null || m == null || d == null) return null;
+  return DateTime(y, m, d);
+}
+
+/// DateTime → "2026.2.10"
+String formatStockDate(DateTime date) =>
+    '${date.year}.${date.month}.${date.day}';
+
 /// Захиалгын явц: ordered/total → 0.0..1.0 (аль нэг нь тоо биш эсвэл
 /// total ≤ 0 бол null — progress харуулахгүй)
 double? orderProgress(dynamic ordered, dynamic total) {

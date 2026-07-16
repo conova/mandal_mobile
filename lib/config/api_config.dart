@@ -86,6 +86,10 @@ class ApiConfig {
   ///   Row: { SYMBOL, STOCKNAME, AMT, CLOSEPRICE, PRICECHANGE, ISFOREIGN, ... }
   static const String stocksMyStocks = '/bdc/api/stocks/mystocks';
 
+  /// POST /stocks/info → хувьцааны дэлгэрэнгүй мэдээлэл
+  ///   Body: { api: "info", data: { stockcode } }
+  static const String stocksInfo = '/bdc/api/stocks/info';
+
   /// GET /stocks/bondlist → зах зээл дээрх бондууд (бонд авах tab)
   ///   Row: { SYMBOL, STOCKNAME, COMPNAME2, TYPENAME, TERM, INTRATE, AMT,
   ///   ISOPEN, ISFOREIGN, MARKET: "Primary"|"Secondary", ... }

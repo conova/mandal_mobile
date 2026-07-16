@@ -20,6 +20,9 @@ class BondMarketCard extends StatelessWidget {
   final String progressLabel;
   final String progressLabel2;
 
+  /// ⓘ icon дээр дарахад — бондын төлвийн тайлбарын sheet нээнэ
+  final VoidCallback? onInfoTap;
+
   const BondMarketCard(
     this.bond, {
     super.key,
@@ -35,6 +38,7 @@ class BondMarketCard extends StatelessWidget {
     this.market,
     this.progressLabel = '',
     this.progressLabel2 = '',
+    this.onInfoTap,
   });
 
   @override
@@ -102,10 +106,14 @@ class BondMarketCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Icon(
-                          Icons.info_outline,
-                          size: 20,
-                          color: extendedColors.neutral300,
+                        GestureDetector(
+                          onTap: onInfoTap,
+                          behavior: HitTestBehavior.opaque,
+                          child: Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: extendedColors.neutral300,
+                          ),
                         ),
                       ],
                     ),

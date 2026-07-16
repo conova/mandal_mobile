@@ -1351,7 +1351,7 @@ abstract class AppLocalizations {
   /// No description provided for @pledgeBondDesc.
   ///
   /// In en, this message translates to:
-  /// **'You can take a loan by pledging your existing bonds.'**
+  /// **'Solve your financial needs without selling your bonds.'**
   String get pledgeBondDesc;
 
   /// No description provided for @pledge.
@@ -1443,6 +1443,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Buy price'**
   String get buyRate;
+
+  /// No description provided for @selectPledgeBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Select bond to pledge'**
+  String get selectPledgeBond;
+
+  /// No description provided for @pledgeBondSelectDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pledge your bond and pay +6.0% interest when releasing it. Just like a deposit-backed bank loan.'**
+  String get pledgeBondSelectDesc;
+
+  /// No description provided for @pledgeQuantityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pledge quantity'**
+  String get pledgeQuantityLabel;
+
+  /// No description provided for @availablePieces.
+  ///
+  /// In en, this message translates to:
+  /// **'Available: {count} pcs'**
+  String availablePieces(Object count);
+
+  /// No description provided for @receiveAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive amount'**
+  String get receiveAmountLabel;
+
+  /// No description provided for @sorryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry'**
+  String get sorryTitle;
+
+  /// No description provided for @noPledgeBondDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You currently have no bonds available to pledge.'**
+  String get noPledgeBondDesc;
+
+  /// No description provided for @requestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'REQUEST SENT'**
+  String get requestSent;
+
+  /// No description provided for @requestSentDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Our broker will contact you shortly at {phone}.'**
+  String requestSentDesc(Object phone);
+
+  /// No description provided for @closedBondInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed bond'**
+  String get closedBondInfoTitle;
+
+  /// No description provided for @closedBondInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A bond traded over the counter with a 10% interest income tax, similar to a savings deposit.'**
+  String get closedBondInfoDesc;
+
+  /// No description provided for @openBondInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open bond'**
+  String get openBondInfoTitle;
+
+  /// No description provided for @openBondInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A bond openly traded on the exchange that can be bought or sold at any time.'**
+  String get openBondInfoDesc;
+
+  /// No description provided for @foreignBondInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foreign bond'**
+  String get foreignBondInfoTitle;
+
+  /// No description provided for @foreignBondInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A bond denominated in foreign currency and traded on international markets.'**
+  String get foreignBondInfoDesc;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 
   /// No description provided for @stockRecommendationTitle.
   ///

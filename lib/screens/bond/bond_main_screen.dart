@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../components/bond/bond_market_card.dart';
+import '../components/bond/bond_status_info_sheet.dart';
 import '../components/bond/pledge_bond_banner.dart';
 import '../components/bond/my_bond_card.dart';
 import '../../common/stock_row_format.dart';
@@ -198,6 +199,7 @@ class _BondMainScreenState extends State<BondMainScreen>
 
   /// /stocks/bondlist мөрөөс BondMarketCard угсарна
   Widget _buildBondListCard(Map<String, dynamic> bond, AppLocalizations l10n) {
+    final isForeign = bond['ISFOREIGN']?.toString() == '1';
     final isOpen = bond['ISOPEN']?.toString() == '1';
     final term = bond['TERM']?.toString() ?? '';
     // Захиалгын явц: ORDEREDAMT / AMT
@@ -210,7 +212,11 @@ class _BondMainScreenState extends State<BondMainScreen>
               ?.toString() ??
           '',
       subtitle: (bond['COMPNAME2'] ?? bond['TYPENAME'])?.toString() ?? '',
-      status: isOpen ? l10n.open : l10n.closed,
+      status: bond['ISFOREIGN']?.toString() == "1"
+          ? l10n.foreign
+          : isOpen
+          ? l10n.open
+          : l10n.closed,
       tenure: term.isEmpty
           ? '-'
           : (num.tryParse(term) != null ? '$term сар' : term),
@@ -236,6 +242,11 @@ class _BondMainScreenState extends State<BondMainScreen>
               isForeign: bond['ISFOREIGN']?.toString() == '1',
               decimals: 0,
             ),
+      onInfoTap: () => BondStatusInfoSheet.showForBond(
+        context,
+        isOpen: isOpen,
+        isForeign: isForeign,
+      ),
       context: context,
     );
   }
@@ -246,9 +257,23 @@ class _BondMainScreenState extends State<BondMainScreen>
     ThemeData theme,
   ) {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       children: [
-        const PledgeBondBanner(),
+        PledgeBondBanner(
+          onPledgePressed: () {
+            // Барьцаалах бонд байхгүй бол sheet-ээр мэдэгдэнэ
+            if (!_myBondsLoading && _myBonds.isEmpty) {
+              BondStatusInfoSheet.show(
+                context,
+                icon: Icons.savings_outlined,
+                title: l10n.sorryTitle,
+                description: l10n.noPledgeBondDesc,
+              );
+              return;
+            }
+            Navigator.pushNamed(context, '/pledge_bond_select');
+          },
+        ),
         const SizedBox(height: 48),
         _buildSectionHeader(
           l10n.myBond,
@@ -306,6 +331,11 @@ class _BondMainScreenState extends State<BondMainScreen>
           : extendedColors.neutral100,
       ownedAmount: formatStockAmount(bond['AMT'], isForeign: isForeign),
       interestRate: formatIntRate(bond['INTRATE']),
+      onInfoTap: () => BondStatusInfoSheet.showForBond(
+        context,
+        isOpen: isOpen,
+        isForeign: isForeign,
+      ),
       onSellPressed: () => Navigator.pushNamed(
         context,
         '/bond_sell',

@@ -14,6 +14,9 @@ class MyBondCard extends StatelessWidget {
   final String interestRate;
   final VoidCallback onSellPressed;
 
+  /// ⓘ icon дээр дарахад — бондын төлвийн тайлбарын sheet нээнэ
+  final VoidCallback? onInfoTap;
+
   const MyBondCard({
     super.key,
     required this.title,
@@ -24,6 +27,7 @@ class MyBondCard extends StatelessWidget {
     required this.ownedAmount,
     required this.interestRate,
     required this.onSellPressed,
+    this.onInfoTap,
   });
 
   @override
@@ -98,10 +102,14 @@ class MyBondCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Icon(
-                          Icons.info_outline,
-                          size: 20,
-                          color: extendedColors.neutral300,
+                        GestureDetector(
+                          onTap: onInfoTap,
+                          behavior: HitTestBehavior.opaque,
+                          child: Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: extendedColors.neutral300,
+                          ),
                         ),
                       ],
                     ),

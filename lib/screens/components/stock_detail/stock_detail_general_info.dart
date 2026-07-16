@@ -3,7 +3,22 @@ import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class StockDetailGeneralInfo extends StatelessWidget {
-  const StockDetailGeneralInfo({super.key});
+  final String marketCap;
+  final String avgVolume;
+  final String peRatio;
+  final String pbRatio;
+  final String dailyVolume;
+  final String dividendYield;
+
+  const StockDetailGeneralInfo({
+    super.key,
+    this.marketCap = '-',
+    this.avgVolume = '-',
+    this.peRatio = '-',
+    this.pbRatio = '-',
+    this.dailyVolume = '-',
+    this.dividendYield = '-',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +44,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
               Expanded(
                 child: _buildMetricItem(
                   l10n.marketCap,
-                  '₮800 ${l10n.billion}',
+                  marketCap,
                   theme,
                   extendedColors,
                 ),
@@ -37,7 +52,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
               Expanded(
                 child: _buildMetricItem(
                   l10n.avgVolume,
-                  '₮340,000',
+                  avgVolume,
                   theme,
                   extendedColors,
                 ),
@@ -50,7 +65,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
               Expanded(
                 child: _buildMetricItem(
                   'Price-to-Earnings ratio',
-                  '1.5',
+                  peRatio,
                   theme,
                   extendedColors,
                 ),
@@ -58,7 +73,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
               Expanded(
                 child: _buildMetricItem(
                   'Price-to-Book ratio',
-                  '1.5',
+                  pbRatio,
                   theme,
                   extendedColors,
                 ),
@@ -68,9 +83,9 @@ class StockDetailGeneralInfo extends StatelessWidget {
           const SizedBox(height: 24),
           _buildMetricRowWithInfo(
             l10n.dailyVolume,
-            '₮100,000',
+            dailyVolume,
             l10n.dividendYield,
-            '10%',
+            dividendYield,
             theme,
             extendedColors,
           ),
