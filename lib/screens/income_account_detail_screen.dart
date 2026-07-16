@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 
 class IncomeAccountDetailScreen extends StatefulWidget {
   const IncomeAccountDetailScreen({super.key});
@@ -60,6 +62,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
@@ -75,7 +78,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          icon: const CustomSvgIcon('close-button', size: 24),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -89,20 +92,20 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
               l10n.incomeAccountDetail,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onBackground,
+                color: extendedColors.neutral100,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.incomeAccountDetailDesc,
-              style: TextStyle(color: theme.disabledColor, fontSize: 14),
+              style: TextStyle(color: extendedColors.neutral200, fontSize: 14),
             ),
             const SizedBox(height: 32),
-            _buildInfoCard(l10n.ibanNumber, accountNumber, theme),
+            _buildInfoCard(l10n.ibanNumber, accountNumber, theme, extendedColors),
             const SizedBox(height: 12),
-            _buildInfoCard(l10n.bank, bankName, theme),
+            _buildInfoCard(l10n.bank, bankName, theme, extendedColors),
             const SizedBox(height: 12),
-            _buildInfoCard(l10n.receiver, receiver, theme),
+            _buildInfoCard(l10n.receiver, receiver, theme, extendedColors),
             const Spacer(),
             const SizedBox(height: 24),
             CustomButton(
@@ -128,7 +131,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
     );
   }
 
-  Widget _buildInfoCard(String label, String value, ThemeData theme) {
+  Widget _buildInfoCard(String label, String value, ThemeData theme, dynamic extendedColors) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -141,7 +144,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(color: theme.disabledColor, fontSize: 13),
+            style: TextStyle(color: extendedColors.neutral200, fontSize: 13, fontWeight:FontWeight.w300),
           ),
           const SizedBox(height: 4),
           Text(

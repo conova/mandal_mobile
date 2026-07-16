@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
@@ -6,6 +7,7 @@ import '../config/api_config.dart';
 import '../theme/extended_colors.dart';
 
 import '../widgets/account_card.dart';
+import '../widgets/custom_svg_icon.dart';
 
 class IncomeAccountScreen extends StatefulWidget {
   const IncomeAccountScreen({super.key});
@@ -110,16 +112,18 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          icon: const CustomSvgIcon('close-button', size: 24),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.add_circle,
-              color: extendedColors.primaryMain,
-              size: 32,
+            style: IconButton.styleFrom(
+              backgroundColor: extendedColors.primaryMain,
+              minimumSize: const Size(32, 32),
+              maximumSize: const Size(32, 32),
+              padding: EdgeInsets.zero,
             ),
+            icon: const CustomSvgIcon('plus', size: 20, color: AppColors.bgBase),
             onPressed: () async {
               final added = await Navigator.pushNamed(
                 context,
@@ -165,7 +169,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
                       Text(
                         l10n.incomeAccBenefitPrompt,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral500,
+                          color: extendedColors.neutral200,
                         ),
                       ),
                       if (otherAccounts.isNotEmpty) ...[
