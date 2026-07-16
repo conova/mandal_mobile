@@ -367,8 +367,14 @@ abstract class AppLocalizations {
   /// No description provided for @market.
   ///
   /// In en, this message translates to:
-  /// **'Market'**
+  /// **'Market Value'**
   String get market;
+
+  /// No description provided for @orderActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Trading Activity'**
+  String get orderActive;
 
   /// No description provided for @stock.
   ///
@@ -1473,6 +1479,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Receive amount'**
   String get receiveAmountLabel;
+
+  /// No description provided for @noReportYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No report generated yet'**
+  String get noReportYet;
+
+  /// No description provided for @reportPeriodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the period for the summary report'**
+  String get reportPeriodTitle;
+
+  /// No description provided for @periodOneMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'1 month'**
+  String get periodOneMonth;
+
+  /// No description provided for @periodThreeMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'3 months'**
+  String get periodThreeMonths;
+
+  /// No description provided for @periodSixMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'6 months'**
+  String get periodSixMonths;
+
+  /// No description provided for @periodTwelveMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'12 months'**
+  String get periodTwelveMonths;
+
+  /// No description provided for @allTimeReport.
+  ///
+  /// In en, this message translates to:
+  /// **'All-time report'**
+  String get allTimeReport;
+
+  /// No description provided for @emptyWatchlist.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved stocks'**
+  String get emptyWatchlist;
+
+  /// No description provided for @emptyWatchlistHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add stocks using the + button'**
+  String get emptyWatchlistHint;
+
+  /// No description provided for @resultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} results'**
+  String resultsCount(Object count);
+
+  /// No description provided for @noResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results'**
+  String get noResults;
+
+  /// No description provided for @noResultsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try changing your search keywords'**
+  String get noResultsHint;
 
   /// No description provided for @sorryTitle.
   ///

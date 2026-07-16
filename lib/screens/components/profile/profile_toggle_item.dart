@@ -24,7 +24,7 @@ class ProfileToggleItem extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),

@@ -52,6 +52,8 @@ dependencies:
   qr_flutter: ^4.1.0
   webview_flutter: ^4.10.0
   web: ^1.1.0
+  pdf: ^3.11.1
+  printing: ^5.13.2
 
 dev_dependencies:
   flutter_test:
@@ -89,6 +91,7 @@ flutter:
     - assets/images/vault.png
     - assets/images/lock.png
     - assets/images/pig.png
+    - assets/images/box.png
     # SVG icon-ууд — хавтсаар нь бүртгэсэн тул шинэ icon нэмэхэд
     # pubspec засах шаардлагагүй (CustomSvgIcon-оор нэрээр нь дуудна)
     - assets/images/icons/

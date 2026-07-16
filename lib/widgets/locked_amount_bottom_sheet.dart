@@ -19,21 +19,17 @@ class LockedAmountBottomSheet extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: extendedColors.primary100,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(color: extendedColors.primary100),
       child: Row(
         children: [
-          Icon(Icons.info, color: extendedColors.neutral100, size: 24),
-          const SizedBox(width: 16),
+          Icon(Icons.info, color: extendedColors.primaryMain, size: 22),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               '${l10n.lockedAmountLabel}: $amount',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w300,
                 color: extendedColors.neutral100,
               ),
             ),
@@ -50,12 +46,12 @@ class LockedAmountBottomSheet extends StatelessWidget {
               children: [
                 Text(
                   l10n.release,
-                  style: TextStyle(
-                    color: extendedColors.neutral100,
-                    fontWeight: FontWeight.bold,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w300,
+                    color: extendedColors.primaryMain,
                   ),
                 ),
-                Icon(Icons.expand_less, color: extendedColors.neutral100),
+                Icon(Icons.expand_less, color: extendedColors.primaryMain),
               ],
             ),
           ),

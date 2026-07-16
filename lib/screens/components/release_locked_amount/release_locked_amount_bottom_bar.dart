@@ -25,12 +25,10 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        border: Border(
-          top: BorderSide(color: extendedColors.neutral500),
-        ),
+        border: Border(top: BorderSide(color: extendedColors.neutral500)),
       ),
       child: SafeArea(
         child: Column(
@@ -43,8 +41,8 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
                   child: Text(
                     '${l10n.availableCash}: ',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: AppTextStyles.light,
-                      color: extendedColors.neutral300,
+                      fontWeight: AppTextStyles.extraLight,
+                      color: extendedColors.neutral200,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -54,7 +52,7 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
                   child: Text(
                     projectedCashText,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w300,
                       color: extendedColors.primaryMain,
                     ),
                     maxLines: 1,
@@ -69,7 +67,7 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
                 GestureDetector(
                   onTap: onBack,
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: extendedColors.bgSecondary,
                       shape: BoxShape.circle,
@@ -80,11 +78,17 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8),
                 Expanded(
                   child: CustomButton(
                     label: l10n.cancelOrder,
-                    onPressed: isCancelEnabled ? onCancel : null,
+                    // Сонголтгүй үед дарахад юу ч хийхгүй — гэхдээ disabled
+                    // саарал биш tertiary төрхөөрөө харагдана
+                    onPressed: isCancelEnabled ? onCancel : () {},
+                    // Дор хаяж 1 мөр сонгогдсон үед primary болно
+                    variant: isCancelEnabled
+                        ? CustomButtonVariant.primary
+                        : CustomButtonVariant.tertiary,
                   ),
                 ),
               ],

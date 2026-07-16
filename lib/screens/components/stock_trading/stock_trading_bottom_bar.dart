@@ -29,7 +29,7 @@ class StockTradingBottomBar extends StatelessWidget {
           onRelease: onReleaseLocked,
         ),
         Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           color: theme.colorScheme.surface,
           child: SafeArea(
             bottom: true,

@@ -1251,6 +1251,54 @@ class AuthService with ChangeNotifier {
   Future<List<Map<String, dynamic>>> getBondList() =>
       _fetchStockList(ApiConfig.stocksBondList);
 
+  /// Хураангуй тайлан — POST /portfolio/summary_report?start=..&end=..
+  /// Returns: { portfolio: [...], transactions: [...] }
+  Future<Map<String, dynamic>?> getSummaryReport({
+    required String start,
+    required String end,
+  }) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.portfolioSummaryReport,
+        queryParameters: {'start': start, 'end': end},
+        data: {'api': 'summary_report'},
+      );
+      final body = response.data;
+      if (body is Map && body['code']?.toString() == '0' && body['data'] is Map) {
+        return Map<String, dynamic>.from(body['data'] as Map);
+      }
+      return null;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Захиалгын самбар — POST /stocks/order_book,
+  /// body: { api: "order_book", data: { stockcode } }
+  Future<List<Map<String, dynamic>>> getOrderBook(String stockcode) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.stocksOrderBook,
+        data: {
+          'api': 'order_book',
+          'data': {'stockcode': stockcode},
+        },
+      );
+      final body = response.data;
+      if (body is Map &&
+          body['code']?.toString() == '0' &&
+          body['data'] is List) {
+        return (body['data'] as List)
+            .whereType<Map>()
+            .map((d) => Map<String, dynamic>.from(d))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Хувьцааны дэлгэрэнгүй мэдээлэл — POST /stocks/info,
   /// body: { api: "info", data: { stockcode } }
   /// Хариу нь мөрүүдийн жагсаалт: эхний мөр = одоогийн ерөнхий мэдээлэл,

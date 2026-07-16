@@ -151,7 +151,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get losers => 'Уналттай';
 
   @override
-  String get market => 'Зах зээл';
+  String get market => 'Зах зээл үнэлгээ';
+
+  @override
+  String get orderActive => 'Арилжааны идэвхи';
 
   @override
   String get stock => 'Хувьцаа';
@@ -731,6 +734,44 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get receiveAmountLabel => 'Хүлээн авах дүн';
+
+  @override
+  String get noReportYet => 'Одоогоор тайлан үүсээгүй';
+
+  @override
+  String get reportPeriodTitle => 'Тайлан хураангуй татах хугацаа сонгоно уу';
+
+  @override
+  String get periodOneMonth => '1 сар';
+
+  @override
+  String get periodThreeMonths => '3 сар';
+
+  @override
+  String get periodSixMonths => '6 сар';
+
+  @override
+  String get periodTwelveMonths => '12 сар';
+
+  @override
+  String get allTimeReport => 'Бүх цаг үеийн тайлан';
+
+  @override
+  String get emptyWatchlist => 'Хадгалсан хувьцаа байхгүй';
+
+  @override
+  String get emptyWatchlistHint => 'Та + товчоор хувьцаа нэмээрэй';
+
+  @override
+  String resultsCount(Object count) {
+    return '$count илэрц';
+  }
+
+  @override
+  String get noResults => 'Илэрц байхгүй';
+
+  @override
+  String get noResultsHint => 'Та түлхүүр үгээ өөрчлөөд үзээрэй';
 
   @override
   String get sorryTitle => 'Уучлаарай';

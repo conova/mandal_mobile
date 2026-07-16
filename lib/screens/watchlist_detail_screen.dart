@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
@@ -149,6 +150,8 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       await auth.saveWatchlistOrder(symbols);
       if (!mounted) return true;
       CustomSnackbar.show(context, message: '${item.symbol} устгагдлаа');
+      // Серверээс жагсаалтыг дахин татаж баталгаажуулна
+      _fetchWatchlist();
       return true;
     } catch (e) {
       if (!mounted) return false;
@@ -271,13 +274,40 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
           Divider(color: extendedColors.neutral500, height: 1),
           const SizedBox(height: 16),
           if (_watchlistItems.isEmpty)
+            // Хоосон төлөв — дугуй icon + тайлбар
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 40),
-              child: Text(
-                'Жагсаалт хоосон байна',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral300,
-                ),
+              padding: const EdgeInsets.symmetric(vertical: 64),
+              child: Column(
+                children: [
+                  Container(
+                    width: 112,
+                    height: 112,
+                    decoration: BoxDecoration(
+                      color: extendedColors.bgSecondary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.star_border,
+                      size: 48,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    AppLocalizations.of(context)!.emptyWatchlist,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.emptyWatchlistHint,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: extendedColors.neutral300,
+                    ),
+                  ),
+                ],
               ),
             )
           else ...[
@@ -389,17 +419,21 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       key: key,
       color: extendedColors.bgBase,
       child: InkWell(
-        onTap: () => Navigator.pushNamed(
-          context,
-          '/stock_detail',
-          arguments: {
-            'symbol': item.symbol,
-            'name': item.name,
-            'price': item.price,
-            'change': item.change,
-            'isGrowing': item.isPositive,
-          },
-        ),
+        onTap: () async {
+          await Navigator.pushNamed(
+            context,
+            '/stock_detail',
+            arguments: {
+              'symbol': item.symbol,
+              'name': item.name,
+              'price': item.price,
+              'change': item.change,
+              'isGrowing': item.isPositive,
+            },
+          );
+          // Detail дээр одоор нэмж/хассан байж болзошгүй тул шинэчилнэ
+          if (mounted) _fetchWatchlist();
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 14),
           child: Row(

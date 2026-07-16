@@ -11,6 +11,7 @@ class ProfileListItem extends StatelessWidget {
   final bool showArrow;
   final Color? titleColor;
   final Color? iconColor;
+  final Color? iconBackgroundColor;
   final Color? backgroundColor;
 
   const ProfileListItem({
@@ -23,6 +24,7 @@ class ProfileListItem extends StatelessWidget {
     this.showArrow = true,
     this.titleColor,
     this.iconColor,
+    this.iconBackgroundColor,
     this.backgroundColor,
   });
 
@@ -33,18 +35,18 @@ class ProfileListItem extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: Material(
         color: backgroundColor ?? Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: ListTile(
           onTap: onTap,
           leading: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceVariant.withOpacity(0.5),
+              color: iconBackgroundColor ?? colorScheme.secondary,
               shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: icon,
           ),
@@ -53,7 +55,7 @@ class ProfileListItem extends StatelessWidget {
             style: theme.textTheme.bodyLarge?.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: extendedColors.neutral100,
+              color: titleColor ?? extendedColors.neutral100,
             ),
           ),
           subtitle: subtitle != null
@@ -71,7 +73,11 @@ class ProfileListItem extends StatelessWidget {
               if (trailing != null) trailing!,
               if (trailing != null && showArrow) const SizedBox(width: 8),
               if (showArrow)
-                const CustomSvgIcon('chevron-right', size: 20,),
+                CustomSvgIcon(
+                  'chevron-right',
+                  size: 20,
+                  color: iconColor ?? extendedColors.neutral100,
+                ),
             ],
           ),
         ),

@@ -28,10 +28,8 @@ class ReleaseLockedAmountList extends StatelessWidget {
         return GestureDetector(
           onTap: () => onToggle(index),
           child: Container(
-            color: isSelected
-                ? extendedColors.primary100.withValues(alpha: 0.3)
-                : Colors.transparent,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            color: isSelected ? extendedColors.primary100 : Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
                 // Checkbox
@@ -65,8 +63,8 @@ class ReleaseLockedAmountList extends StatelessWidget {
                       Flexible(
                         child: Text(
                           item['title'],
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: AppTextStyles.light,
                             color: extendedColors.neutral100,
                           ),
                           maxLines: 1,
@@ -79,7 +77,7 @@ class ReleaseLockedAmountList extends StatelessWidget {
                         Flexible(
                           child: Text(
                             item['subtitle'],
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            style: theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: AppTextStyles.light,
                               color: extendedColors.neutral400,
                             ),
@@ -96,9 +94,9 @@ class ReleaseLockedAmountList extends StatelessWidget {
                 // Amount
                 Text(
                   '${item['amount'].toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮',
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: AppTextStyles.regular,
-                    color: extendedColors.neutral300,
+                    color: extendedColors.neutral200,
                   ),
                 ),
               ],
