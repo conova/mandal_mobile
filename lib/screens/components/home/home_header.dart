@@ -44,8 +44,9 @@ class _HomeHeaderState extends State<HomeHeader> {
     final l10n = AppLocalizations.of(context)!;
 
     // "50,628,000.53₮" → бүхэл ба бутархай хэсгийг тусад нь загварчилна
-    final formatted =
-        _totalAssets == null ? '' : formatStockAmount(_totalAssets, decimals: 2);
+    final formatted = _totalAssets == null
+        ? ''
+        : formatStockAmount(_totalAssets, decimals: 2);
     final dotIdx = formatted.indexOf('.');
     final whole = dotIdx == -1 ? formatted : formatted.substring(0, dotIdx);
     final fraction = dotIdx == -1 ? '' : formatted.substring(dotIdx);
@@ -98,10 +99,7 @@ class _HomeHeaderState extends State<HomeHeader> {
           children: [
             IconButton(
               onPressed: () => Navigator.pushNamed(context, '/notifications'),
-              icon: Icon(
-                Icons.notifications_outlined,
-                color: colorScheme.onSurface,
-              ),
+              icon: const CustomSvgIcon('bell-02', size: 24),
             ),
             Positioned(
               right: 12,
@@ -119,7 +117,7 @@ class _HomeHeaderState extends State<HomeHeader> {
         ),
         IconButton(
           onPressed: () => Navigator.pushNamed(context, '/profile'),
-          icon: Icon(Icons.person_outline, color: colorScheme.onSurface),
+          icon: const CustomSvgIcon('user-03', size: 24),
         ),
         const SizedBox(width: 8),
       ],

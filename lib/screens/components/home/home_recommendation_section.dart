@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
@@ -83,11 +85,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
               color: extendedColors.purple,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              Icons.account_balance_wallet_outlined,
-              color: extendedColors.bgBase,
-              size: 32,
-            ),
+            child: CustomSvgIcon('bank-note-01', size: 32, color: AppColors.bgBase,),
           ),
           const SizedBox(height: 20),
           // Title

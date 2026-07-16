@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 
@@ -19,7 +20,7 @@ class HomeQuickActions extends StatelessWidget {
               label: l10n.income,
               variant: CustomButtonVariant.primary,
               size: CustomButtonSize.small,
-              icon: Icons.add,
+              icon: const CustomSvgIcon('plus', size: 20,),
               onPressed: () => Navigator.pushNamed(context, '/settings'),
             ),
           ),
@@ -31,7 +32,7 @@ class HomeQuickActions extends StatelessWidget {
               label: l10n.expense,
               variant: CustomButtonVariant.tertiary,
               size: CustomButtonSize.small,
-              icon: Icons.north_east,
+              icon: const CustomSvgIcon('reverse-right', size: 20,),
               onPressed: () {},
             ),
           ),
@@ -43,7 +44,7 @@ class HomeQuickActions extends StatelessWidget {
               label: l10n.history,
               variant: CustomButtonVariant.tertiary,
               size: CustomButtonSize.small,
-              icon: Icons.history,
+              icon: const CustomSvgIcon('clock-fast-forward', size: 20,),
               onPressed: () => Navigator.pushNamed(context, '/transaction_history'),
             ),
           ),
