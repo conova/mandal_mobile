@@ -19,7 +19,7 @@ class ReleaseLockedAmountHeader extends StatelessWidget {
         children: [
           Text(
             l10n.releaseLockedTitle,
-            style: theme.textTheme.headlineLarge?.copyWith(
+            style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: extendedColors.neutral100,
             ),
@@ -28,9 +28,8 @@ class ReleaseLockedAmountHeader extends StatelessWidget {
           Text(
             l10n.releaseLockedSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: AppTextStyles.light,
-              color: extendedColors.neutral300,
-              height: 1.4,
+              fontWeight: AppTextStyles.extraLight,
+              color: extendedColors.neutral100,
             ),
           ),
         ],

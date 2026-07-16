@@ -30,7 +30,10 @@ class StockTradingQuantitySelector extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(16),
+            bottomRight: Radius.circular(16),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +41,8 @@ class StockTradingQuantitySelector extends StatelessWidget {
             Text(
               l10n.quantityLabel,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.3),
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w200,
               ),
             ),
             const SizedBox(height: 4),
@@ -64,7 +68,7 @@ class StockTradingQuantitySelector extends StatelessWidget {
                 Row(
                   children: [
                     _buildCircleButton(Icons.remove, onDecrease, theme),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 8),
                     _buildCircleButton(Icons.add, onIncrease, theme),
                   ],
                 ),
@@ -84,12 +88,13 @@ class StockTradingQuantitySelector extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant,
-          shape: BoxShape.circle,
+          color: theme.colorScheme.secondary,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(20),
         ),
-        child: Icon(icon, size: 24, color: theme.colorScheme.onSurface),
+        child: Icon(icon, size: 20, color: theme.colorScheme.onSurface),
       ),
     );
   }

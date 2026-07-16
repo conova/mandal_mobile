@@ -10,7 +10,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/filter_chip_bar.dart';
 
 /// Filter category-уудтай харгалзах API endpoint-ийн ID
-enum _StockFilter { all, ipo, gainers, losers, market }
+enum _StockFilter { all, ipo, gainers, losers, market, orderActive }
 
 class StockScreen extends StatefulWidget {
   const StockScreen({super.key});
@@ -35,7 +35,8 @@ class _StockScreenState extends State<StockScreen> {
     _searchController.addListener(() {
       final q = _searchController.text.trim();
       if (q != _searchQuery) {
-        _searchQuery = q;
+        // setState — banner/tag-ууд бичих мөчид шууд нуугдаж/сэргэнэ
+        setState(() => _searchQuery = q);
         _debounce?.cancel();
         // 350ms-ийн дараа API дуудна
         _debounce = Timer(const Duration(milliseconds: 350), _fetch);
@@ -63,6 +64,8 @@ class _StockScreenState extends State<StockScreen> {
         return 'losers';
       case _StockFilter.ipo:
         return 'ipo';
+      case _StockFilter.orderActive:
+        return 'orderActive';
       case _StockFilter.all:
       case _StockFilter.market:
         return null;
@@ -89,8 +92,8 @@ class _StockScreenState extends State<StockScreen> {
           _StockFilter.ipo => auth.getIpoStocks(),
           _StockFilter.gainers => auth.getGainers(),
           _StockFilter.losers => auth.getLosers(),
-          _StockFilter.all || _StockFilter.market =>
-            auth.getAvailableStocks(),
+          _StockFilter.orderActive => auth.getAvailableStocks(),
+          _StockFilter.all || _StockFilter.market => auth.getAvailableStocks(),
         };
       }
 
@@ -110,10 +113,14 @@ class _StockScreenState extends State<StockScreen> {
 
   void _onFilterSelected(String selected, AppLocalizations locale) {
     _StockFilter next = _StockFilter.all;
-    if (selected == locale.ipo) next = _StockFilter.ipo;
-    else if (selected == locale.gainers) next = _StockFilter.gainers;
-    else if (selected == locale.losers) next = _StockFilter.losers;
-    else if (selected == locale.market) next = _StockFilter.market;
+    if (selected == locale.ipo)
+      next = _StockFilter.ipo;
+    else if (selected == locale.gainers)
+      next = _StockFilter.gainers;
+    else if (selected == locale.losers)
+      next = _StockFilter.losers;
+    else if (selected == locale.market)
+      next = _StockFilter.market;
 
     if (next != _activeFilter) {
       setState(() {
@@ -143,6 +150,7 @@ class _StockScreenState extends State<StockScreen> {
       locale.gainers,
       locale.losers,
       locale.market,
+      locale.orderActive,
     ];
 
     _selectedFilter ??= locale.all;
@@ -156,16 +164,17 @@ class _StockScreenState extends State<StockScreen> {
             // Scrollable Search Bar and Promo Banner
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 8),
                     // Search Bar
                     Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceVariant,
+                        color: colorScheme.secondary,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: TextField(
@@ -194,128 +203,149 @@ class _StockScreenState extends State<StockScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Promo Banner
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            extendedColors.primary100,
-                            extendedColors.bgBase,
-                          ],
+                    // Promo Banner — хайлтын горимд нуугдана
+                    if (_searchQuery.isEmpty)
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              extendedColors.primary100,
+                              extendedColors.bgBase,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Stack(
-                        children: [
-                          // Briefcase image — banner-ийн top-right-д тогтсон
-                          Positioned(
-                            top: -12,
-                            right: -16,
-                            child: SizedBox(
-                              width: 99,
-                              height: 128,
-                              child: Image.asset(
-                                'assets/images/briefcase.png',
-                                fit: BoxFit.contain,
+                        child: Stack(
+                          children: [
+                            // Briefcase image — banner-ийн top-right-д тогтсон
+                            Positioned(
+                              top: -12,
+                              right: -36,
+                              child: SizedBox(
+                                height: 128,
+                                child: Image.asset(
+                                  'assets/images/briefcase.png',
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
-                          ),
-                          // Текстийн контент — image-аас зайтай үлдэхийн тулд
-                          // баруун padding 128 болгосон
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 24, 100, 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  locale.dividendPortfolio,
-                                  style: theme.textTheme.headlineMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 28,
-                                        height: 1.1,
-                                        color: extendedColors.neutral100,
-                                      ),
-                                ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  width: 48,
-                                  height: 3,
-                                  decoration: BoxDecoration(
-                                    color: theme.primaryColor,
-                                    borderRadius: BorderRadius.circular(2),
+                            // Текстийн контент — image-аас зайтай үлдэхийн тулд
+                            // баруун padding 128 болгосон
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                24,
+                                100,
+                                16,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    locale.dividendPortfolio,
+                                    style: theme.textTheme.headlineMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 28,
+                                          height: 1.1,
+                                          color: extendedColors.neutral100,
+                                        ),
                                   ),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  locale.recommendedStocks,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: extendedColors.neutral200,
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    width: 32,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: theme.primaryColor,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 20),
-                                SizedBox(
-                                  width: 120,
-                                  child: CustomButton(
-                                    label: locale.viewPortfolio,
-                                    onPressed: () {},
-                                    size: CustomButtonSize.small,
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    locale.recommendedStocks,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: extendedColors.neutral200,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                    width: 120,
+                                    child: CustomButton(
+                                      label: locale.viewPortfolio,
+                                      onPressed: () {},
+                                      size: CustomButtonSize.small,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
             ),
-            // Sticky FilterChipBar + List Headers
-            SliverAppBar(
-              pinned: true,
-              floating: false,
-              automaticallyImplyLeading: false,
-              surfaceTintColor: extendedColors.bgBase,
-              elevation: 0,
-              toolbarHeight: 52,
-              titleSpacing: 0,
-              title: FilterChipBar(
-                filters: filters,
-                selectedFilter: _selectedFilter!,
-                onFilterSelected: (selected) =>
-                    _onFilterSelected(selected, locale),
-                horizontalPadding: 16,
-              ),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(40),
-                child: Container(
-                  color: extendedColors.bgBase,
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        locale.stock,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
+            // Sticky FilterChipBar + List Headers — хайлтын горимд оронд нь
+            // илэрцийн тоог харуулна
+            if (_searchQuery.isEmpty)
+              SliverAppBar(
+                pinned: true,
+                floating: false,
+                automaticallyImplyLeading: false,
+                surfaceTintColor: extendedColors.bgBase,
+                elevation: 0,
+                toolbarHeight: 52,
+                titleSpacing: 0,
+                title: FilterChipBar(
+                  filters: filters,
+                  selectedFilter: _selectedFilter!,
+                  onFilterSelected: (selected) =>
+                      _onFilterSelected(selected, locale),
+                  horizontalPadding: 16,
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(40),
+                  child: Container(
+                    color: extendedColors.bgBase,
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          locale.stock,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      Text(
-                        locale.lastPrice24h,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
+                        Text(
+                          locale.lastPrice24h,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else if (!_isLoading &&
+                _error == null &&
+                _filteredStocks.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                  child: Text(
+                    locale.resultsCount(_filteredStocks.length.toString()),
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
                   ),
                 ),
               ),
-            ),
             // Stock List — API-аас dynamic
             if (_isLoading)
               const SliverFillRemaining(
@@ -341,20 +371,55 @@ class _StockScreenState extends State<StockScreen> {
             else if (_filteredStocks.isEmpty)
               SliverFillRemaining(
                 hasScrollBody: false,
-                child: Center(
-                  child: Text(
-                    _searchQuery.isEmpty
-                        ? 'Жагсаалт хоосон байна'
-                        : 'Хайлтад тохирох хувьцаа олдсонгүй',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral300,
-                    ),
-                  ),
-                ),
+                child: _searchQuery.isEmpty
+                    ? Center(
+                        child: Text(
+                          locale.noData,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral300,
+                          ),
+                        ),
+                      )
+                    // Хайлтад илэрц олдоогүй — дугуй icon + тайлбартай төлөв
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 112,
+                            height: 112,
+                            decoration: BoxDecoration(
+                              color: extendedColors.bgSecondary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.search,
+                              size: 48,
+                              color: extendedColors.neutral100,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            locale.noResults,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: extendedColors.neutral100,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            locale.noResultsHint,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: extendedColors.neutral300,
+                            ),
+                          ),
+                          // Дээшээ бага зэрэг төвлөрүүлнэ
+                          const SizedBox(height: 120),
+                        ],
+                      ),
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 sliver: SliverList.builder(
                   itemCount: _filteredStocks.length,
                   itemBuilder: (context, i) {
@@ -384,8 +449,10 @@ class _StockScreenState extends State<StockScreen> {
     if (priceChange != null) {
       final pct = double.tryParse(priceChange.toString()) ?? 0;
       changeStr = '${pct.abs().toStringAsFixed(2)}%';
-      if (pct > 0) isGrowing = true;
-      else if (pct < 0) isGrowing = false;
+      if (pct > 0)
+        isGrowing = true;
+      else if (pct < 0)
+        isGrowing = false;
     }
 
     return StockPriceRow(
@@ -412,7 +479,9 @@ class _StockScreenState extends State<StockScreen> {
   String _formatNumber(String s) {
     final n = num.tryParse(s);
     if (n == null) return s;
-    return n.toStringAsFixed(0).replaceAllMapped(
+    return n
+        .toStringAsFixed(0)
+        .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (m) => '${m[1]},',
         );

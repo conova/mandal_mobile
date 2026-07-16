@@ -184,31 +184,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const ProfileSectionHeader(title: 'Хувийн мэдээлэл'),
             ProfileToggleItem(
               icon: AppStateManager.instance.themeMode == ThemeMode.dark
-                ? const CustomSvgIcon('sun', size: 20)
-                : const CustomSvgIcon('moon-01', size: 20),
+                  ? const CustomSvgIcon('sun', size: 20)
+                  : const CustomSvgIcon('moon-01', size: 20),
               title: AppStateManager.instance.themeMode != ThemeMode.dark
-                ? l10n.darkMode
-                : l10n.lightMode,
+                  ? l10n.darkMode
+                  : l10n.lightMode,
               value: theme.brightness == Brightness.dark,
               onChanged: (val) {
                 AppStateManager.instance.toggleTheme(val);
               },
             ),
             ProfileListItem(
-              icon: const CustomSvgIcon('user-03', size: 20,),
+              icon: const CustomSvgIcon('user-03', size: 20),
               title: l10n.myInfo,
               subtitle: l10n.myInfoSubtitle,
               onTap: () => Navigator.pushNamed(context, '/my_info'),
-              trailing: const CustomSvgIcon('info-circle', size: 20, color: AppColors.yellowMain,),
+              trailing: const CustomSvgIcon(
+                'info-circle',
+                size: 20,
+                color: AppColors.yellowMain,
+              ),
             ),
             ProfileListItem(
-              icon: const CustomSvgIcon('bank', size: 20,),
+              icon: const CustomSvgIcon('bank', size: 20),
               title: l10n.incomeAccount,
               subtitle: l10n.incomeAccountSubtitle,
               onTap: () => Navigator.pushNamed(context, '/income_account'),
             ),
             ProfileListItem(
-              icon: const CustomSvgIcon('file-05', size: 20,),
+              icon: const CustomSvgIcon('file-05', size: 20),
               title: l10n.summaryReport,
               subtitle: l10n.summaryReportSubtitle,
               onTap: () => Navigator.pushNamed(context, '/summary_report'),
@@ -218,7 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 24),
             ProfileSectionHeader(title: l10n.childAccount),
             ProfileListItem(
-              icon: const CustomSvgIcon('plus', size: 20,),
+              icon: const CustomSvgIcon('plus', size: 20),
               title: l10n.createNewAccount,
               subtitle: l10n.createNewAccountSubtitle,
               onTap: () {},
@@ -235,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onChanged: _handleBiometricToggle,
             ),
             ProfileListItem(
-              icon: const CustomSvgIcon('lock-04', size: 20,),
+              icon: const CustomSvgIcon('lock-04', size: 20),
               title: l10n.changePassword,
               subtitle: _passDate != null
                   ? l10n.passwordChangedOn(_passDate!)
@@ -244,7 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pushNamed(context, '/change_password_verify'),
             ),
             ProfileListItem(
-              icon: const CustomSvgIcon('phone-02', size: 20,),
+              icon: const CustomSvgIcon('phone-02', size: 20),
               title: l10n.connectedDevices,
               subtitle: _deviceCount != null
                   ? l10n.deviceCountLabel(_deviceCount!)
@@ -254,37 +258,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 40),
 
-            // Logout Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: CustomButton(
-                  label: l10n.logout,
-                  onPressed: () async {
-                    final result = await showModalBottomSheet<bool>(
-                      context: context,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => const LogoutBottomSheet(),
-                    );
-
-                    if (result == true && context.mounted) {
-                      // Clear authentication session
-                      await context.read<AuthService>().clearSession();
-                      // Navigate to login and clear stack
-                      if (context.mounted) {
-                        Navigator.of(
-                          context,
-                        ).pushNamedAndRemoveUntil('/login', (route) => false);
-                      }
-                    }
-                  },
-                  variant: CustomButtonVariant.tertiary,
-                ),
+            ProfileListItem(
+              icon: CustomSvgIcon(
+                'log-out-04',
+                size: 20,
+                color: extendedColors.red,
               ),
+              titleColor: extendedColors.red,
+              iconColor: extendedColors.red,
+              iconBackgroundColor: extendedColors.red100,
+              title: l10n.logout,
+              onTap: () async {
+                final result = await showModalBottomSheet<bool>(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const LogoutBottomSheet(),
+                );
+
+                if (result == true && context.mounted) {
+                  // Clear authentication session
+                  await context.read<AuthService>().clearSession();
+                  // Navigate to login and clear stack
+                  if (context.mounted) {
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil('/login', (route) => false);
+                  }
+                }
+              },
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 80),
           ],
         ),
       ),

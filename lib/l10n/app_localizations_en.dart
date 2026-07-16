@@ -151,7 +151,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get losers => 'Losers';
 
   @override
-  String get market => 'Market';
+  String get market => 'Market Value';
+
+  @override
+  String get orderActive => 'Trading Activity';
 
   @override
   String get stock => 'Stock';
@@ -732,6 +735,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get receiveAmountLabel => 'Receive amount';
+
+  @override
+  String get noReportYet => 'No report generated yet';
+
+  @override
+  String get reportPeriodTitle => 'Select the period for the summary report';
+
+  @override
+  String get periodOneMonth => '1 month';
+
+  @override
+  String get periodThreeMonths => '3 months';
+
+  @override
+  String get periodSixMonths => '6 months';
+
+  @override
+  String get periodTwelveMonths => '12 months';
+
+  @override
+  String get allTimeReport => 'All-time report';
+
+  @override
+  String get emptyWatchlist => 'No saved stocks';
+
+  @override
+  String get emptyWatchlistHint => 'Add stocks using the + button';
+
+  @override
+  String resultsCount(Object count) {
+    return '$count results';
+  }
+
+  @override
+  String get noResults => 'No results';
+
+  @override
+  String get noResultsHint => 'Try changing your search keywords';
 
   @override
   String get sorryTitle => 'Sorry';

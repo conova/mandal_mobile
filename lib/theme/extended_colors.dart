@@ -28,6 +28,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
   final Color orange;
   final Color yellow;
   final Color red;
+  final Color red100;
 
   // Material
   final Color material;
@@ -52,6 +53,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
     required this.orange,
     required this.yellow,
     required this.red,
+    required this.red100,
     required this.material,
   });
 
@@ -76,6 +78,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
     Color? orange,
     Color? yellow,
     Color? red,
+    Color? red100,
     Color? material,
   }) {
     return ExtendedColors(
@@ -98,6 +101,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
       orange: orange ?? this.orange,
       yellow: yellow ?? this.yellow,
       red: red ?? this.red,
+      red100: red100 ?? this.red100,
       material: material ?? this.material,
     );
   }
@@ -127,6 +131,7 @@ class ExtendedColors extends ThemeExtension<ExtendedColors> {
       orange: Color.lerp(orange, other.orange, t)!,
       yellow: Color.lerp(yellow, other.yellow, t)!,
       red: Color.lerp(red, other.red, t)!,
+      red100: Color.lerp(red100, other.red100, t)!,
       material: Color.lerp(material, other.material, t)!,
     );
   }

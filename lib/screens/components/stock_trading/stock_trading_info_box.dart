@@ -17,7 +17,7 @@ class StockTradingInfoBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        color: theme.colorScheme.secondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -27,7 +27,7 @@ class StockTradingInfoBox extends StatelessWidget {
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.4),
+                color: theme.colorScheme.onSurface,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -37,9 +37,7 @@ class StockTradingInfoBox extends StatelessWidget {
           Flexible(
             child: Text(
               value,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.bodyLarge?.copyWith(),
               textAlign: TextAlign.right,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
+import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/stock_detail/stock_detail_header.dart';
 import 'components/stock_detail/stock_detail_chart.dart';
 import 'components/stock_detail/stock_detail_general_info.dart';
@@ -31,6 +34,13 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
 
   Map<String, dynamic>? get _info => _infoRows.isEmpty ? null : _infoRows.first;
 
+  /// Watchlist-д байгаа эсэх (null — хараахан шалгаагүй)
+  bool _inWatchlist = false;
+  bool _watchlistBusy = false;
+
+  /// Арилжааны Авах/Зарах цэс нээлттэй эсэх
+  bool _tradeMenuOpen = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -40,6 +50,51 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
             const {};
     _fetchInfo();
+    _checkWatchlist();
+  }
+
+  String get _symbol =>
+      (_args['symbol'] as String?) ?? _info?['SYMBOL']?.toString() ?? '';
+
+  /// Энэ хувьцаа watchlist-д байгаа эсэхийг шалгана
+  Future<void> _checkWatchlist() async {
+    if (_symbol.isEmpty) return;
+    try {
+      final list = await context.read<AuthService>().getWatchlist();
+      if (!mounted) return;
+      setState(() {
+        _inWatchlist =
+            list.any((row) => row['SYMBOL']?.toString() == _symbol);
+      });
+    } catch (_) {
+      // Шалгаж чадаагүй бол хоосон одоор үлдээнэ
+    }
+  }
+
+  /// Од дарахад — watchlist-д нэмэх / хасах
+  Future<void> _toggleWatchlist() async {
+    if (_watchlistBusy || _symbol.isEmpty) return;
+    setState(() => _watchlistBusy = true);
+    try {
+      final auth = context.read<AuthService>();
+      final message = _inWatchlist
+          ? await auth.removeFromWatchlist(_symbol)
+          : await auth.addToWatchlist(_symbol);
+      if (!mounted) return;
+      setState(() {
+        _inWatchlist = !_inWatchlist;
+        _watchlistBusy = false;
+      });
+      CustomSnackbar.show(context, message: message);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _watchlistBusy = false);
+      CustomSnackbar.show(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: CustomSnackbarType.error,
+      );
+    }
   }
 
   Future<void> _fetchInfo() async {
@@ -108,53 +163,136 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.star_border, color: theme.colorScheme.onSurface),
-            onPressed: () {},
+            icon: Icon(
+              _inWatchlist ? Icons.star : Icons.star_border,
+              color: _inWatchlist
+                  ? theme.extension<ExtendedColors>()!.yellow
+                  : theme.colorScheme.onSurface,
+            ),
+            onPressed: _watchlistBusy ? null : _toggleWatchlist,
           ),
           const SizedBox(width: 12),
         ],
         backgroundColor: theme.colorScheme.surface,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            StockDetailHeader(
-              symbol: symbol,
-              name: name,
-              price: price,
-              change: change,
-              isGrowing: isGrowing,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                StockDetailHeader(
+                  symbol: symbol,
+                  name: name,
+                  price: price,
+                  change: change,
+                  isGrowing: isGrowing,
+                ),
+                const SizedBox(height: 32),
+                StockDetailChart(symbol: symbol),
+                const SizedBox(height: 32),
+                // Эхний мөрийн мэдээллээр ерөнхий мэдээллийг бөглөнө
+                StockDetailGeneralInfo(
+                  marketCap: _info?['MARKETVALUE'] == null
+                      ? '-'
+                      : '₮${formatCompactAmount(_info!['MARKETVALUE'])}',
+                  avgVolume: _info?['AVGTRADE'] == null
+                      ? '-'
+                      : '₮${formatCompactAmount(_info!['AVGTRADE'])}',
+                  dailyVolume: _info?['DAYTRADE'] == null
+                      ? '-'
+                      : '₮${formatCompactAmount(_info!['DAYTRADE'])}',
+                  peRatio: _info?['PERATIO']?.toString() ?? '-',
+                  pbRatio: _info?['PBRATIO']?.toString() ?? '-',
+                  dividendYield: _info?['DIVYEILD'] == null
+                      ? '-'
+                      : '${_info!['DIVYEILD']}%',
+                ),
+                const SizedBox(height: 48),
+                // Бүх мөрийн DIVAMOUNT/DIVDATE = өнгөрсөн ногдол ашгууд
+                StockDetailDividendHistory(items: _dividendHistory),
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 32),
-            StockDetailChart(symbol: symbol),
-            const SizedBox(height: 32),
-            // Эхний мөрийн мэдээллээр ерөнхий мэдээллийг бөглөнө
-            StockDetailGeneralInfo(
-              marketCap: _info?['MARKETVALUE'] == null
-                  ? '-'
-                  : '₮${formatCompactAmount(_info!['MARKETVALUE'])}',
-              peRatio: _info?['PERATIO']?.toString() ?? '-',
-              pbRatio: _info?['PBRATIO']?.toString() ?? '-',
-              dividendYield: _info?['DIVYEILD'] == null
-                  ? '-'
-                  : '${_info!['DIVYEILD']}%',
+          ),
+          // Арилжааны цэс нээлттэй үед: бүдгэрүүлэлт + Авах/Зарах товчнууд
+          if (_tradeMenuOpen) ...[
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () => setState(() => _tradeMenuOpen = false),
+                child: Container(color: Colors.black38),
+              ),
             ),
-            const SizedBox(height: 48),
-            // Бүх мөрийн DIVAMOUNT/DIVDATE = өнгөрсөн ногдол ашгууд
-            StockDetailDividendHistory(items: _dividendHistory),
-            const SizedBox(height: 32),
+            Positioned(
+              right: 24,
+              bottom: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _buildTradeMenuButton(
+                    label: AppLocalizations.of(context)!.buy,
+                    color: theme.extension<ExtendedColors>()!.primaryMain,
+                    onPressed: () => _openTrading('buy'),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTradeMenuButton(
+                    label: AppLocalizations.of(context)!.sell,
+                    color: theme.extension<ExtendedColors>()!.red,
+                    onPressed: () => _openTrading('sell'),
+                  ),
+                ],
+              ),
+            ),
           ],
-        ),
+        ],
       ),
       bottomNavigationBar: StockDetailBottomBar(
-        onTrade: () => Navigator.pushNamed(
-          context,
-          '/stock_trading',
-          arguments: {..._args, if (_info != null) 'info': _info},
+        isMenuOpen: _tradeMenuOpen,
+        onTrade: () => setState(() => _tradeMenuOpen = !_tradeMenuOpen),
+      ),
+    );
+  }
+
+  /// Авах / Зарах pill товч (арилжааны цэс)
+  Widget _buildTradeMenuButton({
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: 200,
+      height: 52,
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32),
+          ),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
         ),
       ),
+    );
+  }
+
+  /// Арилжааны дэлгэц рүү авах/зарах талтай нь шилжинэ
+  void _openTrading(String side) {
+    setState(() => _tradeMenuOpen = false);
+    Navigator.pushNamed(
+      context,
+      '/stock_trading',
+      arguments: {
+        ..._args,
+        if (_info != null) 'info': _info,
+        'side': side,
+      },
     );
   }
 }

@@ -100,7 +100,6 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const ReleaseLockedAmountHeader(),
-          const SizedBox(height: 32),
           Expanded(
             child: ReleaseLockedAmountList(
               items: _items,

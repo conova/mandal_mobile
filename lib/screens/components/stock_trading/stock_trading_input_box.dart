@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 class StockTradingInputBox extends StatelessWidget {
@@ -28,8 +29,11 @@ class StockTradingInputBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: extendedColors.neutral100.withOpacity(0.1)),
-          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: extendedColors.neutral500),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,6 +41,7 @@ class StockTradingInputBox extends StatelessWidget {
             Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w200,
                 color: extendedColors.neutral200,
               ),
             ),
@@ -67,7 +72,14 @@ class StockTradingInputBox extends StatelessWidget {
                 ),
                 if (suffixText != null)
                   GestureDetector(
-                    onTap: onSuffixTap,
+                    onTap: () {
+                      // paste text from clipboard
+                      Clipboard.getData('text/plain').then((value) {
+                        if (value != null) {
+                          controller.text = value.text ?? '';
+                        }
+                      });
+                    },
                     child: Text(
                       suffixText!,
                       style: theme.textTheme.bodyMedium?.copyWith(

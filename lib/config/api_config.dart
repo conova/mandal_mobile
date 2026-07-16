@@ -90,6 +90,12 @@ class ApiConfig {
   ///   Body: { api: "info", data: { stockcode } }
   static const String stocksInfo = '/bdc/api/stocks/info';
 
+  /// POST /stocks/order_book → захиалгын самбар
+  ///   Body: { api: "order_book", data: { stockcode } }
+  ///   Row: { STOCKCODE, PRICE, TOTAL_CNT, ORDER_TYPE: "BUY"|"SELL",
+  ///   PRICE_RANK }
+  static const String stocksOrderBook = '/bdc/api/stocks/order_book';
+
   /// GET /stocks/bondlist → зах зээл дээрх бондууд (бонд авах tab)
   ///   Row: { SYMBOL, STOCKNAME, COMPNAME2, TYPENAME, TERM, INTRATE, AMT,
   ///   ISOPEN, ISFOREIGN, MARKET: "Primary"|"Secondary", ... }
@@ -120,6 +126,15 @@ class ApiConfig {
   ///   CODENAME: Монгол нэр (Төгрөг/Доллар/Бонд/Хувьцаа)
   ///   CODEORDER: эрэмбэ (1..4)
   static const String portfolioBreakdown = '/bdc/api/portfolio/breakdown';
+
+  /// POST /portfolio/summary_report?start=YYYY/MM/DD&end=YYYY/MM/DD
+  ///   Body: { api: "summary_report" }
+  ///   data.portfolio: огноо/төрөл тус бүрийн үлдэгдэл
+  ///     { TXNDATE, TYPE: bond|cash|stock, CODENAME, AMOUNT, AMOUNTMNT, CNT }
+  ///   data.transactions: төрөл тус бүрээс нэг мөр (байхгүй бол 0 гэж үзнэ)
+  ///     { TXNDATE, TYPE: stock|cash|rateincome|dividend|bond, AMOUNT, ... }
+  static const String portfolioSummaryReport =
+      '/bdc/api/portfolio/summary_report';
 
   // ─── Order ───
   static const String orderCreate = '/bdc/api/order/create.php';

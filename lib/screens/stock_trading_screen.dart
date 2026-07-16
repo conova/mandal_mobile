@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import 'components/stock_trading/stock_trading_input_box.dart';
 import 'components/stock_trading/stock_trading_quantity_selector.dart';
@@ -23,17 +27,73 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
 
   int _quantity = 1;
 
+  Map<String, dynamic> _args = const {};
+  bool _argsParsed = false;
+
+  /// /stocks/order_book-ийн мөрүүд
+  List<Map<String, dynamic>> _orderBook = const [];
+  bool _orderBookLoading = true;
+
+  /// Дэлгэц идэвхтэй байх үед самбарыг 5 секунд тутам шинэчилнэ
+  Timer? _orderBookTimer;
+  bool _orderBookFetching = false;
+
   @override
   void initState() {
     super.initState();
-    _priceController = TextEditingController(text: '65.62');
+    _priceController = TextEditingController(text: '0.00');
     _quantityController = TextEditingController(text: '1');
     _priceFocusNode = FocusNode();
     _quantityFocusNode = FocusNode();
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_argsParsed) return;
+    _argsParsed = true;
+    _args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+        const {};
+    _fetchOrderBook();
+
+    // 5 секунд тутамд чимээгүй шинэчилнэ (dispose дээр зогсоно)
+    if ((_args['stockcode']?.toString() ?? '').isNotEmpty) {
+      _orderBookTimer = Timer.periodic(
+        const Duration(seconds: 5),
+        (_) => _fetchOrderBook(),
+      );
+    }
+  }
+
+  Future<void> _fetchOrderBook() async {
+    final stockcode = _args['stockcode']?.toString() ?? '';
+    if (stockcode.isEmpty) {
+      setState(() => _orderBookLoading = false);
+      return;
+    }
+    // Өмнөх хүсэлт дуусаагүй бол давхарлахгүй (удаан сүлжээнд хуримтлагдахгүй)
+    if (_orderBookFetching) return;
+    _orderBookFetching = true;
+    try {
+      final rows = await context.read<AuthService>().getOrderBook(stockcode);
+      if (!mounted) return;
+      setState(() {
+        _orderBook = rows;
+        _orderBookLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      // Давтан шинэчлэлтийн алдааг чимээгүй өнгөрөөнө — өмнөх дата үлдэнэ
+      setState(() => _orderBookLoading = false);
+    } finally {
+      _orderBookFetching = false;
+    }
+  }
+
+  @override
   void dispose() {
+    _orderBookTimer?.cancel();
     _priceController.dispose();
     _quantityController.dispose();
     _priceFocusNode.dispose();
@@ -67,7 +127,11 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                 color: theme.colorScheme.surfaceVariant,
                 borderRadius: BorderRadius.circular(30),
               ),
+              // mainAxisSize.min + Flexible-гүй — AppBar actions хязгааргүй
+              // өргөн өгдөг тул Flexible ашиглавал layout crash болж
+              // бүх AppBar (back товч) ажиллахгүй болдог
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     Icons.keyboard_arrow_down,
@@ -75,16 +139,13 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     color: theme.colorScheme.onSurface,
                   ),
                   const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      l10n.limitPrice,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                  Text(
+                    l10n.limitPrice,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.onSurface,
                     ),
+                    maxLines: 1,
                   ),
                 ],
               ),
@@ -101,12 +162,12 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'MNDL - ${l10n.buyTab}',
+                        '${_args['symbol']} ${l10n.buyTab}',
                         style: theme.textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.neutral100,
@@ -136,15 +197,13 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                           color: extendedColors.neutral100,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       StockTradingInputBox(
                         label: l10n.limitPrice,
                         controller: _priceController,
                         focusNode: _priceFocusNode,
                         suffixText: l10n.paste,
-                        onSuffixTap: () {},
                       ),
-                      const SizedBox(height: 16),
                       StockTradingQuantitySelector(
                         controller: _quantityController,
                         focusNode: _quantityFocusNode,
@@ -182,7 +241,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                 const Divider(height: 1, thickness: 1),
                 const SizedBox(height: 32),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -193,7 +252,15 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const StockTradingOrderBoard(),
+                      if (_orderBookLoading)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      else
+                        StockTradingOrderBoard.fromApi(_orderBook),
                     ],
                   ),
                 ),
