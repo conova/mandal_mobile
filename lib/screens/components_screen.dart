@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_dropdown.dart';
@@ -17,6 +19,9 @@ class _ComponentsScreenState extends State<ComponentsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final extendedColor = theme.extension<ExtendedColors>()!;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('UI Components'),
@@ -87,8 +92,8 @@ class _ComponentsScreenState extends State<ComponentsScreen> {
 
           const SizedBox(height: 24),
           _buildSectionTitle('Asset Cards'),
-          const AssetCard(icon: Icons.currency_ruble, title: 'Tugrug', subtitle: 'Account', amount: '1,280,000₮'),
-          const AssetCard(icon: Icons.attach_money, title: 'Dollar', subtitle: 'Account', amount: '100\$', isDark: true),
+          AssetCard(icon: CustomSvgIcon('tugrug-01', size: 24, color: extendedColor.bgBase,), title: 'Tugrug', subtitle: 'Account', amount: '1,280,000₮'),
+          AssetCard(icon: CustomSvgIcon('currency-dollar', size: 24, color: extendedColor.bgBase,), title: 'Dollar', subtitle: 'Account', amount: '100\$', isDark: true),
 
           const SizedBox(height: 24),
           _buildSectionTitle('Finance Chart'),

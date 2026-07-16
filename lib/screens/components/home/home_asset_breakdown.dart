@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
+import '../../../theme/app_colors.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/asset_card.dart';
 
@@ -63,7 +65,7 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
   }
 
   /// type/symbol → (icon, fallback route, fallback iconColor)
-  ({IconData icon, String route, Color? color}) _meta(
+  ({Widget icon, String route, Color? color}) _meta(
     String? type,
     ExtendedColors extendedColors,
   ) {
@@ -73,17 +75,17 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
       case 'cash':
       case 'tugrik':
         return (
-          icon: Icons.currency_ruble,
+          icon: CustomSvgIcon('tugrug-01', size: 24, color: extendedColors.bgBase,),
           route: '/currency_detail',
           color: null,
         );
       case 'usd':
       case 'dollar':
-        return (icon: Icons.attach_money, route: '/currency_detail', color: null);
+        return (icon: CustomSvgIcon('currency-dollar', size: 24, color: extendedColors.bgBase,), route: '/currency_detail', color: null);
       case 'bond':
       case 'bonds':
         return (
-          icon: Icons.credit_card,
+          icon: const CustomSvgIcon('bank-note-01', size: 24, color: AppColors.bgBase,),
           route: '/bond_portfolio',
           color: extendedColors.purple,
         );
@@ -91,13 +93,13 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
       case 'stocks':
       case 'equity':
         return (
-          icon: Icons.pie_chart_outline,
+          icon: const CustomSvgIcon('coins-swap-02', size: 24, color: AppColors.bgBase,),
           route: '/stock_portfolio',
           color: extendedColors.orange,
         );
       default:
         return (
-          icon: Icons.account_balance_wallet_outlined,
+          icon: const CustomSvgIcon('wallet-01', size: 24, color: AppColors.bgBase,),
           route: '/stock_portfolio',
           color: extendedColors.neutral300,
         );
