@@ -11,7 +11,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final CustomButtonVariant variant;
   final CustomButtonSize size;
-  final IconData? icon;
+  final Widget? icon;
   final bool isLoading;
 
   const CustomButton({
@@ -89,7 +89,13 @@ class CustomButton extends StatelessWidget {
             ),
           )
         else if (icon != null)
-          Icon(icon, size: iconSize, color: foregroundColor),
+          IconTheme.merge(
+            data: IconThemeData(
+              size: iconSize,
+              color: foregroundColor,
+            ),
+            child: icon!,
+          ),
 
         if (isLoading || icon != null) const SizedBox(width: 4),
 

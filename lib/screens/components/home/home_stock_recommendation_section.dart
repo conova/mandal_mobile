@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/stock_price_row.dart';
 
 /// Home дэлгэцийн "Санал болгох хувьцаа" хэсэг —
@@ -86,8 +87,8 @@ class _HomeStockRecommendationSectionState
               color: extendedColors.orange,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              Icons.currency_exchange,
+            child: CustomSvgIcon(
+              'coins-swap-02',
               color: extendedColors.bgBase,
               size: 32,
             ),

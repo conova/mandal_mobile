@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 
 class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -61,10 +62,7 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
           children: [
             IconButton(
               onPressed: () => Navigator.pushNamed(context, '/notifications'),
-              icon: Icon(
-                Icons.notifications_outlined,
-                color: colorScheme.onSurface,
-              ),
+              icon: const CustomSvgIcon('bell-02', size: 24,),
             ),
             Positioned(
               right: 12,
@@ -82,7 +80,7 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
         ),
         IconButton(
           onPressed: () => Navigator.pushNamed(context, '/profile'),
-          icon: Icon(Icons.person_outline, color: colorScheme.onSurface),
+          icon: const CustomSvgIcon('user-03', size: 24,),
         ),
         const SizedBox(width: 8),
       ],
