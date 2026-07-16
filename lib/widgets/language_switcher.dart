@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../theme/app_state_manager.dart';
 
 class LanguageSwitcher extends StatelessWidget {
@@ -49,16 +50,18 @@ class LanguageSwitcher extends StatelessWidget {
   }
 
   Widget _buildFlag(String locale) {
-    final flagUrl = locale == 'mn'
-        ? 'https://flagcdn.com/w20/mn.png'
-        : 'https://flagcdn.com/w20/gb.png';
-
-    return Image.network(
-      flagUrl,
-      height: 16,
-      width: 22,
-      errorBuilder: (context, error, stackTrace) =>
-          const Icon(Icons.language, size: 16),
-    );
+    if (locale == 'mn') {
+      return const CustomSvgIcon(
+        'mongolian-flag',
+        size: 16,
+        preserveColors: true,
+      );
+    } else {
+      return const CustomSvgIcon(
+        'english-flag',
+        size: 16,
+        preserveColors: true,
+      );
+    }
   }
 }
