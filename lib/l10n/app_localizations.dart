@@ -679,7 +679,7 @@ abstract class AppLocalizations {
   /// No description provided for @inactive.
   ///
   /// In en, this message translates to:
-  /// **'INACTIVE'**
+  /// **'Inactive'**
   String get inactive;
 
   /// No description provided for @changePassword.
@@ -997,7 +997,7 @@ abstract class AppLocalizations {
   /// No description provided for @active.
   ///
   /// In en, this message translates to:
-  /// **'ACTIVE'**
+  /// **'Active'**
   String get active;
 
   /// No description provided for @date.

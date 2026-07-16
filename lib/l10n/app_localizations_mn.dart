@@ -476,7 +476,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'Таны Мандал Капитал апп-д холбогдсон төхөөрөмжийн жагсаалт. Танихгүй төхөөрөмж байвал устгана уу.';
 
   @override
-  String get active => 'ИДЭВХТЭЙ';
+  String get active => 'Идэвхтэй';
 
   @override
   String get date => 'Огноо';
