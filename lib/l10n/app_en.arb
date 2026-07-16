@@ -82,6 +82,7 @@
     "themeColorsSubtitle": "Discover the design system palette",
     "personalInfo": "Personal Information",
     "darkMode": "Enable Darkmode",
+    "lightMode": "Enable Lightmode",
     "myInfo": "My Information",
     "myInfoSubtitle": "Email, Phone Number, Address",
     "incomeAccount": "Income Account",

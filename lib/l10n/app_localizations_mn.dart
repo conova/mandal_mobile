@@ -267,7 +267,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get personalInfo => 'Хувийн мэдээлэл';
 
   @override
-  String get darkMode => 'Darkmode acaax';
+  String get darkMode => 'Darkmode асаах';
+
+  @override
+  String get lightMode => 'Lightmode асаах';
 
   @override
   String get myInfo => 'Миний мэдээлэл';
@@ -303,7 +306,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get biometric => 'Биометрик';
 
   @override
-  String get inactive => 'ИДЭВХГҮЙ';
+  String get inactive => 'Идэвхгүй';
 
   @override
   String get changePassword => 'Нууц үг солих';
