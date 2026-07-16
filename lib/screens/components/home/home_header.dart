@@ -100,7 +100,7 @@ class _HomeHeaderState extends State<HomeHeader> {
           children: [
             IconButton(
               onPressed: () => Navigator.pushNamed(context, '/notifications'),
-              icon: const CustomSvgIcon('bell-02', size: 24),
+              icon: const CustomSvgIcon('bell-02', size: 24,),
             ),
             Positioned(
               right: 12,
@@ -118,7 +118,7 @@ class _HomeHeaderState extends State<HomeHeader> {
         ),
         IconButton(
           onPressed: () => Navigator.pushNamed(context, '/profile'),
-          icon: const CustomSvgIcon('user-03', size: 24),
+          icon: const CustomSvgIcon('user-03', size: 24,),
         ),
         const SizedBox(width: 8),
       ],
