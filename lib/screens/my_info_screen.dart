@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/validators.dart';
 import '../l10n/app_localizations.dart';
@@ -164,44 +166,22 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (userInfo['emailVerified'] == true)
-                          Icon(
-                            Icons.verified_user_outlined,
-                            color: extendedColors.primaryMain,
-                            size: 18,
-                          )
-                        else
-                          Icon(
-                            Icons.warning_amber_outlined,
-                            color: extendedColors.orange,
-                            size: 18,
-                          ),
+                        if (userInfo['emailVerified'] == false)
+                          const CustomSvgIcon('info-circle', size: 20, color: AppColors.yellowMain,),
                         const SizedBox(width: 8),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: extendedColors.primaryMain,
-                          size: 18,
-                        ),
+                        const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
                       ],
                     ),
                   ),
                   InfoCard(
                     label: l10n.phoneNumber,
                     value: userInfo['phone']?.toString() ?? '-',
-                    trailing: Icon(
-                      Icons.edit_outlined,
-                      color: extendedColors.primaryMain,
-                      size: 18,
-                    ),
+                    trailing: const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
                   ),
                   InfoCard(
                     label: l10n.address,
                     value: userInfo['address']?.toString() ?? '-',
-                    trailing: Icon(
-                      Icons.edit_outlined,
-                      color: extendedColors.primaryMain,
-                      size: 18,
-                    ),
+                    trailing: const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
                   ),
                   const SizedBox(height: 40),
                 ],

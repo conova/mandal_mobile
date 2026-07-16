@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
+
+import '../theme/extended_colors.dart';
 
 class AccountCard extends StatelessWidget {
   final String bankName;
@@ -18,6 +22,7 @@ class AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return InkWell(
       onTap: onTap,
@@ -40,6 +45,7 @@ class AccountCard extends StatelessWidget {
                   Text(
                     accountNumber,
                     style: theme.textTheme.titleMedium?.copyWith(
+                      color: extendedColors.neutral100,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -47,13 +53,13 @@ class AccountCard extends StatelessWidget {
                   Text(
                     bankName,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.disabledColor,
+                      color: extendedColors.neutral200,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: theme.disabledColor),
+            const CustomSvgIcon('chevron-right', size: 20,),
           ],
         ),
       ),

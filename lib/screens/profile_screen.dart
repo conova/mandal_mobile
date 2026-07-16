@@ -199,7 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: l10n.myInfo,
               subtitle: l10n.myInfoSubtitle,
               onTap: () => Navigator.pushNamed(context, '/my_info'),
-              trailing: const CustomSvgIcon('info-circle', size: 20,),
+              trailing: const CustomSvgIcon('info-circle', size: 20, color: AppColors.yellowMain,),
             ),
             ProfileListItem(
               icon: const CustomSvgIcon('bank', size: 20,),

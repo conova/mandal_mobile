@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/custom_svg_icon.dart';
+
 class MyInfoBackButton extends StatelessWidget {
   const MyInfoBackButton({super.key});
 
@@ -19,7 +21,7 @@ class MyInfoBackButton extends StatelessWidget {
           ],
         ),
         child: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface, size: 20),
+          icon: const CustomSvgIcon('close-button', size: 24),
           onPressed: () => Navigator.pop(context),
           padding: EdgeInsets.zero,
         ),
