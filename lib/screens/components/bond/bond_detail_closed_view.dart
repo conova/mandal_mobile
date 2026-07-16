@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/market_instrument.dart';
 import 'bond_detail_info_list.dart';
 
 /// Хоёрдогч + ХААЛТТАЙ бондын дизайн: зөвхөн үзүүлэлтүүдийн карт +
 /// танилцуулга үзэх товч.
 class BondDetailClosedView extends StatelessWidget {
-  final Map<String, dynamic>? bond;
+  final MarketInstrument? bond;
 
   const BondDetailClosedView({super.key, required this.bond});
 

@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../common/stock_row_format.dart';
+import '../models/market_instrument.dart';
 import '../services/auth_service.dart';
 import '../widgets/stock_price_row.dart';
 import '../widgets/custom_button.dart';
 
+import '../widgets/empty_state.dart';
 import '../widgets/filter_chip_bar.dart';
 
 /// Filter category-уудтай харгалзах API endpoint-ийн ID
@@ -22,7 +25,7 @@ class StockScreen extends StatefulWidget {
 class _StockScreenState extends State<StockScreen> {
   String? _selectedFilter;
   _StockFilter _activeFilter = _StockFilter.all;
-  List<Map<String, dynamic>> _stocks = [];
+  List<MarketInstrument> _stocks = [];
   bool _isLoading = true;
   String? _error;
   final TextEditingController _searchController = TextEditingController();
@@ -53,7 +56,7 @@ class _StockScreenState extends State<StockScreen> {
   }
 
   /// Хайлт оруулсан тохиолдолд API хариу шууд орно
-  List<Map<String, dynamic>> get _filteredStocks => _stocks;
+  List<MarketInstrument> get _filteredStocks => _stocks;
 
   /// Идэвхтэй filter-ийг search API-руу type болгож шилжүүлэх
   String? _typeForActiveFilter() {
@@ -99,7 +102,7 @@ class _StockScreenState extends State<StockScreen> {
 
       if (!mounted) return;
       setState(() {
-        _stocks = list;
+        _stocks = MarketInstrument.listFromJson(list);
         _isLoading = false;
       });
     } catch (e) {
@@ -113,9 +116,9 @@ class _StockScreenState extends State<StockScreen> {
 
   void _onFilterSelected(String selected, AppLocalizations locale) {
     _StockFilter next = _StockFilter.all;
-    if (selected == locale.ipo)
+    if (selected == locale.ipo) {
       next = _StockFilter.ipo;
-    else if (selected == locale.gainers)
+    } else if (selected == locale.gainers)
       next = _StockFilter.gainers;
     else if (selected == locale.losers)
       next = _StockFilter.losers;
@@ -380,37 +383,14 @@ class _StockScreenState extends State<StockScreen> {
                           ),
                         ),
                       )
-                    // Хайлтад илэрц олдоогүй — дугуй icon + тайлбартай төлөв
+                    // Хайлтад илэрц олдоогүй — дундын EmptyState component
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 112,
-                            height: 112,
-                            decoration: BoxDecoration(
-                              color: extendedColors.bgSecondary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.search,
-                              size: 48,
-                              color: extendedColors.neutral100,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            locale.noResults,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: extendedColors.neutral100,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            locale.noResultsHint,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: extendedColors.neutral300,
-                            ),
+                          EmptyState(
+                            icon: Icons.search,
+                            title: locale.noResults,
+                            hint: locale.noResultsHint,
                           ),
                           // Дээшээ бага зэрэг төвлөрүүлнэ
                           const SizedBox(height: 120),
@@ -434,30 +414,23 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  Widget _buildRow(Map<String, dynamic> row, BuildContext context) {
-    final symbol = row['SYMBOL']?.toString() ?? '';
-    final name = (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '';
-    final closePrice = row['CLOSEPRICE'];
-    final priceChange = row['PRICECHANGE'];
-
-    final priceStr = closePrice == null
+  Widget _buildRow(MarketInstrument row, BuildContext context) {
+    final priceStr = row.closePrice == null
         ? '-'
-        : '${_formatNumber(closePrice.toString())}₮';
+        : formatStockAmount(row.closePrice, decimals: 0);
 
     String changeStr = '-';
     bool? isGrowing;
-    if (priceChange != null) {
-      final pct = double.tryParse(priceChange.toString()) ?? 0;
+    final pct = row.priceChange;
+    if (pct != null) {
       changeStr = '${pct.abs().toStringAsFixed(2)}%';
-      if (pct > 0)
-        isGrowing = true;
-      else if (pct < 0)
-        isGrowing = false;
+      if (pct > 0) isGrowing = true;
+      if (pct < 0) isGrowing = false;
     }
 
     return StockPriceRow(
-      symbol: symbol,
-      name: name,
+      symbol: row.symbol,
+      name: row.name,
       price: priceStr,
       change: changeStr,
       isGrowing: isGrowing,
@@ -465,25 +438,14 @@ class _StockScreenState extends State<StockScreen> {
         context,
         '/stock_detail',
         arguments: {
-          'symbol': symbol,
-          'name': name,
+          'symbol': row.symbol,
+          'name': row.name,
           'price': priceStr,
           'change': changeStr,
           'isGrowing': isGrowing,
-          'stockcode': row['STOCKCODE']?.toString(),
+          'stockcode': row.stockcode,
         },
       ),
     );
-  }
-
-  String _formatNumber(String s) {
-    final n = num.tryParse(s);
-    if (n == null) return s;
-    return n
-        .toStringAsFixed(0)
-        .replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (m) => '${m[1]},',
-        );
   }
 }

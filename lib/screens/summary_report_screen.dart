@@ -5,6 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
+import '../models/summary_report_data.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
@@ -27,8 +28,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   _Period _period = _Period.all;
   bool _isLoading = true;
 
-  List<Map<String, dynamic>> _portfolio = const [];
-  List<Map<String, dynamic>> _transactions = const [];
+  SummaryReportData _report = SummaryReportData.empty;
 
   @override
   void initState() {
@@ -65,14 +65,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _portfolio = (data?['portfolio'] as List? ?? [])
-            .whereType<Map>()
-            .map((e) => Map<String, dynamic>.from(e))
-            .toList();
-        _transactions = (data?['transactions'] as List? ?? [])
-            .whereType<Map>()
-            .map((e) => Map<String, dynamic>.from(e))
-            .toList();
+        _report = SummaryReportData.fromJson(data);
         _isLoading = false;
       });
     } catch (_) {
@@ -107,9 +100,6 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     final selected = await showModalBottomSheet<_Period>(
       context: context,
       backgroundColor: extendedColors.bgBase,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
       builder: (sheetContext) {
         var current = _period;
         return StatefulBuilder(
@@ -324,45 +314,12 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     }
   }
 
-  // ── Portfolio тооцоолол ────────────────────────────────────────────────
+  // ── Model руу дамжуулсан богино нэрс ──────────────────────────────────
 
-  double _num(dynamic v) =>
-      double.tryParse(v?.toString().replaceAll(',', '') ?? '') ?? 0;
-
-  /// Огноо тус бүрийн төрлийн дүнгүүд: { "2026.07.16": { bond: 36, ... } }
-  /// Огноо, төрөл хэд ч байж болно (dynamic).
-  Map<String, Map<String, double>> get _byDate {
-    final result = <String, Map<String, double>>{};
-    for (final row in _portfolio) {
-      final date = row['TXNDATE']?.toString() ?? '';
-      final type = row['TYPE']?.toString().toLowerCase() ?? '';
-      if (date.isEmpty || type.isEmpty) continue;
-      result.putIfAbsent(date, () => {});
-      result[date]![type] = (result[date]![type] ?? 0) + _num(row['AMOUNTMNT']);
-    }
-    return result;
-  }
-
-  /// Эрэмбэлэгдсэн огноонууд ("yyyy.MM.dd" — үсгийн эрэмбэ ажиллана)
-  List<String> get _dates => _byDate.keys.toList()..sort();
-
-  /// Тухайн огнооны нийт хөрөнгө = бүх төрлийн нийлбэр
-  double _totalOf(String date) =>
-      _byDate[date]?.values.fold<double>(0, (s, v) => s + v) ?? 0;
-
-  double _typeOf(String date, String type) => _byDate[date]?[type] ?? 0;
-
-  // ── Transactions ───────────────────────────────────────────────────────
-
-  /// Төрөл бүрээс нэг л мөр ирнэ; ирээгүй бол 0
-  double _txnAmount(String type) {
-    for (final row in _transactions) {
-      if (row['TYPE']?.toString().toLowerCase() == type) {
-        return _num(row['AMOUNTMNT']);
-      }
-    }
-    return 0;
-  }
+  List<String> get _dates => _report.dates;
+  double _totalOf(String date) => _report.totalOf(date);
+  double _typeOf(String date, String type) => _report.typeOf(date, type);
+  double _txnAmount(String type) => _report.txnAmount(type);
 
   String _money(double v) => formatStockAmount(v, decimals: 0);
 
@@ -390,7 +347,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(l10n.summaryReport),
         centerTitle: true,
@@ -403,10 +360,10 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       ),
       body: Stack(
         children: [
-          if (_isLoading && _portfolio.isEmpty)
+          if (_isLoading && _report.isEmpty)
             const Center(child: CircularProgressIndicator())
           // Portfolio дата хоосон — "тайлан үүсээгүй" төлөв
-          else if (_portfolio.isEmpty)
+          else if (_report.isEmpty)
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -513,7 +470,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
               ),
             ),
           // Дата байхгүй үед татах товч харуулахгүй
-          if (_portfolio.isNotEmpty)
+          if (!_report.isEmpty)
             Positioned(
               left: 20,
               right: 20,
@@ -625,7 +582,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.2),
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

@@ -29,7 +29,7 @@ class ProfileToggleItem extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant.withOpacity(0.5),
+            color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(14),
           ),
@@ -55,7 +55,7 @@ class ProfileToggleItem extends StatelessWidget {
         trailing: Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: theme.primaryColor,
+          activeThumbColor: theme.primaryColor,
         ),
       ),
     );

@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/empty_state.dart';
 
 /// API row: { TAGID, SYMBOL, STOCKNAME, CLOSEPRICE, OPENPRICE, PRICECHANGE,
 ///            STOCKTYPE, TYPENAME, BOARDNAME }
@@ -274,40 +275,13 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
           Divider(color: extendedColors.neutral500, height: 1),
           const SizedBox(height: 16),
           if (_watchlistItems.isEmpty)
-            // Хоосон төлөв — дугуй icon + тайлбар
+            // Хоосон төлөв — дундын EmptyState component
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 64),
-              child: Column(
-                children: [
-                  Container(
-                    width: 112,
-                    height: 112,
-                    decoration: BoxDecoration(
-                      color: extendedColors.bgSecondary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.star_border,
-                      size: 48,
-                      color: extendedColors.neutral100,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    AppLocalizations.of(context)!.emptyWatchlist,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppLocalizations.of(context)!.emptyWatchlistHint,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral300,
-                    ),
-                  ),
-                ],
+              child: EmptyState(
+                icon: Icons.star_border,
+                title: AppLocalizations.of(context)!.emptyWatchlist,
+                hint: AppLocalizations.of(context)!.emptyWatchlistHint,
               ),
             )
           else ...[

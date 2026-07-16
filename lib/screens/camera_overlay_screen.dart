@@ -115,7 +115,7 @@ class _CameraOverlayScreenState extends State<CameraOverlayScreen> {
           title,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: AppTextStyles.light,
-            color: theme.colorScheme.onBackground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ),

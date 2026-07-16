@@ -96,7 +96,7 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
     final savedUser = authService.savedUser;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),

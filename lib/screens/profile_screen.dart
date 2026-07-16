@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_state_manager.dart';
-import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../widgets/language_switcher.dart';
@@ -140,7 +139,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final biometricEnabled = context.watch<AuthService>().isBiometricEnabled;
 

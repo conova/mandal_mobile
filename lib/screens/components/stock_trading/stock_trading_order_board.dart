@@ -3,14 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
-
-/// Захиалгын самбарын нэг мөр (авах эсвэл зарах тал)
-class OrderBookEntry {
-  final double price;
-  final int quantity;
-
-  const OrderBookEntry({required this.price, required this.quantity});
-}
+import '../../../models/order_book_entry.dart';
 
 /// Захиалгын самбар — /stocks/order_book-ийн BUY/SELL мөрүүдийг зэрэгцүүлж
 /// харуулна. Талбар бүрийн дэвсгэрийн дүүргэлт нь тухайн талын хамгийн их
@@ -24,39 +17,6 @@ class StockTradingOrderBoard extends StatelessWidget {
     this.buyOrders = const [],
     this.sellOrders = const [],
   });
-
-  /// /stocks/order_book-ийн түүхий мөрүүдээс угсарна:
-  /// ORDER_TYPE-аар хувааж PRICE_RANK-аар эрэмбэлнэ.
-  factory StockTradingOrderBoard.fromApi(
-    List<Map<String, dynamic>> rows, {
-    Key? key,
-  }) {
-    List<OrderBookEntry> parse(String type) {
-      final filtered =
-          rows
-              .where((r) => r['ORDER_TYPE']?.toString().toUpperCase() == type)
-              .toList()
-            ..sort((a, b) {
-              final ra = int.tryParse(a['PRICE_RANK']?.toString() ?? '') ?? 0;
-              final rb = int.tryParse(b['PRICE_RANK']?.toString() ?? '') ?? 0;
-              return ra.compareTo(rb);
-            });
-      return filtered
-          .map(
-            (r) => OrderBookEntry(
-              price: double.tryParse(r['PRICE']?.toString() ?? '') ?? 0,
-              quantity: int.tryParse(r['TOTAL_CNT']?.toString() ?? '') ?? 0,
-            ),
-          )
-          .toList();
-    }
-
-    return StockTradingOrderBoard(
-      key: key,
-      buyOrders: parse('BUY'),
-      sellOrders: parse('SELL'),
-    );
-  }
 
   /// Үнийг мянгачилж форматлана: 1000100.12 → "1,000,100.12₮"
   String _formatPrice(double price) {

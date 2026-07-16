@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/app_colors.dart';
 
 class MarkReadBottomSheet extends StatelessWidget {
   const MarkReadBottomSheet({super.key});
@@ -13,10 +12,7 @@ class MarkReadBottomSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      decoration: BoxDecoration(color: colorScheme.surface),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -69,7 +65,7 @@ class MarkReadBottomSheet extends StatelessWidget {
             child: TextButton(
               onPressed: () => Navigator.pop(context, false),
               style: TextButton.styleFrom(
-                backgroundColor: colorScheme.surfaceVariant,
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 foregroundColor: colorScheme.onSurfaceVariant,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

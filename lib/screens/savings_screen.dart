@@ -31,7 +31,7 @@ class _SavingsScreenState extends State<SavingsScreen> with SingleTickerProvider
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         backgroundColor: colorScheme.surface,
         elevation: 0,

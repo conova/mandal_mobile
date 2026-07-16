@@ -33,7 +33,6 @@ class CustomButton extends StatelessWidget {
     // Colors based on variants
     Color backgroundColor;
     Color foregroundColor;
-    BorderSide borderSide = BorderSide.none;
 
     switch (variant) {
       case CustomButtonVariant.primary:
@@ -46,7 +45,7 @@ class CustomButton extends StatelessWidget {
         break;
       case CustomButtonVariant.tertiary:
         backgroundColor = extendedColors.bgTertiary;
-        foregroundColor = theme.colorScheme.onBackground;
+        foregroundColor = theme.colorScheme.onSurface;
         break;
       case CustomButtonVariant.text:
         backgroundColor = Colors.transparent;

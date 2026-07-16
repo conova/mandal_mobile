@@ -11,7 +11,7 @@ class ChangePasswordVerifyScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: const AuthStepAppBar(stepText: '1/2'),
       body: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 24),

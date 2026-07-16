@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../common/stock_row_format.dart';
+import '../../models/market_instrument.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
+import '../../widgets/circle_back_button.dart';
 import '../../widgets/custom_button.dart';
 
 /// Барьцаалах захиалга — ширхэгээ сонгоод хүлээн авах дүнгээ хараад
@@ -20,7 +22,7 @@ class _PledgeBondOrderScreenState extends State<PledgeBondOrderScreen> {
       TextEditingController(text: '0');
   final FocusNode _quantityFocus = FocusNode();
 
-  Map<String, dynamic>? _bond;
+  MarketInstrument? _bond;
   bool _argsParsed = false;
 
   /// Нэгж үнэ, шимтгэл — API-д одоогоор байхгүй тул демо утгууд.
@@ -34,7 +36,9 @@ class _PledgeBondOrderScreenState extends State<PledgeBondOrderScreen> {
     if (_argsParsed) return;
     _argsParsed = true;
     final args = ModalRoute.of(context)?.settings.arguments;
-    if (args is Map) _bond = Map<String, dynamic>.from(args);
+    if (args is Map) {
+      _bond = MarketInstrument.fromJson(Map<String, dynamic>.from(args));
+    }
   }
 
   @override
@@ -44,16 +48,13 @@ class _PledgeBondOrderScreenState extends State<PledgeBondOrderScreen> {
     super.dispose();
   }
 
-  double? _num(String key) =>
-      double.tryParse(_bond?[key]?.toString().replaceAll(',', '') ?? '');
+  bool get _isForeign => _bond?.isForeign ?? false;
 
-  bool get _isForeign => _bond?['ISFOREIGN']?.toString() == '1';
-
-  double get _unitPrice => _num('CLOSEPRICE') ?? _fallbackUnitPrice;
+  double get _unitPrice => _bond?.closePrice ?? _fallbackUnitPrice;
 
   /// Боломжит ширхэг — эзэмшлийн дүнг нэгж үнэд хуваасан
   int get _maxQuantity {
-    final amt = _num('AMT') ?? 0;
+    final amt = _bond?.amt ?? 0;
     if (_unitPrice <= 0) return 0;
     return (amt / _unitPrice).floor();
   }
@@ -81,7 +82,7 @@ class _PledgeBondOrderScreenState extends State<PledgeBondOrderScreen> {
       context,
       '/pledge_bond_confirmation',
       arguments: {
-        'bond': _bond,
+        'bond': _bond?.raw,
         'quantity': _quantity,
         'unitPrice': _unitPrice,
         'fee': _fee,
@@ -96,38 +97,17 @@ class _PledgeBondOrderScreenState extends State<PledgeBondOrderScreen> {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    final name = _bond == null
-        ? ''
-        : (_bond!['STOCKNAME'] ?? _bond!['COMPNAME'] ?? _bond!['SYMBOL'])
-                ?.toString() ??
-            '';
-    final subtitle =
-        (_bond?['COMPNAME2'] ?? _bond?['TYPENAME'])?.toString() ?? '';
+    final name = _bond?.name ?? '';
+    final subtitle = _bond?.subtitle ?? '';
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: extendedColors.bgSecondary,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                size: 20,
-                color: extendedColors.neutral100,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: CircleBackButton(),
         ),
       ),
       body: SingleChildScrollView(
@@ -175,7 +155,7 @@ class _PledgeBondOrderScreenState extends State<PledgeBondOrderScreen> {
                 Flexible(
                   child: Text(
                     formatStockAmount(
-                      _bond?['AMT'],
+                      _bond?.amt,
                       isForeign: _isForeign,
                       decimals: 0,
                     ),

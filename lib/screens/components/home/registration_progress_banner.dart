@@ -35,7 +35,7 @@ class RegistrationProgressBanner extends StatelessWidget {
                     Text(
                       l10n.khurSystem,
                       style: theme.textTheme.titleLarge?.copyWith(
-                        color: theme.colorScheme.onBackground,
+                        color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 1,
@@ -54,7 +54,7 @@ class RegistrationProgressBanner extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          percent.toString() + "%",
+                          "$percent%",
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: extendedColors.neutral100,
                             fontWeight: FontWeight.w400,

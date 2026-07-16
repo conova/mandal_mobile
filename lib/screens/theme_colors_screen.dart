@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/custom_snackbar.dart';
 
 class ThemeColorsScreen extends StatelessWidget {
   const ThemeColorsScreen({super.key});
@@ -25,7 +24,7 @@ class ThemeColorsScreen extends StatelessWidget {
             _ColorBox(name: 'Info', color: Colors.blue),
           ]),
           _buildSection('Neutral Colors', [
-            _ColorBox(name: 'Background', color: colorScheme.background),
+            _ColorBox(name: 'Background', color: colorScheme.surface),
             _ColorBox(name: 'Surface', color: colorScheme.surface),
             _ColorBox(name: 'Grey 100', color: Colors.grey[100]!),
             _ColorBox(name: 'Grey 300', color: Colors.grey[300]!),

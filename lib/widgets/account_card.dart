@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 
 import '../theme/extended_colors.dart';
@@ -30,7 +29,7 @@ class AccountCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceVariant.withOpacity(0.3),
+          color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
           borderRadius: BorderRadius.circular(16),
           border: isPrimary
               ? Border.all(color: theme.primaryColor.withOpacity(0.5))

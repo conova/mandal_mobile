@@ -31,7 +31,7 @@ class ProfileHeader extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 45,
-            backgroundColor: colorScheme.surfaceVariant,
+            backgroundColor: colorScheme.surfaceContainerHighest,
             child: (photoUrl != null && photoUrl!.isNotEmpty)
                 ? ClipOval(
                     child: Image.network(

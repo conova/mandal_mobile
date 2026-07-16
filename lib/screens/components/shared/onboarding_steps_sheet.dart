@@ -83,7 +83,7 @@ class OnboardingStepsSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ...steps.map((step) => _buildStepItem(context, step)).toList(),
+                ...steps.map((step) => _buildStepItem(context, step)),
                 const SizedBox(height: 24),
                 Container(
                   width: double.infinity,

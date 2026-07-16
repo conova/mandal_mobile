@@ -245,7 +245,7 @@ class _DocAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Icon(
               Icons.arrow_back,
               size: 20,
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           onPressed: () => Navigator.pop(context),
@@ -273,7 +273,7 @@ class _DocHeader extends StatelessWidget {
         Text(
           l10n.document,
           style: theme.textTheme.headlineMedium?.copyWith(
-            color: theme.colorScheme.onBackground,
+            color: theme.colorScheme.onSurface,
             fontWeight: AppTextStyles.semiBold,
           ),
         ),
@@ -423,7 +423,7 @@ class _DocItem extends StatelessWidget {
                     title,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: AppTextStyles.light,
-                      color: theme.colorScheme.onBackground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -506,7 +506,7 @@ class _DocRequirements extends StatelessWidget {
           l10n.photoRequirements,
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: AppTextStyles.bold,
-            color: theme.colorScheme.onBackground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -558,7 +558,7 @@ class _RequirementItem extends StatelessWidget {
             child: Text(
               text,
               style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.onBackground.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
                 fontWeight: AppTextStyles.light,
               ),
             ),

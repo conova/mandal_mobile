@@ -16,7 +16,6 @@ class BondSellScreen extends StatefulWidget {
 
 class _BondSellScreenState extends State<BondSellScreen> {
   int _quantity = 1;
-  double _price = 1000000;
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +84,8 @@ class _BondSellScreenState extends State<BondSellScreen> {
               min: 990000,
               max: 1010000,
               initialValue: 1000000,
-              onChanged: (value) {
-                setState(() {
-                  _price = value;
-                });
-              },
+              // Сонгосон үнэ одоогоор хаана ч ашиглагддаггүй (демо дэлгэц)
+              onChanged: (_) {},
             ),
             const SizedBox(height: 24),
             BondQuantitySelector(

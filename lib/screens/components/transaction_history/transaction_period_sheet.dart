@@ -98,10 +98,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: BoxDecoration(
-        color: extendedColors.bgBase,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      decoration: BoxDecoration(color: extendedColors.bgBase),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

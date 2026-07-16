@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
 import '../language_switcher.dart';
 import '../logo.dart';
 
@@ -15,7 +14,7 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
     final colorScheme = theme.colorScheme;
 
     return AppBar(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       elevation: 0,
       leadingWidth: 70,
       leading: showLogo
@@ -46,7 +45,7 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
               height: 32,
               child: Icon(
                 Icons.close,
-                color: colorScheme.onBackground,
+                color: colorScheme.onSurface,
                 size: 24,
               ),
             ),

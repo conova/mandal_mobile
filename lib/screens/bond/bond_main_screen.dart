@@ -5,9 +5,11 @@ import '../components/bond/bond_status_info_sheet.dart';
 import '../components/bond/pledge_bond_banner.dart';
 import '../components/bond/my_bond_card.dart';
 import '../../common/stock_row_format.dart';
+import '../../models/market_instrument.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
+import '../../widgets/section_title.dart';
 
 class BondMainScreen extends StatefulWidget {
   const BondMainScreen({super.key});
@@ -21,10 +23,10 @@ class _BondMainScreenState extends State<BondMainScreen>
   late TabController _tabController;
 
   bool _myBondsLoading = true;
-  List<Map<String, dynamic>> _myBonds = const [];
+  List<MarketInstrument> _myBonds = const [];
 
   bool _bondListLoading = true;
-  List<Map<String, dynamic>> _bondList = const [];
+  List<MarketInstrument> _bondList = const [];
 
   @override
   void initState() {
@@ -40,7 +42,7 @@ class _BondMainScreenState extends State<BondMainScreen>
       final rows = await auth.getMyBonds();
       if (!mounted) return;
       setState(() {
-        _myBonds = rows;
+        _myBonds = MarketInstrument.listFromJson(rows);
         _myBondsLoading = false;
       });
     } catch (_) {
@@ -55,7 +57,7 @@ class _BondMainScreenState extends State<BondMainScreen>
       final rows = await auth.getBondList();
       if (!mounted) return;
       setState(() {
-        _bondList = rows;
+        _bondList = MarketInstrument.listFromJson(rows);
         _bondListLoading = false;
       });
     } catch (_) {
@@ -125,13 +127,9 @@ class _BondMainScreenState extends State<BondMainScreen>
     ExtendedColors extendedColors,
     ThemeData theme,
   ) {
-    // /stocks/bondlist-ийг MARKET талбараар анхдагч/хоёрдогч гэж хуваана
-    final primary = _bondList
-        .where((b) => b['MARKET']?.toString().toLowerCase() == 'primary')
-        .toList();
-    final secondary = _bondList
-        .where((b) => b['MARKET']?.toString().toLowerCase() != 'primary')
-        .toList();
+    // /stocks/bondlist-ийг зах зээлээр нь анхдагч/хоёрдогч гэж хуваана
+    final primary = _bondList.where((b) => b.isPrimaryMarket).toList();
+    final secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
 
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -156,22 +154,12 @@ class _BondMainScreenState extends State<BondMainScreen>
           )
         else ...[
           if (primary.isNotEmpty) ...[
-            _buildSectionHeader(
-              l10n.primaryMarket,
-              extendedColors,
-              theme,
-              extendedColors.primaryMain,
-            ),
+            SectionTitle(l10n.primaryMarket),
             ..._buildBondCards(primary, l10n, extendedColors),
             const SizedBox(height: 40),
           ],
           if (secondary.isNotEmpty) ...[
-            _buildSectionHeader(
-              l10n.secondaryMarket,
-              extendedColors,
-              theme,
-              extendedColors.primaryMain,
-            ),
+            SectionTitle(l10n.secondaryMarket),
             ..._buildBondCards(secondary, l10n, extendedColors),
           ],
         ],
@@ -181,7 +169,7 @@ class _BondMainScreenState extends State<BondMainScreen>
 
   /// Бондын картуудыг хооронд нь Divider-тэй жагсаана
   List<Widget> _buildBondCards(
-    List<Map<String, dynamic>> bonds,
+    List<MarketInstrument> bonds,
     AppLocalizations l10n,
     ExtendedColors extendedColors,
   ) {
@@ -198,54 +186,42 @@ class _BondMainScreenState extends State<BondMainScreen>
   }
 
   /// /stocks/bondlist мөрөөс BondMarketCard угсарна
-  Widget _buildBondListCard(Map<String, dynamic> bond, AppLocalizations l10n) {
-    final isForeign = bond['ISFOREIGN']?.toString() == '1';
-    final isOpen = bond['ISOPEN']?.toString() == '1';
-    final term = bond['TERM']?.toString() ?? '';
+  Widget _buildBondListCard(MarketInstrument bond, AppLocalizations l10n) {
     // Захиалгын явц: ORDEREDAMT / AMT
-    final progress = orderProgress(bond['ORDEREDAMT'], bond['AMT']);
+    final progress = orderProgress(bond.orderedAmt, bond.amt);
 
     return BondMarketCard(
-      bond,
-      title:
-          (bond['STOCKNAME'] ?? bond['COMPNAME'] ?? bond['SYMBOL'])
-              ?.toString() ??
-          '',
-      subtitle: (bond['COMPNAME2'] ?? bond['TYPENAME'])?.toString() ?? '',
-      status: bond['ISFOREIGN']?.toString() == "1"
+      bond.raw,
+      title: bond.name,
+      subtitle: bond.subtitle,
+      status: bond.isForeign
           ? l10n.foreign
-          : isOpen
-          ? l10n.open
-          : l10n.closed,
-      tenure: term.isEmpty
+          : (bond.isOpen ? l10n.open : l10n.closed),
+      tenure: bond.term.isEmpty
           ? '-'
-          : (num.tryParse(term) != null ? '$term сар' : term),
-      yield: formatIntRate(bond['INTRATE']),
+          : (num.tryParse(bond.term) != null ? '${bond.term} сар' : bond.term),
+      yield: formatIntRate(bond.intRate),
       totalAmount: formatCompactAmount(
-        bond['AMT'],
+        bond.amt,
         languageCode: Localizations.localeOf(context).languageCode,
       ),
       progress: progress,
-      payday: bond['PAYDAY']?.toString(),
-      market: bond['MARKET']?.toString(),
+      payday: bond.payday,
+      market: bond.market,
       progressLabel: progress == null
           ? ''
           : formatStockAmount(
-              bond['ORDEREDAMT'],
-              isForeign: bond['ISFOREIGN']?.toString() == '1',
+              bond.orderedAmt,
+              isForeign: bond.isForeign,
               decimals: 0,
             ),
       progressLabel2: progress == null
           ? ''
-          : formatStockAmount(
-              bond['AMT'],
-              isForeign: bond['ISFOREIGN']?.toString() == '1',
-              decimals: 0,
-            ),
+          : formatStockAmount(bond.amt, isForeign: bond.isForeign, decimals: 0),
       onInfoTap: () => BondStatusInfoSheet.showForBond(
         context,
-        isOpen: isOpen,
-        isForeign: isForeign,
+        isOpen: bond.isOpen,
+        isForeign: bond.isForeign,
       ),
       context: context,
     );
@@ -275,12 +251,7 @@ class _BondMainScreenState extends State<BondMainScreen>
           },
         ),
         const SizedBox(height: 48),
-        _buildSectionHeader(
-          l10n.myBond,
-          extendedColors,
-          theme,
-          extendedColors.primaryMain,
-        ),
+        SectionTitle(l10n.myBond),
         const SizedBox(height: 24),
         if (_myBondsLoading)
           const Padding(
@@ -309,67 +280,35 @@ class _BondMainScreenState extends State<BondMainScreen>
 
   /// /stocks/mybonds мөрөөс MyBondCard угсарна
   Widget _buildMyBondCard(
-    Map<String, dynamic> bond,
+    MarketInstrument bond,
     AppLocalizations l10n,
     ExtendedColors extendedColors,
   ) {
-    final isForeign = bond['ISFOREIGN']?.toString() == '1';
-    final isOpen = bond['ISOPEN']?.toString() == '1';
-    final symbol = bond['SYMBOL']?.toString() ?? '';
-    final name =
-        (bond['STOCKNAME'] ?? bond['COMPNAME'] ?? symbol)?.toString() ?? '';
-
     return MyBondCard(
-      title: name,
-      subtitle: (bond['COMPNAME2'] ?? bond['TYPENAME'])?.toString() ?? '',
-      status: isForeign ? l10n.foreign : (isOpen ? l10n.open : l10n.closed),
-      statusBgColor: isOpen
+      title: bond.name,
+      subtitle: bond.subtitle,
+      status: bond.isForeign
+          ? l10n.foreign
+          : (bond.isOpen ? l10n.open : l10n.closed),
+      statusBgColor: bond.isOpen
           ? extendedColors.primary100
           : extendedColors.bgSecondary,
-      statusTextColor: isOpen
+      statusTextColor: bond.isOpen
           ? extendedColors.primaryMain
           : extendedColors.neutral100,
-      ownedAmount: formatStockAmount(bond['AMT'], isForeign: isForeign),
-      interestRate: formatIntRate(bond['INTRATE']),
+      ownedAmount: formatStockAmount(bond.amt, isForeign: bond.isForeign),
+      interestRate: formatIntRate(bond.intRate),
       onInfoTap: () => BondStatusInfoSheet.showForBond(
         context,
-        isOpen: isOpen,
-        isForeign: isForeign,
+        isOpen: bond.isOpen,
+        isForeign: bond.isForeign,
       ),
       onSellPressed: () => Navigator.pushNamed(
         context,
         '/bond_sell',
-        arguments: {'symbol': symbol, 'name': name},
+        arguments: {'symbol': bond.symbol, 'name': bond.name},
       ),
     );
   }
 
-  Widget _buildSectionHeader(
-    String title,
-    ExtendedColors extendedColors,
-    ThemeData theme,
-    Color underlineColor,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: theme.textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: extendedColors.neutral100,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          width: 32,
-          height: 4,
-          decoration: BoxDecoration(
-            color: underlineColor,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-      ],
-    );
-  }
 }

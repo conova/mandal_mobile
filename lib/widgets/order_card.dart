@@ -113,7 +113,7 @@ class OrderCard extends StatelessWidget {
                 _buildBadge(
                   theme,
                   status == OrderStatus.open ? l10n.open : l10n.closed,
-                  colorScheme.surfaceVariant,
+                  colorScheme.surfaceContainerHighest,
                   colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 8),
@@ -124,7 +124,7 @@ class OrderCard extends StatelessWidget {
                       : (market == MarketType.stock
                             ? l10n.stock
                             : l10n.foreign),
-                  colorScheme.surfaceVariant,
+                  colorScheme.surfaceContainerHighest,
                   colorScheme.onSurfaceVariant,
                 ),
               ],

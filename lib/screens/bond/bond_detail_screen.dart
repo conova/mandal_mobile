@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../models/market_instrument.dart';
 import '../components/bond/bond_action_bottom_bar.dart';
 import '../components/bond/bond_detail_closed_view.dart';
 import '../components/bond/bond_detail_foreign_view.dart';
@@ -21,7 +22,7 @@ class BondDetailScreen extends StatefulWidget {
 class _BondDetailScreenState extends State<BondDetailScreen> {
   int _quantity = 0;
 
-  Map<String, dynamic>? _bond;
+  MarketInstrument? _bond;
   bool _argsParsed = false;
 
   @override
@@ -34,17 +35,21 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
     //   • {'bond': {...}, 'languageCode': 'mn'} — BondMarketCard
     //   • {...} шууд түүхий мөр — home recommendation carousel
     final args = ModalRoute.of(context)?.settings.arguments;
-    if (args is Map) {
+    if (args is MarketInstrument) {
+      _bond = args;
+    } else if (args is Map) {
       if (args['bond'] is Map) {
-        _bond = Map<String, dynamic>.from(args['bond'] as Map);
+        _bond = MarketInstrument.fromJson(
+          Map<String, dynamic>.from(args['bond'] as Map),
+        );
       } else if (!args.containsKey('bond')) {
-        _bond = Map<String, dynamic>.from(args);
+        _bond = MarketInstrument.fromJson(Map<String, dynamic>.from(args));
       }
     }
   }
 
-  bool get _isForeign => _bond?['ISFOREIGN']?.toString() == '1';
-  bool get _isOpen => _bond?['ISOPEN']?.toString() == '1';
+  bool get _isForeign => _bond?.isForeign ?? false;
+  bool get _isOpen => _bond?.isOpen ?? false;
 
   /// Гадаад → progress дизайн; нээлттэй → арилжааны дизайн;
   /// бусад (хаалттай / демо) → мэдээллийн дизайн
@@ -106,7 +111,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
               amount: _isForeign ? '3,523.21\$' : '10,000,000₮',
               buttonText: l10n.buyBond,
               onPressed: () =>
-                  Navigator.pushNamed(context, '/bond_buy', arguments: _bond),
+                  Navigator.pushNamed(context, '/bond_buy', arguments: _bond?.raw),
             ),
     );
   }

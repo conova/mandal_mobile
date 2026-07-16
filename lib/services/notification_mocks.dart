@@ -1,4 +1,4 @@
-import 'notification_api_service.dart';
+import '../models/api_notification.dart';
 
 /// Backend Notification Gateway-гүй үед UI-г preview хийх / тест хийхэд
 /// зориулсан жишээ notification-ууд.

@@ -24,7 +24,7 @@ class PepDefinitionScreen extends StatelessWidget {
             Text(
               l10n.pepDefinition,
               style: theme.textTheme.headlineMedium?.copyWith(
-                color: theme.colorScheme.onBackground,
+                color: theme.colorScheme.onSurface,
                 fontWeight: AppTextStyles.semiBold,
               ),
             ),
@@ -32,7 +32,7 @@ class PepDefinitionScreen extends StatelessWidget {
             Text(
               l10n.pepDefinitionFull,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onBackground,
+                color: theme.colorScheme.onSurface,
                 fontWeight: AppTextStyles.extraLight,
               ),
             ),
@@ -68,7 +68,7 @@ class _PepAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Icon(
               Icons.arrow_back,
               size: 20,
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           onPressed: () => Navigator.pop(context),

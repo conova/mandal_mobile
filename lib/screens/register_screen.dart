@@ -6,7 +6,6 @@ import '../widgets/auth/auth_footer.dart';
 import '../widgets/custom_snackbar.dart';
 import '../services/auth_service.dart';
 import 'components/register/register_form.dart';
-import 'components/register/register_contact_info.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -102,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AuthAppBar(showLogo: true, onClose: () => Navigator.pop(context)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -114,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               l10n.registerTitle,
               style: theme.textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onBackground,
+                color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 12),

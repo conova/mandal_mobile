@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../widgets/custom_input.dart';
 import '../../../../widgets/custom_button.dart';
-import '../../../../theme/extended_colors.dart';
 import 'password_validation_rules.dart';
 
 class AuthPasswordForm extends StatefulWidget {

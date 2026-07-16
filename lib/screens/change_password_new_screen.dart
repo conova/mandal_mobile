@@ -54,7 +54,7 @@ class ChangePasswordNewScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: const AuthStepAppBar(stepText: '2/2'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),

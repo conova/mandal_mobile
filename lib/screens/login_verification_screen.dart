@@ -14,7 +14,7 @@ class LoginVerificationScreen extends StatelessWidget {
     final sessionId = args?['sessionId'] as String?;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: const AuthStepAppBar(stepText: '1/2'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),

@@ -73,7 +73,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
     final isPrimary = args['isPrimary'] == true;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -136,7 +136,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
