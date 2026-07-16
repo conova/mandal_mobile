@@ -30,7 +30,8 @@ class ProfileToggleItem extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: colorScheme.surfaceVariant.withOpacity(0.5),
-            shape: BoxShape.circle,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(14),
           ),
           child: icon,
         ),
