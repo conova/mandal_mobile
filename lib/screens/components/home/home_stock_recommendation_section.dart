@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
+import '../../../theme/app_colors.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/stock_price_row.dart';
@@ -87,9 +88,9 @@ class _HomeStockRecommendationSectionState
               color: extendedColors.orange,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: CustomSvgIcon(
+            child: const CustomSvgIcon(
               'coins-swap-02',
-              color: extendedColors.bgBase,
+              color: AppColors.bgBase,
               size: 32,
             ),
           ),

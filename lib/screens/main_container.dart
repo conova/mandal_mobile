@@ -56,25 +56,25 @@ class _MainContainerState extends State<MainContainer> {
             label: l10n.portfolio,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.money_outlined),
-            activeIcon: const Icon(Icons.money),
+            icon: const CustomSvgIcon('bank-note-01'),
+            activeIcon: const CustomSvgIcon('bank-note-01'),
             label: l10n.bonds,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.swap_horizontal_circle_outlined),
-            activeIcon: const Icon(Icons.swap_horizontal_circle),
+            icon: const CustomSvgIcon('coins-swap-02'),
+            activeIcon: const CustomSvgIcon('coins-swap-02'),
             label: l10n.stocks,
           ),
           BottomNavigationBarItem(
             icon: Badge(
               label: const Text('2'),
               backgroundColor: theme.colorScheme.error,
-              child: const Icon(Icons.article_outlined),
+              child: const CustomSvgIcon('file-02'),
             ),
             activeIcon: Badge(
               label: const Text('2'),
               backgroundColor: theme.colorScheme.error,
-              child: const Icon(Icons.article),
+              child: const CustomSvgIcon('file-02'),
             ),
             label: l10n.orders,
           ),

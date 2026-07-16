@@ -3,7 +3,7 @@ import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 class AssetCard extends StatelessWidget {
-  final IconData icon;
+  final Widget icon;
   final String title;
   final String subtitle;
   final String amount;
@@ -43,7 +43,7 @@ class AssetCard extends StatelessWidget {
                   (isDark ? colorScheme.onSurface : theme.primaryColor),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: extendedColors.bgBase, size: 24),
+            child: icon,
           ),
           const SizedBox(width: 16),
           Expanded(
