@@ -183,8 +183,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Personal Information Section
             const ProfileSectionHeader(title: 'Хувийн мэдээлэл'),
             ProfileToggleItem(
-              icon: const CustomSvgIcon('moon-01', size: 20),
-              title: l10n.darkMode,
+              icon: AppStateManager.instance.themeMode == ThemeMode.dark
+                ? const CustomSvgIcon('sun', size: 20)
+                : const CustomSvgIcon('moon-01', size: 20),
+              title: AppStateManager.instance.themeMode != ThemeMode.dark
+                ? l10n.darkMode
+                : l10n.lightMode,
               value: theme.brightness == Brightness.dark,
               onChanged: (val) {
                 AppStateManager.instance.toggleTheme(val);

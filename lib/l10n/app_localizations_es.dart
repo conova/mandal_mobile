@@ -272,6 +272,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get darkMode => 'Enable Darkmode';
 
   @override
+  String get lightMode => 'Enable Lightmode';
+
+  @override
   String get myInfo => 'My Information';
 
   @override
