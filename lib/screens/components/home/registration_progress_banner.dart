@@ -29,6 +29,7 @@ class RegistrationProgressBanner extends StatelessWidget {
             children: [
               Expanded(
                 child: Column(
+                  spacing: 0,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -40,7 +41,6 @@ class RegistrationProgressBanner extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Flexible(
