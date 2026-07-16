@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 
 class ProfileListItem extends StatelessWidget {
-  final IconData icon;
+  final Widget icon;
   final String title;
   final String? subtitle;
   final VoidCallback onTap;
@@ -44,11 +45,7 @@ class ProfileListItem extends StatelessWidget {
               color: colorScheme.surfaceVariant.withOpacity(0.5),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: iconColor ?? colorScheme.onSurface,
-              size: 22,
-            ),
+            child: icon,
           ),
           title: Text(
             title,
@@ -73,11 +70,7 @@ class ProfileListItem extends StatelessWidget {
               if (trailing != null) trailing!,
               if (trailing != null && showArrow) const SizedBox(width: 8),
               if (showArrow)
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: extendedColors.neutral200,
-                ),
+                const CustomSvgIcon('chevron-right', size: 20,),
             ],
           ),
         ),

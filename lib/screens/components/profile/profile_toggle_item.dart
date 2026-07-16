@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 class ProfileToggleItem extends StatelessWidget {
-  final IconData icon;
+  final Widget icon;
   final String title;
   final String? subtitle;
   final bool value;
@@ -32,7 +32,7 @@ class ProfileToggleItem extends StatelessWidget {
             color: colorScheme.surfaceVariant.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: extendedColors.neutral100, size: 22),
+          child: icon,
         ),
         title: Text(
           title,
