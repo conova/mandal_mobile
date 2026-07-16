@@ -403,6 +403,7 @@ class _StockScreenState extends State<StockScreen> {
           'price': priceStr,
           'change': changeStr,
           'isGrowing': isGrowing,
+          'stockcode': row['STOCKCODE']?.toString(),
         },
       ),
     );

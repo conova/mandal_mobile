@@ -516,19 +516,74 @@ class AuthService with ChangeNotifier {
     ),
   );
 
+  /// Session дууссан (401, refresh ч амжилтгүй) үед дуудагдана —
+  /// main.dart-аас login дэлгэц рүү шилжүүлэхээр тохируулна.
+  void Function()? onSessionExpired;
+
+  /// Session-ийг цэвэрлээд login руу шилжүүлнэ. Зэрэг олон 401 ирэхэд
+  /// нэг л удаа ажиллана.
+  Future<void> _handleSessionExpired() async {
+    if (_accessToken == null) return; // аль хэдийн гарсан
+    await clearSession();
+    onSessionExpired?.call();
+  }
+
   /// Authentication header-тай Dio (`Authorization: Bearer <token>`).
   /// Нэвтэрсэн хэрэглэгчийн API дуудлагуудад ашиглана.
-  Dio get _authedDio => Dio(
-    BaseOptions(
-      baseUrl: ApiConfig.baseUrl,
-      connectTimeout: ApiConfig.connectTimeout,
-      receiveTimeout: ApiConfig.receiveTimeout,
-      headers: {
-        'Content-Type': 'application/json',
-        if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
-      },
-    ),
-  );
+  ///
+  /// 401 ирвэл: refresh token-оор шинэ access token авч хүсэлтийг нэг удаа
+  /// давтана; refresh амжилтгүй эсвэл давталт нь дахин 401 бол session
+  /// цэвэрлээд login дэлгэц рүү шилжүүлнэ.
+  Dio get _authedDio {
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: ApiConfig.baseUrl,
+        connectTimeout: ApiConfig.connectTimeout,
+        receiveTimeout: ApiConfig.receiveTimeout,
+        headers: {
+          'Content-Type': 'application/json',
+          if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
+        },
+      ),
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (err, handler) async {
+          if (err.response?.statusCode != 401) return handler.next(err);
+
+          // Давтан refresh хийхээс сэргийлэх
+          if (err.requestOptions.headers.containsKey('X-Retry')) {
+            await _handleSessionExpired();
+            return handler.next(err);
+          }
+
+          final newToken = await refreshAccessToken();
+          if (newToken == null) {
+            // Refresh token-ий хугацаа дууссан → login руу
+            await _handleSessionExpired();
+            return handler.next(err);
+          }
+
+          // Шинэ token-той анхны хүсэлтийг дахин илгээх
+          final options = err.requestOptions;
+          options.headers['Authorization'] = 'Bearer $newToken';
+          options.headers['X-Retry'] = 'true';
+          try {
+            final response = await dio.fetch(options);
+            return handler.resolve(response);
+          } on DioException catch (retryErr) {
+            if (retryErr.response?.statusCode == 401) {
+              await _handleSessionExpired();
+            }
+            return handler.next(retryErr);
+          }
+        },
+      ),
+    );
+
+    return dio;
+  }
 
   /// Хариунаас token задлан хадгалах (login, biometric, OTP verify-д ашиглана)
   Future<void> _handleAuthResponse(Map<String, dynamic> data) async {
@@ -1195,6 +1250,32 @@ class AuthService with ChangeNotifier {
   /// Зах зээл дээрх бондууд (бонд авах tab)
   Future<List<Map<String, dynamic>>> getBondList() =>
       _fetchStockList(ApiConfig.stocksBondList);
+
+  /// Хувьцааны дэлгэрэнгүй мэдээлэл — POST /stocks/info,
+  /// body: { api: "info", data: { stockcode } }
+  /// Хариу нь мөрүүдийн жагсаалт: эхний мөр = одоогийн ерөнхий мэдээлэл,
+  /// мөр бүрийн DIVAMOUNT/DIVDATE = ногдол ашгийн түүх.
+  Future<List<Map<String, dynamic>>> getStockInfo(String stockcode) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.stocksInfo,
+        data: {
+          'api': 'info',
+          'data': {'stockcode': stockcode},
+        },
+      );
+      final body = response.data;
+      if (body is Map && body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .whereType<Map>()
+            .map((d) => Map<String, dynamic>.from(d))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
 
   /// Хувьцаа хайх
   /// POST /stocks/search?q=...&type=...

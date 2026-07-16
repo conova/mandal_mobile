@@ -195,6 +195,7 @@ class _HomeStockRecommendationSectionState
             'price': data.price,
             'change': data.change,
             'isGrowing': data.isGrowing,
+            'stockcode': data.stockcode,
           },
         ),
       ),
@@ -208,6 +209,7 @@ class _StockRecommendationData {
   final String price;
   final String change;
   final bool? isGrowing;
+  final String stockcode;
 
   const _StockRecommendationData({
     required this.symbol,
@@ -215,6 +217,7 @@ class _StockRecommendationData {
     required this.price,
     required this.change,
     required this.isGrowing,
+    required this.stockcode,
   });
 
   /// /stocks/nbo мөрөөс угсарна:
@@ -237,6 +240,7 @@ class _StockRecommendationData {
 
     return _StockRecommendationData(
       symbol: row['SYMBOL']?.toString() ?? '',
+      stockcode: row['STOCKCODE']?.toString() ?? '',
       name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
       price: closePrice == null
           ? '-'

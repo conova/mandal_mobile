@@ -3,7 +3,10 @@ import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class StockDetailDividendHistory extends StatelessWidget {
-  const StockDetailDividendHistory({super.key});
+  /// Ногдол ашгийн түүх: [{year, amount}] — хоосон бол хэсэг нуугдана
+  final List<Map<String, String>> items;
+
+  const StockDetailDividendHistory({super.key, this.items = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -11,13 +14,8 @@ class StockDetailDividendHistory extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
 
-    final history = [
-      {'year': '2024', 'amount': '5,000,000.12₮'},
-      {'year': '2023', 'amount': '4,900,000.12₮'},
-      {'year': '2022', 'amount': '4,800,000.34₮'},
-      {'year': '2021', 'amount': '4,500,000.54₮'},
-      {'year': '2020', 'amount': '4,200,000.91₮'},
-    ];
+    final history = items;
+    if (history.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),

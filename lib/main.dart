@@ -136,6 +136,15 @@ void main() async {
   final authService = AuthService();
   await authService.init();
 
+  // Нэвтэрсэн байхад аль нэг API 401 буцааж, refresh ч амжилтгүй болбол
+  // (session дууссан) login дэлгэц рүү шилжүүлнэ
+  authService.onSessionExpired = () {
+    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      '/login',
+      (route) => false,
+    );
+  };
+
   // FCM token → deviceId
   if (notificationService != null) {
     final fcmToken = notificationService.fcmToken;
