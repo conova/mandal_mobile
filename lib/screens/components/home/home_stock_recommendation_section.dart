@@ -164,11 +164,11 @@ class _HomeStockRecommendationSectionState
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
-                  width: isActive ? 24 : 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: isActive ? 24 : 6,
+                  height: 6,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(3),
                     color: isActive
                         ? extendedColors.neutral100
                         : extendedColors.neutral400,

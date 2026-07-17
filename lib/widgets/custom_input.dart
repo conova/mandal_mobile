@@ -159,7 +159,7 @@ class _CustomInputState extends State<CustomInput> {
               onSaved: widget.onSaved,
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: AppTextStyles.light,
-                color: extendedColors.neutral200,
+                color: extendedColors.neutral100,
               ),
               decoration: InputDecoration(
                 labelText: widget.label.isEmpty ? null : widget.label,
@@ -169,7 +169,7 @@ class _CustomInputState extends State<CustomInput> {
                 ),
                 hintText: widget.hint,
                 hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral200,
+                  color: extendedColors.neutral100,
                   fontWeight: AppTextStyles.light,
                 ),
                 border: InputBorder.none,

@@ -166,11 +166,11 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
-                  width: isActive ? 24 : 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: isActive ? 24 : 6,
+                  height: 6,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(3),
                     color: isActive
                         ? extendedColors.neutral100
                         : extendedColors.neutral400,
@@ -318,7 +318,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
               children: [
                 Expanded(
                   child: _buildStatColumn(
-                    'Хугацаа',
+                    l10n.term,
                     _formatDuration(
                       data,
                       Localizations.localeOf(context).languageCode,
@@ -334,7 +334,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 ),
                 Expanded(
                   child: _buildStatColumn(
-                    'Өгөөж',
+                    l10n.yield,
                     data.intRate == null ? '-' : '${data.intRate}%',
                     theme,
                     extendedColors,
@@ -347,7 +347,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 ),
                 Expanded(
                   child: _buildStatColumn(
-                    'Дүн',
+                    l10n.balance,
                     data.amt == null
                         ? '-'
                         : formatCompactAmount(
