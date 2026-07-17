@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
@@ -74,41 +75,28 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            GestureDetector(
-              onTap: () async {
-                await Navigator.pushNamed(context, '/add_watchlist');
-                _fetch(); // буцаж ирэхэд шинэчлэх
-              },
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: extendedColors.primaryMain,
-                  shape: BoxShape.circle,
+            if (_items.isNotEmpty)
+              GestureDetector(
+                onTap: () async {
+                  await Navigator.pushNamed(context, '/add_watchlist');
+                  _fetch(); // буцаж ирэхэд шинэчлэх
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: extendedColors.primaryMain,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const CustomSvgIcon(
+                    'plus',
+                    size: 20,
+                    color: Colors.white,
+                  ),
                 ),
-                child: const Icon(Icons.add, color: Colors.white, size: 20),
               ),
-            ),
           ],
         ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.stocks,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral200,
-              ),
-            ),
-            Text(
-              l10n.lastPrice24h,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral200,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 25),
         if (_isLoading && _items.isEmpty)
           const Center(
             child: Padding(
@@ -117,31 +105,93 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
             ),
           )
         else if (_items.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            child: Center(
-              child: Text(
-                'Хадгалсан хувьцаа байхгүй',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral300,
+          Center(
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: extendedColors.primaryMain.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: CustomSvgIcon(
+                    'star',
+                    size: 32,
+                    color: extendedColors.primaryMain,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.askingWatchlist,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    l10n.watchlistDescription,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: extendedColors.neutral100,
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: 130,
+                  child: CustomButton(
+                    onPressed: () async {
+                      await Navigator.pushNamed(context, '/add_watchlist');
+                      _fetch();
+                    },
+                    label: l10n.add,
+                    icon: const CustomSvgIcon('plus', size: 18),
+                    size: CustomButtonSize.small,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           )
-        else
-          ...preview.map((s) => _buildItem(s, extendedColors, context)),
-        const SizedBox(height: 20),
-        SizedBox(
-          width: double.infinity,
-          child: CustomButton(
-            onPressed: () async {
-              await Navigator.pushNamed(context, '/watchlist_detail');
-              _fetch(); // буцаж ирэхэд шинэчлэх (дараалал өөрчилсөн байж болзошгүй)
-            },
-            label: '${l10n.viewAll} ($total)',
-            variant: CustomButtonVariant.tertiary,
+        else ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.stocks,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral200,
+                ),
+              ),
+              Text(
+                l10n.lastPrice24h,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral200,
+                ),
+              ),
+            ],
           ),
-        ),
+          const SizedBox(height: 16),
+          ...preview.map((s) => _buildItem(s, extendedColors, context)),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: CustomButton(
+              onPressed: () async {
+                await Navigator.pushNamed(context, '/watchlist_detail');
+                _fetch(); // буцаж ирэхэд шинэчлэх
+              },
+              label: '${l10n.viewAll} ($total)',
+              variant: CustomButtonVariant.tertiary,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -165,68 +215,81 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
         },
       ),
       child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  s.symbol,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    s.symbol,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  s.name,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: AppTextStyles.light,
-                    color: extendedColors.neutral200,
+                  Text(
+                    s.name,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: AppTextStyles.light,
+                      color: extendedColors.neutral200,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  s.price,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    s.price,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  s.isPositive == null
-                      ? s.change
-                      : (s.isPositive! ? '+ ${s.change}' : '- ${s.change}'),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: s.isPositive == null
-                        ? extendedColors.neutral200
-                        : (s.isPositive!
-                            ? extendedColors.primaryMain
-                            : extendedColors.red),
-                    fontWeight: FontWeight.w500,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (s.isPositive != null) ...[
+                        CustomSvgIcon(
+                          s.isPositive! ? 'button-up' : 'button-down',
+                          size: 6,
+                          color: s.isPositive!
+                              ? extendedColors.primaryMain
+                              : extendedColors.red,
+                        ),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        s.change,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: s.isPositive == null
+                              ? extendedColors.neutral200
+                              : (s.isPositive!
+                                  ? extendedColors.primaryMain
+                                  : extendedColors.red),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

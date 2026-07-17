@@ -679,7 +679,14 @@ class AppLocalizationsMn extends AppLocalizations {
       'Earn steady returns with our premium bond offerings. Start investing today.';
 
   @override
-  String get watchlist => 'Хянах жагсаалт';
+  String get watchlist => 'Хадгалсан';
+
+  @override
+  String get askingWatchlist => 'Watchlist үүсгэх үү?';
+
+  @override
+  String get watchlistDescription =>
+      'Өөрийн сонирхсон хувьцааг хадгалж, ханшийг мэдээллийг цаг алдалгүй хурдан аваарай.';
 
   @override
   String get recommendationTitle => 'Та ямар бонд авахаа мэдэхгүй байна уу?';

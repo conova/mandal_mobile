@@ -1384,6 +1384,18 @@ abstract class AppLocalizations {
   /// **'Watchlist'**
   String get watchlist;
 
+  /// No description provided for @askingWatchlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to create a watchlist?'**
+  String get askingWatchlist;
+
+  /// No description provided for @watchlistDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your favorite stocks and get real-time price updates instantly.'**
+  String get watchlistDescription;
+
   /// No description provided for @recommendationTitle.
   ///
   /// In en, this message translates to:

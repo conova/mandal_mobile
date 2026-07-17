@@ -69,17 +69,21 @@ class AssetCard extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Flexible(
-            child: Text(
-              amount,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: AppTextStyles.light,
-                color: extendedColors.neutral100,
-              ),
-              textAlign: TextAlign.right,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                amount,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: AppTextStyles.light,
+                  color: extendedColors.neutral100,
+                ),
+                textAlign: TextAlign.right,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
             ),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       ),

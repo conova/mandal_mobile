@@ -685,6 +685,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get watchlist => 'Watchlist';
 
   @override
+  String get askingWatchlist => 'Do you want to create a watchlist?';
+
+  @override
+  String get watchlistDescription =>
+      'Save your favorite stocks and get real-time price updates instantly.';
+
+  @override
   String get recommendationTitle => 'Don\'t know which bond to choose?';
 
   @override

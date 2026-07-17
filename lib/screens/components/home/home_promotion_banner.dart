@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -55,7 +56,7 @@ class HomePromotionBanner extends StatelessWidget {
               ],
             ),
           ),
-          Icon(Icons.chevron_right, color: extendedColors.neutral300),
+          const CustomSvgIcon('chevron-right', size: 20,),
         ],
       ),
     );

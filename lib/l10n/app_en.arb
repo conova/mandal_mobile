@@ -225,6 +225,8 @@
     "newBond": "New Bond",
     "newBondDesc": "Earn steady returns with our premium bond offerings. Start investing today.",
     "watchlist": "Watchlist",
+    "askingWatchlist": "Do you want to create a watchlist?",
+    "watchlistDescription": "Save your favorite stocks and get real-time price updates instantly.",
     "recommendationTitle": "Don't know which bond to choose?",
     "recommendationDesc": "We recommend the best bonds based on your interests.",
     "uploading": "Uploading",
