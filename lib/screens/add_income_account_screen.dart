@@ -101,8 +101,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
       final list = await auth.getBanksList();
       if (!mounted) return;
       // Кодоор эрэмбэлнэ ("01", "04", ...)
-      list.sort(
-            (a, b) => (a['code']?.toString() ?? '')
+      list.sort((a, b) => (a['code']?.toString() ?? '')
             .compareTo(b['code']?.toString() ?? ''),
       );
       setState(() {
@@ -124,10 +123,10 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
     setState(() {
       // IBAN нь "MN" угтвараас гадна утга агуулсан байх ёстой
       _isButtonEnabled =
-          _ibanController.text.length > IbanPrefixFormatter.prefix.length &&
-              _receiverController.text.isNotEmpty &&
-              _selectedBankCode != null;
-    });
+        _ibanController.text.length > IbanPrefixFormatter.prefix.length &&
+          _receiverController.text.isNotEmpty &&
+          _selectedBankCode != null;
+  });
   }
 
   Future<void> _handleSave() async {

@@ -45,15 +45,15 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
         final data = body['data'];
         setState(() {
           _accounts = data is List
-              ? data
+            ? data
               .whereType<Map>()
               .map(
                 (e) => IncomeAccount.fromJson(
-              Map<String, dynamic>.from(e),
-            ),
-          )
+                  Map<String, dynamic>.from(e),
+                ),
+              )
               .toList()
-              : [];
+            : [];
         });
       } else {
         setState(() => _error = apiMessage(body));
@@ -141,21 +141,21 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: _isLoading && _accounts.isEmpty
               ? const Padding(
-            padding: EdgeInsets.only(top: 120),
-            child: Center(child: CircularProgressIndicator()),
-          )
+                padding: EdgeInsets.only(top: 120),
+                child: Center(child: CircularProgressIndicator()),
+              )
               : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (_error != null && _accounts.isEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.only(top: 120),
-                  child: Center(
-                    child: Text(
-                      _error!,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral500,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_error != null && _accounts.isEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 120),
+                      child: Center(
+                        child: Text(
+                          _error!,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral500,
                       ),
                     ),
                   ),

@@ -150,7 +150,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
           Text(
             value,
             style: theme.textTheme.bodySmall?.copyWith(
-                color: extendedColors.neutral100,
+              color: extendedColors.neutral100,
               fontSize: 16,
             ),
           ),

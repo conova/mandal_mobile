@@ -49,7 +49,7 @@ class CustomBottomSheet extends StatelessWidget {
             icon!,
             const SizedBox(height: 32),
           ] else ...[
-            Image.asset('assets/images/logOut.png', height: 130,),
+            Image.asset('assets/images/log-out.png', height: 130,),
           ],
           Text(
             title,
