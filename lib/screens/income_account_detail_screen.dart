@@ -119,7 +119,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
               CustomButton(
                 label: l10n.setAsDefaultAccount,
                 onPressed:
-                    _isSettingPrimary ? null : () => _handleSetPrimary(args),
+                _isSettingPrimary ? null : () => _handleSetPrimary(args),
                 isLoading: _isSettingPrimary,
                 variant: CustomButtonVariant.secondary,
               ),

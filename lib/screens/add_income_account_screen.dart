@@ -17,7 +17,7 @@ class AddIncomeAccountScreen extends StatefulWidget {
 
 class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
   final TextEditingController _ibanController =
-      TextEditingController(text: IbanPrefixFormatter.prefix);
+  TextEditingController(text: IbanPrefixFormatter.prefix);
   final TextEditingController _receiverController = TextEditingController();
   String? _selectedBankCode;
   bool _isButtonEnabled = false;
@@ -99,7 +99,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
       if (!mounted) return;
       // Кодоор эрэмбэлнэ ("01", "04", ...)
       list.sort(
-        (a, b) => (a['code']?.toString() ?? '')
+            (a, b) => (a['code']?.toString() ?? '')
             .compareTo(b['code']?.toString() ?? ''),
       );
       setState(() {
@@ -122,8 +122,8 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
       // IBAN нь "MN" угтвараас гадна утга агуулсан байх ёстой
       _isButtonEnabled =
           _ibanController.text.length > IbanPrefixFormatter.prefix.length &&
-          _receiverController.text.isNotEmpty &&
-          _selectedBankCode != null;
+              _receiverController.text.isNotEmpty &&
+              _selectedBankCode != null;
     });
   }
 
@@ -230,7 +230,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
               CustomButton(
                 label: l10n.save,
                 onPressed:
-                    (_isButtonEnabled && !_isSaving) ? _handleSave : null,
+                (_isButtonEnabled && !_isSaving) ? _handleSave : null,
                 isLoading: _isSaving,
                 variant: CustomButtonVariant.primary,
               ),
