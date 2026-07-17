@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../services/auth_service.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 
 import 'components/connected_devices/device_item.dart';
@@ -62,17 +63,16 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
         ),
       ),
       body: _isLoading

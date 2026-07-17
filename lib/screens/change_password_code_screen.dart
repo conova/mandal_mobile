@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_otp_form.dart';
@@ -76,9 +77,10 @@ class _ChangePasswordCodeScreenState extends State<ChangePasswordCodeScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '2/2'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),

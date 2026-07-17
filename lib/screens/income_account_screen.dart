@@ -9,6 +9,7 @@ import '../config/api_config.dart';
 import '../theme/extended_colors.dart';
 
 import '../widgets/account_card.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_svg_icon.dart';
 
 class IncomeAccountScreen extends StatefulWidget {
@@ -103,15 +104,15 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
     final otherAccounts = _accounts.where((a) => !a.isPrimary).toList();
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         title: Text(l10n.incomeAccount),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const CustomSvgIcon('close-button', size: 24),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
         ),
         actions: [
           IconButton(

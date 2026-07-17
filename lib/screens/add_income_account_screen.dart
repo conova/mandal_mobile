@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../common/iban_prefix_formatter.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_button.dart';
@@ -160,17 +162,24 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 16),
-              _buildBackButton(context, colorScheme),
               const SizedBox(height: 32),
               Text(
                 l10n.addIncomeAccPrompt,
@@ -238,25 +247,6 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBackButton(BuildContext context, ColorScheme colorScheme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.arrow_back, size: 20),
-        onPressed: () => Navigator.pop(context),
       ),
     );
   }

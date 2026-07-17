@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import 'components/shared/auth_channel_selection_form.dart';
 
@@ -8,10 +9,10 @@ class ChangePasswordVerifyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '1/2'),
       body: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 24),

@@ -5,12 +5,14 @@ import 'package:provider/provider.dart';
 import '../common/validators.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_snackbar.dart';
 
 import 'components/my_info/info_card.dart';
 import 'components/my_info/my_info_back_button.dart';
+import 'package:mandal_capital/theme/extended_colors.dart';
 
 class MyInfoScreen extends StatefulWidget {
   const MyInfoScreen({super.key});
@@ -113,18 +115,21 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     // Cache-аас шууд авах. Хоосон бол loader харагдана.
     final userInfo = context.watch<AuthService>().userInfo;
     final isLoading = userInfo == null;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const MyInfoBackButton(),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -180,7 +185,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   const SizedBox(height: 40),
                 ],
               ),
-            ),
+          ),
     );
   }
 }

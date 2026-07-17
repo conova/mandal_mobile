@@ -15,21 +15,19 @@ class CircleBackButton extends StatelessWidget {
     final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
 
     return IconButton(
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(),
-      icon: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: extendedColors.bgSecondary,
-          shape: BoxShape.circle,
-        ),
-        child: CustomSvgIcon(
-          'close-button',
-          size: 24,
-          color: extendedColors.neutral100,
-        ),
-      ),
       onPressed: onPressed ?? () => Navigator.pop(context),
+      style: IconButton.styleFrom(
+        backgroundColor: extendedColors.bgSecondary,
+        foregroundColor: extendedColors.neutral100,
+        padding: const EdgeInsets.all(8),
+        minimumSize: const Size(40, 40),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: const CircleBorder(),
+      ),
+      icon: const CustomSvgIcon(
+        'close-button',
+        size: 24,
+      ),
     );
   }
 }

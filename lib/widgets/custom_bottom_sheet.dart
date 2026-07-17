@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/extended_colors.dart';
+
 class CustomBottomSheet extends StatelessWidget {
   final String title;
   final String description;
@@ -26,10 +28,11 @@ class CustomBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(color: colorScheme.surface),
+      decoration: BoxDecoration(color: extendedColors.bgBase),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -45,6 +48,8 @@ class CustomBottomSheet extends StatelessWidget {
           if (icon != null) ...[
             icon!,
             const SizedBox(height: 32),
+          ] else ...[
+            Image.asset('assets/images/logOut.png', height: 130,),
           ],
           Text(
             title,
@@ -57,7 +62,7 @@ class CustomBottomSheet extends StatelessWidget {
           Text(
             description,
             textAlign: TextAlign.center,
-            style: TextStyle(color: theme.disabledColor, fontSize: 16),
+            style: TextStyle(color: extendedColors.neutral100, fontSize: 16),
           ),
           const SizedBox(height: 32),
           SizedBox(
