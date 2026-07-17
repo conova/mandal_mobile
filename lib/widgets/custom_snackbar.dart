@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 enum CustomSnackbarType { success, error, info }
 
 class CustomSnackbar {
+  /// API дуудлагын алдааг улаан snackbar-аар харуулна.
+  /// Exception-ий "Exception: " угтварыг автоматаар хасна.
+  static void showError(BuildContext context, Object error) {
+    show(
+      context,
+      message: error.toString().replaceFirst('Exception: ', ''),
+      type: CustomSnackbarType.error,
+    );
+  }
+
   static void show(
     BuildContext context, {
     required String message,
