@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
+import '../common/api_message.dart';
 import '../l10n/app_localizations.dart';
 import '../models/income_account.dart';
 import '../services/api_service.dart';
@@ -54,7 +55,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
               : [];
         });
       } else {
-        setState(() => _error = body is Map ? body['message']?.toString() : null);
+        setState(() => _error = apiMessage(body));
       }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());

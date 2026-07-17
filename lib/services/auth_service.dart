@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:dio/dio.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import '../common/api_message.dart';
 import '../config/api_config.dart';
 
 /// Login хариуны төрөл
@@ -501,10 +502,7 @@ class AuthService with ChangeNotifier {
   /// DioException-с алдааны мессеж задлах (data нь String эсвэл Map байж болно)
   String _extractErrorMessage(DioException e) {
     final data = e.response?.data;
-    if (data is Map) {
-      return data['message']?.toString() ?? e.message ?? 'Network error';
-    }
-    return e.message ?? 'Network error';
+    return apiMessage(data) ?? e.message ?? 'Network error';
   }
 
   Dio get _dio => Dio(
@@ -638,9 +636,9 @@ class AuthService with ChangeNotifier {
           await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
           notifyListeners();
         }
-        return body['message']?.toString() ?? 'И-мэйл амжилттай хадгалагдлаа';
+        return apiMessage(body) ?? 'И-мэйл амжилттай хадгалагдлаа';
       }
-      throw Exception(body['message'] ?? 'И-мэйл хадгалахад алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'И-мэйл хадгалахад алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -748,7 +746,7 @@ class AuthService with ChangeNotifier {
   LoginResult _loginErrorFromBody(dynamic body) {
     if (body is Map) {
       return LoginResult(
-        message: body['message']?.toString() ?? 'Login failed',
+        message: apiMessage(body) ?? 'Login failed',
         counter: int.tryParse(body['counter']?.toString() ?? ''),
         attempt: int.tryParse(body['attempt']?.toString() ?? ''),
       );
@@ -795,7 +793,7 @@ class AuthService with ChangeNotifier {
         }
 
         return LoginResult(
-          message: body['message'] ?? 'Biometric login failed',
+          message: apiMessage(body) ?? 'Biometric login failed',
         );
       }
 
@@ -839,7 +837,7 @@ class AuthService with ChangeNotifier {
         }
 
         return LoginResult(
-          message: body['message'] ?? 'Device registration failed',
+          message: apiMessage(body) ?? 'Device registration failed',
         );
       }
 
@@ -888,7 +886,7 @@ class AuthService with ChangeNotifier {
       // Сервер код 0 биш, эсвэл data.success != true → алдааны мессеж
       final msg =
           (data is Map ? data['msg']?.toString() : null) ??
-          body['message']?.toString() ??
+          apiMessage(body) ??
           'Бүртгэл амжилтгүй боллоо';
       throw Exception(msg);
     } on DioException catch (e) {
@@ -929,9 +927,9 @@ class AuthService with ChangeNotifier {
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['message']?.toString() ?? 'Нууц үг амжилттай үүсгэгдлээ';
+        return apiMessage(body) ?? 'Нууц үг амжилттай үүсгэгдлээ';
       }
-      throw Exception(body['message'] ?? 'Нууц үг үүсгэхэд алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Нууц үг үүсгэхэд алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -979,10 +977,10 @@ class AuthService with ChangeNotifier {
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['message']?.toString() ??
+        return apiMessage(body) ??
             'Дансны мэдээлэл амжилттай хадгалагдлаа';
       }
-      throw Exception(body['message'] ?? 'Данс холбоход алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Данс холбоход алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1030,7 +1028,7 @@ class AuthService with ChangeNotifier {
         }
         return url;
       }
-      throw Exception(body['message'] ?? 'Бичиг баримт илгээхэд алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Бичиг баримт илгээхэд алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1059,9 +1057,9 @@ class AuthService with ChangeNotifier {
           await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
           notifyListeners();
         }
-        return body['message']?.toString() ?? 'Гэрээ амжилттай зөвшөөрөгдлөө';
+        return apiMessage(body) ?? 'Гэрээ амжилттай зөвшөөрөгдлөө';
       }
-      throw Exception(body['message'] ?? 'Гэрээ зөвшөөрөхөд алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Гэрээ зөвшөөрөхөд алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1089,9 +1087,9 @@ class AuthService with ChangeNotifier {
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['message']?.toString() ?? 'Нууц үг амжилттай үүсгэгдлээ';
+        return apiMessage(body) ?? 'Нууц үг амжилттай үүсгэгдлээ';
       }
-      throw Exception(body['message'] ?? 'Нууц үг сэргээхэд алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Нууц үг сэргээхэд алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1130,7 +1128,7 @@ class AuthService with ChangeNotifier {
       if (body['code']?.toString() == '0' && body['data'] is Map) {
         return Map<String, dynamic>.from(body['data'] as Map);
       }
-      throw Exception(body['message'] ?? 'Failed to fetch user info');
+      throw Exception(apiMessage(body) ?? 'Failed to fetch user info');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1395,7 +1393,7 @@ class AuthService with ChangeNotifier {
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() != '0') {
         throw Exception(
-          body['message']?.toString() ?? 'Portfolio summary алдаа',
+          apiMessage(body) ?? 'Portfolio summary алдаа',
         );
       }
       final data = (body['data'] as Map?) ?? const {};
@@ -1425,7 +1423,7 @@ class AuthService with ChangeNotifier {
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() != '0') {
-        throw Exception(body['message']?.toString() ?? 'Chart data алдаа');
+        throw Exception(apiMessage(body) ?? 'Chart data алдаа');
       }
       final data = (body['data'] as Map?) ?? const {};
       final rawPoints = (data['points'] as List?) ?? const [];
@@ -1540,9 +1538,9 @@ class AuthService with ChangeNotifier {
       final response = await _authedDio.post(ApiConfig.watchlistAdd(symbol));
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['message']?.toString() ?? 'Амжилттай нэмэгдлээ';
+        return apiMessage(body) ?? 'Амжилттай нэмэгдлээ';
       }
-      throw Exception(body['message'] ?? 'Watchlist нэмэхэд алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Watchlist нэмэхэд алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1562,9 +1560,9 @@ class AuthService with ChangeNotifier {
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['message']?.toString() ?? 'Амжилттай устгагдлаа';
+        return apiMessage(body) ?? 'Амжилттай устгагдлаа';
       }
-      throw Exception(body['message'] ?? 'Watchlist устгахад алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Watchlist устгахад алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1584,9 +1582,9 @@ class AuthService with ChangeNotifier {
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['message']?.toString() ?? 'Төхөөрөмж устгагдлаа';
+        return apiMessage(body) ?? 'Төхөөрөмж устгагдлаа';
       }
-      throw Exception(body['message'] ?? 'Төхөөрөмж устгахад алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'Төхөөрөмж устгахад алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1605,9 +1603,9 @@ class AuthService with ChangeNotifier {
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return body['message']?.toString() ?? 'PEP төлөв хадгалагдлаа';
+        return apiMessage(body) ?? 'PEP төлөв хадгалагдлаа';
       }
-      throw Exception(body['message'] ?? 'PEP төлөв илгээхэд алдаа гарлаа');
+      throw Exception(apiMessage(body) ?? 'PEP төлөв илгээхэд алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1725,7 +1723,7 @@ class AuthService with ChangeNotifier {
       if (body['code']?.toString() == '0') {
         return (body['data'] as Map<String, dynamic>?) ?? {};
       }
-      throw Exception(body['message'] ?? 'OTP send failed');
+      throw Exception(apiMessage(body) ?? 'OTP send failed');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1775,7 +1773,7 @@ class AuthService with ChangeNotifier {
         }
         return {};
       }
-      throw Exception(body['message'] ?? 'OTP verification failed');
+      throw Exception(apiMessage(body) ?? 'OTP verification failed');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -1805,7 +1803,7 @@ class AuthService with ChangeNotifier {
       if (body['code']?.toString() == '0' && body['data'] is Map) {
         return Map<String, dynamic>.from(body['data'] as Map);
       }
-      throw Exception(body['message'] ?? 'Харилцагч олдсонгүй');
+      throw Exception(apiMessage(body) ?? 'Харилцагч олдсонгүй');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
