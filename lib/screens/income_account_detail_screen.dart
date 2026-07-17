@@ -145,12 +145,14 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(color: extendedColors.neutral200, fontSize: 13, fontWeight:FontWeight.w300),
+            style: theme.textTheme.labelLarge,
           ),
-          const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            style: theme.textTheme.bodySmall?.copyWith(
+                color: extendedColors.neutral100,
+              fontSize: 16,
+            ),
           ),
         ],
       ),

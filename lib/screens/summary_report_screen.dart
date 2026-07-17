@@ -351,7 +351,12 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        title: Text(l10n.summaryReport),
+        title: Text(
+          l10n.summaryReport,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: extendedColors.neutral100,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,

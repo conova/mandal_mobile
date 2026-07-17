@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/iban_prefix_formatter.dart';
 import '../l10n/app_localizations.dart';
@@ -198,7 +199,10 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
                 label: l10n.iban,
                 controller: _ibanController,
                 inputFormatters: [IbanPrefixFormatter()],
-                suffix: Icon(Icons.copy, color: theme.disabledColor, size: 20),
+                suffix: Padding(
+                  padding: const EdgeInsets.only(right: 14),
+                  child: CustomSvgIcon('copy-06', size: 24,),
+                ),
               ),
               const SizedBox(height: 20),
               if (_banksLoading)
