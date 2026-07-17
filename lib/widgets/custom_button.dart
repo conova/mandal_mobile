@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
-enum CustomButtonVariant { primary, secondary, tertiary, text, error, neutral }
+enum CustomButtonVariant { primary, secondary, tertiary, text, error, neutral, purple, orange }
 
 enum CustomButtonSize { large, small }
 
@@ -48,8 +48,8 @@ class CustomButton extends StatelessWidget {
         foregroundColor = theme.primaryColor;
         break;
       case CustomButtonVariant.tertiary:
-        backgroundColor = extendedColors.bgTertiary;
-        foregroundColor = theme.colorScheme.onSurface;
+        backgroundColor = extendedColors.bgSecondary;
+        foregroundColor = extendedColors.neutral100;
         break;
       case CustomButtonVariant.text:
         backgroundColor = Colors.transparent;
@@ -61,6 +61,14 @@ class CustomButton extends StatelessWidget {
       case CustomButtonVariant.neutral:
         backgroundColor = extendedColors.neutral100;
         foregroundColor = extendedColors.bgBase;
+      case CustomButtonVariant.purple:
+        backgroundColor = extendedColors.purple;
+        foregroundColor = theme.colorScheme.onPrimary;
+        break;
+      case CustomButtonVariant.orange:
+        backgroundColor = extendedColors.orange;
+        foregroundColor = theme.colorScheme.onPrimary;
+        break;
     }
 
     // Adjust for disabled state

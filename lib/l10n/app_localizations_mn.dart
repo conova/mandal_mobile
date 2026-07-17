@@ -1410,4 +1410,23 @@ class AppLocalizationsMn extends AppLocalizations {
   String eduCheckAnswer(int current, int total) {
     return 'Хариулт шалгах $current/$total';
   }
+
+  @override
+  String get noBondsYet => 'Танд бонд байхгүй байна';
+
+  @override
+  String get noStocksYet => 'Танд хувьцаа байхгүй байна';
+
+  @override
+  String get startInvestingPrompt => 'Хөрөнгө оруулалт хийж эхлэх үү?';
+
+  @override
+  String timesReceived(int cnt, int total) {
+    return '$cnt/$total удаа авсан';
+  }
+
+  @override
+  String timesRemaining(int cnt, int total) {
+    return '$cnt/$total удаа үлдсэн';
+  }
 }

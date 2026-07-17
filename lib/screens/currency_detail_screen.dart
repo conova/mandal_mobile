@@ -267,7 +267,9 @@ class CurrencyDetailScreen extends StatelessWidget {
               color: extendedColors.bgSecondary,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24),
+            child: Center(
+              child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24)
+            )
           ),
           const SizedBox(width: 16),
           Expanded(

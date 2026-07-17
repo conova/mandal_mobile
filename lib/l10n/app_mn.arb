@@ -463,5 +463,10 @@
     "eduWrongDesc": "Зөв хариулсан тохиолдолд хичээлийг үзсэнд тооцно. Энэ хичээлийг дахиад үзэх үү?",
     "eduRetryLesson": "Хичээл дахин үзэх",
     "eduLater": "Дараа болох",
-    "eduCheckAnswer": "Хариулт шалгах {current}/{total}"
+    "eduCheckAnswer": "Хариулт шалгах {current}/{total}",
+    "noBondsYet": "Танд бонд байхгүй байна",
+    "noStocksYet": "Танд хувьцаа байхгүй байна",
+    "startInvestingPrompt": "Хөрөнгө оруулалт хийж эхлэх үү?",
+    "timesReceived": "{cnt}/{total} удаа авсан",
+    "timesRemaining": "{cnt}/{total} удаа үлдсэн"
 }

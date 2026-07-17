@@ -46,6 +46,26 @@ class MarketInstrument {
   final double? dayTrade;
   final String divDate;
 
+  // /stocks/mybonds-ийн нэмэлт талбарууд (бусад API-д null)
+  /// Хүү авсан тоо / нийт авах тоо (DIVCNT / DIVTOTAL)
+  final int? divCnt;
+  final int? divTotal;
+
+  /// Нийт авсан өгөөж (RCVYEILD)
+  final double? rcvYield;
+
+  /// Ирээдүйд авах өгөөж (EXPYEILD)
+  final double? expYield;
+
+  /// Эзэмшиж буй ширхэг (CURRENTBAL)
+  final double? currentBal;
+
+  /// Дундаж үнэ (AVGPRICE)
+  final double? avgPrice;
+
+  final String curCode;
+  final double? curRate;
+
   final bool isOpen;
   final bool isForeign;
 
@@ -81,6 +101,14 @@ class MarketInstrument {
     this.avgTrade,
     this.dayTrade,
     this.divDate = '',
+    this.divCnt,
+    this.divTotal,
+    this.rcvYield,
+    this.expYield,
+    this.currentBal,
+    this.avgPrice,
+    this.curCode = '',
+    this.curRate,
     required this.isOpen,
     required this.isForeign,
     required this.raw,
@@ -127,6 +155,14 @@ class MarketInstrument {
       avgTrade: num_('AVGTRADE'),
       dayTrade: num_('DAYTRADE'),
       divDate: str('DIVDATE'),
+      divCnt: int.tryParse(str('DIVCNT')),
+      divTotal: int.tryParse(str('DIVTOTAL')),
+      rcvYield: num_('RCVYEILD'),
+      expYield: num_('EXPYEILD'),
+      currentBal: num_('CURRENTBAL'),
+      avgPrice: num_('AVGPRICE'),
+      curCode: str('CURCODE'),
+      curRate: num_('CURRATE'),
       isOpen: str('ISOPEN') == '1',
       isForeign: str('ISFOREIGN') == '1',
       raw: json,

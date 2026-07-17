@@ -506,5 +506,30 @@
                 "type": "int"
             }
         }
+    },
+    "noBondsYet": "You don't have any bonds yet",
+    "noStocksYet": "You don't have any stocks yet",
+    "startInvestingPrompt": "Ready to start investing?",
+    "timesReceived": "received {cnt}/{total} times",
+    "@timesReceived": {
+        "placeholders": {
+            "cnt": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "timesRemaining": "{cnt}/{total} times remaining",
+    "@timesRemaining": {
+        "placeholders": {
+            "cnt": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
     }
 }

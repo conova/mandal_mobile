@@ -100,6 +100,8 @@ flutter:
     - assets/images/edu_stock.png
     - assets/images/edu_fund.png
     - assets/images/edu_material.png
+    - assets/images/safe_box.png
+    - assets/images/add_folder.png
     # SVG icon-ууд — хавтсаар нь бүртгэсэн тул шинэ icon нэмэхэд
     # pubspec засах шаардлагагүй (CustomSvgIcon-оор нэрээр нь дуудна)
     - assets/images/icons/

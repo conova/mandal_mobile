@@ -5,6 +5,9 @@ import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_svg_icon.dart';
 import '../widgets/custom_snackbar.dart';
 
 class BondPortfolioScreen extends StatefulWidget {
@@ -65,10 +68,10 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             const SizedBox(height: 24),
             // My Bond section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 l10n.myBond,
-                style: theme.textTheme.titleLarge?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: extendedColors.neutral100,
                 ),
@@ -77,10 +80,10 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             const SizedBox(height: 16),
             // Filter chips
             SizedBox(
-              height: 40,
+              height: 32,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: filterLabels.length,
                 separatorBuilder: (context, index) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
@@ -88,20 +91,20 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                   return GestureDetector(
                     onTap: () => setState(() => _selectedFilter = index),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? extendedColors.neutral100
+                            ? extendedColors.purple
                             : extendedColors.bgSecondary,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         filterLabels[index],
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w300,
                           color: isSelected
                               ? extendedColors.bgBase
-                              : extendedColors.neutral200,
+                              : extendedColors.neutral100,
                         ),
                       ),
                     ),
@@ -109,23 +112,28 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             // Table header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     l10n.bondName,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: extendedColors.neutral300,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral200,
                     ),
                   ),
                   Text(
-                    l10n.amountPieces,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: extendedColors.neutral300,
+                    // Баруун баганын нэр сонгосон filter-ээ дагана
+                    switch (_selectedFilter) {
+                      1 => l10n.totalReturnReceived,
+                      2 => l10n.futureReturn,
+                      _ => l10n.amountPieces,
+                    },
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral200,
                     ),
                   ),
                 ],
@@ -139,15 +147,49 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_holdings.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text(
-                    l10n.noData,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral300,
+              Center(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    Image.asset(
+                      'assets/images/safe_box.png',
+                      height: 101,
+                      errorBuilder: (_, _, _) => const SizedBox(height: 80),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.noBondsYet,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        l10n.startInvestingPrompt,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral100,
+                          fontWeight: FontWeight.w200
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: 130,
+                      child: CustomButton(
+                        variant: CustomButtonVariant.purple,
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, '/home');
+                        },
+                        label: l10n.add,
+                        size: CustomButtonSize.small,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               )
             else
@@ -159,11 +201,11 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             const SizedBox(height: 24),
             // Statistics section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 l10n.statistics,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w400,
                   color: extendedColors.neutral100,
                 ),
               ),
@@ -172,18 +214,18 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             _buildStatRow(
               theme: theme,
               extendedColors: extendedColors,
-              icon: Icons.receipt_long_outlined,
+              icon: 'coins-stacked-03',
               label: l10n.totalReturnReceived,
-              amount: '8,250,000.00₮',
+              amount: '0.00₮',
               buttonLabel: l10n.view,
             ),
             const SizedBox(height: 20),
             _buildStatRow(
               theme: theme,
               extendedColors: extendedColors,
-              icon: Icons.calendar_today_outlined,
+              icon: 'calendar-check-01',
               label: l10n.futureReturn,
-              amount: '17,650,400.00₮',
+              amount: '0.00₮',
               buttonLabel: l10n.view,
             ),
             const SizedBox(height: 24),
@@ -211,7 +253,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [extendedColors.purple200, extendedColors.purple100],
+          colors: [extendedColors.purple200, extendedColors.bgBase],
         ),
       ),
       child: SafeArea(
@@ -220,57 +262,50 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 44,
-                    height: 44,
+              // Back товч зүүн талд, icon мөрийн голд
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleBackButton(),
+                  ),
+                  Container(
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: extendedColors.bgBase.withValues(alpha: 0.5),
+                      color: extendedColors.purple,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: extendedColors.neutral100,
-                      size: 20,
+                    child: Center(
+                      child: CustomSvgIcon(
+                        'bank-note-01',
+                        size: 22,
+                        color: extendedColors.bgBase,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: extendedColors.neutral100,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(
-                Icons.account_balance_outlined,
-                color: extendedColors.bgBase,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
             Text(
               l10n.bonds,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral300,
+                color: extendedColors.neutral100,
+                fontWeight: FontWeight.w200,
               ),
             ),
             const SizedBox(height: 8),
-            _buildAmountText('50,000,000.00₮', theme, extendedColors),
+            _buildAmountText('0.00₮', theme, extendedColors),
             const SizedBox(height: 4),
             Text(
-              l10n.approxUsd('14,084.50'),
+              l10n.approxUsd('0.00'),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.purple500,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -321,7 +356,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     AppLocalizations l10n,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -334,20 +369,21 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                     Flexible(
                       child: Text(
                         bond.name,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w400,
                           color: extendedColors.neutral100,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     Flexible(
                       child: Text(
                         bond.subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: extendedColors.neutral300,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w300,
+                          color: extendedColors.neutral200,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -355,9 +391,9 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: extendedColors.bgSecondary,
                     borderRadius: BorderRadius.circular(4),
@@ -377,39 +413,89 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
           ),
           const SizedBox(width: 8),
           Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  formatStockAmount(bond.amt, isForeign: bond.isForeign),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${l10n.interestRateShort} - ${formatIntRate(bond.intRate)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: extendedColors.neutral300,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+            child: _buildRowValue(bond, theme, extendedColors, l10n),
           ),
         ],
       ),
     );
   }
 
+  /// Мөрийн баруун баганын утга — сонгосон filter-ээс хамаарна:
+  ///   0 — Эзэмшиж буй дүн (ширхэг × дундаж үнэ, доор нь хүү | ширхэг)
+  ///   1 — Нийт авсан өгөөж (RCVYEILD, доор нь авсан тоо)
+  ///   2 — Ирээдүйд авах өгөөж (EXPYEILD, доор нь үлдсэн тоо)
+  Widget _buildRowValue(
+    MarketInstrument bond,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+    AppLocalizations l10n,
+  ) {
+    final cnt = bond.divCnt ?? 0;
+    final total = bond.divTotal ?? 0;
+
+    final String amountText;
+    final Color amountColor;
+    final String subText;
+
+    switch (_selectedFilter) {
+      case 1:
+        final yield_ = bond.rcvYield ?? 0;
+        amountText = formatStockAmount(yield_, isForeign: bond.isForeign);
+        // Өгөөж авсан бол ягаанаар тодруулна
+        amountColor = yield_ > 0
+            ? extendedColors.purple500
+            : extendedColors.neutral100;
+        subText = cnt > 0 ? l10n.timesReceived(cnt, total) : '$cnt/$total';
+      case 2:
+        final yield_ = bond.expYield ?? 0;
+        amountText = formatStockAmount(yield_, isForeign: bond.isForeign);
+        amountColor = yield_ > 0
+            ? extendedColors.purple500
+            : extendedColors.neutral100;
+        final remaining = (total - cnt).clamp(0, total);
+        subText = remaining > 0
+            ? l10n.timesRemaining(remaining, total)
+            : '$remaining/$total';
+      default:
+        // Эзэмшиж буй дүн = ширхэг × дундаж үнэ
+        final bal = bond.currentBal ?? 0;
+        final value = bal * (bond.avgPrice ?? 0);
+        amountText = formatStockAmount(value, isForeign: bond.isForeign);
+        amountColor = extendedColors.neutral100;
+        subText =
+            '${l10n.interestRateShort} - ${formatIntRate(bond.intRate)} | '
+            '${formatStockAmount(bal, decimals: 0).replaceAll('₮', '')}${l10n.pieces}';
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          amountText,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: amountColor,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subText,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: extendedColors.neutral300,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
   Widget _buildStatRow({
     required ThemeData theme,
     required ExtendedColors extendedColors,
-    required IconData icon,
+    required String icon,
     required String label,
     required String amount,
     required String buttonLabel,
@@ -425,7 +511,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               color: extendedColors.bgSecondary,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: extendedColors.neutral200, size: 24),
+            child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -436,42 +522,32 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                   children: [
                     Text(
                       label,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral300,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: extendedColors.neutral200,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Icon(Icons.info_outline, size: 16, color: extendedColors.neutral400),
+                    CustomSvgIcon('info-circle', size: 16, color: extendedColors.neutral400),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   amount,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w300,
                     color: extendedColors.neutral100,
                   ),
                 ),
               ],
             ),
           ),
-          OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: extendedColors.neutral400),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            ),
-            child: Text(
-              buttonLabel,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: extendedColors.neutral100,
-              ),
-            ),
-          ),
+          CustomButton(
+              label: buttonLabel,
+              size: CustomButtonSize.small,
+              variant: CustomButtonVariant.tertiary,
+              minWidth: 72,
+              onPressed: (){},
+          )
         ],
       ),
     );
@@ -485,8 +561,8 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         final isLast = label == 'Бүгд';
         return Text(
           label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: isLast ? FontWeight.bold : FontWeight.normal,
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.normal,
             color: isLast ? extendedColors.neutral100 : extendedColors.neutral300,
           ),
         );

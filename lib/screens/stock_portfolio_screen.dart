@@ -5,6 +5,8 @@ import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
+import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 
 class StockPortfolioScreen extends StatefulWidget {
@@ -147,15 +149,49 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_holdings.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text(
-                    l10n.noData,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral300,
+              Center(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    Image.asset(
+                      'assets/images/add_folder.png',
+                      height: 101,
+                      errorBuilder: (_, _, _) => const SizedBox(height: 80),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.noStocksYet,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        l10n.startInvestingPrompt,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral100,
+                            fontWeight: FontWeight.w200
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: 130,
+                      child: CustomButton(
+                        variant: CustomButtonVariant.orange,
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, '/home');
+                        },
+                        label: l10n.add,
+                        size: CustomButtonSize.small,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               )
             else
@@ -194,56 +230,57 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
-    return SafeArea(
-      bottom: false,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: extendedColors.bgSecondary,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [extendedColors.orange200, extendedColors.bgBase],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              // Back товч зүүн талд, icon мөрийн голд
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleBackButton(),
                   ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: extendedColors.neutral100,
-                    size: 20,
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: extendedColors.orange,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.pie_chart_outline,
+                      color: extendedColors.bgBase,
+                      size: 22,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ),
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: extendedColors.orange,
-              borderRadius: BorderRadius.circular(16),
+            const SizedBox(height: 6),
+            Text(
+              l10n.stocks,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral100,
+                fontWeight: FontWeight.w200,
+              ),
             ),
-            child: Icon(
-              Icons.pie_chart_outline,
-              color: extendedColors.bgBase,
-              size: 28,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            l10n.stocks,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.neutral300,
-            ),
-          ),
-          const SizedBox(height: 8),
-          _buildAmountText('50,000,000.00₮', theme, extendedColors),
-          const SizedBox(height: 24),
-        ],
+            const SizedBox(height: 8),
+            _buildAmountText('50,000,000.00₮', theme, extendedColors),
+          ],
+        ),
       ),
     );
   }

@@ -1415,4 +1415,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String eduCheckAnswer(int current, int total) {
     return 'Check answer $current/$total';
   }
+
+  @override
+  String get noBondsYet => 'You don\'t have any bonds yet';
+
+  @override
+  String get noStocksYet => 'You don\'t have any stocks yet';
+
+  @override
+  String get startInvestingPrompt => 'Ready to start investing?';
+
+  @override
+  String timesReceived(int cnt, int total) {
+    return 'received $cnt/$total times';
+  }
+
+  @override
+  String timesRemaining(int cnt, int total) {
+    return '$cnt/$total times remaining';
+  }
 }

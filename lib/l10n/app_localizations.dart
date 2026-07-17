@@ -2763,6 +2763,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check answer {current}/{total}'**
   String eduCheckAnswer(int current, int total);
+
+  /// No description provided for @noBondsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any bonds yet'**
+  String get noBondsYet;
+
+  /// No description provided for @noStocksYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any stocks yet'**
+  String get noStocksYet;
+
+  /// No description provided for @startInvestingPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to start investing?'**
+  String get startInvestingPrompt;
+
+  /// No description provided for @timesReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'received {cnt}/{total} times'**
+  String timesReceived(int cnt, int total);
+
+  /// No description provided for @timesRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{cnt}/{total} times remaining'**
+  String timesRemaining(int cnt, int total);
 }
 
 class _AppLocalizationsDelegate
