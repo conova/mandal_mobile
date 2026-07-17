@@ -161,7 +161,23 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ],
-          onContinue: () => Navigator.pop(ctx),
+          // Үргэлжлүүлэх — гүйцээгээгүй эхний алхам руу шилжинэ,
+          // бүгд дууссан бол success дэлгэц рүү орно
+          onContinue: () async {
+            final navigator = Navigator.of(context);
+            if (auth.isKycComplete) {
+              Navigator.pop(ctx);
+              navigator.pushNamed('/onboarding_success');
+              return;
+            }
+            final route = !auth.isDanVerified
+                ? '/pep_question'
+                : !auth.hasAgreement
+                ? '/securities_agreement'
+                : '/document_verification';
+            final result = await Navigator.pushNamed(ctx, route);
+            if (result == true) await _onStepFinished();
+          },
         );
       },
     );
@@ -175,6 +191,12 @@ class _HomeScreenState extends State<HomeScreen> {
     // KYC бүрэн дууссан үед registration banner-ыг харуулахгүй
     final showRegistrationBanner = !auth.isKycComplete && auth.userInfo != null;
     final progress = auth.kycProgress;
+    // Гүйцээгээгүй эхний алхам: 1 — ХУР, 2 — гэрээ, 3 — бичиг баримт
+    final currentStep = !auth.isDanVerified
+        ? 1
+        : !auth.hasAgreement
+        ? 2
+        : 3;
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -194,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (showRegistrationBanner)
                   RegistrationProgressBanner(
                     progress: progress,
+                    currentStep: currentStep,
                     onStartPressed: _showOnboardingSheet,
                   ),
                 const SizedBox(height: 8),

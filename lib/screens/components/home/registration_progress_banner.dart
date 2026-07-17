@@ -4,11 +4,16 @@ import '../../../theme/extended_colors.dart';
 
 class RegistrationProgressBanner extends StatelessWidget {
   final double progress; // 0.0 to 1.0
+
+  /// Одоо явж буй алхам (1..3):
+  /// 1 — ХУР систем, 2 — Үнэт цаасны гэрээ, 3 — Бичиг баримт
+  final int currentStep;
   final VoidCallback onStartPressed;
 
   const RegistrationProgressBanner({
     super.key,
     required this.progress,
+    this.currentStep = 1,
     required this.onStartPressed,
   });
 
@@ -18,6 +23,14 @@ class RegistrationProgressBanner extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final percent = (progress * 100).toInt();
+
+    // Алхам бүрийн нэр — onboarding sheet-ийн дараалалтай ижил
+    final stepTitles = [
+      l10n.khurSystem,
+      l10n.securitiesAgreement,
+      l10n.document,
+    ];
+    final step = currentStep.clamp(1, stepTitles.length);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -33,9 +46,9 @@ class RegistrationProgressBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n.khurSystem,
+                      stepTitles[step - 1],
                       style: theme.textTheme.titleLarge?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                        color: extendedColors.neutral100,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 1,

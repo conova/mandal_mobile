@@ -132,7 +132,7 @@ class OnboardingStepsSheet extends StatelessWidget {
             ),
             child: CustomButton(
               label: l10n.continueLabel,
-              onPressed: () async {},
+              onPressed: onContinue,
               variant: CustomButtonVariant.primary,
             ),
           ),

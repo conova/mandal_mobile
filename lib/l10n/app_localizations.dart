@@ -2032,6 +2032,12 @@ abstract class AppLocalizations {
   /// **'KHUR system'**
   String get khurSystem;
 
+  /// No description provided for @registrationStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {num}: {title}'**
+  String registrationStepLabel(int num, String title);
+
   /// No description provided for @registrationProgress.
   ///
   /// In en, this message translates to:

@@ -5,6 +5,7 @@ import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_snackbar.dart';
 
 class BondPortfolioScreen extends StatefulWidget {
   const BondPortfolioScreen({super.key});
@@ -34,9 +35,10 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         _holdings = MarketInstrument.listFromJson(rows);
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

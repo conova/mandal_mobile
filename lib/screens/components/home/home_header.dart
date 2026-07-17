@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
+import '../../../widgets/custom_snackbar.dart';
 
 class HomeHeader extends StatefulWidget implements PreferredSizeWidget {
   final double showSummaryOpacity;
@@ -32,8 +33,10 @@ class _HomeHeaderState extends State<HomeHeader> {
       final summary = await context.read<AuthService>().getPortfolioSummary();
       if (!mounted) return;
       setState(() => _totalAssets = summary.totalAssets);
-    } catch (_) {
-      // Татагдаагүй бол дүнгүй (хоосон) үлдээнэ
+    } catch (e) {
+      // Дүнгүй үлдээгээд алдааг мэдэгдэнэ
+      if (!mounted) return;
+      CustomSnackbar.showError(context, e);
     }
   }
 
@@ -55,6 +58,17 @@ class _HomeHeaderState extends State<HomeHeader> {
     return AppBar(
       backgroundColor: extendedColors.bgBase,
       elevation: 0,
+      // Scroll хийхэд өнгө өөрчлөгдөхөөс сэргийлнэ (M3 surface tint)
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      // Доод border — scroll хийхэд (summary харагдахтай зэрэг) илэрнэ
+      shape: Border(
+        bottom: BorderSide(
+          color: extendedColors.neutral500.withValues(
+            alpha: extendedColors.neutral500.a * widget.showSummaryOpacity,
+          ),
+        ),
+      ),
       centerTitle: true,
       automaticallyImplyLeading: false,
       title: Opacity(
@@ -64,8 +78,8 @@ class _HomeHeaderState extends State<HomeHeader> {
           children: [
             Text(
               l10n.totalAssets,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.disabledColor,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: extendedColors.neutral200,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -77,17 +91,17 @@ class _HomeHeaderState extends State<HomeHeader> {
                 children: [
                   Text(
                     whole,
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                   if (fraction.isNotEmpty)
                     Text(
                       fraction,
-                      style: theme.textTheme.labelSmall?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.disabledColor,
+                        color: extendedColors.neutral200,
                       ),
                     ),
                 ],
@@ -100,7 +114,7 @@ class _HomeHeaderState extends State<HomeHeader> {
           children: [
             IconButton(
               onPressed: () => Navigator.pushNamed(context, '/notifications'),
-              icon: const CustomSvgIcon('bell-02', size: 24,),
+              icon: const CustomSvgIcon('bell-02', size: 24),
             ),
             Positioned(
               right: 12,
@@ -118,7 +132,7 @@ class _HomeHeaderState extends State<HomeHeader> {
         ),
         IconButton(
           onPressed: () => Navigator.pushNamed(context, '/profile'),
-          icon: const CustomSvgIcon('user-03', size: 24,),
+          icon: const CustomSvgIcon('user-03', size: 24),
         ),
         const SizedBox(width: 8),
       ],

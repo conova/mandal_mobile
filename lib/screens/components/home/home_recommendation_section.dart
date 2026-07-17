@@ -7,6 +7,7 @@ import '../../../common/stock_row_format.dart';
 import '../../../models/market_instrument.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_snackbar.dart';
 
 class HomeRecommendationSection extends StatefulWidget {
   const HomeRecommendationSection({super.key});
@@ -51,9 +52,10 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
             .toList();
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

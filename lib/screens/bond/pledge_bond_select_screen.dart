@@ -7,6 +7,7 @@ import '../../services/auth_service.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/circle_back_button.dart';
+import '../../widgets/custom_snackbar.dart';
 
 /// Барьцаалах бонд сонгох — миний бондуудын (/stocks/mybonds) жагсаалтаас
 /// сонгож барьцаалах захиалгын дэлгэц рүү шилжинэ.
@@ -36,9 +37,10 @@ class _PledgeBondSelectScreenState extends State<PledgeBondSelectScreen> {
         _myBonds = MarketInstrument.listFromJson(rows);
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

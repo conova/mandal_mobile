@@ -7,6 +7,7 @@ import '../../../services/auth_service.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/asset_card.dart';
+import '../../../widgets/custom_snackbar.dart';
 
 class HomeAssetBreakdown extends StatefulWidget {
   const HomeAssetBreakdown({super.key});
@@ -59,8 +60,9 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
         _loaded = true;
       });
     } catch (e) {
-      debugPrint('[HomeAssetBreakdown] алдаа: $e');
-      // Алдаа гарсан ч placeholder харагдсаар үлдэнэ
+      // Placeholder харагдсаар үлдэх ч алдааг мэдэгдэнэ
+      if (!mounted) return;
+      CustomSnackbar.showError(context, e);
     }
   }
 

@@ -9,6 +9,7 @@ import '../../models/market_instrument.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
+import '../../widgets/custom_snackbar.dart';
 import '../../widgets/section_title.dart';
 
 class BondMainScreen extends StatefulWidget {
@@ -45,9 +46,10 @@ class _BondMainScreenState extends State<BondMainScreen>
         _myBonds = MarketInstrument.listFromJson(rows);
         _myBondsLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _myBondsLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 
@@ -60,9 +62,10 @@ class _BondMainScreenState extends State<BondMainScreen>
         _bondList = MarketInstrument.listFromJson(rows);
         _bondListLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _bondListLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

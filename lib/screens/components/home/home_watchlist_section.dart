@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_snackbar.dart';
 import '../../watchlist_detail_screen.dart' show WatchlistStock;
 
 /// Home-ийн доорх watchlist хэсэг — API-аас бодит datasource татна.
@@ -48,9 +49,10 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
         _items = raw.map(WatchlistStock.fromApi).toList();
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

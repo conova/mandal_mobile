@@ -6,6 +6,7 @@ import '../../../models/market_instrument.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_snackbar.dart';
 import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/stock_price_row.dart';
 
@@ -54,9 +55,10 @@ class _HomeStockRecommendationSectionState
             .toList();
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

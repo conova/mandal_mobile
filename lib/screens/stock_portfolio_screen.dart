@@ -5,6 +5,7 @@ import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_snackbar.dart';
 
 class StockPortfolioScreen extends StatefulWidget {
   const StockPortfolioScreen({super.key});
@@ -32,9 +33,10 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
         _holdings = MarketInstrument.listFromJson(rows);
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

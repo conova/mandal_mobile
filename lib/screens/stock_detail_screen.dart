@@ -66,8 +66,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         _inWatchlist =
             list.any((row) => row['SYMBOL']?.toString() == _symbol);
       });
-    } catch (_) {
-      // Шалгаж чадаагүй бол хоосон одоор үлдээнэ
+    } catch (e) {
+      // Хоосон одоор үлдээгээд алдааг мэдэгдэнэ
+      if (!mounted) return;
+      CustomSnackbar.showError(context, e);
     }
   }
 
@@ -104,8 +106,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
       final rows = await context.read<AuthService>().getStockInfo(stockcode);
       if (!mounted || rows.isEmpty) return;
       setState(() => _infoRows = MarketInstrument.listFromJson(rows));
-    } catch (_) {
-      // Мэдээлэл татагдаагүй ч args-аар ирсэн утгуудаа харуулсаар байна
+    } catch (e) {
+      // Args-аар ирсэн утгуудаа харуулсаар байх ч алдааг мэдэгдэнэ
+      if (!mounted) return;
+      CustomSnackbar.showError(context, e);
     }
   }
 

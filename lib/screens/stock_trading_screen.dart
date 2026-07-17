@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../models/order_book_entry.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/stock_trading/stock_trading_input_box.dart';
 import 'components/stock_trading/stock_trading_quantity_selector.dart';
 import 'components/stock_trading/stock_trading_percentage_selector.dart';
@@ -85,10 +86,13 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         _sellOrders = OrderBookEntry.sideFromJson(rows, 'SELL');
         _orderBookLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      // Давтан шинэчлэлтийн алдааг чимээгүй өнгөрөөнө — өмнөх дата үлдэнэ
+      // Зөвхөн анхны ачаалалтын алдааг мэдэгдэнэ —
+      // 5 секундын давтан шинэчлэлтийнхийг чимээгүй өнгөрөөнө
+      final wasInitialLoad = _orderBookLoading;
       setState(() => _orderBookLoading = false);
+      if (wasInitialLoad) CustomSnackbar.showError(context, e);
     } finally {
       _orderBookFetching = false;
     }

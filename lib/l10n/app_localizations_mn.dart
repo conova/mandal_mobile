@@ -1024,6 +1024,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get khurSystem => 'ХУР систем';
 
   @override
+  String registrationStepLabel(int num, String title) {
+    return 'Алхам $num: $title';
+  }
+
+  @override
   String registrationProgress(String percent) {
     return 'Бүртгэлийн явц: ';
   }

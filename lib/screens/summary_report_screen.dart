@@ -68,9 +68,10 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         _report = SummaryReportData.fromJson(data);
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
   }
 

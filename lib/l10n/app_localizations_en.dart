@@ -1025,6 +1025,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get khurSystem => 'KHUR system';
 
   @override
+  String registrationStepLabel(int num, String title) {
+    return 'Step $num: $title';
+  }
+
+  @override
   String registrationProgress(String percent) {
     return 'Registration progress: $percent%';
   }
