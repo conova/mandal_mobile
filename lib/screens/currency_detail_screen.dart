@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/circle_back_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_button.dart';
 
 enum CurrencyType { mnt, usd }
 
@@ -33,74 +36,50 @@ class CurrencyDetailScreen extends StatelessWidget {
               extendedColors: extendedColors,
               accentColor: accentColor,
               title: title,
-              amount: isMnt ? '128,000.53₮' : '128.40\$',
+              amount: isMnt ? '0.00₮' : '0.00\$',
               currencySymbol: currencySymbol,
               isMnt: isMnt,
             ),
             const SizedBox(height: 24),
             // Action buttons
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 60),
               child: Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => Navigator.pushNamed(context, '/income_method'),
-                      icon: const Icon(Icons.add, size: 20),
-                      label: Text(
-                        l10n.income,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: extendedColors.bgBase,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        foregroundColor: extendedColors.bgBase,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
+                    child: CustomButton(
+                      label: l10n.income,
+                      size: CustomButtonSize.small,
+                      icon: const Icon(Icons.add),
+                      variant: isMnt ? CustomButtonVariant.primary : CustomButtonVariant.neutral,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/income_method'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => Navigator.pushNamed(context, '/withdraw_method'),
-                      icon: Icon(Icons.sync, size: 20, color: extendedColors.neutral100),
-                      label: Text(
-                        l10n.expense,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: extendedColors.neutral100,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: extendedColors.bgSecondary,
-                        foregroundColor: extendedColors.neutral100,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
+                    child: CustomButton(
+                      label: l10n.expense,
+                      size: CustomButtonSize.small,
+                      icon: const Icon(Icons.sync),
+                      variant: CustomButtonVariant.tertiary,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/withdraw_method'),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Divider(height: 1, color: extendedColors.neutral500),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             // General Info section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 l10n.generalInfo,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w400,
                   color: extendedColors.neutral100,
                 ),
               ),
@@ -110,34 +89,25 @@ class CurrencyDetailScreen extends StatelessWidget {
               context: context,
               theme: theme,
               extendedColors: extendedColors,
-              icon: Icons.people_outline,
+              icon: 'coins-hand',
               label: l10n.cash,
-              amount: isMnt ? '28,000.53₮' : '100.00\$',
+              amount: isMnt ? '0.00₮' : '0.00\$',
             ),
             const SizedBox(height: 20),
             _buildInfoRow(
               context: context,
               theme: theme,
               extendedColors: extendedColors,
-              icon: Icons.description_outlined,
+              icon: 'file-check-02',
               label: l10n.lockedAmountLabel,
-              amount: isMnt ? '100,000.00₮' : '28.40\$',
-              trailing: OutlinedButton(
-                onPressed: () => Navigator.pushNamed(context, '/release_locked'),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: extendedColors.neutral400),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                ),
-                child: Text(
-                  l10n.release,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: extendedColors.neutral100,
-                  ),
-                ),
+              amount: isMnt ? '0.00₮' : '0.00\$',
+              trailing: CustomButton(
+                label: l10n.release,
+                size: CustomButtonSize.small,
+                minWidth: 78,
+                variant: CustomButtonVariant.tertiary,
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/release_locked'),
               ),
             ),
             const SizedBox(height: 24),
@@ -148,13 +118,12 @@ class CurrencyDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 l10n.history,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w400,
                   color: extendedColors.neutral100,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
             ..._buildTransactionHistory(
               theme: theme,
               extendedColors: extendedColors,
@@ -179,8 +148,8 @@ class CurrencyDetailScreen extends StatelessWidget {
     required bool isMnt,
   }) {
     final gradientColors = isMnt
-        ? [extendedColors.primary200, extendedColors.primary100.withValues(alpha: 0.3)]
-        : [extendedColors.bgSecondary, extendedColors.bgBase];
+        ? [extendedColors.primary200, extendedColors.bgBase]
+        : [extendedColors.bgTertiary, extendedColors.bgBase];
 
     return Container(
       width: double.infinity,
@@ -197,54 +166,43 @@ class CurrencyDetailScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 44,
-                    height: 44,
+              // Back товч зүүн талд, валютын icon мөрийн голд
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleBackButton(),
+                  ),
+                  Container(
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: extendedColors.bgBase.withValues(alpha: 0.5),
+                      color: accentColor,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: extendedColors.neutral100,
-                      size: 20,
+                    child: Center(
+                      child: CustomSvgIcon(
+                              isMnt ? 'tugrug-01': 'currency-dollar',
+                              size: 22,
+                              color: extendedColors.bgBase,
+                            ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: accentColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: Text(
-                  currencySymbol,
-                  style: TextStyle(
-                    color: extendedColors.bgBase,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
             Text(
               title,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral300,
+                color: extendedColors.neutral100,
+                fontWeight: FontWeight.w200
               ),
             ),
             const SizedBox(height: 8),
             _buildAmountText(amount, theme, extendedColors),
-            const SizedBox(height: 24),
+            const SizedBox(height: 0),
           ],
         ),
       ),
@@ -293,7 +251,7 @@ class CurrencyDetailScreen extends StatelessWidget {
     required BuildContext context,
     required ThemeData theme,
     required ExtendedColors extendedColors,
-    required IconData icon,
+    required String icon,
     required String label,
     required String amount,
     Widget? trailing,
@@ -309,7 +267,7 @@ class CurrencyDetailScreen extends StatelessWidget {
               color: extendedColors.bgSecondary,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: extendedColors.neutral200, size: 24),
+            child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -320,19 +278,18 @@ class CurrencyDetailScreen extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral300,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: extendedColors.neutral200,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Icon(Icons.info_outline, size: 16, color: extendedColors.neutral400),
+                    CustomSvgIcon('info-circle', size: 20, color: extendedColors.neutral300,)
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   amount,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     color: extendedColors.neutral100,
                   ),
                 ),
@@ -397,7 +354,7 @@ class CurrencyDetailScreen extends StatelessWidget {
 
     return transactions.map((tx) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
             Container(
@@ -405,21 +362,14 @@ class CurrencyDetailScreen extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 color: tx.isIncome
-                    ? extendedColors.primary100.withValues(alpha: 0.3)
+                    ? extendedColors.primary100
                     : extendedColors.bgSecondary,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
-                child: Text(
-                  currencySymbol,
-                  style: TextStyle(
-                    color: tx.isIncome
-                        ? extendedColors.primaryMain
-                        : extendedColors.neutral300,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: CustomSvgIcon(
+                  isMnt ? 'tugrug-01': 'currency-dollar',
+                  color: tx.isIncome ? extendedColors.primaryMain: extendedColors.neutral200,)
               ),
             ),
             const SizedBox(width: 16),
@@ -430,15 +380,16 @@ class CurrencyDetailScreen extends StatelessWidget {
                   Text(
                     '${tx.type} - ${tx.currency}',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w300,
                       color: extendedColors.neutral100,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     tx.date,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: extendedColors.neutral300,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w300,
+                      color: extendedColors.neutral200,
                     ),
                   ),
                 ],
@@ -447,7 +398,7 @@ class CurrencyDetailScreen extends StatelessWidget {
             Text(
               tx.amount,
               style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w300,
                 color: tx.isIncome
                     ? extendedColors.primaryMain
                     : extendedColors.neutral100,

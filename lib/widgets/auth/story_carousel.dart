@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_text_styles.dart';
+import '../../theme/extended_colors.dart';
 import '../logo.dart';
 
 class StoryCarousel extends StatefulWidget {
@@ -98,6 +99,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     return Scaffold(
       backgroundColor: Colors.black, // Story aesthetic is usually black
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -189,15 +191,15 @@ class _StoryCarouselState extends State<StoryCarousel> {
                   _buildStoryButton(
                     label: 'Бүртгүүлэх',
                     onPressed: widget.onRegisterPressed,
-                    backgroundColor: const Color(0xFF41CEC2),
+                    backgroundColor: extendedColors.primaryMain,
                     textColor: Colors.black,
                   ),
                   const SizedBox(height: 12),
                   _buildStoryButton(
                     label: 'Нэвтрэх',
                     onPressed: widget.onLoginPressed,
-                    backgroundColor: const Color(0xFF062C2D),
-                    textColor: const Color(0xFF41CEC2),
+                    backgroundColor: extendedColors.primary100,
+                    textColor: extendedColors.primaryMain,
                   ),
                 ],
               ),

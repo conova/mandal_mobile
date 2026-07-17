@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
-enum CustomButtonVariant { primary, secondary, tertiary, text, error }
+enum CustomButtonVariant { primary, secondary, tertiary, text, error, neutral }
 
 enum CustomButtonSize { large, small }
 
@@ -14,6 +14,9 @@ class CustomButton extends StatelessWidget {
   final Widget? icon;
   final bool isLoading;
 
+  /// Товчны хамгийн бага өргөн (заагаагүй бол агуулгаараа хэмжигдэнэ)
+  final double? minWidth;
+
   const CustomButton({
     super.key,
     required this.label,
@@ -22,6 +25,7 @@ class CustomButton extends StatelessWidget {
     this.size = CustomButtonSize.large,
     this.icon,
     this.isLoading = false,
+    this.minWidth,
   });
 
   bool get isDisabled => onPressed == null || isLoading;
@@ -52,10 +56,11 @@ class CustomButton extends StatelessWidget {
         foregroundColor = theme.primaryColor;
         break;
       case CustomButtonVariant.error:
-        backgroundColor = theme.brightness == Brightness.dark
-            ? Color(0xFF1F0B0A)
-            : const Color(0xFFFBE9E9);
+        backgroundColor = extendedColors.red100;
         foregroundColor = extendedColors.red;
+      case CustomButtonVariant.neutral:
+        backgroundColor = extendedColors.neutral100;
+        foregroundColor = extendedColors.bgBase;
     }
 
     // Adjust for disabled state
@@ -122,8 +127,12 @@ class CustomButton extends StatelessWidget {
       ],
     );
 
-    return SizedBox(
-      height: height,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: height,
+        maxHeight: height,
+        minWidth: minWidth ?? 0,
+      ),
       child: Material(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),

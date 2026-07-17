@@ -73,125 +73,137 @@ class _HomeStockRecommendationSectionState
       return const SizedBox.shrink();
     }
 
+    // Гадна давхарга — градиент border (1px)
     return Container(
+      padding: const EdgeInsets.all(1),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFFBE3D2), Color(0xFFFDF1E9)],
+          colors: [extendedColors.orange300, extendedColors.orange200],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 24),
-          // Orange icon badge
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: extendedColors.orange,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const CustomSvgIcon(
-              'coins-swap-02',
-              color: AppColors.bgBase,
-              size: 32,
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [extendedColors.orange200, extendedColors.orange100],
           ),
-          const SizedBox(height: 20),
-          // Title
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              l10n.stockRecommendationTitle,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            // Orange icon badge
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: extendedColors.orange,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const CustomSvgIcon(
+                'coins-swap-02',
+                color: AppColors.bgBase,
+                size: 32,
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          // Description
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              l10n.stockRecommendationDesc,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral300,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          // PageView carousel
-          SizedBox(
-            height: 110,
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : PageView.builder(
-                    controller: _pageController,
-                    itemCount: _stocks.length,
-                    allowImplicitScrolling: true,
-                    onPageChanged: (index) {
-                      setState(() => _currentPage = index);
-                    },
-                    itemBuilder: (context, index) {
-                      final item = _stocks[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: _buildStockCard(item, extendedColors),
-                      );
-                    },
-                  ),
-          ),
-          const SizedBox(height: 16),
-          // Page indicator dots
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(_stocks.length, (index) {
-              final isActive = index == _currentPage;
-              return Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isActive
-                      ? extendedColors.neutral100
-                      : extendedColors.neutral400,
+            const SizedBox(height: 20),
+            // Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                l10n.stockRecommendationTitle,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-              );
-            }),
-          ),
-          const SizedBox(height: 20),
-        ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Description
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                l10n.stockRecommendationDesc,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w200,
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // PageView carousel
+            SizedBox(
+              height: 112,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : PageView.builder(
+                      controller: _pageController,
+                      itemCount: _stocks.length,
+                      allowImplicitScrolling: true,
+                      onPageChanged: (index) {
+                        setState(() => _currentPage = index);
+                      },
+                      itemBuilder: (context, index) {
+                        final item = _stocks[index];
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 16),
+                          child: _buildStockCard(item, extendedColors),
+                        );
+                      },
+                    ),
+            ),
+            // Page indicator dots
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(_stocks.length, (index) {
+                final isActive = index == _currentPage;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
+                  width: isActive ? 24 : 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: isActive
+                        ? extendedColors.neutral100
+                        : extendedColors.neutral400,
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildStockCard(
-    MarketInstrument data,
-    ExtendedColors extendedColors,
-  ) {
+  Widget _buildStockCard(MarketInstrument data, ExtendedColors extendedColors) {
     final change = data.priceChange;
     final price = data.closePrice == null
         ? '-'
         : formatStockAmount(data.closePrice, decimals: 0);
-    final changeStr =
-        change == null ? '-' : '${change.abs().toStringAsFixed(2)}%';
-    final bool? isGrowing =
-        change == null || change == 0 ? null : change > 0;
+    final changeStr = change == null
+        ? '-'
+        : '${change.abs().toStringAsFixed(2)}%';
+    final bool? isGrowing = change == null || change == 0 ? null : change > 0;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(16),
+        // 0px 8px 16px #FF794029
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: extendedColors.orange.withValues(alpha: 0.16),
             blurRadius: 16,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 8),
           ),
         ],
       ),

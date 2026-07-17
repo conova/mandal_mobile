@@ -202,13 +202,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get foreign => 'ГАДААД';
 
   @override
-  String get buy => 'АВАХ';
+  String get buy => 'Авах';
 
   @override
-  String get sell => 'ЗАРАХ';
+  String get sell => 'Зарах';
 
   @override
-  String get bond => 'БОНД';
+  String get bond => 'Бонд';
 
   @override
   String get orderUpdated => 'Захиалга шинэчлэгдлээ';

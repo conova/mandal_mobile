@@ -306,7 +306,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
     final arrow = isPositive ? '▲' : '▼';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
       child: Row(
         children: [
           Expanded(

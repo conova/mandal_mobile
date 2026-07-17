@@ -207,11 +207,11 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   ) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFC5D4F8), Color(0xFFEAEFFD)],
+          colors: [extendedColors.purple200, extendedColors.purple100],
         ),
       ),
       child: SafeArea(
@@ -266,7 +266,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             Text(
               l10n.approxUsd('14,084.50'),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF4A6CF7),
+                color: extendedColors.purple500,
                 fontWeight: FontWeight.w500,
               ),
             ),

@@ -469,19 +469,19 @@ abstract class AppLocalizations {
   /// No description provided for @buy.
   ///
   /// In en, this message translates to:
-  /// **'BUY'**
+  /// **'Buy'**
   String get buy;
 
   /// No description provided for @sell.
   ///
   /// In en, this message translates to:
-  /// **'SELL'**
+  /// **'Sell'**
   String get sell;
 
   /// No description provided for @bond.
   ///
   /// In en, this message translates to:
-  /// **'BOND'**
+  /// **'Bond'**
   String get bond;
 
   /// No description provided for @orderUpdated.

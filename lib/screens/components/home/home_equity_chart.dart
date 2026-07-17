@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../../../theme/extended_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../services/auth_service.dart';
 import '../../../widgets/finance_chart.dart';
@@ -66,12 +67,9 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
 
     return Column(
       children: [
-        SizedBox(
-          height: 200,
-          // spots хоосон бол FinanceChart нь sample data-аар (өөрийн default)
-          // дүүргэгдэх — UI шууд харагдана.
-          child: FinanceChart(spots: spots.isEmpty ? null : spots),
-        ),
+        // spots хоосон бол FinanceChart нь sample data-аар (өөрийн default)
+        // дүүргэгдэх — UI шууд харагдана.
+        FinanceChart(spots: spots.isEmpty ? null : spots, height: 100),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -84,14 +82,17 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
   }
 
   Widget _timeFilter(ThemeData theme, String text) {
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final isSelected = _selectedFilter == text;
     return GestureDetector(
       onTap: () => _onFilterTap(text),
       child: Text(
         text,
         style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? theme.colorScheme.onSurface : theme.disabledColor,
+          fontWeight: FontWeight.w400,
+          color: isSelected
+              ? extendedColors.neutral100
+              : extendedColors.neutral300,
         ),
       ),
     );

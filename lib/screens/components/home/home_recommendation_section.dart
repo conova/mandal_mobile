@@ -70,105 +70,120 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
       return const SizedBox.shrink();
     }
 
+    // Гадна давхарга — градиент border (1px)
     return Container(
+      padding: const EdgeInsets.all(1),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFC5D4F8), Color(0xFFDEE6FB)],
+          colors: [extendedColors.purple300, extendedColors.purple200],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 24),
-          // Purple icon badge
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: extendedColors.purple,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: CustomSvgIcon('bank-note-01', size: 32, color: AppColors.bgBase,),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [extendedColors.purple200, extendedColors.purple100],
           ),
-          const SizedBox(height: 20),
-          // Title
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              l10n.recommendationTitle,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            // Purple icon badge
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: extendedColors.purple,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: CustomSvgIcon(
+                'bank-note-01',
+                size: 32,
+                color: AppColors.bgBase,
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          // Description
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              l10n.recommendationDesc,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: extendedColors.neutral100,
-                fontWeight: FontWeight.w200,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          // PageView carousel
-          SizedBox(
-            height: 200,
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : PageView.builder(
-                    controller: _pageController,
-                    itemCount: _recommendations.length,
-                    allowImplicitScrolling: true,
-                    onPageChanged: (index) {
-                      setState(() => _currentPage = index);
-                    },
-                    itemBuilder: (context, index) {
-                      final item = _recommendations[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: _buildRecommendationCard(
-                          context: context,
-                          data: item,
-                          extendedColors: extendedColors,
-                          l10n: l10n,
-                        ),
-                      );
-                    },
-                  ),
-          ),
-          const SizedBox(height: 16),
-          // Page indicator dots
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(_recommendations.length, (index) {
-              final isActive = index == _currentPage;
-              return Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isActive
-                      ? extendedColors.neutral100
-                      : extendedColors.neutral400,
+            const SizedBox(height: 20),
+            // Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                l10n.recommendationTitle,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-              );
-            }),
-          ),
-          const SizedBox(height: 20),
-        ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Description
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                l10n.recommendationDesc,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral100,
+                  fontWeight: FontWeight.w200,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // PageView carousel
+            SizedBox(
+              height: 196,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : PageView.builder(
+                      controller: _pageController,
+                      itemCount: _recommendations.length,
+                      allowImplicitScrolling: true,
+                      onPageChanged: (index) {
+                        setState(() => _currentPage = index);
+                      },
+                      itemBuilder: (context, index) {
+                        final item = _recommendations[index];
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 16),
+                          child: _buildRecommendationCard(
+                            context: context,
+                            data: item,
+                            extendedColors: extendedColors,
+                            l10n: l10n,
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            // Page indicator dots
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(_recommendations.length, (index) {
+                final isActive = index == _currentPage;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
+                  width: isActive ? 24 : 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: isActive
+                        ? extendedColors.neutral100
+                        : extendedColors.neutral400,
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
-
 
   /// Хугацааг locale-ийн дагуу нэгжтэй харуулна:
   ///   12 → "12 сар" (мон) / "12 month" (англи); огноо бол шууд
@@ -191,11 +206,12 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(16),
+        // 0px 8px 16px #3D57DA29
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: extendedColors.purple.withValues(alpha: 0.16),
             blurRadius: 16,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -215,8 +231,9 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.topLeft,
                       child: ConstrainedBox(
-                        constraints:
-                            BoxConstraints(maxWidth: constraints.maxWidth),
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,7 +305,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                     l10n.buy,
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: extendedColors.bgBase,
                     ),
                   ),
                 ),
@@ -335,8 +352,9 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                         ? '-'
                         : formatCompactAmount(
                             data.amt,
-                            languageCode:
-                                Localizations.localeOf(context).languageCode,
+                            languageCode: Localizations.localeOf(
+                              context,
+                            ).languageCode,
                           ),
                     theme,
                     extendedColors,

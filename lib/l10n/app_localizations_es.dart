@@ -204,13 +204,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get foreign => 'FOREIGN';
 
   @override
-  String get buy => 'BUY';
+  String get buy => 'Buy';
 
   @override
-  String get sell => 'SELL';
+  String get sell => 'Sell';
 
   @override
-  String get bond => 'BOND';
+  String get bond => 'Bond';
 
   @override
   String get orderUpdated => 'Order Updated';

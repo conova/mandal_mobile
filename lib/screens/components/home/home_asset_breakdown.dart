@@ -83,7 +83,7 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
         );
       case 'usd':
       case 'dollar':
-        return (icon: CustomSvgIcon('currency-dollar', size: 24, color: extendedColors.bgBase,), route: '/currency_detail', color: null);
+        return (icon: CustomSvgIcon('currency-dollar', size: 24, color: extendedColors.bgBase,), route: '/currency_detail', color: extendedColors.neutral100);
       case 'bond':
       case 'bonds':
         return (

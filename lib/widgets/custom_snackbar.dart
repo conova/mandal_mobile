@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/extended_colors.dart';
+
 enum CustomSnackbarType { success, error, info }
 
 class CustomSnackbar {
@@ -22,6 +24,7 @@ class CustomSnackbar {
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     IconData iconData;
     Color iconColor;
@@ -29,7 +32,7 @@ class CustomSnackbar {
     switch (type) {
       case CustomSnackbarType.success:
         iconData = Icons.check_circle_outline;
-        iconColor = const Color(0xFF4DB6AC); // Teal matching the design
+        iconColor = extendedColors.primary500;
         break;
       case CustomSnackbarType.error:
         iconData = Icons.cancel_outlined;
@@ -37,7 +40,7 @@ class CustomSnackbar {
         break;
       case CustomSnackbarType.info:
         iconData = Icons.info_outline;
-        iconColor = Colors.white;
+        iconColor = extendedColors.bgBase;
         break;
     }
 
@@ -49,7 +52,8 @@ class CustomSnackbar {
       content: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A), // Dark background as seen in design
+          // Урвуу (inverse) дэвсгэр — light theme-д бараан, dark-д цайвар
+          color: extendedColors.neutral100,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -68,7 +72,7 @@ class CustomSnackbar {
                   Text(
                     message,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
+                      color: extendedColors.bgBase,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -82,7 +86,7 @@ class CustomSnackbar {
                       child: Text(
                         actionLabel,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF4DB6AC), // Action color
+                          color: extendedColors.primary500,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

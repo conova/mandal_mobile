@@ -92,9 +92,9 @@ class RegisterSuccessScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check,
-                        color: Color(0xFF1E8675),
+                        color: extendedColors.primaryMain,
                         size: 70,
                       ),
                     ),

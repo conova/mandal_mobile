@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../services/auth_service.dart';
+import '../../theme/extended_colors.dart';
 
 class BiometricLoginButton extends StatelessWidget {
   final VoidCallback onAuthenticated;
@@ -16,6 +17,7 @@ class BiometricLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = context.watch<AuthService>();
+    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
 
     return FutureBuilder<List<BiometricType>>(
       future: authService.getAvailableBiometrics(),
@@ -39,13 +41,13 @@ class BiometricLoginButton extends StatelessWidget {
           width: 52,
           height: 52,
           decoration: BoxDecoration(
-            color: const Color(0xFFE0F2F1), // Very light teal background
+            color: extendedColors.primary100,
             borderRadius: BorderRadius.circular(16),
           ),
           child: IconButton(
             icon: Icon(
               iconData,
-              color: const Color(0xFF29A396), // Mandal teal color
+              color: extendedColors.primaryMain,
               size: 32,
             ),
             onPressed: () async {

@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 class FinanceChart extends StatelessWidget {
   final List<FlSpot>? spots;
 
-  const FinanceChart({super.key, this.spots});
+  /// Графикийн өндөр (px)
+  final double height;
+
+  const FinanceChart({super.key, this.spots, this.height = 200});
 
   static const List<FlSpot> _sampleSpots = [
     FlSpot(0, 3), FlSpot(1, 1), FlSpot(2, 4), FlSpot(3, 2), FlSpot(4, 5),
@@ -42,7 +45,7 @@ class FinanceChart extends StatelessWidget {
     if (maxX == minX) maxX = minX + 1;
 
     return SizedBox(
-      height: 200,
+      height: height,
       child: LineChart(
         LineChartData(
           gridData: const FlGridData(show: false),
