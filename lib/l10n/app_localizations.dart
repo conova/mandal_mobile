@@ -484,6 +484,24 @@ abstract class AppLocalizations {
   /// **'Bond'**
   String get bond;
 
+  /// No description provided for @term.
+  ///
+  /// In en, this message translates to:
+  /// **'Term'**
+  String get term;
+
+  /// No description provided for @yield.
+  ///
+  /// In en, this message translates to:
+  /// **'Yield'**
+  String get yield;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get balance;
+
   /// No description provided for @orderUpdated.
   ///
   /// In en, this message translates to:

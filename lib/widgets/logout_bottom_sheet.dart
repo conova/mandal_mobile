@@ -14,7 +14,6 @@ class LogoutBottomSheet extends StatelessWidget {
       description: l10n.logoutConfirmDesc,
       confirmText: l10n.yesLogout,
       cancelText: l10n.back,
-      icon: Icon(Icons.sentiment_very_dissatisfied, size: 80, color: Colors.purple[100]),
       confirmColor: Colors.red[400],
       onConfirm: () => Navigator.of(context).pop(true),
       onCancel: () => Navigator.of(context).pop(false),

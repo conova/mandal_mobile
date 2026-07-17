@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/extended_colors.dart';
+import '../circle_back_button.dart';
+
 class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? stepText;
   final VoidCallback? onBack;
@@ -10,29 +13,14 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return AppBar(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       elevation: 0,
-      leadingWidth: 70,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 20.0, top: 12, bottom: 12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: colorScheme.secondary,
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: colorScheme.onSurface,
-              size: 20,
-            ),
-            onPressed: onBack ?? () => Navigator.pop(context),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          ),
-        ),
+        padding: EdgeInsets.only(left: 20,),
+        child: CircleBackButton(),
       ),
       actions: [
         if (stepText != null)

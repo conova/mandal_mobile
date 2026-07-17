@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_state_manager.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../widgets/language_switcher.dart';
@@ -153,9 +156,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // background bgBase-аараа үлдэхийг баталгаажуулна.
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const CustomSvgIcon('close-button', size: 24),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
         ),
         actions: const [
           // Login дэлгэцтэй ижил pill switcher (flag + MN/ENG).
@@ -179,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 32),
 
             // Personal Information Section
-            const ProfileSectionHeader(title: 'Хувийн мэдээлэл'),
+            ProfileSectionHeader(title: l10n.personalInfo),
             ProfileToggleItem(
               icon: AppStateManager.instance.themeMode == ThemeMode.dark
                   ? const CustomSvgIcon('sun', size: 20)

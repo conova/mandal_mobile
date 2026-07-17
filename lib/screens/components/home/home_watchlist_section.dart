@@ -126,7 +126,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
                 const SizedBox(height: 16),
                 Text(
                   l10n.askingWatchlist,
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
                   ),
@@ -137,14 +137,13 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
                   child: Text(
                     l10n.watchlistDescription,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.neutral100,
-                      fontSize: 14,
-                      height: 1.4,
+                      fontWeight: AppTextStyles.extraLight,
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 25),
                 SizedBox(
                   width: 130,
                   child: CustomButton(

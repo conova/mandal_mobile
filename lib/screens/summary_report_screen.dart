@@ -9,6 +9,7 @@ import '../models/summary_report_data.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/finance_chart.dart';
 import '../widgets/summary_table_row.dart';
@@ -348,15 +349,20 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        title: Text(l10n.summaryReport),
+        title: Text(
+          l10n.summaryReport,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: extendedColors.neutral100,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
         ),
       ),
       body: Stack(

@@ -211,6 +211,15 @@ class AppLocalizationsMn extends AppLocalizations {
   String get bond => 'Бонд';
 
   @override
+  String get term => 'Хугацаа';
+
+  @override
+  String get yield => 'Өгөөж';
+
+  @override
+  String get balance => 'Дүн';
+
+  @override
   String get orderUpdated => 'Захиалга шинэчлэгдлээ';
 
   @override

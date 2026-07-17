@@ -213,6 +213,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get bond => 'Bond';
 
   @override
+  String get term => 'Term';
+
+  @override
+  String get yield => 'Yield';
+
+  @override
+  String get balance => 'Balance';
+
+  @override
   String get orderUpdated => 'Order Updated';
 
   @override

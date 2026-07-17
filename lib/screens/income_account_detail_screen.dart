@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
@@ -73,13 +74,13 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
     final isPrimary = args['isPrimary'] == true;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const CustomSvgIcon('close-button', size: 24),
-          onPressed: () => Navigator.pop(context),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
         ),
       ),
       body: Padding(
@@ -119,7 +120,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
               CustomButton(
                 label: l10n.setAsDefaultAccount,
                 onPressed:
-                    _isSettingPrimary ? null : () => _handleSetPrimary(args),
+                _isSettingPrimary ? null : () => _handleSetPrimary(args),
                 isLoading: _isSettingPrimary,
                 variant: CustomButtonVariant.secondary,
               ),
@@ -144,12 +145,14 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(color: extendedColors.neutral200, fontSize: 13, fontWeight:FontWeight.w300),
+            style: theme.textTheme.labelLarge,
           ),
-          const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: extendedColors.neutral100,
+              fontSize: 16,
+            ),
           ),
         ],
       ),

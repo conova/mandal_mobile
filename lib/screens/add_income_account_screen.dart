@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/iban_prefix_formatter.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_button.dart';
@@ -17,7 +20,7 @@ class AddIncomeAccountScreen extends StatefulWidget {
 
 class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
   final TextEditingController _ibanController =
-      TextEditingController(text: IbanPrefixFormatter.prefix);
+  TextEditingController(text: IbanPrefixFormatter.prefix);
   final TextEditingController _receiverController = TextEditingController();
   String? _selectedBankCode;
   bool _isButtonEnabled = false;
@@ -98,8 +101,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
       final list = await auth.getBanksList();
       if (!mounted) return;
       // Кодоор эрэмбэлнэ ("01", "04", ...)
-      list.sort(
-        (a, b) => (a['code']?.toString() ?? '')
+      list.sort((a, b) => (a['code']?.toString() ?? '')
             .compareTo(b['code']?.toString() ?? ''),
       );
       setState(() {
@@ -121,10 +123,10 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
     setState(() {
       // IBAN нь "MN" угтвараас гадна утга агуулсан байх ёстой
       _isButtonEnabled =
-          _ibanController.text.length > IbanPrefixFormatter.prefix.length &&
+        _ibanController.text.length > IbanPrefixFormatter.prefix.length &&
           _receiverController.text.isNotEmpty &&
           _selectedBankCode != null;
-    });
+  });
   }
 
   Future<void> _handleSave() async {
@@ -160,17 +162,24 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20,),
+          child: CircleBackButton(),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 16),
-              _buildBackButton(context, colorScheme),
               const SizedBox(height: 32),
               Text(
                 l10n.addIncomeAccPrompt,
@@ -189,7 +198,10 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
                 label: l10n.iban,
                 controller: _ibanController,
                 inputFormatters: [IbanPrefixFormatter()],
-                suffix: Icon(Icons.copy, color: theme.disabledColor, size: 20),
+                suffix: Padding(
+                  padding: const EdgeInsets.only(right: 14),
+                  child: CustomSvgIcon('copy-06', size: 24,),
+                ),
               ),
               const SizedBox(height: 20),
               if (_banksLoading)
@@ -230,7 +242,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
               CustomButton(
                 label: l10n.save,
                 onPressed:
-                    (_isButtonEnabled && !_isSaving) ? _handleSave : null,
+                (_isButtonEnabled && !_isSaving) ? _handleSave : null,
                 isLoading: _isSaving,
                 variant: CustomButtonVariant.primary,
               ),
@@ -238,25 +250,6 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBackButton(BuildContext context, ColorScheme colorScheme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.arrow_back, size: 20),
-        onPressed: () => Navigator.pop(context),
       ),
     );
   }

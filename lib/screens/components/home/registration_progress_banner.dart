@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 class RegistrationProgressBanner extends StatelessWidget {
   final double progress; // 0.0 to 1.0
@@ -74,8 +75,8 @@ class RegistrationProgressBanner extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Icon(
-                          Icons.warning_amber_rounded,
+                        CustomSvgIcon(
+                          'warning-sign',
                           size: 16,
                           color: extendedColors.yellow,
                         ),
@@ -91,6 +92,7 @@ class RegistrationProgressBanner extends StatelessWidget {
                   backgroundColor: extendedColors.yellow,
                   foregroundColor: extendedColors.bgBase,
                   elevation: 0,
+                  maximumSize: (const Size(120, 40)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

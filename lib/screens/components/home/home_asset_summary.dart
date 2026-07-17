@@ -124,6 +124,8 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
               ),
             ),
             const SizedBox(width: 4),
+            CustomSvgIcon('divider-icon', size: 15, color: extendedColors.primaryMain,),
+            const SizedBox(width: 4),
             if (isUp)
               const CustomSvgIcon(
                 'button-up',

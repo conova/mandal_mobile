@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'custom_svg_icon.dart';
+
 class StockPriceRow extends StatelessWidget {
   final String symbol;
   final String name;
@@ -61,15 +63,16 @@ class StockPriceRow extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isGrowing != null && change != '0.00%')
-                        Icon(
+                        CustomSvgIcon(
                           isGrowing!
-                              ? Icons.arrow_drop_up
-                              : Icons.arrow_drop_down,
+                              ? 'button-up'
+                              : 'button-down',
                           color: isGrowing!
                               ? theme.primaryColor
                               : colorScheme.error,
-                          size: 20,
+                          size: 6,
                         ),
+                      const SizedBox(width: 4),
                       Text(
                         change,
                         style: theme.textTheme.bodyMedium?.copyWith(
