@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import '../l10n/app_localizations.dart';
@@ -179,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 32),
 
             // Personal Information Section
-            const ProfileSectionHeader(title: 'Хувийн мэдээлэл'),
+            ProfileSectionHeader(title: l10n.personalInfo),
             ProfileToggleItem(
               icon: AppStateManager.instance.themeMode == ThemeMode.dark
                   ? const CustomSvgIcon('sun', size: 20)
