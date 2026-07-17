@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/market_instrument.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/extended_colors.dart';
@@ -23,7 +25,7 @@ class _HomeStockRecommendationSectionState
   int _currentPage = 0;
 
   bool _isLoading = true;
-  List<_StockRecommendationData> _stocks = const [];
+  List<MarketInstrument> _stocks = const [];
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _HomeStockRecommendationSectionState
         _stocks = rows
             .where((r) => r['STOCKGRP']?.toString() == 'stock')
             .take(10)
-            .map(_StockRecommendationData.fromApi)
+            .map(MarketInstrument.fromJson)
             .toList();
         _isLoading = false;
       });
@@ -166,9 +168,18 @@ class _HomeStockRecommendationSectionState
   }
 
   Widget _buildStockCard(
-    _StockRecommendationData data,
+    MarketInstrument data,
     ExtendedColors extendedColors,
   ) {
+    final change = data.priceChange;
+    final price = data.closePrice == null
+        ? '-'
+        : formatStockAmount(data.closePrice, decimals: 0);
+    final changeStr =
+        change == null ? '-' : '${change.abs().toStringAsFixed(2)}%';
+    final bool? isGrowing =
+        change == null || change == 0 ? null : change > 0;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -185,83 +196,22 @@ class _HomeStockRecommendationSectionState
       child: StockPriceRow(
         symbol: data.symbol,
         name: data.name,
-        price: data.price,
-        change: data.change,
-        isGrowing: data.isGrowing,
+        price: price,
+        change: changeStr,
+        isGrowing: isGrowing,
         onTap: () => Navigator.pushNamed(
           context,
           '/stock_detail',
           arguments: {
             'symbol': data.symbol,
             'name': data.name,
-            'price': data.price,
-            'change': data.change,
-            'isGrowing': data.isGrowing,
+            'price': price,
+            'change': changeStr,
+            'isGrowing': isGrowing,
             'stockcode': data.stockcode,
           },
         ),
       ),
     );
-  }
-}
-
-class _StockRecommendationData {
-  final String symbol;
-  final String name;
-  final String price;
-  final String change;
-  final bool? isGrowing;
-  final String stockcode;
-
-  const _StockRecommendationData({
-    required this.symbol,
-    required this.name,
-    required this.price,
-    required this.change,
-    required this.isGrowing,
-    required this.stockcode,
-  });
-
-  /// /stocks/nbo мөрөөс угсарна:
-  /// { SYMBOL, STOCKNAME, COMPNAME, CLOSEPRICE, PRICECHANGE }
-  factory _StockRecommendationData.fromApi(Map<String, dynamic> row) {
-    final closePrice = row['CLOSEPRICE'];
-    final priceChange = row['PRICECHANGE'];
-
-    String changeStr = '-';
-    bool? isGrowing;
-    if (priceChange != null) {
-      final pct = double.tryParse(priceChange.toString()) ?? 0;
-      changeStr = '${pct.abs().toStringAsFixed(2)}%';
-      if (pct > 0) {
-        isGrowing = true;
-      } else if (pct < 0) {
-        isGrowing = false;
-      }
-    }
-
-    return _StockRecommendationData(
-      symbol: row['SYMBOL']?.toString() ?? '',
-      stockcode: row['STOCKCODE']?.toString() ?? '',
-      name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
-      price: closePrice == null
-          ? '-'
-          : '${_formatPrice(closePrice.toString())}₮',
-      change: changeStr,
-      isGrowing: isGrowing,
-    );
-  }
-
-  /// 3299.02 → "3,299.02" (бутархайгүй бол бүхлээр)
-  static String _formatPrice(String s) {
-    final n = num.tryParse(s);
-    if (n == null) return s;
-    final formatted = n % 1 == 0 ? n.toStringAsFixed(0) : n.toStringAsFixed(2);
-    final parts = formatted.split('.');
-    parts[0] = parts[0].replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (m) => '${m[1]},',
-    );
-    return parts.join('.');
   }
 }

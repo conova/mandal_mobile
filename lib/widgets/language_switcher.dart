@@ -34,7 +34,7 @@ class LanguageSwitcher extends StatelessWidget {
               Text(
                 currentLocale == 'mn' ? 'MN' : 'ENG',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onBackground,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
                 textHeightBehavior: const TextHeightBehavior(

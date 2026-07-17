@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
+import '../../models/market_instrument.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
+import '../../widgets/circle_back_button.dart';
 
 /// Барьцаалах бонд сонгох — миний бондуудын (/stocks/mybonds) жагсаалтаас
 /// сонгож барьцаалах захиалгын дэлгэц рүү шилжинэ.
@@ -17,7 +19,7 @@ class PledgeBondSelectScreen extends StatefulWidget {
 
 class _PledgeBondSelectScreenState extends State<PledgeBondSelectScreen> {
   bool _isLoading = true;
-  List<Map<String, dynamic>> _myBonds = const [];
+  List<MarketInstrument> _myBonds = const [];
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _PledgeBondSelectScreenState extends State<PledgeBondSelectScreen> {
       final rows = await auth.getMyBonds();
       if (!mounted) return;
       setState(() {
-        _myBonds = rows;
+        _myBonds = MarketInstrument.listFromJson(rows);
         _isLoading = false;
       });
     } catch (_) {
@@ -51,25 +53,9 @@ class _PledgeBondSelectScreenState extends State<PledgeBondSelectScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: extendedColors.bgSecondary,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                size: 20,
-                color: extendedColors.neutral100,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: CircleBackButton(),
         ),
       ),
       body: Column(
@@ -131,22 +117,19 @@ class _PledgeBondSelectScreenState extends State<PledgeBondSelectScreen> {
   }
 
   Widget _buildBondRow(
-    Map<String, dynamic> bond,
+    MarketInstrument bond,
     ThemeData theme,
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
-    final isForeign = bond['ISFOREIGN']?.toString() == '1';
-    final name =
-        (bond['STOCKNAME'] ?? bond['COMPNAME'] ?? bond['SYMBOL'])?.toString() ??
-            '';
-    final subtitle = (bond['COMPNAME2'] ?? bond['TYPENAME'])?.toString() ?? '';
+    final name = bond.name;
+    final subtitle = bond.subtitle;
 
     return InkWell(
       onTap: () => Navigator.pushNamed(
         context,
         '/pledge_bond_order',
-        arguments: bond,
+        arguments: bond.raw,
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -197,8 +180,8 @@ class _PledgeBondSelectScreenState extends State<PledgeBondSelectScreen> {
                       Flexible(
                         child: Text(
                           formatStockAmount(
-                            bond['AMT'],
-                            isForeign: isForeign,
+                            bond.amt,
+                            isForeign: bond.isForeign,
                             decimals: 0,
                           ),
                           style: theme.textTheme.bodyLarge?.copyWith(

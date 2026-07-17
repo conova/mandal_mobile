@@ -3,6 +3,8 @@ import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../common/stock_row_format.dart';
+import '../../../models/market_instrument.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -19,7 +21,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
   int _currentPage = 0;
 
   bool _isLoading = true;
-  List<_RecommendationData> _recommendations = const [];
+  List<MarketInstrument> _recommendations = const [];
 
   @override
   void initState() {
@@ -45,7 +47,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
         _recommendations = rows
             .where((r) => r['STOCKGRP']?.toString() == 'bond')
             .take(10)
-            .map(_RecommendationData.fromApi)
+            .map(MarketInstrument.fromJson)
             .toList();
         _isLoading = false;
       });
@@ -165,9 +167,19 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     );
   }
 
+
+  /// Хугацааг locale-ийн дагуу нэгжтэй харуулна:
+  ///   12 → "12 сар" (мон) / "12 month" (англи); огноо бол шууд
+  String _formatDuration(MarketInstrument data, String languageCode) {
+    final term = data.term;
+    if (term.isEmpty) return '-';
+    if (num.tryParse(term) == null) return term;
+    return languageCode == 'en' ? '$term month' : '$term сар';
+  }
+
   Widget _buildRecommendationCard({
     required BuildContext context,
-    required _RecommendationData data,
+    required MarketInstrument data,
     required ExtendedColors extendedColors,
     required AppLocalizations l10n,
   }) {
@@ -208,7 +220,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              data.title,
+                              data.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.titleMedium?.copyWith(
@@ -288,7 +300,8 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 Expanded(
                   child: _buildStatColumn(
                     'Хугацаа',
-                    data.formatDuration(
+                    _formatDuration(
+                      data,
                       Localizations.localeOf(context).languageCode,
                     ),
                     theme,
@@ -303,7 +316,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 Expanded(
                   child: _buildStatColumn(
                     'Өгөөж',
-                    data.returnRate,
+                    data.intRate == null ? '-' : '${data.intRate}%',
                     theme,
                     extendedColors,
                   ),
@@ -316,9 +329,13 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 Expanded(
                   child: _buildStatColumn(
                     'Дүн',
-                    data.formatAmount(
-                      Localizations.localeOf(context).languageCode,
-                    ),
+                    data.amt == null
+                        ? '-'
+                        : formatCompactAmount(
+                            data.amt,
+                            languageCode:
+                                Localizations.localeOf(context).languageCode,
+                          ),
                     theme,
                     extendedColors,
                   ),
@@ -366,102 +383,5 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
         ),
       ],
     );
-  }
-}
-
-class _RecommendationData {
-  final String title;
-  final String subtitle;
-  final bool isOpen;
-  final String returnRate;
-
-  /// TERM — түүхий утга; дэлгэцэд гаргахдаа locale-ийн дагуу сар/month залгана
-  final String rawDuration;
-
-  /// AMT — түүхий тоон утга; дэлгэцэд гаргахдаа сая/тэрбум руу хөрвүүлнэ
-  final String rawAmount;
-
-  /// API-ийн түүхий мөр — detail дэлгэц рүү дамжуулна
-  final Map<String, dynamic> raw;
-
-  const _RecommendationData({
-    required this.title,
-    required this.subtitle,
-    required this.isOpen,
-    required this.returnRate,
-    required this.rawDuration,
-    required this.rawAmount,
-    required this.raw,
-  });
-
-  /// /stocks/nbo мөрөөс угсарна:
-  /// { STOCKNAME, COMPNAME, COMPNAME2, TYPENAME, TERM, INTRATE, AMT, ISOPEN }
-  factory _RecommendationData.fromApi(Map<String, dynamic> row) {
-    String field(List<String> keys) {
-      for (final key in keys) {
-        final value = row[key];
-        if (value != null && value.toString().isNotEmpty) {
-          return value.toString();
-        }
-      }
-      return '';
-    }
-
-    final rate = field(['INTRATE']);
-
-    return _RecommendationData(
-      title: field(['COMPNAME', 'STOCKNAME', 'SYMBOL']),
-      subtitle: field(['COMPNAME2', 'TYPENAME']),
-      isOpen: field(['ISOPEN']) == '1',
-      returnRate: rate.isEmpty
-          ? '-'
-          : (num.tryParse(rate) != null ? '$rate%' : rate),
-      rawDuration: field(['TERM']),
-      rawAmount: field(['AMT']),
-      raw: row,
-    );
-  }
-
-  /// Хугацааг locale-ийн дагуу нэгжтэй харуулна:
-  ///   12 → "12 сар" (мон) / "12 month" (англи)
-  String formatDuration(String languageCode) {
-    if (rawDuration.isEmpty) return '-';
-    if (num.tryParse(rawDuration) == null) return rawDuration;
-    return languageCode == 'en'
-        ? '$rawDuration month'
-        : '$rawDuration сар';
-  }
-
-  /// Дүнг сая/тэрбум нэгжээр хөрвүүлнэ (locale-ээс хамаарч монгол/англи):
-  ///   420000000  → "420 сая"  / "420M"
-  ///   5000000000 → "5 тэрбум" / "5B"
-  String formatAmount(String languageCode) {
-    if (rawAmount.isEmpty) return '-';
-    final value = num.tryParse(rawAmount.replaceAll(',', ''));
-    if (value == null) return rawAmount;
-
-    final isEnglish = languageCode == 'en';
-    String fmt(num v) {
-      var s = v.toStringAsFixed(1);
-      if (s.endsWith('.0')) s = s.substring(0, s.length - 2);
-      return s;
-    }
-
-    if (value >= 1e12) {
-      return isEnglish
-          ? '${fmt(value / 1e12)}T'
-          : '${fmt(value / 1e12)} их наяд';
-    }
-    if (value >= 1e9) {
-      return isEnglish
-          ? '${fmt(value / 1e9)}B'
-          : '${fmt(value / 1e9)} тэрбум';
-    }
-    if (value >= 1e6) {
-      return isEnglish
-          ? '${fmt(value / 1e6)}M'
-          : '${fmt(value / 1e6)} сая';
-    }
-    return rawAmount;
   }
 }

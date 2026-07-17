@@ -170,7 +170,7 @@ class _DanAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Icon(
               Icons.arrow_back,
               size: 20,
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           onPressed: () => Navigator.pop(context),
@@ -235,7 +235,7 @@ class _DanContent extends StatelessWidget {
           Text(
             isApproved ? 'Систем баталгаажлаа' : l10n.danSystem,
             style: theme.textTheme.headlineMedium?.copyWith(
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
               fontWeight: AppTextStyles.semiBold,
             ),
           ),
@@ -245,7 +245,7 @@ class _DanContent extends StatelessWidget {
                 ? 'Таны мэдээлэл системд амжилттай баталгаажлаа.'
                 : l10n.danVerificationDesc,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onBackground.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
         ],

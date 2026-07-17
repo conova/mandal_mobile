@@ -23,7 +23,7 @@ class SummaryTableRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: isHeader
-            ? colorScheme.surfaceVariant.withOpacity(0.3)
+            ? colorScheme.surfaceContainerHighest.withOpacity(0.3)
             : Colors.transparent,
         borderRadius: isHeader ? BorderRadius.circular(12) : null,
       ),

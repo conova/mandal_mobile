@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../l10n/app_localizations.dart';
@@ -7,7 +6,6 @@ import 'home_screen.dart';
 import 'bond/bond_main_screen.dart';
 import 'stock_screen.dart';
 import 'order_screen.dart';
-import 'settings_screen.dart';
 
 class MainContainer extends StatefulWidget {
   const MainContainer({super.key});

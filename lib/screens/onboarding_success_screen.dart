@@ -130,7 +130,7 @@ class _SuccessContent extends StatelessWidget {
             l10n.readyToTrade,
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineLarge?.copyWith(
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
               fontWeight: AppTextStyles.bold,
             ),
           ),

@@ -106,7 +106,7 @@ class RegisterSuccessScreen extends StatelessWidget {
                 l10n.registrationSuccess,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: colorScheme.onBackground,
+                  color: colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),

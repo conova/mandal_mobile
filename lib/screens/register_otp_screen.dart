@@ -67,7 +67,7 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: const AuthStepAppBar(stepText: '1/4'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -79,13 +79,13 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
               l10n.enterCodeTitle,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onBackground,
+                color: colorScheme.onSurface,
               ),
             ),
             Text(
               l10n.codeSentTo(_phone),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onBackground,
+                color: colorScheme.onSurface,
                 fontWeight: FontWeight.w300,
               ),
             ),

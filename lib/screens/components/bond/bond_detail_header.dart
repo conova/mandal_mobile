@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/market_instrument.dart';
 import '../../../theme/extended_colors.dart';
 
 /// Бондын дэлгэрэнгүйн нийтлэг толгой: нэр, дэд нэр, (арилжааны үед
 /// бэлэн мөнгө), төлөв + зах зээлийн badge-ууд.
 class BondDetailHeader extends StatelessWidget {
-  final Map<String, dynamic>? bond;
+  final MarketInstrument? bond;
 
   /// Арилжааны дизайнд нэрийн доор бэлэн мөнгө харуулна
   final bool showAvailableCash;
@@ -17,33 +18,23 @@ class BondDetailHeader extends StatelessWidget {
     this.showAvailableCash = false,
   });
 
-  String _field(String key) => bond?[key]?.toString() ?? '';
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    final title = bond == null
-        ? 'Net Capital'
-        : (bond!['STOCKNAME'] ?? bond!['COMPNAME'] ?? bond!['SYMBOL'])
-                ?.toString() ??
-            '';
-    final subtitle = bond == null
-        ? 'Нэт Капитал'
-        : (bond!['COMPNAME2'] ?? bond!['TYPENAME'])?.toString() ?? '';
+    final title = bond?.name ?? 'Net Capital';
+    final subtitle = bond?.subtitle ?? 'Нэт Капитал';
 
-    final isForeign = _field('ISFOREIGN') == '1';
-    final isOpen = _field('ISOPEN') == '1';
     final statusLabel = bond == null
         ? l10n.closed
-        : (isForeign ? l10n.foreign : (isOpen ? l10n.open : l10n.closed));
+        : (bond!.isForeign
+            ? l10n.foreign
+            : (bond!.isOpen ? l10n.open : l10n.closed));
     final marketLabel = bond == null
         ? l10n.primaryMarket
-        : (_field('MARKET').toLowerCase() == 'primary'
-            ? l10n.primaryMarket
-            : l10n.secondaryMarket);
+        : (bond!.isPrimaryMarket ? l10n.primaryMarket : l10n.secondaryMarket);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -98,7 +98,7 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
                 whole,
                 style: theme.textTheme.displayLarge?.copyWith(
                   fontWeight: AppTextStyles.semiBold,
-                  color: theme.colorScheme.onBackground,
+                  color: theme.colorScheme.onSurface,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

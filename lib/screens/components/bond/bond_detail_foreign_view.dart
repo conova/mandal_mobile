@@ -3,6 +3,7 @@ import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/market_instrument.dart';
 import '../../../theme/extended_colors.dart';
 import 'bond_detail_info_list.dart';
 import 'bond_progress.dart';
@@ -11,7 +12,7 @@ import 'bond_progress.dart';
 /// (ORDEREDAMT/AMT), арилжаа биелэх төлөвлөгөөт огноо (PAYDAY),
 /// үзүүлэлтүүдийн карт, танилцуулга үзэх товч.
 class BondDetailForeignView extends StatelessWidget {
-  final Map<String, dynamic>? bond;
+  final MarketInstrument? bond;
 
   const BondDetailForeignView({super.key, required this.bond});
 
@@ -22,8 +23,8 @@ class BondDetailForeignView extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     final progress =
-        bond == null ? null : orderProgress(bond!['ORDEREDAMT'], bond!['AMT']);
-    final paydayDate = parseStockDate(bond?['PAYDAY']);
+        bond == null ? null : orderProgress(bond!.orderedAmt, bond!.amt);
+    final paydayDate = parseStockDate(bond?.payday);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,15 +32,11 @@ class BondDetailForeignView extends StatelessWidget {
         if (progress != null) ...[
           BondProgress(
             current: formatStockAmount(
-              bond?['ORDEREDAMT'],
+              bond?.orderedAmt,
               isForeign: true,
               decimals: 0,
             ),
-            total: formatStockAmount(
-              bond?['AMT'],
-              isForeign: true,
-              decimals: 0,
-            ),
+            total: formatStockAmount(bond?.amt, isForeign: true, decimals: 0),
             percentage: progress,
           ),
           const SizedBox(height: 24),

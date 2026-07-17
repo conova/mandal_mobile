@@ -57,7 +57,7 @@ class AuthChannelSelector extends StatelessWidget {
                     value,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: AppTextStyles.light,
-                      color: colorScheme.onBackground,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],

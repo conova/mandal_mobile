@@ -69,7 +69,7 @@ class _PepAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Icon(
               Icons.arrow_back,
               size: 20,
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           onPressed: () => Navigator.pop(context),
@@ -124,7 +124,7 @@ class _PepQuestionContent extends StatelessWidget {
           Text(
             l10n.pepQuestion,
             style: theme.textTheme.headlineMedium?.copyWith(
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
               fontWeight: AppTextStyles.semiBold,
             ),
           ),

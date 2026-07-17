@@ -269,6 +269,10 @@ class MyApp extends StatelessWidget {
               ),
             ),
             dividerTheme: const DividerThemeData(color: AppColors.bgTertiary),
+            // Бүх bottom sheet radius-гүй (M3 default 28px radius-ийг дарна)
+            bottomSheetTheme: const BottomSheetThemeData(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            ),
             extensions: [
               ExtendedColors(
                 primaryMain: AppColors.primaryMain,
@@ -355,6 +359,10 @@ class MyApp extends StatelessWidget {
               ),
             ),
             dividerTheme: const DividerThemeData(color: AppColors.dpBgTertiary),
+            // Бүх bottom sheet radius-гүй (M3 default 28px radius-ийг дарна)
+            bottomSheetTheme: const BottomSheetThemeData(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            ),
             extensions: [
               ExtendedColors(
                 primaryMain: AppColors.dpPrimaryMain,

@@ -29,10 +29,7 @@ class CustomBottomSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      decoration: BoxDecoration(color: colorScheme.surface),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -89,7 +86,7 @@ class CustomBottomSheet extends StatelessWidget {
             child: TextButton(
               onPressed: onCancel,
               style: TextButton.styleFrom(
-                backgroundColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                backgroundColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 foregroundColor: colorScheme.onSurface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),

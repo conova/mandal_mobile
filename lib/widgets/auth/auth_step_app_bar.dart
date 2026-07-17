@@ -10,10 +10,9 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
 
     return AppBar(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       elevation: 0,
       leadingWidth: 70,
       leading: Padding(
@@ -26,7 +25,7 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
               size: 20,
             ),
             onPressed: onBack ?? () => Navigator.pop(context),
@@ -49,7 +48,7 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
                 stepText!,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w400,
-                  color: colorScheme.onBackground,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),

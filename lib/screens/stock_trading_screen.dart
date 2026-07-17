@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../models/order_book_entry.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import 'components/stock_trading/stock_trading_input_box.dart';
@@ -30,8 +31,9 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   Map<String, dynamic> _args = const {};
   bool _argsParsed = false;
 
-  /// /stocks/order_book-ийн мөрүүд
-  List<Map<String, dynamic>> _orderBook = const [];
+  /// /stocks/order_book — авах/зарах талууд
+  List<OrderBookEntry> _buyOrders = const [];
+  List<OrderBookEntry> _sellOrders = const [];
   bool _orderBookLoading = true;
 
   /// Дэлгэц идэвхтэй байх үед самбарыг 5 секунд тутам шинэчилнэ
@@ -79,7 +81,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       final rows = await context.read<AuthService>().getOrderBook(stockcode);
       if (!mounted) return;
       setState(() {
-        _orderBook = rows;
+        _buyOrders = OrderBookEntry.sideFromJson(rows, 'BUY');
+        _sellOrders = OrderBookEntry.sideFromJson(rows, 'SELL');
         _orderBookLoading = false;
       });
     } catch (_) {
@@ -124,7 +127,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant,
+                color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(30),
               ),
               // mainAxisSize.min + Flexible-гүй — AppBar actions хязгааргүй
@@ -260,7 +263,10 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                           ),
                         )
                       else
-                        StockTradingOrderBoard.fromApi(_orderBook),
+                        StockTradingOrderBoard(
+                          buyOrders: _buyOrders,
+                          sellOrders: _sellOrders,
+                        ),
                     ],
                   ),
                 ),

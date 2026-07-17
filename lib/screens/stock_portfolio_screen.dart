@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
+import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
@@ -14,7 +15,7 @@ class StockPortfolioScreen extends StatefulWidget {
 
 class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
   bool _isLoading = true;
-  List<_StockHolding> _holdings = const [];
+  List<MarketInstrument> _holdings = const [];
 
   @override
   void initState() {
@@ -28,7 +29,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
       final rows = await auth.getMyStocks();
       if (!mounted) return;
       setState(() {
-        _holdings = rows.map(_StockHolding.fromApi).toList();
+        _holdings = MarketInstrument.listFromJson(rows);
         _isLoading = false;
       });
     } catch (_) {
@@ -287,14 +288,20 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
   }
 
   Widget _buildStockRow(
-    _StockHolding stock,
+    MarketInstrument stock,
     ThemeData theme,
     ExtendedColors extendedColors,
   ) {
-    final profitColor = stock.isPositive
+    // Ханшийн өөрчлөлт (нэгж үнээр) — OPEN/CLOSE хоёулаа байвал
+    final diff = (stock.closePrice != null && stock.openPrice != null)
+        ? stock.closePrice! - stock.openPrice!
+        : null;
+    final change = stock.priceChange;
+    final isPositive = (change ?? diff ?? 0) >= 0;
+    final profitColor = isPositive
         ? extendedColors.primaryMain
         : extendedColors.red;
-    final arrow = stock.isPositive ? '▲' : '▼';
+    final arrow = isPositive ? '▲' : '▼';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -327,14 +334,17 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
             child: Column(
               children: [
                 Text(
-                  stock.amount,
+                  formatStockAmount(stock.amt, isForeign: stock.isForeign),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
                   ),
                 ),
                 Text(
-                  stock.pieces,
+                  formatStockAmount(
+                    stock.closePrice,
+                    isForeign: stock.isForeign,
+                  ),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: extendedColors.neutral300,
                   ),
@@ -348,14 +358,21 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  stock.profit,
+                  diff == null
+                      ? '-'
+                      : formatStockAmount(
+                          diff.abs(),
+                          isForeign: stock.isForeign,
+                        ),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: profitColor,
                   ),
                 ),
                 Text(
-                  '$arrow ${stock.changePercent}',
+                  change == null
+                      ? '-'
+                      : '$arrow ${change.abs().toStringAsFixed(2)}%',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: profitColor,
                   ),
@@ -485,49 +502,6 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _StockHolding {
-  final String symbol;
-  final String name;
-  final String amount;
-  final String pieces;
-  final String profit;
-  final String changePercent;
-  final bool isPositive;
-
-  const _StockHolding({
-    required this.symbol,
-    required this.name,
-    required this.amount,
-    required this.pieces,
-    required this.profit,
-    required this.changePercent,
-    required this.isPositive,
-  });
-
-  /// /stocks/mystocks мөрөөс угсарна:
-  /// { SYMBOL, STOCKNAME, AMT, CLOSEPRICE, OPENPRICE, PRICECHANGE, ISFOREIGN }
-  factory _StockHolding.fromApi(Map<String, dynamic> row) {
-    final isForeign = row['ISFOREIGN']?.toString() == '1';
-    final change = double.tryParse(row['PRICECHANGE']?.toString() ?? '');
-    final close = double.tryParse(row['CLOSEPRICE']?.toString() ?? '');
-    final open = double.tryParse(row['OPENPRICE']?.toString() ?? '');
-    // Ханшийн өөрчлөлт (нэгж үнээр) — OPEN/CLOSE хоёулаа байвал
-    final diff = (close != null && open != null) ? close - open : null;
-    return _StockHolding(
-      symbol: row['SYMBOL']?.toString() ?? '',
-      name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
-      amount: formatStockAmount(row['AMT'], isForeign: isForeign),
-      // Ширхэгийн мэдээлэл API-д алга — хаалтын ханшийг харуулна
-      pieces: formatStockAmount(row['CLOSEPRICE'], isForeign: isForeign),
-      profit: diff == null
-          ? '-'
-          : formatStockAmount(diff.abs(), isForeign: isForeign),
-      changePercent: change == null ? '' : '${change.abs().toStringAsFixed(2)}%',
-      isPositive: (change ?? diff ?? 0) >= 0,
     );
   }
 }

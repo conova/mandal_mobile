@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
+import '../../models/market_instrument.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../components/shared/swipe_order_confirmation.dart';
@@ -19,20 +20,18 @@ class PledgeBondConfirmationScreen extends StatelessWidget {
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
             const {};
     final bond = args['bond'] is Map
-        ? Map<String, dynamic>.from(args['bond'] as Map)
+        ? MarketInstrument.fromJson(
+            Map<String, dynamic>.from(args['bond'] as Map),
+          )
         : null;
     final quantity = (args['quantity'] as num?)?.toInt() ?? 0;
     final unitPrice = (args['unitPrice'] as num?)?.toDouble() ?? 0;
     final fee = (args['fee'] as num?)?.toDouble() ?? 0;
     final receiveAmount = (args['receiveAmount'] as num?)?.toDouble() ?? 0;
 
-    final isForeign = bond?['ISFOREIGN']?.toString() == '1';
-    final name = bond == null
-        ? ''
-        : (bond['STOCKNAME'] ?? bond['COMPNAME'] ?? bond['SYMBOL'])
-                ?.toString() ??
-            '';
-    final subtitle = (bond?['COMPNAME2'] ?? bond?['TYPENAME'])?.toString() ?? '';
+    final isForeign = bond?.isForeign ?? false;
+    final name = bond?.name ?? '';
+    final subtitle = bond?.subtitle ?? '';
 
     final phone = context.read<AuthService>().userInfo?['phone']?.toString() ??
         '';

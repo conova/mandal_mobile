@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
+import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
@@ -16,7 +17,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   int _selectedFilter = 0;
 
   bool _isLoading = true;
-  List<_BondHolding> _holdings = const [];
+  List<MarketInstrument> _holdings = const [];
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       final rows = await auth.getMyBonds();
       if (!mounted) return;
       setState(() {
-        _holdings = rows.map(_BondHolding.fromApi).toList();
+        _holdings = MarketInstrument.listFromJson(rows);
         _isLoading = false;
       });
     } catch (_) {
@@ -312,7 +313,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   }
 
   Widget _buildBondRow(
-    _BondHolding bond,
+    MarketInstrument bond,
     ThemeData theme,
     ExtendedColors extendedColors,
     AppLocalizations l10n,
@@ -378,7 +379,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  bond.amount,
+                  formatStockAmount(bond.amt, isForeign: bond.isForeign),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
@@ -388,7 +389,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${l10n.interestRateShort} - ${bond.interestRate}',
+                  '${l10n.interestRateShort} - ${formatIntRate(bond.intRate)}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: extendedColors.neutral300,
                   ),
@@ -488,40 +489,6 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
           ),
         );
       }).toList(),
-    );
-  }
-}
-
-class _BondHolding {
-  final String name;
-  final String subtitle;
-  final bool isOpen;
-  final bool isForeign;
-  final String amount;
-  final String interestRate;
-
-  const _BondHolding({
-    required this.name,
-    required this.subtitle,
-    required this.isOpen,
-    required this.isForeign,
-    required this.amount,
-    required this.interestRate,
-  });
-
-  /// /stocks/mybonds мөрөөс угсарна:
-  /// { STOCKNAME, COMPNAME2, TYPENAME, AMT, INTRATE, ISOPEN, ISFOREIGN }
-  factory _BondHolding.fromApi(Map<String, dynamic> row) {
-    final isForeign = row['ISFOREIGN']?.toString() == '1';
-    return _BondHolding(
-      name: (row['STOCKNAME'] ?? row['COMPNAME'] ?? row['SYMBOL'])
-              ?.toString() ??
-          '',
-      subtitle: (row['COMPNAME2'] ?? row['TYPENAME'])?.toString() ?? '',
-      isOpen: row['ISOPEN']?.toString() == '1',
-      isForeign: isForeign,
-      amount: formatStockAmount(row['AMT'], isForeign: isForeign),
-      interestRate: formatIntRate(row['INTRATE']),
     );
   }
 }

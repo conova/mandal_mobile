@@ -107,7 +107,7 @@ class _AgreementAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Icon(
               Icons.arrow_back,
               size: 20,
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           onPressed: () => Navigator.pop(context),
@@ -131,7 +131,7 @@ class _AgreementHeader extends StatelessWidget {
     return Text(
       l10n.securitiesAgreement,
       style: theme.textTheme.headlineMedium?.copyWith(
-        color: theme.colorScheme.onBackground,
+        color: theme.colorScheme.onSurface,
         fontWeight: AppTextStyles.semiBold,
       ),
     );
@@ -151,7 +151,7 @@ class _AgreementContent extends StatelessWidget {
         child: Text(
           l10n.securitiesAgreementContent,
           style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onBackground.withOpacity(0.8),
+            color: theme.colorScheme.onSurface.withOpacity(0.8),
             height: 1.6,
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../models/api_notification.dart';
 import '../services/notification_api_service.dart';
 import '../services/notification_mocks.dart';
 import '../widgets/custom_snackbar.dart';
@@ -73,7 +74,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     await Navigator.pushNamed(
       context,
       '/notification_detail',
-      arguments: n.toDetailArgs(),
+      arguments: n,
     );
 
     if (wasUnread) {
@@ -88,17 +89,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         setState(() {
           final idx = _items.indexWhere((x) => x.id == n.id);
           if (idx >= 0) {
-            final orig = _items[idx];
-            _items[idx] = ApiNotification(
-              id: orig.id,
-              type: orig.type,
-              title: orig.title,
-              body: orig.body,
-              data: orig.data,
-              targetKind: orig.targetKind,
-              isRead: true,
-              createdAt: orig.createdAt,
-            );
+            _items[idx] = _items[idx].copyWith(isRead: true);
           }
         });
       } catch (_) {
@@ -114,18 +105,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       }
       if (!mounted) return;
       setState(() {
-        _items = _items
-            .map((n) => ApiNotification(
-                  id: n.id,
-                  type: n.type,
-                  title: n.title,
-                  body: n.body,
-                  data: n.data,
-                  targetKind: n.targetKind,
-                  isRead: true,
-                  createdAt: n.createdAt,
-                ))
-            .toList();
+        _items = _items.map((n) => n.copyWith(isRead: true)).toList();
       });
     } catch (e) {
       if (!mounted) return;
@@ -200,7 +180,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
               ),
               style: TextButton.styleFrom(
-                backgroundColor: colorScheme.surfaceVariant,
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),

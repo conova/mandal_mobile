@@ -3,6 +3,7 @@ import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/market_instrument.dart';
 import '../../../theme/extended_colors.dart';
 import 'bond_order_board.dart';
 import 'bond_payment_details.dart';
@@ -11,7 +12,7 @@ import 'bond_quantity_selector.dart';
 /// Хоёрдогч + НЭЭЛТТЭЙ бондын арилжааны дизайн: авах ханш, ширхэг
 /// сонгогч, төлбөрийн задаргаа, захиалгын самбар.
 class BondDetailTradingView extends StatelessWidget {
-  final Map<String, dynamic>? bond;
+  final MarketInstrument? bond;
   final int quantity;
   final ValueChanged<int> onQuantityChanged;
 
@@ -22,18 +23,15 @@ class BondDetailTradingView extends StatelessWidget {
     required this.onQuantityChanged,
   });
 
-  double? _num(String key) =>
-      double.tryParse(bond?[key]?.toString().replaceAll(',', '') ?? '');
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    final price = _num('CLOSEPRICE') ?? _num('OPENPRICE') ?? 0;
+    final price = bond?.closePrice ?? bond?.openPrice ?? 0;
     final total = price * quantity;
-    final rate = _num('INTRATE') ?? 0;
+    final rate = bond?.intRate ?? 0;
     final expectedReturn = total * rate / 100;
 
     return Column(
@@ -99,7 +97,7 @@ class BondDetailTradingView extends StatelessWidget {
 /// Арилжааны дизайны доод хэсэг: түгжигдсэн дүнгийн banner + захиалга
 /// өгөх товч (ширхэг 0 үед идэвхгүй).
 class BondDetailTradingBottomBar extends StatelessWidget {
-  final Map<String, dynamic>? bond;
+  final MarketInstrument? bond;
   final int quantity;
 
   const BondDetailTradingBottomBar({
@@ -172,7 +170,7 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                   ? () => Navigator.pushNamed(
                         context,
                         '/bond_confirmation',
-                        arguments: bond,
+                        arguments: bond?.raw,
                       )
                   : null,
             ),

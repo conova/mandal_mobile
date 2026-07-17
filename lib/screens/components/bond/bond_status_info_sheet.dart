@@ -67,10 +67,7 @@ class BondStatusInfoSheet extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      decoration: BoxDecoration(
-        color: extendedColors.bgBase,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      decoration: BoxDecoration(color: extendedColors.bgBase),
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,

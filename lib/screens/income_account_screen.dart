@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
+import '../common/api_message.dart';
 import '../l10n/app_localizations.dart';
+import '../models/income_account.dart';
 import '../services/api_service.dart';
 import '../config/api_config.dart';
 import '../theme/extended_colors.dart';
@@ -19,7 +21,7 @@ class IncomeAccountScreen extends StatefulWidget {
 class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
   bool _isLoading = false;
   String? _error;
-  List<Map<String, dynamic>> _accounts = [];
+  List<IncomeAccount> _accounts = [];
 
   @override
   void initState() {
@@ -42,11 +44,18 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
         final data = body['data'];
         setState(() {
           _accounts = data is List
-              ? data.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
+              ? data
+                    .whereType<Map>()
+                    .map(
+                      (e) => IncomeAccount.fromJson(
+                        Map<String, dynamic>.from(e),
+                      ),
+                    )
+                    .toList()
               : [];
         });
       } else {
-        setState(() => _error = body is Map ? body['message']?.toString() : null);
+        setState(() => _error = apiMessage(body));
       }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -57,32 +66,23 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
     }
   }
 
-  String _bankName(BuildContext context, Map<String, dynamic> account) {
-    final isEnglish =
-        Localizations.localeOf(context).languageCode == 'en';
-    final name = isEnglish
-        ? account['BANKNAME2']?.toString()
-        : account['BANKNAME']?.toString();
-    return (name == null || name.isEmpty)
-        ? account['BANKNAME']?.toString() ?? ''
-        : name;
-  }
-
-  Widget _buildAccountCard(Map<String, dynamic> account, {bool isPrimary = false}) {
-    final bank = _bankName(context, account);
-    final holder = account['TXNACNTNAME']?.toString() ?? '';
+  Widget _buildAccountCard(IncomeAccount account, {bool isPrimary = false}) {
+    final bank = account.localizedBankName(
+      Localizations.localeOf(context).languageCode,
+    );
+    final holder = account.accountName;
     return AccountCard(
       bankName: holder.isEmpty ? bank : '$bank - $holder',
-      accountNumber: account['TXNACNTNO']?.toString() ?? '',
+      accountNumber: account.accountNumber,
       isPrimary: isPrimary,
       onTap: () async {
         final changed = await Navigator.pushNamed(
           context,
           '/income_account_detail',
           arguments: {
-            'accountNumber': account['TXNACNTNO']?.toString() ?? '',
-            'bankName': _bankName(context, account),
-            'bankCode': account['TXNBANKNO']?.toString() ?? '',
+            'accountNumber': account.accountNumber,
+            'bankName': bank,
+            'bankCode': account.bankCode,
             'receiver': holder,
             'isPrimary': isPrimary,
           },
@@ -99,13 +99,11 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    final primaryAccounts =
-        _accounts.where((a) => a['ISPRIMARY']?.toString() == '1').toList();
-    final otherAccounts =
-        _accounts.where((a) => a['ISPRIMARY']?.toString() != '1').toList();
+    final primaryAccounts = _accounts.where((a) => a.isPrimary).toList();
+    final otherAccounts = _accounts.where((a) => !a.isPrimary).toList();
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(l10n.incomeAccount),
         centerTitle: true,

@@ -28,7 +28,7 @@ class HomePromotionBanner extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          SizedBox(
             width: 36,
             height: 36,
             child: Image.asset('assets/images/vault.png', fit: BoxFit.contain),

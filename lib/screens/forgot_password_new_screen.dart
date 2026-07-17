@@ -20,7 +20,7 @@ class ForgotPasswordNewScreen extends StatelessWidget {
     final sessionId = args['sessionId'] as String?;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: const AuthStepAppBar(stepText: '2/2'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -32,7 +32,7 @@ class ForgotPasswordNewScreen extends StatelessWidget {
               l10n.createNewPassword,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onBackground,
+                color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 48),

@@ -4,7 +4,6 @@ import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/validators.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/extended_colors.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_input.dart';
@@ -114,7 +113,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
 
     // Cache-аас шууд авах. Хоосон бол loader харагдана.
@@ -122,7 +120,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     final isLoading = userInfo == null;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

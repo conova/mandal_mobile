@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../models/api_notification.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 
 /// Notification дэлгэрэнгүй харах дэлгэц.
 ///
-/// Args (`ApiNotification.toDetailArgs()`-ээс):
-/// ```
-/// {
-///   'id'?: int,
-///   'type': String,            // 'order'|'trading'|'news'|'promo'|'system'|...
-///   'title': String,
-///   'body': String,
-///   'time': String,
-///   'targetKind'?: String,     // 'user' | 'broadcast'
-///   'isRead'?: bool,
-///   'data'?: Map<String, dynamic>,  // type-зэрэг нэмэлт өгөгдөл
-/// }
-/// ```
+/// Args: [ApiNotification] объект. (Хуучин Map хэлбэрийг мөн дэмжинэ —
+/// FCM push г.м. гаднаас Map-аар навигаци хийх боломж хэвээр.)
 class NotificationDetailScreen extends StatelessWidget {
   const NotificationDetailScreen({super.key});
 
@@ -29,20 +19,35 @@ class NotificationDetailScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
-            const {};
-    final type = (args['type'] as String?) ?? 'system';
-    final title = (args['title'] as String?) ?? '';
-    final body = (args['body'] as String?) ?? '';
-    final time = (args['time'] as String?) ?? '';
-    final targetKind = (args['targetKind'] as String?);
-    final data = args['data'] is Map
-        ? Map<String, dynamic>.from(args['data'] as Map)
-        : <String, dynamic>{};
-    // `icon` arg explicit өгөгдсөн бол хэрэглэнэ, бус бол type-аас сонгоно.
-    final icon =
-        (args['icon'] as IconData?) ?? notificationIconForType(type);
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+
+    final String type;
+    final String title;
+    final String body;
+    final String time;
+    final String? targetKind;
+    final Map<String, dynamic> data;
+
+    if (rawArgs is ApiNotification) {
+      type = rawArgs.type;
+      title = rawArgs.title;
+      body = rawArgs.body;
+      time = rawArgs.formattedTime;
+      targetKind = rawArgs.targetKind;
+      data = rawArgs.data ?? const {};
+    } else {
+      final args = rawArgs is Map<String, dynamic> ? rawArgs : const {};
+      type = (args['type'] as String?) ?? 'system';
+      title = (args['title'] as String?) ?? '';
+      body = (args['body'] as String?) ?? '';
+      time = (args['time'] as String?) ?? '';
+      targetKind = args['targetKind'] as String?;
+      data = args['data'] is Map
+          ? Map<String, dynamic>.from(args['data'] as Map)
+          : const {};
+    }
+
+    final icon = notificationIconForType(type);
 
     return Scaffold(
       backgroundColor: colorScheme.surface,

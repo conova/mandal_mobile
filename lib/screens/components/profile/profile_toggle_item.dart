@@ -62,7 +62,7 @@ class ProfileToggleItem extends StatelessWidget {
         trailing: Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: theme.primaryColor,
+          activeThumbColor: theme.primaryColor,
         ),
       ),
     );

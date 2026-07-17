@@ -33,7 +33,7 @@ class SettingsListItem extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant.withOpacity(0.5),
+            color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: colorScheme.onSurface, size: 22),

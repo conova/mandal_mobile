@@ -25,7 +25,6 @@ class DeviceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Column(

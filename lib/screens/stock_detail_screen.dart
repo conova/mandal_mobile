@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../models/market_instrument.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
@@ -29,10 +30,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
   bool _initialized = false;
 
   /// /stocks/info-ийн мөрүүд. Эхний мөр = одоогийн ерөнхий мэдээлэл,
-  /// мөр бүрийн DIVAMOUNT/DIVDATE = ногдол ашгийн түүх.
-  List<Map<String, dynamic>> _infoRows = const [];
+  /// мөр бүрийн divAmount/divDate = ногдол ашгийн түүх.
+  List<MarketInstrument> _infoRows = const [];
 
-  Map<String, dynamic>? get _info => _infoRows.isEmpty ? null : _infoRows.first;
+  MarketInstrument? get _info => _infoRows.isEmpty ? null : _infoRows.first;
 
   /// Watchlist-д байгаа эсэх (null — хараахан шалгаагүй)
   bool _inWatchlist = false;
@@ -53,8 +54,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
     _checkWatchlist();
   }
 
-  String get _symbol =>
-      (_args['symbol'] as String?) ?? _info?['SYMBOL']?.toString() ?? '';
+  String get _symbol => (_args['symbol'] as String?) ?? _info?.symbol ?? '';
 
   /// Энэ хувьцаа watchlist-д байгаа эсэхийг шалгана
   Future<void> _checkWatchlist() async {
@@ -103,33 +103,29 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
     try {
       final rows = await context.read<AuthService>().getStockInfo(stockcode);
       if (!mounted || rows.isEmpty) return;
-      setState(() => _infoRows = rows);
+      setState(() => _infoRows = MarketInstrument.listFromJson(rows));
     } catch (_) {
       // Мэдээлэл татагдаагүй ч args-аар ирсэн утгуудаа харуулсаар байна
     }
   }
 
-  /// Бүх мөрийн DIVDATE/DIVAMOUNT-аас ногдол ашгийн түүх угсарна
+  /// Бүх мөрийн divDate/divAmount-аас ногдол ашгийн түүх угсарна
   List<Map<String, String>> get _dividendHistory {
     final items = <Map<String, String>>[];
     for (final row in _infoRows) {
-      final date = parseStockDate(row['DIVDATE']);
-      final amount = row['DIVAMOUNT']?.toString() ?? '';
-      if (date == null || amount.isEmpty) continue;
+      final date = parseStockDate(row.divDate);
+      if (date == null || row.divAmount == null) continue;
       items.add({
         'year': date.year.toString(),
-        'amount': formatStockAmount(amount, decimals: 0),
+        'amount': formatStockAmount(row.divAmount, decimals: 0),
       });
     }
     return items;
   }
 
-  /// info-гийн талбар байвал түүнийг, үгүй бол args-ийн утгыг ашиглана
-  String _display(String argKey, List<String> infoKeys, String fallback) {
-    for (final key in infoKeys) {
-      final v = _info?[key]?.toString();
-      if (v != null && v.isNotEmpty) return v;
-    }
+  /// info-гийн утга байвал түүнийг, үгүй бол args-ийн утгыг ашиглана
+  String _display(String argKey, String? infoValue, String fallback) {
+    if (infoValue != null && infoValue.isNotEmpty) return infoValue;
     return (_args[argKey] as String?) ?? fallback;
   }
 
@@ -137,17 +133,16 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final symbol = _display('symbol', ['SYMBOL'], '');
-    final name = _display('name', ['STOCKNAME', 'COMPNAME'], '');
+    final symbol = _display('symbol', _info?.symbol, '');
+    final name = _display('name', _info?.name, '');
 
     // Ханш/өөрчлөлт — info-гоос тоо ирвэл форматлана, үгүй бол args
-    final infoPrice = _info?['CLOSEPRICE'];
-    final price = infoPrice != null && infoPrice.toString().isNotEmpty
+    final infoPrice = _info?.closePrice;
+    final price = infoPrice != null
         ? formatStockAmount(infoPrice, decimals: 0)
         : (_args['price'] as String?) ?? '-';
 
-    final infoChange =
-        double.tryParse(_info?['PRICECHANGE']?.toString() ?? '');
+    final infoChange = _info?.priceChange;
     final change = infoChange != null
         ? '${infoChange.abs().toStringAsFixed(2)}%'
         : (_args['change'] as String?) ?? '-';
@@ -194,20 +189,19 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                 const SizedBox(height: 32),
                 // Эхний мөрийн мэдээллээр ерөнхий мэдээллийг бөглөнө
                 StockDetailGeneralInfo(
-                  marketCap: _info?['MARKETVALUE'] == null
+                  marketCap: _info?.marketValue == null
                       ? '-'
-                      : '₮${formatCompactAmount(_info!['MARKETVALUE'])}',
-                  avgVolume: _info?['AVGTRADE'] == null
+                      : '₮${formatCompactAmount(_info!.marketValue)}',
+                  avgVolume: _info?.avgTrade == null
                       ? '-'
-                      : '₮${formatCompactAmount(_info!['AVGTRADE'])}',
-                  dailyVolume: _info?['DAYTRADE'] == null
+                      : '₮${formatCompactAmount(_info!.avgTrade)}',
+                  dailyVolume: _info?.dayTrade == null
                       ? '-'
-                      : '₮${formatCompactAmount(_info!['DAYTRADE'])}',
-                  peRatio: _info?['PERATIO']?.toString() ?? '-',
-                  pbRatio: _info?['PBRATIO']?.toString() ?? '-',
-                  dividendYield: _info?['DIVYEILD'] == null
-                      ? '-'
-                      : '${_info!['DIVYEILD']}%',
+                      : '₮${formatCompactAmount(_info!.dayTrade)}',
+                  peRatio: _info?.peRatio?.toString() ?? '-',
+                  pbRatio: _info?.pbRatio?.toString() ?? '-',
+                  dividendYield:
+                      _info?.divYield == null ? '-' : '${_info!.divYield}%',
                 ),
                 const SizedBox(height: 48),
                 // Бүх мөрийн DIVAMOUNT/DIVDATE = өнгөрсөн ногдол ашгууд
@@ -290,7 +284,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
       '/stock_trading',
       arguments: {
         ..._args,
-        if (_info != null) 'info': _info,
+        if (_info != null) 'info': _info!.raw,
         'side': side,
       },
     );

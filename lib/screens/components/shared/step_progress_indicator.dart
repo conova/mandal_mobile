@@ -19,7 +19,7 @@ class StepProgressIndicator extends StatelessWidget {
       margin: const EdgeInsets.only(right: 16, top: 12, bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Center(

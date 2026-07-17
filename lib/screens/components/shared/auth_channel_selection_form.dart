@@ -101,14 +101,14 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
             l10n.selectVerifyChannel,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
           Text(
             l10n.verifyChannelPrompt,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 48),
