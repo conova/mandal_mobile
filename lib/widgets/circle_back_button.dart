@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../theme/extended_colors.dart';
 
 /// Саарал дугуй дэвсгэртэй back товч — AppBar-ийн leading болон
@@ -22,9 +23,9 @@ class CircleBackButton extends StatelessWidget {
           color: extendedColors.bgSecondary,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          Icons.arrow_back,
-          size: 20,
+        child: CustomSvgIcon(
+          'close-button',
+          size: 24,
           color: extendedColors.neutral100,
         ),
       ),
