@@ -94,7 +94,7 @@ flutter:
     - assets/images/lock.png
     - assets/images/pig.png
     - assets/images/box.png
-    - assets/images/logOut.png
+    - assets/images/log_out.png
     - assets/images/edu_header.png
     - assets/images/edu_intro.png
     - assets/images/edu_bond.png
