@@ -41,35 +41,44 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             });
           },
           child: Container(
-            // Fixed: Padding and child must be inside the Container
+            constraints: const BoxConstraints(minHeight: 75),
+            alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: colorScheme.surface,
+              color: extendedColors.bgBase,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: hasError
                     ? colorScheme.error
                     : (_isFocused
-                          ? theme.primaryColor
-                          : extendedColors.neutral500),
+                        ? theme.primaryColor
+                        : extendedColors.neutral500),
                 width: _isFocused ? 2 : 1,
               ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  widget.label,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
+                if (widget.value != null)
+                  Text(
+                    widget.label,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: extendedColors.neutral200,
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
                 DropdownButtonHideUnderline(
                   child: DropdownButton<T>(
                     value: widget.value,
+                    hint: Text(
+                      widget.label,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                    ),
                     items: widget.items,
                     onChanged: widget.onChanged,
                     isExpanded: true,
@@ -87,10 +96,10 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
         ),
         if (hasError)
           Padding(
-            padding: const EdgeInsets.only(top: 4, left: 16),
+            padding: const EdgeInsets.only(top: 7, left: 16),
             child: Text(
               widget.errorText!,
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.error,
               ),
             ),

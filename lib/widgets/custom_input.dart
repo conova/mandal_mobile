@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 
+import 'custom_svg_icon.dart';
+
 class CustomInput extends StatefulWidget {
   final String label;
   final String? hint;
@@ -115,7 +117,7 @@ class _CustomInputState extends State<CustomInput> {
               vertical: 12,
             ), // Adjusted vertical padding
             decoration: BoxDecoration(
-              color: colorScheme.surface,
+              color: extendedColors.bgBase,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: hasError
@@ -157,17 +159,17 @@ class _CustomInputState extends State<CustomInput> {
               onSaved: widget.onSaved,
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: AppTextStyles.light,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral200,
               ),
               decoration: InputDecoration(
                 labelText: widget.label.isEmpty ? null : widget.label,
                 labelStyle: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: AppTextStyles.light,
-                  color: theme.disabledColor,
+                  color: extendedColors.neutral200,
                 ),
                 hintText: widget.hint,
                 hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.disabledColor,
+                  color: extendedColors.neutral200,
                   fontWeight: AppTextStyles.light,
                 ),
                 border: InputBorder.none,
@@ -180,11 +182,11 @@ class _CustomInputState extends State<CustomInput> {
                 ), // Hide default error text
                 suffixIcon: widget.isPassword
                     ? IconButton(
-                        icon: Icon(
+                        icon: CustomSvgIcon(
                           _obscureText
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: theme.disabledColor,
+                              ? 'eye-open'
+                              : 'eye-closed',
+                          color: extendedColors.neutral300,
                           size: 24,
                         ),
                         onPressed: () {

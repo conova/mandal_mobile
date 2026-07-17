@@ -9,11 +9,27 @@ class IbanPrefixFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (newValue.text.startsWith(prefix)) return newValue;
-    // Угтвар эвдэрсэн — үлдсэн хэсгийг хадгалж "MN"-г сэргээнэ
-    var body = newValue.text;
-    if (body.startsWith('M')) body = body.substring(1);
-    if (body.startsWith('N')) body = body.substring(1);
+    // Хэрэв утга хоосон бол "MN" нэмэхгүй
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    // Угтвар аль хэдийн байвал хэвээр үлдээнэ
+    if (newValue.text.startsWith(prefix)) {
+      return newValue;
+    }
+
+    // Угтвар эвдэрсэн эсвэл байхгүй үед "MN" нэмж засна
+    String body = newValue.text;
+    if (body.startsWith('M')) {
+      body = body.substring(1);
+      if (body.startsWith('N')) {
+        body = body.substring(1);
+      }
+    } else if (body.startsWith('N')) {
+      body = body.substring(1);
+    }
+
     final text = '$prefix$body';
     return TextEditingValue(
       text: text,
