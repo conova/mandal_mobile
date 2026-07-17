@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
+import '../../../theme/app_colors.dart';
+
 class ProfileToggleItem extends StatelessWidget {
   final Widget icon;
   final String title;
   final String? subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
+  final Color? activeSubtitleColor;
+  final Color? inactiveSubtitleColor;
 
   const ProfileToggleItem({
     super.key,
@@ -15,23 +19,24 @@ class ProfileToggleItem extends StatelessWidget {
     this.subtitle,
     required this.value,
     required this.onChanged,
+    this.activeSubtitleColor,
+    this.inactiveSubtitleColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: ListTile(
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
             shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: icon,
         ),
@@ -48,7 +53,9 @@ class ProfileToggleItem extends StatelessWidget {
                 subtitle!,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontSize: 12,
-                  color: extendedColors.neutral300,
+                  color: value
+                      ? (activeSubtitleColor ?? AppColors.primaryMain)
+                      : (inactiveSubtitleColor ?? AppColors.yellowMain),
                 ),
               )
             : null,
