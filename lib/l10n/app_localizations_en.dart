@@ -1298,4 +1298,119 @@ class AppLocalizationsEn extends AppLocalizations {
   String approxUsd(String amount) {
     return '≈$amount\$';
   }
+
+  @override
+  String get educationTitle => 'Education';
+
+  @override
+  String get educationSubtitle =>
+      'Growing your financial knowledge brings more freedom to your life.';
+
+  @override
+  String get eduCourseIntro => 'Introduction to investing';
+
+  @override
+  String get eduCourseBond => 'Bond course';
+
+  @override
+  String get eduCourseStock => 'Stock course';
+
+  @override
+  String get eduCourseFund => 'Investment fund course';
+
+  @override
+  String eduLessonProgress(int done, int total) {
+    return '$done/$total';
+  }
+
+  @override
+  String get appGuideTitle => 'App user guide';
+
+  @override
+  String get eduGeneralInfo => 'General information';
+
+  @override
+  String get eduGeneralInfoDesc => 'What every client should know';
+
+  @override
+  String get eduGeneral1 => 'Create an account and verify your identity';
+
+  @override
+  String get eduGeneral2 => 'Home page dashboard';
+
+  @override
+  String get eduGeneral3 => 'Portfolio: your assets and performance';
+
+  @override
+  String get eduTradingTitle => 'How to trade?';
+
+  @override
+  String get eduTradingDesc => 'Bond and stock trading';
+
+  @override
+  String get eduTrading1 => 'Buying bonds';
+
+  @override
+  String get eduTrading2 => 'Buying stocks';
+
+  @override
+  String get eduTrading3 => 'Market order vs Limit order';
+
+  @override
+  String get eduSecurityTitle => 'Security';
+
+  @override
+  String get eduSecurityDesc => 'How to protect your information?';
+
+  @override
+  String get eduSecurity1 => 'Investment risks';
+
+  @override
+  String get eduSecurity2 => 'Preventing fraud and protecting your account';
+
+  @override
+  String get eduSecurity3 =>
+      'Protecting your account (PIN, biometrics, two-factor authentication)';
+
+  @override
+  String get viewMore => 'View more';
+
+  @override
+  String get searchByKeyword => 'Search by keyword';
+
+  @override
+  String get eduQuizLabel => 'Knowledge check';
+
+  @override
+  String eduNextCounter(int current, int total) {
+    return 'Next $current/$total';
+  }
+
+  @override
+  String get eduFinish => 'Finish';
+
+  @override
+  String get eduCorrectAnswer => 'Correct answer';
+
+  @override
+  String get eduCorrectDesc =>
+      'Congratulations! You have completed this lesson.';
+
+  @override
+  String get eduWrongAnswer => 'Incorrect answer';
+
+  @override
+  String get eduWrongDesc =>
+      'The lesson counts as completed only with a correct answer. Watch this lesson again?';
+
+  @override
+  String get eduRetryLesson => 'Watch lesson again';
+
+  @override
+  String get eduLater => 'Later';
+
+  @override
+  String eduCheckAnswer(int current, int total) {
+    return 'Check answer $current/$total';
+  }
 }

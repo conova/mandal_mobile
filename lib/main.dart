@@ -74,6 +74,11 @@ import 'screens/pep_definition_screen.dart';
 import 'screens/securities_agreement_screen.dart';
 import 'screens/document_verification_screen.dart';
 import 'screens/camera_overlay_screen.dart';
+import 'screens/education_course_screen.dart';
+import 'screens/education_guide_detail_screen.dart';
+import 'screens/education_lesson_screen.dart';
+import 'screens/education_guide_list_screen.dart';
+import 'screens/education_screen.dart';
 import 'screens/onboarding_success_screen.dart';
 import 'screens/payment_qpay_screen.dart';
 import 'screens/payment_result_screen.dart';
@@ -449,6 +454,15 @@ class MyApp extends StatelessWidget {
               '/camera_overlay': (context) => const CameraOverlayScreen(),
               '/onboarding_success': (context) =>
                   const OnboardingSuccessScreen(),
+              '/education': (context) => const EducationScreen(),
+              '/education_course': (context) =>
+                  const EducationCourseScreen(),
+              '/education_lesson': (context) =>
+                  const EducationLessonScreen(),
+              '/education_guide_list': (context) =>
+                  const EducationGuideListScreen(),
+              '/education_guide_detail': (context) =>
+                  const EducationGuideDetailScreen(),
               '/dan_verification': (context) => const DanVerificationScreen(),
               '/register_otp': (context) => const RegisterOtpScreen(),
               '/register_password': (context) => const RegisterPasswordScreen(),

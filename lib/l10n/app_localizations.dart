@@ -2553,6 +2553,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'≈{amount}\$'**
   String approxUsd(String amount);
+
+  /// No description provided for @educationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get educationTitle;
+
+  /// No description provided for @educationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Growing your financial knowledge brings more freedom to your life.'**
+  String get educationSubtitle;
+
+  /// No description provided for @eduCourseIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction to investing'**
+  String get eduCourseIntro;
+
+  /// No description provided for @eduCourseBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond course'**
+  String get eduCourseBond;
+
+  /// No description provided for @eduCourseStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock course'**
+  String get eduCourseStock;
+
+  /// No description provided for @eduCourseFund.
+  ///
+  /// In en, this message translates to:
+  /// **'Investment fund course'**
+  String get eduCourseFund;
+
+  /// No description provided for @eduLessonProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done}/{total}'**
+  String eduLessonProgress(int done, int total);
+
+  /// No description provided for @appGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App user guide'**
+  String get appGuideTitle;
+
+  /// No description provided for @eduGeneralInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'General information'**
+  String get eduGeneralInfo;
+
+  /// No description provided for @eduGeneralInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'What every client should know'**
+  String get eduGeneralInfoDesc;
+
+  /// No description provided for @eduGeneral1.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account and verify your identity'**
+  String get eduGeneral1;
+
+  /// No description provided for @eduGeneral2.
+  ///
+  /// In en, this message translates to:
+  /// **'Home page dashboard'**
+  String get eduGeneral2;
+
+  /// No description provided for @eduGeneral3.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio: your assets and performance'**
+  String get eduGeneral3;
+
+  /// No description provided for @eduTradingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to trade?'**
+  String get eduTradingTitle;
+
+  /// No description provided for @eduTradingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond and stock trading'**
+  String get eduTradingDesc;
+
+  /// No description provided for @eduTrading1.
+  ///
+  /// In en, this message translates to:
+  /// **'Buying bonds'**
+  String get eduTrading1;
+
+  /// No description provided for @eduTrading2.
+  ///
+  /// In en, this message translates to:
+  /// **'Buying stocks'**
+  String get eduTrading2;
+
+  /// No description provided for @eduTrading3.
+  ///
+  /// In en, this message translates to:
+  /// **'Market order vs Limit order'**
+  String get eduTrading3;
+
+  /// No description provided for @eduSecurityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get eduSecurityTitle;
+
+  /// No description provided for @eduSecurityDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'How to protect your information?'**
+  String get eduSecurityDesc;
+
+  /// No description provided for @eduSecurity1.
+  ///
+  /// In en, this message translates to:
+  /// **'Investment risks'**
+  String get eduSecurity1;
+
+  /// No description provided for @eduSecurity2.
+  ///
+  /// In en, this message translates to:
+  /// **'Preventing fraud and protecting your account'**
+  String get eduSecurity2;
+
+  /// No description provided for @eduSecurity3.
+  ///
+  /// In en, this message translates to:
+  /// **'Protecting your account (PIN, biometrics, two-factor authentication)'**
+  String get eduSecurity3;
+
+  /// No description provided for @viewMore.
+  ///
+  /// In en, this message translates to:
+  /// **'View more'**
+  String get viewMore;
+
+  /// No description provided for @searchByKeyword.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by keyword'**
+  String get searchByKeyword;
+
+  /// No description provided for @eduQuizLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Knowledge check'**
+  String get eduQuizLabel;
+
+  /// No description provided for @eduNextCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Next {current}/{total}'**
+  String eduNextCounter(int current, int total);
+
+  /// No description provided for @eduFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get eduFinish;
+
+  /// No description provided for @eduCorrectAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct answer'**
+  String get eduCorrectAnswer;
+
+  /// No description provided for @eduCorrectDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations! You have completed this lesson.'**
+  String get eduCorrectDesc;
+
+  /// No description provided for @eduWrongAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect answer'**
+  String get eduWrongAnswer;
+
+  /// No description provided for @eduWrongDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The lesson counts as completed only with a correct answer. Watch this lesson again?'**
+  String get eduWrongDesc;
+
+  /// No description provided for @eduRetryLesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch lesson again'**
+  String get eduRetryLesson;
+
+  /// No description provided for @eduLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get eduLater;
+
+  /// No description provided for @eduCheckAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Check answer {current}/{total}'**
+  String eduCheckAnswer(int current, int total);
 }
 
 class _AppLocalizationsDelegate

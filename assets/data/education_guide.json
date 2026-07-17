@@ -1,0 +1,638 @@
+{
+  "courses": [
+    {
+      "id": "intro",
+      "title": "Хөрөнгө оруулалтын ухаанд нэвтрэхүй",
+      "titleEn": "Introduction to investing",
+      "image": "assets/images/edu_header.png",
+      "lessons": [
+        {
+          "id": "portfolio",
+          "title": "Хөрөнгө оруулалтын багц бүрдүүлэх",
+          "titleEn": "Building an investment portfolio",
+          "slides": [
+            {
+              "title": "Хөрөнгө оруулалтын багц гэж юу вэ?",
+              "titleEn": "What is an investment portfolio?",
+              "body": "Хөрөнгө оруулалтын багц гэдэг нь таны эзэмшиж буй бонд, хувьцаа, бэлэн мөнгө зэрэг бүх хөрөнгийн нийлбэр юм.\n\nБагцаа төрөлжүүлснээр нэг хөрөнгийн үнэ буурахад бусад нь тэнцвэржүүлж, нийт эрсдэлийг бууруулдаг.",
+              "bodyEn": "An investment portfolio is the sum of all your assets — bonds, stocks, and cash.\n\nDiversifying your portfolio means that when one asset falls in value, others balance it out, reducing overall risk.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            },
+            {
+              "title": "Багцаа хэрхэн бүрдүүлэх вэ?",
+              "titleEn": "How to build your portfolio?",
+              "body": "Эхлээд зорилго, хугацаа, эрсдэл хүлээх чадвараа тодорхойл. Дараа нь тогтмол орлоготой бонд, өсөлтийн боломжтой хувьцаа хоёрыг өөрийн байдалд тохируулан хуваарил.\n\nЖишээ: эрсдэл багатай байхыг хүсвэл бондын хувийг өндөр байлга.",
+              "bodyEn": "First define your goal, horizon, and risk tolerance. Then allocate between stable-income bonds and growth stocks to fit your situation.\n\nExample: if you prefer low risk, keep a higher share of bonds.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Багцаа төрөлжүүлэхийн гол зорилго юу вэ?",
+            "questionEn": "What is the main purpose of diversification?",
+            "options": [
+              "Шимтгэл багасгах",
+              "Эрсдэлийг бууруулах",
+              "Татвараас чөлөөлөгдөх",
+              "Ханшийг урьдчилан таамаглах"
+            ],
+            "optionsEn": [
+              "Reducing fees",
+              "Reducing risk",
+              "Avoiding taxes",
+              "Predicting prices"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "why_invest",
+          "title": "Яагаад хөрөнгө оруулалт хийх хэрэгтэй вэ?",
+          "titleEn": "Why should you invest?",
+          "slides": [
+            {
+              "title": "Мөнгөө ажиллуул",
+              "titleEn": "Put your money to work",
+              "body": "Инфляцийн улмаас бэлэн мөнгөний худалдан авах чадвар жил бүр буурдаг. Хөрөнгө оруулалт нь мөнгөө өсгөж, инфляциас хамгаалах гол арга юм.\n\nЭрт эхлэх тусам хүүгийн давхар өсөлтийн (compound) үр өгөөж ихэсдэг.",
+              "bodyEn": "Inflation erodes the purchasing power of cash every year. Investing is the main way to grow your money and protect it from inflation.\n\nThe earlier you start, the more you benefit from compound growth.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Хөрөнгө оруулалтын гол давуу тал юу вэ?",
+            "questionEn": "What is the main benefit of investing?",
+            "options": [
+              "Мөнгө хадгалах",
+              "Инфляциас хамгаалж, хөрөнгөө өсгөх",
+              "Зээл авахад хялбар болох",
+              "Татвар нэмэгдэх"
+            ],
+            "optionsEn": [
+              "Storing money",
+              "Protecting from inflation and growing wealth",
+              "Easier loans",
+              "More taxes"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "savings",
+          "title": "Хуримтлал үүсгэх",
+          "titleEn": "Building savings",
+          "slides": [
+            {
+              "title": "Хуримтлалын зуршил",
+              "titleEn": "The savings habit",
+              "body": "Орлогынхоо тодорхой хувийг (жишээ нь 10–20%) хүлээн авмагцаа тусад нь хийж хэвшээрэй.\n\nХуримтлал нь гэнэтийн зардлын нөөц болохоос гадна ирээдүйн хөрөнгө оруулалтын эх үүсвэр болдог.",
+              "bodyEn": "Set aside a fixed share of your income (e.g. 10–20%) as soon as you receive it.\n\nSavings act as an emergency buffer and become the source of your future investments.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Хуримтлалыг хэзээ хийх нь зүйтэй вэ?",
+            "questionEn": "When should you set savings aside?",
+            "options": [
+              "Сарын сүүлд үлдсэн мөнгөнөөс",
+              "Орлого орж ирмэгц эхэлж",
+              "Зөвхөн их орлоготой үед",
+              "Зээл төлж дууссаны дараа"
+            ],
+            "optionsEn": [
+              "From what is left at month end",
+              "Immediately when income arrives",
+              "Only with high income",
+              "After paying off loans"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "exchange",
+          "title": "Бирж гэж юу вэ?",
+          "titleEn": "What is a stock exchange?",
+          "slides": [
+            {
+              "title": "Бирж гэж юу вэ?",
+              "titleEn": "What is an exchange?",
+              "body": "Бирж бол үнэт цаас (бонд, хувьцаа) худалдах, худалдан авах зохион байгуулалттай зах зээл юм.\n\nМонголд үнэт цаасны арилжаа Монголын Хөрөнгийн Бирж дээр төвлөрдөг бөгөөд брокерийн компаниар дамжуулан оролцдог.",
+              "bodyEn": "An exchange is an organized market for buying and selling securities (bonds, stocks).\n\nIn Mongolia, securities trading is centered on the Mongolian Stock Exchange, accessed through brokerage firms.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Биржид иргэд хэрхэн оролцдог вэ?",
+            "questionEn": "How do individuals participate in the exchange?",
+            "options": [
+              "Шууд өөрөө",
+              "Брокерийн компаниар дамжуулан",
+              "Банкаар дамжуулан л",
+              "Оролцох боломжгүй"
+            ],
+            "optionsEn": [
+              "Directly themselves",
+              "Through a brokerage firm",
+              "Only through banks",
+              "They cannot"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "underwriter",
+          "title": "Underwriter брокер гэж хэн бэ?",
+          "titleEn": "What is an underwriter broker?",
+          "slides": [
+            {
+              "title": "Underwriter гэж хэн бэ?",
+              "titleEn": "Who is an underwriter?",
+              "body": "Underwriter нь компанийг үнэт цаас (IPO, бонд) гаргахад нь бэлтгэж, үнэлгээ тогтоож, олон нийтэд санал болгох ажлыг зохион байгуулдаг мэргэжлийн байгууллага юм.\n\nМандал Капитал нь underwriter брокерийн үйлчилгээ үзүүлдэг.",
+              "bodyEn": "An underwriter prepares a company to issue securities (IPO, bonds), sets the valuation, and organizes the public offering.\n\nMandal Capital provides underwriting services.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Underwriter-ийн гол үүрэг юу вэ?",
+            "questionEn": "What is the main role of an underwriter?",
+            "options": [
+              "Зээл олгох",
+              "Үнэт цаас гаргалтыг зохион байгуулах",
+              "Татвар хураах",
+              "Ханш зарлах"
+            ],
+            "optionsEn": [
+              "Issuing loans",
+              "Organizing securities issuance",
+              "Collecting taxes",
+              "Publishing prices"
+            ],
+            "correctIndex": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "bond",
+      "title": "Бондын хичээл",
+      "titleEn": "Bond course",
+      "image": "assets/images/edu_bond.png",
+      "lessons": [
+        {
+          "id": "markets",
+          "title": "Анхдагч ба хоёрдогч зах зээл гэж юу вэ?",
+          "titleEn": "Primary and secondary markets",
+          "slides": [
+            {
+              "title": "Анхдагч ба хоёрдогч зах зээл гэж юу вэ?",
+              "titleEn": "What are primary and secondary markets?",
+              "body": "Анхдагч зах зээл (Primary market) гэдэг нь шинээр гарч буй бондыг (эсвэл хувьцааг) анх удаа хөрөнгө оруулагчдад санал болгодог зах зээл юм.\nЭнд хөрөнгө оруулагчид шууд бонд гаргагч байгууллагаас (төр, компани гэх мэт) худалдан авалт хийдэг.\n\nЖишээлбэл:\nЗасгийн газар 10% хүүтэй 2 жилийн хугацаатай шинэ бонд гаргалаа гэж бодъё. Та энэ бондыг анхдагч зах зээлээс худалдаж авбал — та шууд төрд мөнгөө зээлдүүлж, тодорхой хугацаанд хүүгийн орлого авна гэсэн үг.",
+              "bodyEn": "The primary market is where newly issued bonds (or stocks) are offered to investors for the first time.\nHere investors buy directly from the issuer (the state, a company, etc.).\n\nExample:\nSuppose the government issues a new 2-year bond with 10% interest. If you buy it on the primary market, you are lending money directly to the state and earning interest income for a set period.",
+              "image": "assets/images/edu_slide_board.png",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            },
+            {
+              "title": "Хоёрдогч зах зээл",
+              "titleEn": "The secondary market",
+              "body": "Хоёрдогч зах зээл (Secondary market) нь аль хэдийн гарсан бондыг хөрөнгө оруулагчид хоорондоо арилжаалдаг зах зээл юм.\nЭнд бонд гаргагч тал оролцохгүй, харин хөрөнгө оруулагчид хуучин бондыг худалдаж, худалдан авдаг.\n\nЖишээлбэл:\nТа өмнө нь анхдагч зах зээлээс авсан бондоо хугацаа дуусаагүй байхад бусдад зарж болно — энэ арилжаа хоёрдогч зах зээлд хийгдэж байгаа хэрэг.",
+              "bodyEn": "The secondary market is where already-issued bonds are traded between investors.\nThe issuer does not participate here; investors buy and sell existing bonds among themselves.\n\nExample:\nYou can sell a bond you bought on the primary market before it matures — that trade happens on the secondary market.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            },
+            {
+              "title": "Анхдагч болон Хоёрдогч зах зээлийн гол ялгарал",
+              "titleEn": "Key differences between primary and secondary markets",
+              "body": "Бонд анх удаа худалдаалагддаг зах зээл юм. Энд компани, эсвэл Засгийн газар шинэ бонд гаргаж, хөрөнгө оруулагчдаас шууд хөрөнгө татдаг.\nӨөрөөр хэлбэл, та анхдагч зах зээлээс бонд худалдаж авч байгаа бол шууд тухайн байгууллагад мөнгөө зээлдүүлж байна гэсэн үг. Тэд тодорхой хугацаанд танд хүү төлж, дараа нь үндсэн мөнгийг чинь буцаан өгдөг.\n\nЖишээ:\nЗасгийн газар 10% хүүтэй 2 жилийн хугацаатай шинэ бонд гаргав. Та үүнийг анхдагч зах зээлээс авбал — төрд зээл өгч, жил бүр 10%-ийн хүүгийн орлого авна.",
+              "bodyEn": "The primary market is where a bond is sold for the first time. A company or the government issues new bonds and raises capital directly from investors.\nIn other words, buying on the primary market means lending money directly to the issuer. They pay you interest for a set period and then return your principal.\n\nExample:\nThe government issues a new 2-year bond with 10% interest. Buying it on the primary market means lending to the state and earning 10% interest each year.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"
+            },
+            {
+              "title": "Анхдагч болон Хоёрдогч зах зээлийн гол ялгарал",
+              "titleEn": "Key differences between primary and secondary markets",
+              "body": "Хоёрдогч зах зээл\nЭнэ бол аль хэдийн гарсан бондыг хөрөнгө оруулагчид хоорондоо арилжаалдаг зах зээл юм. Бонд гаргагч байгууллага энд оролцдоггүй — харин бондыг эзэмшигчид хоорондоо зарж, худалдан авч үнээ тохиролцоно.\nИнгэснээр хөрөнгө оруулагчид бондоо хугацаа дуусахаас өмнө зарах, мөн шинэ хөрөнгө оруулагчид бонд худалдаж авах уян хатан боломжтой болдог.\n\nЖишээ:\nТа 2 жилийн хугацаатай бонд авсан ч, 1 жилийн дараа мөнгө хэрэгтэй болбол — хоёрдогч зах зээл дээр өөр хүнд зарж болно. Ингэснээр таны хөрөнгө \"гацдаггүй\", харин ч зах зээлийн үнээр хөрвөх боломжтой байдаг.",
+              "bodyEn": "The secondary market\nThis is where already-issued bonds are traded between investors. The issuer does not participate — bondholders sell and buy among themselves at negotiated prices.\nThis gives investors the flexibility to sell before maturity and lets new investors buy in.\n\nExample:\nEven if you bought a 2-year bond, if you need money after 1 year you can sell it to someone else on the secondary market. Your capital is never \"stuck\" — it stays liquid at market prices.",
+              "image": "assets/images/edu_slide_calc.png",
+              "caption": "Зургийн тайлбар энд бичигдэнэ",
+              "captionEn": "Image caption goes here",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Анхдагч зах зээлд бонд хэндээс худалдан авдаг вэ?",
+            "questionEn": "On the primary market, who do you buy bonds from?",
+            "options": [
+              "Хөрөнгө оруулагчдаас",
+              "Бонд гаргагч байгууллагаас",
+              "Хөрөнгийн биржээс",
+              "Өлзий захирлаас"
+            ],
+            "optionsEn": [
+              "From investors",
+              "From the issuing organization",
+              "From the stock exchange",
+              "From director Ulzii"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "bond_basics",
+          "title": "Бонд гэж юу вэ?",
+          "titleEn": "What is a bond?",
+          "slides": [
+            {
+              "title": "Бонд гэж юу вэ?",
+              "titleEn": "What is a bond?",
+              "body": "Бонд бол байгууллагад мөнгө зээлдүүлж, хариуд нь тогтмол хүү авах үнэт цаас юм.\n\nБонд нь хугацаа (TERM), хүү (нэрлэсэн хүү), нэрлэсэн үнэ гэсэн үндсэн үзүүлэлттэй. Хугацаа дуусахад үндсэн мөнгө буцаан олгогдоно.",
+              "bodyEn": "A bond is a security where you lend money to an organization and receive fixed interest in return.\n\nA bond has a term, an interest rate, and a face value. At maturity the principal is returned.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Бонд эзэмшигч юу авдаг вэ?",
+            "questionEn": "What does a bondholder receive?",
+            "options": [
+              "Компанийн хувьцаа",
+              "Тогтмол хүүгийн орлого",
+              "Ногдол ашиг",
+              "Байгууллагын удирдлагад оролцох эрх"
+            ],
+            "optionsEn": [
+              "Company shares",
+              "Fixed interest income",
+              "Dividends",
+              "Management rights"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "bond_risk",
+          "title": "Бондын эрсдэл ба өгөөж",
+          "titleEn": "Bond risk and return",
+          "slides": [
+            {
+              "title": "Эрсдэл ба өгөөж",
+              "titleEn": "Risk and return",
+              "body": "Бонд нь хувьцаанаас тогтвортой боловч эрсдэлгүй биш. Гаргагчийн төлбөрийн чадвар, хүүгийн түвшний өөрчлөлт зэрэг нь бондын үнэд нөлөөлдөг.\n\nӨндөр хүүтэй бонд ихэвчлэн өндөр эрсдэлтэй байдаг тул гаргагчийн мэдээлэлтэй сайтар танилцаарай.",
+              "bodyEn": "Bonds are more stable than stocks but not risk-free. The issuer's solvency and interest-rate changes affect bond prices.\n\nHigher-yield bonds usually carry higher risk, so study the issuer carefully.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Өндөр хүүтэй бонд ихэвчлэн ямар байдаг вэ?",
+            "questionEn": "Higher-yield bonds are usually…",
+            "options": [
+              "Эрсдэлгүй",
+              "Өндөр эрсдэлтэй",
+              "Татваргүй",
+              "Хугацаагүй"
+            ],
+            "optionsEn": [
+              "Risk-free",
+              "Higher risk",
+              "Tax-free",
+              "Perpetual"
+            ],
+            "correctIndex": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "stock",
+      "title": "Хувьцааны хичээл",
+      "titleEn": "Stock course",
+      "image": "assets/images/edu_stock.png",
+      "lessons": [
+        {
+          "id": "stock_basics",
+          "title": "Хувьцаа гэж юу вэ?",
+          "titleEn": "What is a stock?",
+          "slides": [
+            {
+              "title": "Хувьцаа гэж юу вэ?",
+              "titleEn": "What is a stock?",
+              "body": "Хувьцаа бол компанийн өмчийн тодорхой хэсгийг эзэмших эрхийг илэрхийлдэг үнэт цаас юм.\n\nХувьцаа эзэмшигч ханшийн өсөлтөөс болон ногдол ашгаас орлого олох боломжтой.",
+              "bodyEn": "A stock is a security representing partial ownership of a company.\n\nShareholders can earn from price appreciation and dividends.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Хувьцаа эзэмшигч юуны эзэн бэ?",
+            "questionEn": "What does a shareholder own?",
+            "options": [
+              "Компанийн өрийн",
+              "Компанийн өмчийн хэсгийн",
+              "Бондын",
+              "Биржийн"
+            ],
+            "optionsEn": [
+              "Company debt",
+              "A share of company equity",
+              "A bond",
+              "The exchange"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "dividend",
+          "title": "Ногдол ашиг",
+          "titleEn": "Dividends",
+          "slides": [
+            {
+              "title": "Ногдол ашиг гэж юу вэ?",
+              "titleEn": "What is a dividend?",
+              "body": "Ногдол ашиг бол компани ашгаасаа хувьцаа эзэмшигчдэд хуваарилдаг мөнгө юм.\n\nКомпани бүр ногдол ашиг олгодоггүй — зарим нь ашгаа өсөлтөд дахин зарцуулдаг.",
+              "bodyEn": "A dividend is money a company distributes to shareholders from its profits.\n\nNot every company pays dividends — some reinvest profits into growth.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Ногдол ашиг хаанаас олгогддог вэ?",
+            "questionEn": "Where are dividends paid from?",
+            "options": [
+              "Компанийн ашгаас",
+              "Банкны хүүгээс",
+              "Татварын буцаалтаас",
+              "Биржийн шимтгэлээс"
+            ],
+            "optionsEn": [
+              "Company profits",
+              "Bank interest",
+              "Tax refunds",
+              "Exchange fees"
+            ],
+            "correctIndex": 0
+          }
+        },
+        {
+          "id": "order_types",
+          "title": "Захиалгын төрлүүд",
+          "titleEn": "Order types",
+          "slides": [
+            {
+              "title": "Market ба Limit захиалга",
+              "titleEn": "Market and limit orders",
+              "body": "Зах зээлийн захиалга одоогийн ханшаар шууд биелдэг бол хязгаарласан захиалга таны заасан үнэд хүрсэн үед л биелдэг.\n\nХурд чухал бол market, үнэ чухал бол limit захиалга ашиглаарай.",
+              "bodyEn": "A market order executes immediately at the current price, while a limit order executes only at your specified price.\n\nUse market orders when speed matters, limit orders when price matters.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Хязгаарласан захиалга хэзээ биелдэг вэ?",
+            "questionEn": "When does a limit order execute?",
+            "options": [
+              "Шууд",
+              "Таны заасан үнэд хүрсэн үед",
+              "Өдрийн эцэст",
+              "Хэзээ ч биелэхгүй"
+            ],
+            "optionsEn": [
+              "Immediately",
+              "When your specified price is reached",
+              "At day end",
+              "Never"
+            ],
+            "correctIndex": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "fund",
+      "title": "Хөрөнгийн оруулалтын сангийн тухай хичээл",
+      "titleEn": "Investment fund course",
+      "image": "assets/images/edu_fund.png",
+      "lessons": [
+        {
+          "id": "fund_basics",
+          "title": "Хөрөнгө оруулалтын сан гэж юу вэ?",
+          "titleEn": "What is an investment fund?",
+          "slides": [
+            {
+              "title": "Сан гэж юу вэ?",
+              "titleEn": "What is a fund?",
+              "body": "Хөрөнгө оруулалтын сан нь олон хөрөнгө оруулагчийн мөнгийг нэгтгэж, мэргэжлийн баг удирдан төрөл бүрийн хөрөнгөд байршуулдаг хэрэгсэл юм.\n\nБага дүнгээр ч төрөлжсөн багцад хөрөнгө оруулах боломж олгодог.",
+              "bodyEn": "An investment fund pools money from many investors and is managed by professionals across various assets.\n\nIt lets you access a diversified portfolio even with small amounts.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Сангийн гол давуу тал юу вэ?",
+            "questionEn": "What is the main advantage of a fund?",
+            "options": [
+              "Баталгаат өгөөж",
+              "Мэргэжлийн удирдлагатай төрөлжилт",
+              "Татваргүй байдал",
+              "Шимтгэлгүй байдал"
+            ],
+            "optionsEn": [
+              "Guaranteed returns",
+              "Professional management and diversification",
+              "No taxes",
+              "No fees"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "fund_types",
+          "title": "Сангийн төрлүүд",
+          "titleEn": "Types of funds",
+          "slides": [
+            {
+              "title": "Ямар төрлийн сангууд байдаг вэ?",
+              "titleEn": "What types of funds exist?",
+              "body": "Бондын сан, хувьцааны сан, холимог сан гэх мэт төрлүүд байдаг. Төрөл бүр өөрийн эрсдэл, өгөөжийн түвшинтэй.\n\nӨөрийн зорилгод тохирсон төрлийг сонгох нь чухал.",
+              "bodyEn": "There are bond funds, equity funds, mixed funds, and more. Each has its own risk and return profile.\n\nChoosing the type that fits your goal is key.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Бондын сан ямар онцлогтой вэ?",
+            "questionEn": "What characterizes a bond fund?",
+            "options": [
+              "Өндөр эрсдэлтэй",
+              "Харьцангуй тогтвортой орлоготой",
+              "Зөвхөн хувьцаанд байршуулдаг",
+              "Хугацаагүй"
+            ],
+            "optionsEn": [
+              "High risk",
+              "Relatively stable income",
+              "Invests only in stocks",
+              "No term"
+            ],
+            "correctIndex": 1
+          }
+        },
+        {
+          "id": "fund_fees",
+          "title": "Сангийн шимтгэл",
+          "titleEn": "Fund fees",
+          "slides": [
+            {
+              "title": "Шимтгэлийн нөлөө",
+              "titleEn": "The impact of fees",
+              "body": "Сангууд удирдлагын шимтгэл авдаг бөгөөд энэ нь урт хугацаанд өгөөжид мэдэгдэхүйц нөлөөлдөг.\n\nХөрөнгө оруулахаасаа өмнө шимтгэлийн бүтцийг сайтар харьцуулаарай.",
+              "bodyEn": "Funds charge management fees, which noticeably affect long-term returns.\n\nCompare fee structures carefully before investing.",
+              "image": "",
+              "caption": "",
+              "captionEn": "",
+              "video": ""
+            }
+          ],
+          "quiz": {
+            "question": "Шимтгэл юунд нөлөөлдөг вэ?",
+            "questionEn": "What do fees affect?",
+            "options": [
+              "Юунд ч нөлөөлөхгүй",
+              "Урт хугацааны өгөөжид",
+              "Зөвхөн татварт",
+              "Зөвхөн ханшид"
+            ],
+            "optionsEn": [
+              "Nothing",
+              "Long-term returns",
+              "Only taxes",
+              "Only prices"
+            ],
+            "correctIndex": 1
+          }
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "general",
+      "icon": "message-question-circle",
+      "title": "Ерөнхий мэдээлэл",
+      "titleEn": "General information",
+      "description": "Харилцагч мэдэх ёстой зүйлс",
+      "descriptionEn": "What every client should know",
+      "items": [
+        {
+          "title": "Бүртгэл үүсгэх, хувийн мэдээлэл баталгаажуулах",
+          "titleEn": "Create an account and verify your identity",
+          "body": "Мандал Капитал аппыг бүрэн ашиглахын тулд бүртгэл үүсгэж, хувийн мэдээллээ баталгаажуулна.\n\nАлхмууд:\n1. Утасны дугаараа оруулж OTP кодоор баталгаажуулна.\n2. ХУР системээр иргэний мэдээллээ татна.\n3. Үнэт цаасны гэрээтэй танилцаж зөвшөөрнө.\n4. Иргэний үнэмлэхний зураг болон селфи илгээнэ.\n\nБаталгаажуулалт дууссаны дараа арилжааны бүх боломж нээгдэнэ.",
+          "bodyEn": "To use the Mandal Capital app fully, create an account and verify your identity.\n\nSteps:\n1. Enter your phone number and confirm with an OTP code.\n2. Fetch your citizen data through the KHUR system.\n3. Read and accept the securities agreement.\n4. Upload photos of your ID card and a selfie.\n\nOnce verification is complete, all trading features become available."
+        },
+        {
+          "title": "Нүүр хуудасны хяналтын самбар",
+          "titleEn": "Home page dashboard",
+          "body": "Нүүр хуудас нь таны нийт хөрөнгө, хөрөнгийн задаргаа, ханшийн график болон санал болгож буй бүтээгдэхүүнүүдийг нэг дор харуулна.\n\nДээд хэсэгт нийт хөрөнгийн дүн, доор нь бонд, хувьцаа, бэлэн мөнгөний задаргаа харагдана. Watchlist хэсэгт өөрийн сонирхдог хувьцаануудаа нэмж ханшийг нь хялбар хянах боломжтой.",
+          "bodyEn": "The home page shows your total assets, asset breakdown, price chart, and recommended products in one place.\n\nAt the top you see your total asset value, followed by a breakdown of bonds, stocks, and cash. In the watchlist section you can add stocks you are interested in and easily track their prices."
+        },
+        {
+          "title": "Портфолио: эзэмшиж буй хөрөнгө, гүйцэтгэл",
+          "titleEn": "Portfolio: your assets and performance",
+          "body": "Портфолио хэсэгт таны эзэмшиж буй бонд, хувьцааны жагсаалт, тэдгээрийн өнөөгийн үнэлгээ болон гүйцэтгэл харагдана.\n\nТайлан хэсгээс сонгосон хугацааны хөрөнгийн өөрчлөлт, орлого зарлагын хураангуйг харж, PDF хэлбэрээр татаж авах боломжтой.",
+          "bodyEn": "The portfolio section lists the bonds and stocks you own, their current valuation, and performance.\n\nFrom the report section you can view asset changes and a summary of income and expenses for a selected period, and download it as a PDF."
+        }
+      ]
+    },
+    {
+      "id": "trading",
+      "icon": "switch-vertical-01",
+      "title": "Арилжаа хэрхэн хийх вэ?",
+      "titleEn": "How to trade?",
+      "description": "Бонд болон хувьцааны арилжаа",
+      "descriptionEn": "Bond and stock trading",
+      "items": [
+        {
+          "title": "Бонд худалдан авах",
+          "titleEn": "Buying bonds",
+          "body": "Бонд анх удаа худалдаалагддаг зах зээл юм. Энд компани, эсвэл Засгийн газар шинэ бонд гаргаж, хөрөнгө оруулагчдаас шууд хөрөнгө татдаг.\nӨөрөөр хэлбэл, та анхдагч зах зээлээс бонд худалдаж авч байгаа бол шууд тухайн байгууллагад мөнгөө зээлдүүлж байна гэсэн үг. Тэд тодорхой хугацаанд танд хүү төлж, дараа нь үндсэн мөнгийг чинь буцаан өгдөг.\n\nЖишээ:\nЗасгийн газар 10% хүүтэй 2 жилийн хугацаатай шинэ бонд гаргав. Та үүнийг анхдагч зах зээлээс авбал — төрд зээл өгч, жил бүр 10%-ийн хүүгийн орлого авна.",
+          "bodyEn": "The primary market is where bonds are sold for the first time. Here a company or the government issues new bonds and raises capital directly from investors.\nIn other words, when you buy a bond on the primary market, you are lending money directly to that organization. They pay you interest for a set period and then return your principal.\n\nExample:\nThe government issues a new 2-year bond with 10% interest. If you buy it on the primary market, you are lending to the state and earning 10% interest income each year."
+        },
+        {
+          "title": "Хувьцаа худалдан авах",
+          "titleEn": "Buying stocks",
+          "body": "Хувьцаа худалдан авснаар та тухайн компанийн өчүүхэн ч гэсэн эзэмшигч болно.\n\nАпп дотроос хувьцааны дэлгэрэнгүй мэдээлэл, ханшийн график, захиалгын самбарыг хараад Авах товчоор захиалга үүсгэнэ. Захиалгад үнэ болон тоо ширхэгээ оруулаад баталгаажуулахад арилжааны системд илгээгдэнэ.",
+          "bodyEn": "By buying a stock you become a partial owner of that company.\n\nIn the app, view the stock's details, price chart, and order book, then create an order with the Buy button. Enter the price and quantity, confirm, and the order is sent to the trading system."
+        },
+        {
+          "title": "Зах зээлийн захиалга vs Хязгаарласан захиалга",
+          "titleEn": "Market order vs Limit order",
+          "body": "Зах зээлийн захиалга (Market order) — одоогийн зах зээлийн ханшаар шууд биелдэг захиалга. Хурдан биелэх давуу талтай ч ханш нь өөрчлөгдөж болзошгүй.\n\nХязгаарласан захиалга (Limit order) — таны заасан үнэд хүрсэн үед л биелдэг захиалга. Үнээ өөрөө удирдах давуу талтай ч ханш хүрэхгүй бол биелэхгүй байж болно.",
+          "bodyEn": "A market order executes immediately at the current market price. It fills quickly, but the price may move.\n\nA limit order executes only when the price reaches the level you set. You control the price, but the order may not fill if the price is never reached."
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "icon": "shield-tick",
+      "title": "Аюулгүй байдал",
+      "titleEn": "Security",
+      "description": "Мэдээллээ хэрхэн хамгаалах вэ?",
+      "descriptionEn": "How to protect your information?",
+      "items": [
+        {
+          "title": "Хөрөнгө оруулалтын эрсдэл",
+          "titleEn": "Investment risks",
+          "body": "Аливаа хөрөнгө оруулалт эрсдэлтэй. Ханшийн хэлбэлзэл, компанийн үйл ажиллагаа, эдийн засгийн нөхцөл байдал зэрэг нь таны хөрөнгийн үнэлгээнд нөлөөлнө.\n\nЭрсдэлээ бууруулахын тулд хөрөнгөө төрөлжүүлж (бонд, хувьцаа, бэлэн мөнгө), өөрийн хүлээж чадах эрсдэлийн түвшинд тохирсон шийдвэр гаргаарай.",
+          "bodyEn": "Every investment carries risk. Price volatility, company performance, and economic conditions all affect the value of your assets.\n\nTo reduce risk, diversify your portfolio (bonds, stocks, cash) and make decisions that match the level of risk you can tolerate."
+        },
+        {
+          "title": "Луйвраас сэргийлэх, данс хамгаалах",
+          "titleEn": "Preventing fraud and protecting your account",
+          "body": "Мандал Капитал таны нууц үг, OTP кодыг хэзээ ч утсаар болон мессежээр асуухгүй.\n\nСэрэмжлэх зүйлс:\n• Нэвтрэх мэдээллээ хэнтэй ч хуваалцахгүй байх\n• Сэжигтэй холбоос дээр дарахгүй байх\n• Албан ёсны апп, вэб хуудсыг л ашиглах\n\nСэжигтэй үйлдэл ажиглагдвал шууд харилцагчийн үйлчилгээнд хандаарай.",
+          "bodyEn": "Mandal Capital will never ask for your password or OTP code by phone or message.\n\nPrecautions:\n• Never share your login credentials with anyone\n• Do not click suspicious links\n• Only use the official app and website\n\nIf you notice suspicious activity, contact customer service immediately."
+        },
+        {
+          "title": "Акаунтаа хамгаалах (PIN, биометрик, 2 шатлалтай баталгаажуулалт)",
+          "titleEn": "Protecting your account (PIN, biometrics, two-factor authentication)",
+          "body": "Аппын тохиргооноос дараах хамгаалалтуудыг идэвхжүүлж болно:\n\n• PIN код — апп нээх бүрд асуух хамгаалалт\n• Биометрик — хурууны хээ эсвэл царайгаар хурдан, аюулгүй нэвтрэх\n• 2 шатлалтай баталгаажуулалт — шинэ төхөөрөмжөөс нэвтрэхэд OTP кодоор давхар баталгаажуулна\n\nЭдгээрийг идэвхжүүлснээр таны данс гуравдагч этгээдээс найдвартай хамгаалагдана.",
+          "bodyEn": "You can enable the following protections in the app settings:\n\n• PIN code — required every time the app opens\n• Biometrics — fast, secure login with fingerprint or face\n• Two-factor authentication — logins from a new device require an extra OTP code\n\nEnabling these keeps your account safe from third parties."
+        }
+      ]
+    }
+  ]
+}

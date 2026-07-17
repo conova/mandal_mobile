@@ -110,6 +110,10 @@ class _HomeHeaderState extends State<HomeHeader> {
         ),
       ),
       actions: [
+        IconButton(
+          onPressed: () => Navigator.pushNamed(context, '/education'),
+          icon: const CustomSvgIcon('book-open-01', size: 24),
+        ),
         Stack(
           children: [
             IconButton(

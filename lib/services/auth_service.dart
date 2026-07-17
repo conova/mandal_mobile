@@ -800,7 +800,8 @@ class AuthService with ChangeNotifier {
       return const LoginResult(message: 'Biometric login failed');
     } catch (e) {
       if (e is DioException) {
-        return LoginResult(message: 'Network error: ${e.message}');
+        // HTTP алдааны body-д message/messageen ирсэн бол түүнийг харуулна
+        return LoginResult(message: _extractErrorMessage(e));
       }
       return LoginResult(message: e.toString());
     }
@@ -844,7 +845,7 @@ class AuthService with ChangeNotifier {
       return const LoginResult(message: 'Device registration failed');
     } catch (e) {
       if (e is DioException) {
-        return LoginResult(message: 'Network error: ${e.message}');
+        return LoginResult(message: _extractErrorMessage(e));
       }
       return LoginResult(message: e.toString());
     }

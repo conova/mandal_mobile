@@ -120,10 +120,10 @@
     "back": "Back",
     "notificationRelatedInfo": "Related details",
     "@notificationRelatedInfo": {
-      "description": "Section title on notification detail screen showing the data payload"
+        "description": "Section title on notification detail screen showing the data payload"
     },
     "surname": "Surname",
-    "firstName": "Name",
+    "firstName": "First Name",
     "regNo": "Registration No",
     "address": "Address",
     "otherAccounts": "Other Accounts",
@@ -134,13 +134,9 @@
     "receiver": "Receiver",
     "receiverHint": "Write in Surname Name order",
     "save": "Save",
-    "summaryReport": "Summary Report",
-    "totalAssets": "Total Assets",
     "growth": "Growth",
     "lastMonth": "Last 1 month",
     "cash": "Cash",
-    "stocks": "Stocks",
-    "bonds": "Bonds",
     "type": "Type",
     "incomeExpense": "Income/Expense",
     "incomeSalary": "Income/Salary",
@@ -153,12 +149,9 @@
     "threeDays": "3C",
     "sixDays": "6C",
     "oneYear": "1Ж",
-    "all": "All",
     "selectedPeriod": "Selected Period",
-    "connectedDevices": "Connected Devices",
     "connectedDevicesDesc": "List of devices connected to your Mandal Capital app. Please remove any unrecognized devices.",
     "active": "Active",
-    "inactive": "Inactive",
     "date": "Date",
     "ipAddress": "IP Address",
     "remove": "Remove",
@@ -196,13 +189,11 @@
     "registerTitle": "Register",
     "registerSubtitle": "Enter your personal information",
     "lastName": "Last Name",
-    "firstName": "First Name",
     "enterIncomeAccount": "Enter income account",
     "enterIncomeAccountSubtitle": "Profits from your trades will be transferred to this account",
     "bankName": "Bank",
     "recipientName": "Recipient",
     "lastNameOrFirstNameNote": "Write in last name, first name order",
-    "save": "Save",
     "registrationSuccess": "Registration Successful",
     "registrationSuccessMessage": "Your goals, our experience - we are confident that it will be full of trust, rewards, and opportunities.",
     "finish": "Finish",
@@ -285,7 +276,6 @@
     "lockedAmount": "Locked Amount",
     "release": "Release",
     "orderRegistered": "ORDER REGISTERED",
-    "viewOrders": "View Orders",
     "sellPrice": "Sell Price",
     "executionProbability": "Execution Probability",
     "orderBoard": "Order Board",
@@ -337,8 +327,12 @@
     "registrationStepLabel": "Step {num}: {title}",
     "@registrationStepLabel": {
         "placeholders": {
-            "num": {"type": "int"},
-            "title": {"type": "String"}
+            "num": {
+                "type": "int"
+            },
+            "title": {
+                "type": "String"
+            }
         }
     },
     "registrationProgress": "Registration progress: {percent}%",
@@ -445,6 +439,71 @@
         "placeholders": {
             "count": {
                 "type": "String"
+            }
+        }
+    },
+    "educationTitle": "Education",
+    "educationSubtitle": "Growing your financial knowledge brings more freedom to your life.",
+    "eduCourseIntro": "Introduction to investing",
+    "eduCourseBond": "Bond course",
+    "eduCourseStock": "Stock course",
+    "eduCourseFund": "Investment fund course",
+    "eduLessonProgress": "{done}/{total}",
+    "@eduLessonProgress": {
+        "placeholders": {
+            "done": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "appGuideTitle": "App user guide",
+    "eduGeneralInfo": "General information",
+    "eduGeneralInfoDesc": "What every client should know",
+    "eduGeneral1": "Create an account and verify your identity",
+    "eduGeneral2": "Home page dashboard",
+    "eduGeneral3": "Portfolio: your assets and performance",
+    "eduTradingTitle": "How to trade?",
+    "eduTradingDesc": "Bond and stock trading",
+    "eduTrading1": "Buying bonds",
+    "eduTrading2": "Buying stocks",
+    "eduTrading3": "Market order vs Limit order",
+    "eduSecurityTitle": "Security",
+    "eduSecurityDesc": "How to protect your information?",
+    "eduSecurity1": "Investment risks",
+    "eduSecurity2": "Preventing fraud and protecting your account",
+    "eduSecurity3": "Protecting your account (PIN, biometrics, two-factor authentication)",
+    "viewMore": "View more",
+    "searchByKeyword": "Search by keyword",
+    "eduQuizLabel": "Knowledge check",
+    "eduNextCounter": "Next {current}/{total}",
+    "@eduNextCounter": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "eduFinish": "Finish",
+    "eduCorrectAnswer": "Correct answer",
+    "eduCorrectDesc": "Congratulations! You have completed this lesson.",
+    "eduWrongAnswer": "Incorrect answer",
+    "eduWrongDesc": "The lesson counts as completed only with a correct answer. Watch this lesson again?",
+    "eduRetryLesson": "Watch lesson again",
+    "eduLater": "Later",
+    "eduCheckAnswer": "Check answer {current}/{total}",
+    "@eduCheckAnswer": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
             }
         }
     }

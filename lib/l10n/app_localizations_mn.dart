@@ -1296,4 +1296,118 @@ class AppLocalizationsMn extends AppLocalizations {
   String approxUsd(String amount) {
     return '≈$amount\$';
   }
+
+  @override
+  String get educationTitle => 'Боловсрол';
+
+  @override
+  String get educationSubtitle =>
+      'Санхүүгийн мэдлэгээ нэмэх нь таны амьдралд илүү эрх чөлөө авчирна.';
+
+  @override
+  String get eduCourseIntro => 'Хөрөнгө оруулалтын ухаанд нэвтрэхүй';
+
+  @override
+  String get eduCourseBond => 'Бондын хичээл';
+
+  @override
+  String get eduCourseStock => 'Хувьцааны хичээл';
+
+  @override
+  String get eduCourseFund => 'Хөрөнгийн оруулалтын сангийн тухай хичээл';
+
+  @override
+  String eduLessonProgress(int done, int total) {
+    return '$done/$total';
+  }
+
+  @override
+  String get appGuideTitle => 'Апп ашиглах заавар';
+
+  @override
+  String get eduGeneralInfo => 'Ерөнхий мэдээлэл';
+
+  @override
+  String get eduGeneralInfoDesc => 'Харилцагч мэдэх ёстой зүйлс';
+
+  @override
+  String get eduGeneral1 => 'Бүртгэл үүсгэх, хувийн мэдээлэл баталгаажуулах';
+
+  @override
+  String get eduGeneral2 => 'Нүүр хуудасны хяналтын самбар';
+
+  @override
+  String get eduGeneral3 => 'Портфолио: эзэмшиж буй хөрөнгө, гүйцэтгэл';
+
+  @override
+  String get eduTradingTitle => 'Арилжаа хэрхэн хийх вэ?';
+
+  @override
+  String get eduTradingDesc => 'Бонд болон хувьцааны арилжаа';
+
+  @override
+  String get eduTrading1 => 'Бонд худалдан авах';
+
+  @override
+  String get eduTrading2 => 'Хувьцаа худалдан авах';
+
+  @override
+  String get eduTrading3 => 'Зах зээлийн захиалга vs Хязгаарласан захиалга';
+
+  @override
+  String get eduSecurityTitle => 'Аюулгүй байдал';
+
+  @override
+  String get eduSecurityDesc => 'Мэдээллээ хэрхэн хамгаалах вэ?';
+
+  @override
+  String get eduSecurity1 => 'Хөрөнгө оруулалтын эрсдэл';
+
+  @override
+  String get eduSecurity2 => 'Луйвраас сэргийлэх, данс хамгаалах';
+
+  @override
+  String get eduSecurity3 =>
+      'Акаунтаа хамгаалах (PIN, биометрик, 2 шатлалтай баталгаажуулалт)';
+
+  @override
+  String get viewMore => 'Цааш үзэх';
+
+  @override
+  String get searchByKeyword => 'Түлхүүр үгээр хайх';
+
+  @override
+  String get eduQuizLabel => 'Мэдлэг шалгах тест';
+
+  @override
+  String eduNextCounter(int current, int total) {
+    return 'Дараах $current/$total';
+  }
+
+  @override
+  String get eduFinish => 'Дуусгах';
+
+  @override
+  String get eduCorrectAnswer => 'Зөв хариулт';
+
+  @override
+  String get eduCorrectDesc => 'Баяр хүргэе! Та энэ хичээлийг үзэж дууслаа.';
+
+  @override
+  String get eduWrongAnswer => 'Хариулт буруу';
+
+  @override
+  String get eduWrongDesc =>
+      'Зөв хариулсан тохиолдолд хичээлийг үзсэнд тооцно. Энэ хичээлийг дахиад үзэх үү?';
+
+  @override
+  String get eduRetryLesson => 'Хичээл дахин үзэх';
+
+  @override
+  String get eduLater => 'Дараа болох';
+
+  @override
+  String eduCheckAnswer(int current, int total) {
+    return 'Хариулт шалгах $current/$total';
+  }
 }
