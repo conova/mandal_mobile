@@ -309,7 +309,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get biometric => 'Biometric';
 
   @override
-  String get inactive => 'INACTIVE';
+  String get inactive => 'Inactive';
 
   @override
   String get changePassword => 'Change Password';
@@ -476,7 +476,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'List of devices connected to your Mandal Capital app. Please remove any unrecognized devices.';
 
   @override
-  String get active => 'ACTIVE';
+  String get active => 'Active';
 
   @override
   String get date => 'Date';
@@ -681,6 +681,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get watchlist => 'Watchlist';
+
+  @override
+  String get askingWatchlist => 'Do you want to create a watchlist?';
+
+  @override
+  String get watchlistDescription =>
+      'Save your favorite stocks and get real-time price updates instantly.';
 
   @override
   String get recommendationTitle => 'Don\'t know which bond to choose?';

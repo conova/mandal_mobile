@@ -679,7 +679,7 @@ abstract class AppLocalizations {
   /// No description provided for @inactive.
   ///
   /// In en, this message translates to:
-  /// **'INACTIVE'**
+  /// **'Inactive'**
   String get inactive;
 
   /// No description provided for @changePassword.
@@ -997,7 +997,7 @@ abstract class AppLocalizations {
   /// No description provided for @active.
   ///
   /// In en, this message translates to:
-  /// **'ACTIVE'**
+  /// **'Active'**
   String get active;
 
   /// No description provided for @date.
@@ -1383,6 +1383,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watchlist'**
   String get watchlist;
+
+  /// No description provided for @askingWatchlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to create a watchlist?'**
+  String get askingWatchlist;
+
+  /// No description provided for @watchlistDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your favorite stocks and get real-time price updates instantly.'**
+  String get watchlistDescription;
 
   /// No description provided for @recommendationTitle.
   ///

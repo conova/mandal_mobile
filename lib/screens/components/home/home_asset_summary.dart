@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
+import '../../../theme/app_colors.dart';
 import '../../../theme/extended_colors.dart';
 
 class HomeAssetSummary extends StatefulWidget {
@@ -122,11 +124,19 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(
-              isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              color: changeColor,
-              size: 18,
-            ),
+            if (isUp)
+              const CustomSvgIcon(
+                'button-up',
+                size: 6,
+                color: AppColors.primaryMain,
+              )
+            else
+              const CustomSvgIcon(
+                'button-down',
+                size: 6,
+                color: AppColors.redMain,
+              ),
+            const SizedBox(width: 4),
             Text(
               '$percentStr ',
               style: theme.textTheme.bodyMedium?.copyWith(

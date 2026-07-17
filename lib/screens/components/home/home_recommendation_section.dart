@@ -63,7 +63,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    // Мэдээлэл байхгүй бол хэсгийг бүхэлд нь нуана
+    // Мэдээлэл байхгүй бол хэсгийг бүхэлд нь нууна
     if (!_isLoading && _recommendations.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -108,8 +108,10 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
             child: Text(
               l10n.recommendationDesc,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral300,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: extendedColors.neutral100,
+                fontWeight: FontWeight.w200,
+                fontSize: 14,
               ),
             ),
           ),
