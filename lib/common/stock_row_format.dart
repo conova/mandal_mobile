@@ -48,7 +48,7 @@ double? orderProgress(dynamic ordered, dynamic total) {
 
 /// INTRATE → "3.5%", null/хоосон → "-"
 String formatIntRate(dynamic raw) {
-  if (raw == null || raw.toString().isEmpty) return '-';
+  if (raw == null || raw.toString().isEmpty) return '0%';
   return '$raw%';
 }
 

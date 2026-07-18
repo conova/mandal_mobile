@@ -79,7 +79,8 @@
       "Bash(dart fix *)",
       "Bash(python3 -)",
       "Bash(python3 -c ' *)",
-      "Bash(cp /Users/altanshagai/Downloads/shield-tick.svg /Users/altanshagai/Downloads/switch-vertical-01.svg /Users/altanshagai/Downloads/message-question-circle.svg assets/images/icons/ && ls assets/images/icons/ | grep -E \"shield|switch|message\"; sed -n '1,20p' lib/widgets/circle_back_button.dart)"
+      "Bash(cp /Users/altanshagai/Downloads/shield-tick.svg /Users/altanshagai/Downloads/switch-vertical-01.svg /Users/altanshagai/Downloads/message-question-circle.svg assets/images/icons/ && ls assets/images/icons/ | grep -E \"shield|switch|message\"; sed -n '1,20p' lib/widgets/circle_back_button.dart)",
+      "Bash(dart format *)"
     ]
   }
 }

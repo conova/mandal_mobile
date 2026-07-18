@@ -194,7 +194,7 @@ class _HomeStockRecommendationSectionState
     final bool? isGrowing = change == null || change == 0 ? null : change > 0;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(16),

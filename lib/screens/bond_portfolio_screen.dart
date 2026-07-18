@@ -23,19 +23,48 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   bool _isLoading = true;
   List<MarketInstrument> _holdings = const [];
 
+    /// Бондын нийт дүн (₮) — home-ийн хөрөнгийн задаргаа API-аас
+  double? _bondTotal;
+
+  /// USD ханш (amountMnt/amount) — ойролцоо $ дүн тооцоход
+  double? _usdRate;
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(_fetchMyBonds);
+    Future.microtask(_fetch);
   }
 
-  Future<void> _fetchMyBonds() async {
+  Future<void> _fetch() async {
     try {
       final auth = context.read<AuthService>();
-      final rows = await auth.getMyBonds();
+      // Миний бонд + задаргааг зэрэг татна (задаргаа нь header-ийн дүн)
+      final results = await Future.wait([
+        auth.getMyBonds(),
+        auth
+            .getAssetBreakdown()
+            .catchError((_) => <Map<String, dynamic>>[]),
+      ]);
       if (!mounted) return;
+
+      final breakdown = results[1];
+      double? bondTotal;
+      double? usdRate;
+      for (final item in breakdown) {
+        final type = item['type']?.toString() ?? '';
+        if (type == 'bond' || type == 'bonds') {
+          bondTotal = (item['amountMnt'] as num?)?.toDouble();
+        } else if (type == 'usd' || type == 'dollar') {
+          final usd = (item['amount'] as num?)?.toDouble() ?? 0;
+          final mnt = (item['amountMnt'] as num?)?.toDouble() ?? 0;
+          if (usd > 0 && mnt > 0) usdRate = mnt / usd;
+        }
+      }
+
       setState(() {
-        _holdings = MarketInstrument.listFromJson(rows);
+        _holdings = MarketInstrument.listFromJson(results[0]);
+        _bondTotal = bondTotal;
+        _usdRate = usdRate;
         _isLoading = false;
       });
     } catch (e) {
@@ -43,6 +72,20 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       setState(() => _isLoading = false);
       CustomSnackbar.showError(context, e);
     }
+  }
+
+  /// Жагсаалт дээр зүүн тийш swipe — дараагийн, баруун тийш — өмнөх filter
+  void _onListSwipe(DragEndDetails details) {
+    final velocity = details.primaryVelocity ?? 0;
+    // Санамсаргүй жижиг хөдөлгөөнийг тоохгүй
+    if (velocity.abs() < 100) return;
+    setState(() {
+      if (velocity < 0 && _selectedFilter < 2) {
+        _selectedFilter++;
+      } else if (velocity > 0 && _selectedFilter > 0) {
+        _selectedFilter--;
+      }
+    });
   }
 
   @override
@@ -193,8 +236,18 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 ),
               )
             else
-              ..._holdings.map(
-                (bond) => _buildBondRow(bond, theme, extendedColors, l10n),
+              // Жагсаалт дээр баруун/зүүн swipe хийж filter шилжүүлнэ
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragEnd: _onListSwipe,
+                child: Column(
+                  children: _holdings
+                      .map(
+                        (bond) =>
+                            _buildBondRow(bond, theme, extendedColors, l10n),
+                      )
+                      .toList(),
+                ),
               ),
             const SizedBox(height: 8),
             Divider(height: 1, color: extendedColors.neutral500),
@@ -297,10 +350,22 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            _buildAmountText('0.00₮', theme, extendedColors),
+            _buildAmountText(
+              formatStockAmount(_bondTotal ?? 0),
+              theme,
+              extendedColors,
+            ),
             const SizedBox(height: 4),
             Text(
-              l10n.approxUsd('0.00'),
+              // USD ханш задаргаанаас тооцоологдвол ойролцоо $ дүн
+              l10n.approxUsd(
+                formatStockAmount(
+                  _usdRate == null || _usdRate == 0
+                      ? 0
+                      : (_bondTotal ?? 0) / _usdRate!,
+                  isForeign: true,
+                ).replaceAll('\$', ''),
+              ),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.purple500,
                 fontWeight: FontWeight.w500,
@@ -412,9 +477,9 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          Flexible(
-            child: _buildRowValue(bond, theme, extendedColors, l10n),
-          ),
+          // Flexible биш — агуулгаараа хэмжигдэж баруун захад наалдана
+          // (Expanded + Flexible хослол сул зайг хувааж дүнг голд гацаадаг)
+          _buildRowValue(bond, theme, extendedColors, l10n),
         ],
       ),
     );
@@ -449,13 +514,8 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       case 2:
         final yield_ = bond.expYield ?? 0;
         amountText = formatStockAmount(yield_, isForeign: bond.isForeign);
-        amountColor = yield_ > 0
-            ? extendedColors.purple500
-            : extendedColors.neutral100;
-        final remaining = (total - cnt).clamp(0, total);
-        subText = remaining > 0
-            ? l10n.timesRemaining(remaining, total)
-            : '$remaining/$total';
+        amountColor = extendedColors.neutral100;
+        subText = bond.term;
       default:
         // Эзэмшиж буй дүн = ширхэг × дундаж үнэ
         final bal = bond.currentBal ?? 0;
@@ -472,8 +532,8 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       children: [
         Text(
           amountText,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w400,
             color: amountColor,
           ),
           maxLines: 1,
@@ -482,7 +542,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         const SizedBox(height: 4),
         Text(
           subText,
-          style: theme.textTheme.bodySmall?.copyWith(
+          style: theme.textTheme.bodyMedium?.copyWith(
             color: extendedColors.neutral300,
           ),
           maxLines: 1,

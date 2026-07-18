@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 
 import '../theme/extended_colors.dart';
 
@@ -27,84 +28,63 @@ class CustomBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: extendedColors.bgBase),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: theme.dividerColor,
-              borderRadius: BorderRadius.circular(2),
+      // Жижиг дэлгэц/keyboard үед агуулга багтахгүй бол scroll болно
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: theme.dividerColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(height: 32),
-          if (icon != null) ...[
-            icon!,
             const SizedBox(height: 32),
-          ] else ...[
-            Image.asset('assets/images/log-out.png', height: 130,),
-          ],
-          Text(
-            title,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: extendedColors.neutral100, fontSize: 16),
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: onConfirm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: confirmColor ?? colorScheme.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
-                ),
-              ),
-              child: Text(
-                confirmText,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            if (icon != null) ...[
+              icon!,
+              const SizedBox(height: 32),
+            ] else ...[
+              Image.asset('assets/images/log_out.png', height: 130),
+            ],
+            Text(
+              title,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: TextButton(
+            const SizedBox(height: 12),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: CustomButton(
+                label: confirmText,
+                onPressed: onConfirm,
+                variant: CustomButtonVariant.error,
+              ),
+            ),
+            const SizedBox(height: 12),
+            CustomButton(
+              label: cancelText,
               onPressed: onCancel,
-              style: TextButton.styleFrom(
-                backgroundColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                foregroundColor: colorScheme.onSurface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
-                ),
-              ),
-              child: Text(
-                cancelText,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              variant: CustomButtonVariant.text,
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
