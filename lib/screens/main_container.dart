@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../widgets/custom_svg_icon.dart';
@@ -34,49 +35,57 @@ class _MainContainerState extends State<MainContainer> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final footerColor = theme.extension<ExtendedColors>()?.footerColor ?? Colors.black;
 
     return Scaffold(
+      extendBody: true,
       body: IndexedStack(index: _selectedIndex, children: _screens),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: theme.extension<ExtendedColors>()!.footerColor,
-        selectedItemColor: theme.primaryColor,
-        unselectedItemColor: theme.disabledColor,
-        showUnselectedLabels: true,
-        selectedLabelStyle: theme.textTheme.labelSmall,
-        unselectedLabelStyle: theme.textTheme.labelSmall,
-        items: [
-          BottomNavigationBarItem(
-            icon: const CustomSvgIcon('wallet-01'),
-            activeIcon: const CustomSvgIcon('wallet-01'),
-            label: l10n.portfolio,
+      bottomNavigationBar: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: footerColor.withOpacity(0.8),
+            elevation: 0,
+            selectedItemColor: theme.primaryColor,
+            unselectedItemColor: theme.disabledColor,
+            showUnselectedLabels: true,
+            selectedLabelStyle: theme.textTheme.labelSmall,
+            unselectedLabelStyle: theme.textTheme.labelSmall,
+            items: [
+              BottomNavigationBarItem(
+                icon: const CustomSvgIcon('wallet-01'),
+                activeIcon: const CustomSvgIcon('wallet-01'),
+                label: l10n.portfolio,
+              ),
+              BottomNavigationBarItem(
+                icon: const CustomSvgIcon('bank-note-01'),
+                activeIcon: const CustomSvgIcon('bank-note-01'),
+                label: l10n.bonds,
+              ),
+              BottomNavigationBarItem(
+                icon: const CustomSvgIcon('coins-swap-02'),
+                activeIcon: const CustomSvgIcon('coins-swap-02'),
+                label: l10n.stocks,
+              ),
+              BottomNavigationBarItem(
+                icon: Badge(
+                  label: const Text('2'),
+                  backgroundColor: theme.colorScheme.error,
+                  child: const CustomSvgIcon('file-02'),
+                ),
+                activeIcon: Badge(
+                  label: const Text('2'),
+                  backgroundColor: theme.colorScheme.error,
+                  child: const CustomSvgIcon('file-02'),
+                ),
+                label: l10n.orders,
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: const CustomSvgIcon('bank-note-01'),
-            activeIcon: const CustomSvgIcon('bank-note-01'),
-            label: l10n.bonds,
-          ),
-          BottomNavigationBarItem(
-            icon: const CustomSvgIcon('coins-swap-02'),
-            activeIcon: const CustomSvgIcon('coins-swap-02'),
-            label: l10n.stocks,
-          ),
-          BottomNavigationBarItem(
-            icon: Badge(
-              label: const Text('2'),
-              backgroundColor: theme.colorScheme.error,
-              child: const CustomSvgIcon('file-02'),
-            ),
-            activeIcon: Badge(
-              label: const Text('2'),
-              backgroundColor: theme.colorScheme.error,
-              child: const CustomSvgIcon('file-02'),
-            ),
-            label: l10n.orders,
-          ),
-        ],
+        ),
       ),
     );
   }

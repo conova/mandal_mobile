@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/market_instrument.dart';
+import '../../theme/extended_colors.dart';
+import '../../widgets/circle_back_button.dart';
 import '../components/bond/bond_action_bottom_bar.dart';
 import '../components/bond/bond_detail_closed_view.dart';
 import '../components/bond/bond_detail_foreign_view.dart';
@@ -59,13 +61,20 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
         actions: [
           if (_isTrading)

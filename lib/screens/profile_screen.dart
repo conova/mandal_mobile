@@ -156,9 +156,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // background bgBase-аараа үлдэхийг баталгаажуулна.
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 20,),
-          child: CircleBackButton(),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
         actions: const [
           // Login дэлгэцтэй ижил pill switcher (flag + MN/ENG).

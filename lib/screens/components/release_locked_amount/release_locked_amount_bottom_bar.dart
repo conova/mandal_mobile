@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../widgets/custom_button.dart';
 
@@ -72,8 +73,8 @@ class ReleaseLockedAmountBottomBar extends StatelessWidget {
                       color: extendedColors.bgSecondary,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.arrow_back,
+                    child: CustomSvgIcon(
+                      'close-button',
                       color: extendedColors.neutral100,
                     ),
                   ),

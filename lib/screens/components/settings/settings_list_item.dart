@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 
 class SettingsListItem extends StatelessWidget {
   final IconData icon;
@@ -61,9 +62,9 @@ class SettingsListItem extends StatelessWidget {
             if (trailing != null) trailing!,
             if (trailing != null && showArrow) const SizedBox(width: 8),
             if (showArrow)
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 14,
+              CustomSvgIcon(
+                'chevron-right',
+                size: 24,
                 color: extendedColors.neutral200,
               ),
           ],

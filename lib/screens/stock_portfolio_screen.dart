@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
 import '../models/market_instrument.dart';
@@ -244,7 +245,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               // Back товч зүүн талд, icon мөрийн голд
               child: Stack(
                 alignment: Alignment.center,
@@ -260,10 +261,12 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                       color: extendedColors.orange,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      Icons.pie_chart_outline,
-                      color: extendedColors.bgBase,
-                      size: 22,
+                    child: Center(
+                      child: CustomSvgIcon(
+                        'coins-swap-02',
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ],

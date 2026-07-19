@@ -85,8 +85,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                     isDense: true,
                     icon: Icon(Icons.expand_more, color: theme.disabledColor),
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                 ),

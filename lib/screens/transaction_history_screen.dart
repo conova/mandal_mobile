@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import 'components/transaction_history/transaction_list_item.dart';
 import 'components/transaction_history/transaction_filter_sheet.dart';
 import 'components/transaction_history/transaction_period_sheet.dart';
@@ -209,22 +211,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
               padding: const EdgeInsets.only(left: 16, top: 8),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: extendedColors.bgSecondary,
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: extendedColors.neutral100,
-                        size: 20,
-                      ),
-                    ),
-                  ),
+                  // Back button
+                  CircleBackButton(),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TabBar(
@@ -316,15 +304,15 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
             Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: isActive ? Colors.white : extendedColors.neutral100,
+                color: isActive ? Colors.black : extendedColors.neutral100,
                 fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(width: 4),
-            Icon(
-              Icons.keyboard_arrow_down,
-              size: 18,
-              color: isActive ? Colors.white : extendedColors.neutral100,
+            CustomSvgIcon(
+              'button-down',
+              size: 6,
+              color: isActive ? Colors.black : extendedColors.neutral200,
             ),
           ],
         ),

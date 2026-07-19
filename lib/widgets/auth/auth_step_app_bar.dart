@@ -18,9 +18,15 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: extendedColors.bgBase,
       elevation: 0,
+      toolbarHeight: 70,
+      leadingWidth: 60,
       leading: Padding(
-        padding: EdgeInsets.only(left: 20,),
-        child: CircleBackButton(),
+        padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: CircleBackButton(),
+        ),
       ),
       actions: [
         if (stepText != null)
@@ -46,5 +52,5 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(70);
 }

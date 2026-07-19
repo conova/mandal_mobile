@@ -70,6 +70,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leadingWidth: 60,
         leading: const Padding(
           padding: EdgeInsets.only(left: 20,),
           child: CircleBackButton(),

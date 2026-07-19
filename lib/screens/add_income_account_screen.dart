@@ -19,8 +19,8 @@ class AddIncomeAccountScreen extends StatefulWidget {
 }
 
 class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
-  final TextEditingController _ibanController =
-  TextEditingController(text: IbanPrefixFormatter.prefix);
+  // Initialize with empty text so it doesn't display "MN" by default
+  final TextEditingController _ibanController = TextEditingController();
   final TextEditingController _receiverController = TextEditingController();
   String? _selectedBankCode;
   bool _isButtonEnabled = false;
@@ -169,9 +169,15 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 20,),
-          child: CircleBackButton(),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
       ),
       body: SafeArea(

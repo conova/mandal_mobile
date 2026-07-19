@@ -121,6 +121,9 @@ const Set<String> _publicRoutes = {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load app state (theme and language)
+  await AppStateManager.instance.init();
+
   // Firebase init — бодит config байхгүй бол алдааг бариж app ажиллуулна
   NotificationService? notificationService;
   try {

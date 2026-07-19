@@ -106,30 +106,42 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        title: Text(l10n.incomeAccount),
+        title: Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Text(l10n.incomeAccount),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 20,),
-          child: CircleBackButton(),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
         actions: [
-          IconButton(
-            style: IconButton.styleFrom(
-              backgroundColor: extendedColors.primaryMain,
-              minimumSize: const Size(32, 32),
-              maximumSize: const Size(32, 32),
-              padding: EdgeInsets.zero,
+          Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: extendedColors.primaryMain,
+                minimumSize: const Size(32, 32),
+                maximumSize: const Size(32, 32),
+                padding: EdgeInsets.zero,
+              ),
+              icon: const CustomSvgIcon('plus', size: 20, color: AppColors.bgBase),
+              onPressed: () async {
+                final added = await Navigator.pushNamed(
+                  context,
+                  '/add_income_account',
+                );
+                if (added == true) _fetchAccounts();
+              },
             ),
-            icon: const CustomSvgIcon('plus', size: 20, color: AppColors.bgBase),
-            onPressed: () async {
-              final added = await Navigator.pushNamed(
-                context,
-                '/add_income_account',
-              );
-              if (added == true) _fetchAccounts();
-            },
           ),
           const SizedBox(width: 8),
         ],
