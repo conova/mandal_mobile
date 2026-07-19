@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/circle_back_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
@@ -139,6 +142,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final filteredIndices = _filteredIndices;
     final hasSelections = _totalSelected > 0;
@@ -153,21 +157,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: extendedColors.bgTertiary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: extendedColors.neutral100,
-                        size: 20,
-                      ),
-                    ),
-                  ),
+                  CircleBackButton(),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Container(
@@ -179,9 +169,9 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                       child: Row(
                         children: [
                           const SizedBox(width: 14),
-                          Icon(
-                            Icons.search,
-                            color: extendedColors.neutral300,
+                          CustomSvgIcon(
+                            'search-icon',
+                            color: extendedColors.neutral100,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -193,7 +183,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                                 color: extendedColors.neutral100,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Хайх',
+                                hintText: l10n.searchByKeyword,
                                 hintStyle: theme.textTheme.bodyLarge?.copyWith(
                                   fontWeight: AppTextStyles.light,
                                   color: extendedColors.neutral300,
@@ -299,34 +289,10 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                           ),
                           if (isAlreadyAdded)
                             // Аль хэдийн нэмэгдсэн → "Нэмэгдсэн" пилл
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: extendedColors.bgSecondary,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.check_rounded,
-                                    color: extendedColors.primaryMain,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Нэмэгдсэн',
-                                    style:
-                                        theme.textTheme.labelSmall?.copyWith(
-                                      color: extendedColors.neutral200,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            Icon(
+                              Icons.check,
+                              color: extendedColors.primaryMain,
+                              size: 24,
                             )
                           else if (isSelected)
                             Icon(

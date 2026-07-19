@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../models/market_instrument.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/stock_detail/stock_detail_header.dart';
 import 'components/stock_detail/stock_detail_chart.dart';
@@ -136,6 +137,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     final symbol = _display('symbol', _info?.symbol, '');
     final name = _display('name', _info?.name, '');
@@ -154,25 +156,34 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         infoChange != null ? infoChange >= 0 : _args['isGrowing'] as bool?;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              _inWatchlist ? Icons.star : Icons.star_border,
-              color: _inWatchlist
-                  ? theme.extension<ExtendedColors>()!.yellow
-                  : theme.colorScheme.onSurface,
+          Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: IconButton(
+              icon: Icon(
+                _inWatchlist ? Icons.star : Icons.star_border,
+                color: _inWatchlist
+                    ? theme.extension<ExtendedColors>()!.yellow
+                    : theme.colorScheme.onSurface,
+              ),
+              onPressed: _watchlistBusy ? null : _toggleWatchlist,
             ),
-            onPressed: _watchlistBusy ? null : _toggleWatchlist,
           ),
           const SizedBox(width: 12),
         ],
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),
       body: Stack(

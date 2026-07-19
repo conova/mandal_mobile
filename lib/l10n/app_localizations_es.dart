@@ -162,6 +162,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get stock => 'Stock';
 
   @override
+  String get saved => 'Saved';
+
+  @override
+  String get pieceOfStock => 'stocks';
+
+  @override
   String get lastPrice24h => 'Last Price (24h)';
 
   @override
@@ -513,7 +519,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get verifyChannelPrompt =>
-      'A 6-digit code will be sent to your selected phone number or email address.';
+      'A 4-digit code will be sent to your selected phone number or email address.';
 
   @override
   String get sms => 'SMS';

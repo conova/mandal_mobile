@@ -23,9 +23,9 @@ class StockDetailBottomBar extends StatelessWidget {
 
     return Container(
       height: 100,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.only(top: 10, left: 24, right: 24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: extendedColors.bgBase,
         border: Border(
           top: BorderSide(color: theme.dividerColor.withOpacity(0.1)),
         ),

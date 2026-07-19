@@ -382,6 +382,18 @@ abstract class AppLocalizations {
   /// **'Stock'**
   String get stock;
 
+  /// No description provided for @saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get saved;
+
+  /// No description provided for @pieceOfStock.
+  ///
+  /// In en, this message translates to:
+  /// **'stocks'**
+  String get pieceOfStock;
+
   /// No description provided for @lastPrice24h.
   ///
   /// In en, this message translates to:
@@ -1063,7 +1075,7 @@ abstract class AppLocalizations {
   /// No description provided for @verifyChannelPrompt.
   ///
   /// In en, this message translates to:
-  /// **'A 6-digit code will be sent to your selected phone number or email address.'**
+  /// **'A 4-digit code will be sent to your selected phone number or email address.'**
   String get verifyChannelPrompt;
 
   /// No description provided for @sms.

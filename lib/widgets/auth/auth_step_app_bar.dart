@@ -31,7 +31,7 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         if (stepText != null)
           Container(
-            margin: const EdgeInsets.only(right: 16, top: 12, bottom: 12),
+            margin: const EdgeInsets.only(right: 16, top: 22, bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: colorScheme.secondary,
