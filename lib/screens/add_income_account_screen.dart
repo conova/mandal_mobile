@@ -19,8 +19,8 @@ class AddIncomeAccountScreen extends StatefulWidget {
 }
 
 class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
-  final TextEditingController _ibanController =
-  TextEditingController(text: IbanPrefixFormatter.prefix);
+  // Initialize with empty text so it doesn't display "MN" by default
+  final TextEditingController _ibanController = TextEditingController();
   final TextEditingController _receiverController = TextEditingController();
   String? _selectedBankCode;
   bool _isButtonEnabled = false;
