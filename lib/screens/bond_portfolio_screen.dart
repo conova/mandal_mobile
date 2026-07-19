@@ -4,6 +4,7 @@ import '../common/stock_row_format.dart';
 import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/app_colors.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
@@ -267,7 +268,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             _buildStatRow(
               theme: theme,
               extendedColors: extendedColors,
-              icon: 'coins-stacked-03',
+              icon: 'coins-stacked',
               label: l10n.totalReturnReceived,
               amount: '0.00₮',
               buttonLabel: l10n.view,
@@ -276,7 +277,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
             _buildStatRow(
               theme: theme,
               extendedColors: extendedColors,
-              icon: 'calendar-check-01',
+              icon: 'calendar-check',
               label: l10n.futureReturn,
               amount: '0.00₮',
               buttonLabel: l10n.view,
@@ -314,7 +315,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               // Back товч зүүн талд, icon мөрийн голд
               child: Stack(
                 alignment: Alignment.center,
@@ -334,7 +335,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                       child: CustomSvgIcon(
                         'bank-note-01',
                         size: 22,
-                        color: extendedColors.bgBase,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -571,7 +572,10 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               color: extendedColors.bgSecondary,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24),
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(

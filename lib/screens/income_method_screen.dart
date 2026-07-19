@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/circle_back_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 
@@ -18,22 +20,10 @@ class IncomeMethodScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: extendedColors.bgSecondary,
-                  ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: extendedColors.neutral100,
-                    size: 20,
-                  ),
-                ),
+              padding: const EdgeInsets.all(20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: CircleBackButton(),
               ),
             ),
             const SizedBox(height: 8),
@@ -185,9 +175,9 @@ class IncomeMethodScreen extends StatelessWidget {
                 ),
               ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
-              color: extendedColors.neutral300,
+            CustomSvgIcon(
+              'chevron-right',
+              color: extendedColors.neutral200,
               size: 24,
             ),
           ],

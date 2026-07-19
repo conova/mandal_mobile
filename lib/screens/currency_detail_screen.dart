@@ -165,7 +165,7 @@ class CurrencyDetailScreen extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               // Back товч зүүн талд, валютын icon мөрийн голд
               child: Stack(
                 alignment: Alignment.center,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 
 class IncomeAmountScreen extends StatefulWidget {
   const IncomeAmountScreen({super.key});
@@ -90,25 +91,10 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
           children: [
             // Back button
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: extendedColors.bgSecondary,
-                    ),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: extendedColors.neutral100,
-                      size: 20,
-                    ),
-                  ),
-                ),
+                child: CircleBackButton(),
               ),
             ),
             const Spacer(),

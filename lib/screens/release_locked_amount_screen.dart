@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/circle_back_button.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
@@ -60,9 +61,13 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
-          onPressed: () => Navigator.pop(context),
+        leadingWidth: 60,
+        leading: Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.only(left: 20, top: 20),
+            child: CircleBackButton(),
+          ),
         ),
         actions: [
           Padding(

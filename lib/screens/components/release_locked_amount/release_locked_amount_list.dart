@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
+import '../../../widgets/custom_svg_icon.dart';
+
 class ReleaseLockedAmountList extends StatelessWidget {
   final List<Map<String, dynamic>> items;
   final Set<int> selectedIndices;
@@ -49,7 +51,7 @@ class ReleaseLockedAmountList extends StatelessWidget {
                         : Colors.transparent,
                   ),
                   child: isSelected
-                      ? const Icon(Icons.check, size: 18, color: Colors.white)
+                      ? const CustomSvgIcon('checked', size: 18, color: Colors.white)
                       : null,
                 ),
                 const SizedBox(width: 16),
