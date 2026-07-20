@@ -1036,6 +1036,36 @@ abstract class AppLocalizations {
   /// **'Date'**
   String get date;
 
+  /// No description provided for @d1.
+  ///
+  /// In en, this message translates to:
+  /// **'1D'**
+  String get d1;
+
+  /// No description provided for @d7.
+  ///
+  /// In en, this message translates to:
+  /// **'7D'**
+  String get d7;
+
+  /// No description provided for @m1.
+  ///
+  /// In en, this message translates to:
+  /// **'1M'**
+  String get m1;
+
+  /// No description provided for @m3.
+  ///
+  /// In en, this message translates to:
+  /// **'3M'**
+  String get m3;
+
+  /// No description provided for @y1.
+  ///
+  /// In en, this message translates to:
+  /// **'1Y'**
+  String get y1;
+
   /// No description provided for @ipAddress.
   ///
   /// In en, this message translates to:

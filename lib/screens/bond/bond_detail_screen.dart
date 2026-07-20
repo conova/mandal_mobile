@@ -89,7 +89,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
               ),
             ),
         ],
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),
       body: SingleChildScrollView(

@@ -5,6 +5,7 @@ import '../../../theme/extended_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../services/auth_service.dart';
 import '../../../widgets/finance_chart.dart';
+import '../../../l10n/app_localizations.dart';
 
 class HomeEquityChart extends StatefulWidget {
   const HomeEquityChart({super.key});
@@ -14,17 +15,8 @@ class HomeEquityChart extends StatefulWidget {
 }
 
 class _HomeEquityChartState extends State<HomeEquityChart> {
-  /// Шошго (UI) → API period код
-  static const Map<String, String> _periodMap = {
-    '1Х': '1D',
-    '7Х': '1W',
-    '1С': '1M',
-    '3С': '3M',
-    '1Ж': '1Y',
-    'Бүгд': 'ALL',
-  };
-
-  String _selectedFilter = '1С';
+  /// Internal state tracks the API period code instead of localized label
+  String _selectedPeriod = '1M';
   EquityChart _chart = EquityChart.empty;
 
   @override
@@ -39,8 +31,7 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
     if (!mounted) return;
     try {
       final auth = context.read<AuthService>();
-      final period = _periodMap[_selectedFilter] ?? '1Y';
-      final chart = await auth.getEquityChart(period: period);
+      final chart = await auth.getEquityChart(period: _selectedPeriod);
       if (!mounted) return;
       setState(() => _chart = chart);
     } catch (e) {
@@ -48,9 +39,9 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
     }
   }
 
-  void _onFilterTap(String f) {
-    if (f == _selectedFilter) return;
-    setState(() => _selectedFilter = f);
+  void _onFilterTap(String periodCode) {
+    if (periodCode == _selectedPeriod) return;
+    setState(() => _selectedPeriod = periodCode);
     _fetch();
   }
 
@@ -66,6 +57,17 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
     final theme = Theme.of(context);
     final spots = _toSpots(_chart.points);
     final screenWidth = MediaQuery.of(context).size.width;
+    final l10n = AppLocalizations.of(context)!;
+
+    /// Map localized labels to API period codes
+    final Map<String, String> periodMap = {
+      l10n.d1: '1D',
+      l10n.d7: '1W',
+      l10n.m1: '1M',
+      l10n.m3: '3M',
+      l10n.y1: '1Y',
+      l10n.all: 'ALL',
+    };
 
     return Column(
       children: [
@@ -76,21 +78,21 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
         CustomSvgIcon('meter', size: screenWidth * 0.15,),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: _periodMap.keys
-              .map((label) => _timeFilter(theme, label))
+          children: periodMap.entries
+              .map((entry) => _timeFilter(theme, entry.key, entry.value))
               .toList(),
         ),
       ],
     );
   }
 
-  Widget _timeFilter(ThemeData theme, String text) {
+  Widget _timeFilter(ThemeData theme, String label, String periodCode) {
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final isSelected = _selectedFilter == text;
+    final isSelected = _selectedPeriod == periodCode;
     return GestureDetector(
-      onTap: () => _onFilterTap(text),
+      onTap: () => _onFilterTap(periodCode),
       child: Text(
-        text,
+        label,
         style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w400,
           color: isSelected

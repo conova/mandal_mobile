@@ -497,6 +497,21 @@ class AppLocalizationsMn extends AppLocalizations {
   String get date => 'Огноо';
 
   @override
+  String get d1 => '1Х';
+
+  @override
+  String get d7 => '7Х';
+
+  @override
+  String get m1 => '1С';
+
+  @override
+  String get m3 => '3С';
+
+  @override
+  String get y1 => '1Ж';
+
+  @override
   String get ipAddress => 'IP хаяг';
 
   @override

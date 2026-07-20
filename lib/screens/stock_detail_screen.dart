@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
@@ -170,18 +171,26 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.only(top: 20,),
             child: IconButton(
-              icon: Icon(
-                _inWatchlist ? Icons.star : Icons.star_border,
-                color: _inWatchlist
-                    ? theme.extension<ExtendedColors>()!.yellow
-                    : theme.colorScheme.onSurface,
-              ),
               onPressed: _watchlistBusy ? null : _toggleWatchlist,
+              style: IconButton.styleFrom(
+                backgroundColor: extendedColors.bgSecondary,
+                minimumSize: const Size(40, 40),
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: const CircleBorder(),
+              ),
+              icon: CustomSvgIcon(
+                _inWatchlist ? 'filled-star' : 'unfilled-star',
+                color: _inWatchlist
+                    ? extendedColors.primaryMain
+                    : theme.colorScheme.onSurface,
+                size: 24,
+              ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 20),
         ],
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
@@ -241,13 +250,13 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                 children: [
                   _buildTradeMenuButton(
                     label: AppLocalizations.of(context)!.buy,
-                    color: theme.extension<ExtendedColors>()!.primaryMain,
+                    color: extendedColors.primaryMain,
                     onPressed: () => _openTrading('buy'),
                   ),
                   const SizedBox(height: 16),
                   _buildTradeMenuButton(
                     label: AppLocalizations.of(context)!.sell,
-                    color: theme.extension<ExtendedColors>()!.red,
+                    color: extendedColors.red,
                     onPressed: () => _openTrading('sell'),
                   ),
                 ],

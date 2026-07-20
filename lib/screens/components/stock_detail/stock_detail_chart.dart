@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
 
 /// Stock chart — `/stocks/{SYMBOL}/chart` API-аас өгөгдөл татаж зурна.
@@ -121,13 +122,14 @@ class _StockDetailChartState extends State<StockDetailChart> {
   }
 
   Widget _buildPeriodSelector(ThemeData theme, ExtendedColors extendedColors) {
+    final l10n = AppLocalizations.of(context)!;
     final labels = {
-      _Period.d1: '1Ө',
-      _Period.d7: '7Ө',
-      _Period.m1: '1С',
-      _Period.m3: '3С',
-      _Period.y1: '1Ж',
-      _Period.all: 'Бүгд',
+      _Period.d1: l10n.d1,
+      _Period.d7: l10n.d7,
+      _Period.m1: l10n.m1,
+      _Period.m3: l10n.m3,
+      _Period.y1: l10n.y1,
+      _Period.all: l10n.all,
     };
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

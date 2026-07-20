@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/circle_back_button.dart';
 import '../components/bond/bond_price_slider.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_order_board.dart';
@@ -26,9 +27,15 @@ class _BondSellScreenState extends State<BondSellScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
@@ -56,7 +63,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
                   child: Text(
                     'Нэт Капитал',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral400,
+                      color: extendedColors.neutral200,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

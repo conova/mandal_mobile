@@ -269,7 +269,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                data.isOpen ? 'Нээлттэй' : 'Хаалттай',
+                                data.isOpen ? l10n.open : l10n.closed,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: extendedColors.neutral100,
                                   fontWeight: FontWeight.w500,
