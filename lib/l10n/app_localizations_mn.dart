@@ -160,6 +160,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get stock => 'Хувьцаа';
 
   @override
+  String get saved => 'Хадгалсан';
+
+  @override
+  String get pieceOfStock => 'ширхэг хувьцаа';
+
+  @override
   String get lastPrice24h => 'Сүүлийн ханш (24 цаг)';
 
   @override
@@ -491,6 +497,21 @@ class AppLocalizationsMn extends AppLocalizations {
   String get date => 'Огноо';
 
   @override
+  String get d1 => '1Х';
+
+  @override
+  String get d7 => '7Х';
+
+  @override
+  String get m1 => '1С';
+
+  @override
+  String get m3 => '3С';
+
+  @override
+  String get y1 => '1Ж';
+
+  @override
   String get ipAddress => 'IP хаяг';
 
   @override
@@ -510,7 +531,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get verifyChannelPrompt =>
-      '6 оронтой кодыг таны сонгосон утасны дугаар эсвэл и-мэйл рүү илгээх болно.';
+      '4 оронтой кодыг таны сонгосон утасны дугаар эсвэл и-мэйл рүү илгээх болно.';
 
   @override
   String get sms => 'SMS';

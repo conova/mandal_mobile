@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
@@ -52,7 +53,7 @@ class BondDetailInfoList extends StatelessWidget {
           _buildInfoRow(
             theme,
             extendedColors,
-            Icons.percent,
+            'percent-icon',
             l10n.annualYield,
             bond == null ? '12.5%' : (intRate == null ? '-' : '$intRate%'),
           ),
@@ -60,7 +61,7 @@ class BondDetailInfoList extends StatelessWidget {
           _buildInfoRow(
             theme,
             extendedColors,
-            Icons.event_available_outlined,
+            'calendar-check',
             l10n.nextInterestPayDate,
             bond == null
                 ? '2026.2.10 (${l10n.daysCount('122')})'
@@ -70,7 +71,7 @@ class BondDetailInfoList extends StatelessWidget {
           _buildInfoRow(
             theme,
             extendedColors,
-            Icons.event_note_outlined,
+            'calendar-done',
             l10n.bondMaturityDate,
             bond == null
                 ? '2026.8.10 (${l10n.daysCount('280')})'
@@ -80,7 +81,7 @@ class BondDetailInfoList extends StatelessWidget {
           _buildInfoRow(
             theme,
             extendedColors,
-            Icons.autorenew,
+            'clock-refresh',
             l10n.paymentFrequency,
             bond == null ? 'Хагас жил' : _payPeriodOf(context),
           ),
@@ -92,14 +93,19 @@ class BondDetailInfoList extends StatelessWidget {
   Widget _buildInfoRow(
     ThemeData theme,
     ExtendedColors extendedColors,
-    IconData icon,
+    String icon,
     String label,
     String value,
   ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 26, color: extendedColors.neutral100),
+        Column(
+          children: [
+            const SizedBox(height: 12,),
+            CustomSvgIcon(icon, size: 24, color: extendedColors.neutral100),
+          ],
+        ),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -112,7 +118,6 @@ class BondDetailInfoList extends StatelessWidget {
                   fontWeight: AppTextStyles.extraLight,
                 ),
               ),
-              const SizedBox(height: 4),
               Text(
                 value,
                 style: theme.textTheme.bodyLarge?.copyWith(

@@ -160,6 +160,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stock => 'Stock';
 
   @override
+  String get saved => 'Saved';
+
+  @override
+  String get pieceOfStock => 'stocks';
+
+  @override
   String get lastPrice24h => 'Last Price (24h)';
 
   @override
@@ -491,6 +497,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get date => 'Date';
 
   @override
+  String get d1 => '1D';
+
+  @override
+  String get d7 => '7D';
+
+  @override
+  String get m1 => '1M';
+
+  @override
+  String get m3 => '3M';
+
+  @override
+  String get y1 => '1Y';
+
+  @override
   String get ipAddress => 'IP Address';
 
   @override
@@ -511,7 +532,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verifyChannelPrompt =>
-      'A 6-digit code will be sent to your selected phone number or email address.';
+      'A 4-digit code will be sent to your selected phone number or email address.';
 
   @override
   String get sms => 'SMS';

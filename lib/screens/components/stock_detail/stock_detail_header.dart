@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 
 class StockDetailHeader extends StatelessWidget {
@@ -58,13 +59,14 @@ class StockDetailHeader extends StatelessWidget {
           Row(
             children: [
               if (showArrow)
-                Icon(
+                CustomSvgIcon(
                   isGrowing!
-                      ? Icons.arrow_drop_up
-                      : Icons.arrow_drop_down,
+                      ? 'button-up'
+                      : 'button-down',
                   color: changeColor,
-                  size: 24,
+                  size: 6,
                 ),
+              const SizedBox(width: 4,),
               Text(
                 change,
                 style: theme.textTheme.bodyMedium?.copyWith(

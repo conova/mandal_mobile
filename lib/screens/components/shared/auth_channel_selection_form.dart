@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../services/auth_service.dart';
+import '../../../theme/extended_colors.dart';
 import 'auth_channel_selector.dart';
 
 class AuthChannelSelectionForm extends StatefulWidget {
@@ -91,6 +92,7 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return SingleChildScrollView(
       child: Column(
@@ -101,14 +103,15 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
             l10n.selectVerifyChannel,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
+              color: extendedColors.neutral100,
             ),
           ),
           const SizedBox(height: 12),
           Text(
             l10n.verifyChannelPrompt,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurface,
+              color: extendedColors.neutral100,
+              fontWeight: FontWeight.w200,
             ),
           ),
           const SizedBox(height: 48),

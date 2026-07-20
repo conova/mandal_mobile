@@ -92,13 +92,9 @@ class RegistrationProgressBanner extends StatelessWidget {
                   backgroundColor: extendedColors.yellow,
                   foregroundColor: extendedColors.bgBase,
                   elevation: 0,
-                  maximumSize: (const Size(120, 40)),
+                  maximumSize: (const Size(140, 40)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 15.5,
                   ),
                 ),
                 child: Text(

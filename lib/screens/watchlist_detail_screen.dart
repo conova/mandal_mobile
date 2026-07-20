@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/circle_back_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
@@ -176,18 +178,11 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.all(20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: extendedColors.neutral100,
-                      size: 24,
-                    ),
-                  ),
+                  CircleBackButton(),
                   GestureDetector(
                     onTap: _openAddScreen,
                     child: Container(
@@ -196,8 +191,8 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                         color: extendedColors.primaryMain,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.add,
+                      child: const CustomSvgIcon(
+                        'plus',
                         color: Colors.white,
                         size: 20,
                       ),
@@ -239,34 +234,23 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
   }
 
   Widget _buildContent(ThemeData theme, ExtendedColors extendedColors) {
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         children: [
           const SizedBox(height: 24),
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: extendedColors.neutral100,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Icon(
-              Icons.bookmark_outline,
-              color: extendedColors.primaryMain,
-              size: 36,
-            ),
-          ),
+          Image.asset('assets/images/bookmark.png', width: 80, height: 80),
           const SizedBox(height: 16),
           Text(
-            'Хадгалсан',
+            l10n.saved,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            '${_watchlistItems.length} ширхэг хувьцаа',
+            '${_watchlistItems.length} ${l10n.pieceOfStock}',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: extendedColors.neutral300,
             ),
@@ -293,14 +277,14 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 40),
                     child: Text(
-                      'Хувьцаа',
+                      l10n.stock,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: extendedColors.neutral200,
                       ),
                     ),
                   ),
                   Text(
-                    'Сүүлийн ханш (24 цаг)',
+                    l10n.lastPrice24h,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.neutral200,
                     ),
@@ -384,7 +368,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
   }) {
     final changePrefix = item.isPositive == null
         ? ''
-        : (item.isPositive! ? '▲ ' : '▼ ');
+        : (item.isPositive! ? 'button-up' : 'button-down');
     final changeColor = item.isPositive == null
         ? extendedColors.neutral200
         : (item.isPositive! ? extendedColors.primaryMain : extendedColors.red);
@@ -412,7 +396,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           child: Row(
             children: [
-              Icon(Icons.drag_handle, color: extendedColors.neutral300, size: 24),
+              CustomSvgIcon('menu-item', color: extendedColors.neutral300, size: 24),
               const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -452,14 +436,26 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  '$changePrefix${item.change}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: changeColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (changePrefix != '')
+                      CustomSvgIcon(
+                        changePrefix,
+                        color: changeColor,
+                        size: 6,
+                      ),
+                    const SizedBox(width: 4),
+                    Text(
+                      item.change,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: changeColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ]
                 ),
               ],
             ),

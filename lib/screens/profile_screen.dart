@@ -169,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: const [
           // Login дэлгэцтэй ижил pill switcher (flag + MN/ENG).
           Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 16, top: 10),
             child: Center(child: LanguageSwitcher()),
           ),
         ],
