@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../theme/app_text_styles.dart';
@@ -7,14 +8,14 @@ import '../../../theme/app_text_styles.dart';
 class OnboardingStep {
   final String title;
   final String description;
-  final IconData icon;
+  final String image;
   final bool isCompleted;
   final VoidCallback? onTap;
 
   OnboardingStep({
     required this.title,
     required this.description,
-    required this.icon,
+    required this.image,
     this.isCompleted = false,
     this.onTap,
   });
@@ -42,7 +43,7 @@ class OnboardingStepsSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: extendedColors.bgBase,
         borderRadius: BorderRadius.zero,
       ),
       child: Column(
@@ -51,7 +52,7 @@ class OnboardingStepsSheet extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
+              color: extendedColors.bgBase,
               borderRadius: BorderRadius.zero,
             ),
             child: Column(
@@ -68,7 +69,7 @@ class OnboardingStepsSheet extends StatelessWidget {
                 const SizedBox(height: 24),
                 Text(
                   l10n.preparationWork,
-                  style: AppTextStyles.h2.copyWith(
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     color: extendedColors.neutral100,
                     fontWeight: FontWeight.bold,
                   ),
@@ -77,7 +78,7 @@ class OnboardingStepsSheet extends StatelessWidget {
                 Text(
                   l10n.preparationDesc,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.body2.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.neutral200,
                     fontWeight: AppTextStyles.light,
                   ),
@@ -152,15 +153,7 @@ class OnboardingStepsSheet extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: theme.disabledColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(step.icon, color: theme.colorScheme.onSurface),
-            ),
+            Image.asset(step.image, height: 48, width: 48,),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -193,9 +186,17 @@ class OnboardingStepsSheet extends StatelessWidget {
               ),
             ),
             if (step.isCompleted == true)
-              Icon(Icons.check_circle, color: extendedColors.primaryMain)
+              Stack(
+                children: [
+                  CustomSvgIcon('check-circle', color: extendedColors.primaryMain),
+                  Padding(
+                    padding: EdgeInsets.only(left: 7, top: 8, bottom: 8, right: 8),
+                    child: CustomSvgIcon('check', color: Colors.white, size: 8,),
+                  ),
+                ],
+              )
             else
-              Icon(Icons.chevron_right, color: theme.disabledColor),
+              CustomSvgIcon('chevron-right', color: theme.disabledColor),
           ],
         ),
       ),

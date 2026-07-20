@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_app_bar.dart';
 import '../widgets/auth/auth_footer.dart';
 import '../widgets/custom_snackbar.dart';
@@ -98,10 +99,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AuthAppBar(showLogo: true, onClose: () => Navigator.pop(context)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -113,14 +114,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               l10n.registerTitle,
               style: theme.textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.registerSubtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+                color: extendedColors.neutral200,
               ),
             ),
             const SizedBox(height: 48),
@@ -132,10 +133,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               firstNameController: _firstNameController,
               isLoading: _isLoading,
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 28),
             AuthFooter(
-              questionText: 'Нэвтрэх хаяг байгаа?',
-              actionText: 'Нэвтрэх',
+              questionText: l10n.alreadyHaveAccount,
+              actionText: l10n.login,
               onAction: () => Navigator.pop(context),
             ),
             const SizedBox(height: 32),

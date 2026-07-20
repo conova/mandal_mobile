@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_otp_form.dart';
@@ -68,10 +69,10 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '1/2'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -83,17 +84,17 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
               l10n.enterCodeTitle,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
               ),
             ),
             Text(
               l10n.codeSentTo(_value),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
                 fontWeight: FontWeight.w300,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 36),
             AuthOtpForm(
               key: ValueKey(_sessionId ?? 'no-session'),
               sessionId: _sessionId,

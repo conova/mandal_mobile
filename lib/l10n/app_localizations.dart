@@ -1123,7 +1123,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterCodeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter 6-digit code'**
+  /// **'Enter 4-digit code'**
   String get enterCodeTitle;
 
   /// No description provided for @codeSentTo.
@@ -2607,6 +2607,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'month'**
   String get monthLabel;
+
+  /// No description provided for @mandalCapital.
+  ///
+  /// In en, this message translates to:
+  /// **'Mandal Capital'**
+  String get mandalCapital;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @registerContactPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'If you wish to register as an organization,'**
+  String get registerContactPrefix;
+
+  /// No description provided for @registerContactPostfix.
+  ///
+  /// In en, this message translates to:
+  /// **' please send your request to '**
+  String get registerContactPostfix;
 
   /// No description provided for @approxUsd.
   ///

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_app_bar.dart';
 import 'components/login/login_header.dart';
 import 'components/login/login_form.dart';
@@ -66,10 +67,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AuthAppBar(
         showLogo: true,
         onClose: () {
@@ -78,14 +79,17 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            LoginHeader(),
-            SizedBox(height: 32),
-            Expanded(child: LoginForm()),
-            SizedBox(height: 32),
-          ],
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 32,),
+              LoginHeader(),
+              SizedBox(height: 32),
+              Expanded(child: LoginForm()),
+              SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );

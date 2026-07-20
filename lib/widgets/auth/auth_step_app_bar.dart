@@ -42,7 +42,7 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
                 stepText!,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w400,
-                  color: colorScheme.onSurface,
+                  color: extendedColors.neutral100,
                 ),
               ),
             ),

@@ -67,8 +67,18 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+  flutter_launcher_icons: ^0.13.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/app_logo.png" # Path to your source icon image
+  adaptive_icon_background: "#1E847C" # For Android adaptive icons
+  adaptive_icon_foreground: "assets/images/app_logo.png"
+
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -104,6 +114,9 @@ flutter:
     - assets/images/safe_box.png
     - assets/images/add_folder.png
     - assets/images/bookmark.png
+    - assets/images/success.png
+    - assets/images/stamp.png
+    - assets/images/document.png
     # SVG icon-ууд — хавтсаар нь бүртгэсэн тул шинэ icon нэмэхэд
     # pubspec засах шаардлагагүй (CustomSvgIcon-оор нэрээр нь дуудна)
     - assets/images/icons/

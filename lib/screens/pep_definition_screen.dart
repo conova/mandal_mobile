@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../widgets/circle_back_button.dart';
 
 class PepDefinitionScreen extends StatelessWidget {
   const PepDefinitionScreen({super.key});
@@ -24,7 +25,7 @@ class PepDefinitionScreen extends StatelessWidget {
             Text(
               l10n.pepDefinition,
               style: theme.textTheme.headlineMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+                color: extendedColors.neutral100,
                 fontWeight: AppTextStyles.semiBold,
               ),
             ),
@@ -32,7 +33,7 @@ class PepDefinitionScreen extends StatelessWidget {
             Text(
               l10n.pepDefinitionFull,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+                color: extendedColors.neutral100,
                 fontWeight: AppTextStyles.extraLight,
               ),
             ),
@@ -54,29 +55,19 @@ class _PepAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      toolbarHeight: 70,
+      leadingWidth: 60,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 20),
-        child: IconButton(
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: extendedColors.neutral500,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.arrow_back,
-              size: 20,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          onPressed: () => Navigator.pop(context),
+        padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: CircleBackButton(),
         ),
       ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(70);
 }

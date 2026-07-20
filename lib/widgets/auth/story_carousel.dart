@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../l10n/app_localizations.dart';
+import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
 import '../logo.dart';
@@ -99,6 +101,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
     return Scaffold(
       backgroundColor: Colors.black, // Story aesthetic is usually black
@@ -171,7 +174,7 @@ class _StoryCarouselState extends State<StoryCarousel> {
                   const AppLogo(width: 32, height: 32, color: Colors.white),
                   const SizedBox(width: 8),
                   Text(
-                    'Мандал Капитал',
+                    l10n.mandalCapital,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: AppTextStyles.semiBold,
@@ -189,17 +192,17 @@ class _StoryCarouselState extends State<StoryCarousel> {
               child: Column(
                 children: [
                   _buildStoryButton(
-                    label: 'Бүртгүүлэх',
+                    label: l10n.register,
                     onPressed: widget.onRegisterPressed,
-                    backgroundColor: extendedColors.primaryMain,
-                    textColor: Colors.black,
+                    backgroundColor: AppColors.primaryMain,
+                    textColor: AppColors.neutral100,
                   ),
                   const SizedBox(height: 12),
                   _buildStoryButton(
-                    label: 'Нэвтрэх',
+                    label: l10n.login,
                     onPressed: widget.onLoginPressed,
-                    backgroundColor: extendedColors.primary100,
-                    textColor: extendedColors.primaryMain,
+                    backgroundColor: AppColors.dpPrimary100,
+                    textColor: AppColors.primaryMain,
                   ),
                 ],
               ),

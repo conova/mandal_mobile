@@ -95,15 +95,15 @@ class _RegisterBankSelectionScreenState
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '4/5'),
       body: Column(
         children: [
           const SizedBox(height: 24),
           Text(
             l10n.selectYourBank,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.neutral500,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: extendedColors.neutral200,
             ),
           ),
           const SizedBox(height: 8),
@@ -111,10 +111,23 @@ class _RegisterBankSelectionScreenState
             '₮5,000',
             style: theme.textTheme.displayMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
+              color: extendedColors.neutral100,
             ),
           ),
           const SizedBox(height: 32),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(width: 30),
+              Text(
+                l10n.selectYourBank,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20,),
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())

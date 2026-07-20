@@ -169,7 +169,7 @@
     "verifyChannelPrompt": "4 оронтой кодыг таны сонгосон утасны дугаар эсвэл и-мэйл рүү илгээх болно.",
     "sms": "SMS",
     "emailLabel": "И-мэйл",
-    "enterCodeTitle": "6 оронтой код оруулна уу",
+    "enterCodeTitle": "4 оронтой код оруулна уу",
     "codeSentTo": "Таны {value} дугаарт код илгээлээ.",
     "resendCode": "Шинэ код авах",
     "noCodeReceived": "Код ирээгүй?",
@@ -417,6 +417,12 @@
     "bondReturnType": "Бондын өгөөж",
     "stockTransferType": "Хувьцаа шилжүүлэн авсан",
     "monthLabel": "сар",
+    "mandalCapital": "Мандал Капитал",
+    "signUp": "Бүртгүүлэх",
+    "signIn": "Нэвтрэх",
+    "alreadyHaveAccount": "Надад хаяг байгаа?",
+    "registerContactPrefix": "Та байгууллагаар бүртгүүлэх бол ",
+    "registerContactPostfix": " хаягт хүсэлтээ илгээнэ үү.",
     "approxUsd": "≈{amount}$",
     "@approxUsd": {
         "placeholders": {

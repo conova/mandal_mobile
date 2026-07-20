@@ -20,7 +20,6 @@ class AuthChannelSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return InkWell(
@@ -58,7 +57,7 @@ class AuthChannelSelector extends StatelessWidget {
                     value,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: AppTextStyles.light,
-                      color: colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                 ],

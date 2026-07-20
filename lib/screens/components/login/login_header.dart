@@ -16,7 +16,7 @@ class LoginHeader extends StatelessWidget {
         const SizedBox(height: 32),
         Text(
           l10n.login,
-          style: theme.textTheme.headlineSmall?.copyWith(
+          style: theme.textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
