@@ -541,7 +541,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailLabel => 'Email';
 
   @override
-  String get enterCodeTitle => 'Enter 6-digit code';
+  String get enterCodeTitle => 'Enter 4-digit code';
 
   @override
   String codeSentTo(Object value) {
@@ -1323,6 +1323,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthLabel => 'month';
+
+  @override
+  String get mandalCapital => 'Mandal Capital';
+
+  @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get registerContactPrefix =>
+      'If you wish to register as an organization,';
+
+  @override
+  String get registerContactPostfix => ' please send your request to ';
 
   @override
   String approxUsd(String amount) {

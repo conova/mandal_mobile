@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -30,21 +31,21 @@ class BondInfoCard extends StatelessWidget {
         children: [
           _buildInfoRow(
             Theme.of(context),
-            Icons.calendar_today_outlined,
+            'calendar-check',
             l10n.tenureLabel,
             tenure,
           ),
           const SizedBox(height: 20),
           _buildInfoRow(
             Theme.of(context),
-            Icons.percent,
+            'percent-icon',
             l10n.annualInterest,
             rate,
           ),
           const SizedBox(height: 20),
           _buildInfoRow(
             Theme.of(context),
-            Icons.refresh,
+            'refresh-icon',
             l10n.paymentFrequency,
             frequency,
           ),
@@ -55,7 +56,7 @@ class BondInfoCard extends StatelessWidget {
 
   Widget _buildInfoRow(
     ThemeData theme,
-    IconData icon,
+    String icon,
     String label,
     String value,
   ) {
@@ -67,7 +68,7 @@ class BondInfoCard extends StatelessWidget {
             color: theme.extension<ExtendedColors>()!.bgSecondary,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
+          child: CustomSvgIcon(
             icon,
             size: 24,
             color: theme.extension<ExtendedColors>()!.neutral100,

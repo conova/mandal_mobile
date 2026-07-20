@@ -82,11 +82,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -96,16 +95,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             const SizedBox(height: 40),
             Text(
               l10n.forgotPasswordTitle,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: theme.textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.forgotPasswordSubtitle,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral500,
+                color: extendedColors.neutral200,
               ),
             ),
             const SizedBox(height: 48),

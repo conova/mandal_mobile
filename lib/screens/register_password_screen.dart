@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_password_form.dart';
@@ -13,6 +14,7 @@ class RegisterPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final colorScheme = theme.colorScheme;
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
@@ -20,7 +22,7 @@ class RegisterPasswordScreen extends StatelessWidget {
     final sessionId = args['sessionId'] as String?;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '2/4'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -30,12 +32,12 @@ class RegisterPasswordScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               l10n.createNewPassword,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
               ),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 28),
             AuthPasswordForm(
               onContinue: (password) async {
                 if (sessionId == null) {

@@ -540,7 +540,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get emailLabel => 'И-мэйл';
 
   @override
-  String get enterCodeTitle => '6 оронтой код оруулна уу';
+  String get enterCodeTitle => '4 оронтой код оруулна уу';
 
   @override
   String codeSentTo(Object value) {
@@ -1321,6 +1321,24 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get monthLabel => 'сар';
+
+  @override
+  String get mandalCapital => 'Мандал Капитал';
+
+  @override
+  String get signUp => 'Бүртгүүлэх';
+
+  @override
+  String get signIn => 'Нэвтрэх';
+
+  @override
+  String get alreadyHaveAccount => 'Надад хаяг байгаа?';
+
+  @override
+  String get registerContactPrefix => 'Та байгууллагаар бүртгүүлэх бол ';
+
+  @override
+  String get registerContactPostfix => ' хаягт хүсэлтээ илгээнэ үү.';
 
   @override
   String approxUsd(String amount) {

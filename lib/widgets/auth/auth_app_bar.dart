@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/extended_colors.dart';
 import '../language_switcher.dart';
 import '../logo.dart';
 
@@ -12,9 +13,10 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return AppBar(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       elevation: 0,
       leadingWidth: 70,
       leading: showLogo
@@ -30,28 +32,35 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       actions: [
-        const LanguageSwitcher(),
-        const SizedBox(width: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: colorScheme.secondary,
-            shape: BoxShape.circle,
-          ),
-          child: InkWell(
-            onTap: onClose ?? () => Navigator.of(context).pop(),
-            borderRadius: BorderRadius.circular(16), // Half of 32 for a circle
-            child: SizedBox(
-              width: 32,
-              height: 32,
-              child: Icon(
-                Icons.close,
-                color: colorScheme.onSurface,
-                size: 24,
+        Padding(
+          padding: EdgeInsets.only(top: 12),
+          child: Row(
+            children: [
+              const LanguageSwitcher(),
+              const SizedBox(width: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.secondary,
+                  shape: BoxShape.circle,
+                ),
+                child: InkWell(
+                  onTap: onClose ?? () => Navigator.of(context).pop(),
+                  borderRadius: BorderRadius.circular(16), // Half of 32 for a circle
+                  child: SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Icon(
+                      Icons.close,
+                      color: colorScheme.onSurface,
+                      size: 24,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+              const SizedBox(width: 20),
+          ],
+          )
         ),
-        const SizedBox(width: 20),
       ],
     );
   }

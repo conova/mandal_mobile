@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 
 class DocumentVerificationScreen extends StatefulWidget {
@@ -142,7 +143,7 @@ class _DocumentVerificationScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              _DocHeader(l10n: l10n, theme: theme),
+              _DocHeader(l10n: l10n, theme: theme, extendedColors: extendedColors),
               const SizedBox(height: 32),
               _DocItemList(
                 l10n: l10n,
@@ -231,38 +232,29 @@ class _DocAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      toolbarHeight: 70,
+      leadingWidth: 60,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 20),
-        child: IconButton(
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: extendedColors.neutral500,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.arrow_back,
-              size: 20,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          onPressed: () => Navigator.pop(context),
+        padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: CircleBackButton(),
         ),
       ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(70);
 }
 
 class _DocHeader extends StatelessWidget {
   final AppLocalizations l10n;
   final ThemeData theme;
+  final ExtendedColors extendedColors;
 
-  const _DocHeader({required this.l10n, required this.theme});
+  const _DocHeader({required this.l10n, required this.theme, required this.extendedColors});
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +265,7 @@ class _DocHeader extends StatelessWidget {
         Text(
           l10n.document,
           style: theme.textTheme.headlineMedium?.copyWith(
-            color: theme.colorScheme.onSurface,
+            color: extendedColors.neutral100,
             fontWeight: AppTextStyles.semiBold,
           ),
         ),
@@ -423,7 +415,7 @@ class _DocItem extends StatelessWidget {
                     title,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: AppTextStyles.light,
-                      color: theme.colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -506,7 +498,7 @@ class _DocRequirements extends StatelessWidget {
           l10n.photoRequirements,
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: AppTextStyles.bold,
-            color: theme.colorScheme.onSurface,
+            color: extendedColors.neutral100,
           ),
         ),
         const SizedBox(height: 16),
@@ -558,7 +550,7 @@ class _RequirementItem extends StatelessWidget {
             child: Text(
               text,
               style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: extendedColors.neutral100,
                 fontWeight: AppTextStyles.light,
               ),
             ),

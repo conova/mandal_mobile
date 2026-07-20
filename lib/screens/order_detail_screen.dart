@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import 'components/order_detail/order_detail_header.dart';
 import 'components/order_detail/order_detail_summary.dart';
 import 'components/order_detail/order_detail_history.dart';
@@ -15,9 +16,15 @@ class OrderDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
         backgroundColor: extendedColors.bgBase,
         elevation: 0,

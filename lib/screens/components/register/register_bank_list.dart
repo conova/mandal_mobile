@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../../theme/extended_colors.dart';
 
 class RegisterBankList extends StatelessWidget {
@@ -16,7 +17,6 @@ class RegisterBankList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return ListView.separated(
@@ -32,16 +32,6 @@ class RegisterBankList extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isSelected
-                    ? extendedColors.primaryMain
-                    : extendedColors.neutral500,
-                width: isSelected ? 2 : 1,
-              ),
-            ),
             child: Row(
               children: [
                 Container(
@@ -64,14 +54,14 @@ class RegisterBankList extends StatelessWidget {
                     bank['name'],
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: extendedColors.neutral400,
+                CustomSvgIcon(
+                  'chevron-right',
+                  size: 24,
+                  color: extendedColors.neutral200,
                 ),
               ],
             ),

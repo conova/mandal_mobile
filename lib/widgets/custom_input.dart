@@ -169,7 +169,7 @@ class _CustomInputState extends State<CustomInput> {
                 ),
                 hintText: widget.hint,
                 hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral100,
+                  color: extendedColors.neutral200,
                   fontWeight: AppTextStyles.light,
                 ),
                 border: InputBorder.none,
@@ -186,7 +186,7 @@ class _CustomInputState extends State<CustomInput> {
                           _obscureText
                               ? 'eye-open'
                               : 'eye-closed',
-                          color: extendedColors.neutral300,
+                          color: extendedColors.neutral100,
                           size: 24,
                         ),
                         onPressed: () {

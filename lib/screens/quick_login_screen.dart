@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 import '../widgets/language_switcher.dart';
 import '../widgets/auth/biometric_login_button.dart';
 import '../services/auth_service.dart';
@@ -91,12 +93,12 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final authService = context.watch<AuthService>();
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final savedUser = authService.savedUser;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -115,16 +117,17 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                         nav.pushReplacementNamed('/login');
                       }
                     },
-                    icon: const Icon(Icons.arrow_back),
+                    icon: CustomSvgIcon('close-button'),
                     label: Text(
                       l10n.useAnotherAccount,
-                      style: AppTextStyles.body2.copyWith(
-                        color: AppColors.neutral100,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral100,
                         fontWeight: AppTextStyles.regular,
                       ),
                     ),
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColors.bgSecondary,
+                      minimumSize: Size(171, 40),
+                      backgroundColor: extendedColors.bgSecondary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
@@ -137,24 +140,27 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                   const LanguageSwitcher(),
                 ],
               ),
-              const Spacer(flex: 2),
+              const Spacer(flex: 3),
 
               // User Profile Section
               Container(
-                width: 100,
-                height: 100,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
                   color: AppColors.bgSecondary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.person, size: 64, color: Colors.grey),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10, top: 20, right: 10),
+                  child: CustomSvgIcon('user', size: 20, color: Colors.grey),
+                ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 24,),
               Text(
                 savedUser['name'] ?? 'Мандал хэрэглэгч',
                 style: AppTextStyles.h2.copyWith(
                   fontWeight: AppTextStyles.semiBold,
-                  color: AppColors.neutral100,
+                  color: extendedColors.neutral100,
                 ),
               ),
               const SizedBox(height: 4),
@@ -162,7 +168,7 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                 savedUser['id'] ?? '',
                 style: AppTextStyles.body2.copyWith(color: theme.disabledColor),
               ),
-              const Spacer(flex: 1),
+              const SizedBox(height: 32),
 
               // Input Section
               CustomInput(
@@ -185,7 +191,7 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                   ),
                 ),
               ),
-              const Spacer(flex: 3),
+              const Spacer(flex: 1,),
 
               // Action Buttons
               Row(
@@ -211,7 +217,7 @@ class _QuickLoginScreenState extends State<QuickLoginScreen> {
                     ),
                 ],
               ),
-              const SizedBox(height: 32),
+              const Spacer(flex: 4),
             ],
           ),
         ),

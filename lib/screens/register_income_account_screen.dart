@@ -179,7 +179,7 @@ class _RegisterIncomeAccountScreenState
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '3/4'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),

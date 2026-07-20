@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
             OnboardingStep(
               title: AppLocalizations.of(ctx)!.danSystem,
               description: AppLocalizations.of(ctx)!.danSystemDesc,
-              icon: Icons.fingerprint_rounded,
+              image: 'assets/images/finger_print.png',
               isCompleted: auth.isDanVerified,
               onTap: () async {
                 if (auth.isDanVerified) return;
@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
             OnboardingStep(
               title: AppLocalizations.of(ctx)!.securitiesAgreement,
               description: AppLocalizations.of(ctx)!.securitiesAgreementDesc,
-              icon: Icons.assignment_turned_in_rounded,
+              image: 'assets/images/stamp.png',
               isCompleted: auth.hasAgreement,
               onTap: () async {
                 if (auth.hasAgreement) return;
@@ -148,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
             OnboardingStep(
               title: AppLocalizations.of(ctx)!.document,
               description: AppLocalizations.of(ctx)!.documentDesc,
-              icon: Icons.contact_page_rounded,
+              image: 'assets/images/document.png',
               // 3 зураг (id_front, id_back, selfie) бүгд true бол дууссан
               isCompleted: auth.areAllDocumentsUploaded,
               onTap: () async {
@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final auth = context.watch<AuthService>();
     // KYC бүрэн дууссан үед registration banner-ыг харуулахгүй
-    final showRegistrationBanner = !auth.isKycComplete && auth.userInfo != null;
+    final showRegistrationBanner = !auth.isKycComplete || auth.userInfo != null;
     final progress = auth.kycProgress;
     // Гүйцээгээгүй эхний алхам: 1 — ХУР, 2 — гэрээ, 3 — бичиг баримт
     final currentStep = !auth.isDanVerified

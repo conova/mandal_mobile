@@ -189,7 +189,7 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
               child: Text(
                 l10n.noCodeReceived,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
+                  color: extendedColors.neutral100,
                   fontWeight: FontWeight.w200,
                 ),
                 maxLines: 1,

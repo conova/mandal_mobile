@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../widgets/circle_back_button.dart';
 
 class CameraOverlayScreen extends StatefulWidget {
   const CameraOverlayScreen({super.key});
@@ -91,24 +92,13 @@ class _CameraOverlayScreenState extends State<CameraOverlayScreen> {
         centerTitle: false,
         leadingWidth: 70,
         titleSpacing: 0,
+        toolbarHeight: 70,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: extendedColors.neutral500,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                size: 20,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
           ),
         ),
         title: Text(

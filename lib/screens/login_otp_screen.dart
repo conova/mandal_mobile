@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_snackbar.dart';
 import '../services/auth_service.dart';
@@ -87,6 +88,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -101,13 +103,13 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
               l10n.enterCodeTitle,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
               ),
             ),
             Text(
               l10n.codeSentTo(_value),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
                 fontWeight: FontWeight.w300,
               ),
             ),

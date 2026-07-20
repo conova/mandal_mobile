@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/shared/auth_channel_selector.dart';
@@ -14,13 +15,14 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final channels =
         (args?['channels'] as List<Map<String, dynamic>>?) ?? [];
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '1/2'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -30,16 +32,16 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               l10n.selectVerifyChannel,
-              style: theme.textTheme.headlineMedium?.copyWith(
+              style: theme.textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.verifyChannelPrompt,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral200,
               ),
             ),
             const SizedBox(height: 48),
@@ -52,8 +54,8 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: AuthChannelSelector(
                   icon: isSms
-                      ? Icons.smartphone_outlined
-                      : Icons.email_outlined,
+                      ? 'phone'
+                      : 'email',
                   title: isSms ? l10n.sms : l10n.emailLabel,
                   value: _maskValue(type, value),
                   onTap: () async {

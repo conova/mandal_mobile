@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_button.dart';
@@ -41,8 +42,6 @@ class MyBondCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: extendedColors.neutral500),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,8 +104,8 @@ class MyBondCard extends StatelessWidget {
                         GestureDetector(
                           onTap: onInfoTap,
                           behavior: HitTestBehavior.opaque,
-                          child: Icon(
-                            Icons.info_outline,
+                          child: CustomSvgIcon(
+                            'info-circle',
                             size: 20,
                             color: extendedColors.neutral300,
                           ),
@@ -130,27 +129,39 @@ class MyBondCard extends StatelessWidget {
           IntrinsicHeight(
             child: Row(
               children: [
-                _buildMetric(
-                  theme,
-                  extendedColors,
-                  l10n.ownedAmountLabel,
-                  ownedAmount,
+                Expanded(
+                  child: _buildMetric(
+                    theme,
+                    extendedColors,
+                    l10n.ownedAmountLabel,
+                    ownedAmount,
+                  ),
                 ),
-                const SizedBox(width: 24),
                 VerticalDivider(
                   color: extendedColors.neutral500,
                   width: 1,
                   thickness: 1,
                 ),
-                const SizedBox(width: 24),
-                _buildMetric(
-                  theme,
-                  extendedColors,
-                  l10n.interestRate,
-                  interestRate,
+                Expanded(
+                  child: _buildMetric(
+                    theme,
+                    extendedColors,
+                    l10n.interestRate,
+                    interestRate,
+                  ),
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 20,),
+          SizedBox(
+            height: 1,
+            width: double.infinity,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: extendedColors.neutral400,
+              ),
+            )
           ),
         ],
       ),
@@ -164,10 +175,11 @@ class MyBondCard extends StatelessWidget {
     String value,
   ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           label,
+          textAlign: TextAlign.center,
           style: theme.textTheme.labelMedium?.copyWith(
             fontWeight: AppTextStyles.light,
             color: extendedColors.neutral300,
@@ -176,6 +188,7 @@ class MyBondCard extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           value,
+          textAlign: TextAlign.center,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: extendedColors.neutral100,

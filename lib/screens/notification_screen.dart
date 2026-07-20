@@ -5,7 +5,9 @@ import '../l10n/app_localizations.dart';
 import '../models/api_notification.dart';
 import '../services/notification_api_service.dart';
 import '../services/notification_mocks.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 import '../widgets/filter_chip_bar.dart';
 import '../widgets/mark_read_bottom_sheet.dart';
 import '../widgets/notification_item.dart';
@@ -158,18 +160,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: CircleBackButton(),
+          ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 8.0, top: 10),
             child: TextButton.icon(
               onPressed: _unreadCount > 0 ? () => _showMarkReadPopup() : null,
-              icon: Icon(
-                Icons.check,
-                size: 18,
+              icon: CustomSvgIcon(
+                'checked',
+                size: 8,
                 color: colorScheme.onSurfaceVariant,
               ),
               label: Text(
