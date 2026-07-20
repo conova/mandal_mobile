@@ -52,8 +52,8 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: AuthChannelSelector(
                   icon: isSms
-                      ? Icons.smartphone_outlined
-                      : Icons.email_outlined,
+                      ? 'phone'
+                      : 'email',
                   title: isSms ? l10n.sms : l10n.emailLabel,
                   value: _maskValue(type, value),
                   onTap: () async {

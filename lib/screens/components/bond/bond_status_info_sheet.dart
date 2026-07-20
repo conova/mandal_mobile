@@ -3,6 +3,7 @@ import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_button.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 /// Бондын төлвийн тайлбарын bottom sheet — картуудын ⓘ icon дээр дарахад
 /// гарна. Гарчиг/тайлбарыг [showForBond]-оор бондын төлвөөс автоматаар
@@ -10,13 +11,13 @@ import '../../../widgets/custom_button.dart';
 class BondStatusInfoSheet extends StatelessWidget {
   final String title;
   final String description;
-  final IconData icon;
+  final String icon;
 
   const BondStatusInfoSheet({
     super.key,
     required this.title,
     required this.description,
-    this.icon = Icons.info_outline,
+    this.icon = 'info-circle',
   });
 
   /// Дурын гарчиг/тайлбар/icon-той мэдээллийн sheet нээнэ
@@ -24,7 +25,7 @@ class BondStatusInfoSheet extends StatelessWidget {
     BuildContext context, {
     required String title,
     required String description,
-    IconData icon = Icons.info_outline,
+    String icon = 'info-circle',
   }) {
     return showModalBottomSheet(
       context: context,
@@ -90,7 +91,7 @@ class BondStatusInfoSheet extends StatelessWidget {
               color: extendedColors.bgSecondary,
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: CustomSvgIcon(
               icon,
               size: 40,
               color: extendedColors.neutral100,

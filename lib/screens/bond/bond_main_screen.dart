@@ -244,7 +244,6 @@ class _BondMainScreenState extends State<BondMainScreen>
             if (!_myBondsLoading && _myBonds.isEmpty) {
               BondStatusInfoSheet.show(
                 context,
-                icon: Icons.savings_outlined,
                 title: l10n.sorryTitle,
                 description: l10n.noPledgeBondDesc,
               );

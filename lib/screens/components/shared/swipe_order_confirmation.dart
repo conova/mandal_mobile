@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/circle_back_button.dart';
 
 /// Баталгаажуулалтын дэлгэцийн нэг мөр (шошго + утга)
 class OrderDetailItem {
@@ -241,22 +242,10 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: GestureDetector(
-                                    onTap: () => Navigator.pop(context),
-                                    child: Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: extendedColors.bgSecondary,
-                                      ),
-                                      child: Icon(
-                                        Icons.arrow_back,
-                                        color: extendedColors.neutral100,
-                                        size: 20,
-                                      ),
-                                    ),
+                                  padding: const EdgeInsets.all(20),
+                                  child: const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: CircleBackButton(),
                                   ),
                                 ),
                                 Padding(

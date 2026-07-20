@@ -343,7 +343,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
     final profitColor = isPositive
         ? extendedColors.primaryMain
         : extendedColors.red;
-    final arrow = isPositive ? '▲' : '▼';
+    final arrow = isPositive ? 'button-up' : 'button-down';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
@@ -411,14 +411,26 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                     color: profitColor,
                   ),
                 ),
-                Text(
-                  change == null
-                      ? '-'
-                      : '$arrow ${change.abs().toStringAsFixed(2)}%',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: profitColor,
-                  ),
-                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (change != null)
+                      CustomSvgIcon(
+                        arrow,
+                        size: 6,
+                        color: profitColor,
+                      ),
+                    const SizedBox(width: 4,),
+                    Text(
+                      change == null
+                          ? '-'
+                          : '${change.abs().toStringAsFixed(2)}%',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: profitColor,
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 
 class AuthChannelSelector extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final String title;
   final String value;
   final VoidCallback onTap;
@@ -39,7 +40,7 @@ class AuthChannelSelector extends StatelessWidget {
                 color: extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: extendedColors.neutral100),
+              child: CustomSvgIcon(icon, color: extendedColors.neutral100),
             ),
             const SizedBox(width: 16),
             Expanded(

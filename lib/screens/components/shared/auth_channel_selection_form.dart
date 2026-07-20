@@ -138,8 +138,8 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: AuthChannelSelector(
                   icon: isPhone
-                      ? Icons.smartphone_outlined
-                      : Icons.email_outlined,
+                      ? 'phone'
+                      : 'email',
                   title: isPhone ? l10n.sms : l10n.emailLabel,
                   value: _maskValue(type, value),
                   onTap: () => _onChannelTap(type, value),
