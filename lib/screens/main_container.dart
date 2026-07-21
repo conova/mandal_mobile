@@ -17,6 +17,7 @@ class MainContainer extends StatefulWidget {
 
 class _MainContainerState extends State<MainContainer> {
   int _selectedIndex = 0;
+  bool _argsApplied = false;
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -24,6 +25,19 @@ class _MainContainerState extends State<MainContainer> {
     const StockScreen(),
     const OrderScreen(),
   ];
+
+  /// Route args-аар эхлэх tab зааж болно:
+  ///   Navigator.pushNamed(context, '/main', arguments: {'tab': 1})
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_argsApplied) return;
+    _argsApplied = true;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map && args['tab'] is int) {
+      _selectedIndex = (args['tab'] as int).clamp(0, _screens.length - 1);
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {

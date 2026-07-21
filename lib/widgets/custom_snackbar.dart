@@ -5,14 +5,25 @@ import '../theme/extended_colors.dart';
 enum CustomSnackbarType { success, error, info }
 
 class CustomSnackbar {
+  /// Сүүлд харуулсан алдааны мессеж + хугацаа — давхардлаас сэргийлнэ
+  static String? _lastErrorMessage;
+  static DateTime? _lastErrorAt;
+
   /// API дуудлагын алдааг улаан snackbar-аар харуулна.
   /// Exception-ий "Exception: " угтварыг автоматаар хасна.
+  /// Ижил мессеж 3 секундын дотор давхар гарахгүй (зэрэг олон API
+  /// дуудлага ижил алдаа буцаахад toast-оор дүүргэхгүй).
   static void showError(BuildContext context, Object error) {
-    show(
-      context,
-      message: error.toString().replaceFirst('Exception: ', ''),
-      type: CustomSnackbarType.error,
-    );
+    final message = error.toString().replaceFirst('Exception: ', '');
+    final now = DateTime.now();
+    if (message == _lastErrorMessage &&
+        _lastErrorAt != null &&
+        now.difference(_lastErrorAt!) < const Duration(seconds: 3)) {
+      return;
+    }
+    _lastErrorMessage = message;
+    _lastErrorAt = now;
+    show(context, message: message, type: CustomSnackbarType.error);
   }
 
   static void show(

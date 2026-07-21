@@ -4,7 +4,6 @@ import '../common/stock_row_format.dart';
 import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
-import '../theme/app_colors.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
@@ -225,10 +224,16 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                       width: 130,
                       child: CustomButton(
                         variant: CustomButtonVariant.purple,
-                        onPressed: () async {
-                          await Navigator.pushNamed(context, '/home');
+                        onPressed: () {
+                          // Home (main) руу буцаж бондын tab-ийг нээнэ
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/main',
+                            (route) => false,
+                            arguments: {'tab': 1},
+                          );
                         },
-                        label: l10n.add,
+                        label: l10n.buyBond,
                         size: CustomButtonSize.small,
                       ),
                     ),

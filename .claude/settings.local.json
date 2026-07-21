@@ -80,7 +80,10 @@
       "Bash(python3 -)",
       "Bash(python3 -c ' *)",
       "Bash(cp /Users/altanshagai/Downloads/shield-tick.svg /Users/altanshagai/Downloads/switch-vertical-01.svg /Users/altanshagai/Downloads/message-question-circle.svg assets/images/icons/ && ls assets/images/icons/ | grep -E \"shield|switch|message\"; sed -n '1,20p' lib/widgets/circle_back_button.dart)",
-      "Bash(dart format *)"
+      "Bash(dart format *)",
+      "Bash(sed -n '1,60p' ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/base/axis_chart/transformation_config.dart)",
+      "Bash(grep -n \"getTooltipColor\\\\|this.getTooltipItems\\\\|class LineTouchTooltipData\" ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/line_chart/line_chart_data.dart | head -5)",
+      "Bash(grep -rn \"scaleAxis\\\\|Matrix4\\\\|getMaxScaleOnAxis\\\\|translation\" ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/base/custom_interactive_viewer.dart 2>/dev/null | head -20; ls ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/base/)"
     ]
   }
 }

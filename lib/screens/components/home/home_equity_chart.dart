@@ -27,11 +27,33 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
     Future.microtask(_fetch);
   }
 
+  /// Сонгосон интервалын эхлэх огноо (дуусах нь өнөөдөр)
+  DateTime _startDate() {
+    final now = DateTime.now();
+    return switch (_selectedPeriod) {
+      '1D' => now.subtract(const Duration(days: 1)),
+      '1W' => now.subtract(const Duration(days: 7)),
+      '1M' => DateTime(now.year, now.month - 1, now.day),
+      '3M' => DateTime(now.year, now.month - 3, now.day),
+      '1Y' => DateTime(now.year - 1, now.month, now.day),
+      _ => DateTime(2000, 1, 1), // ALL
+    };
+  }
+
+  String _fmt(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}/'
+      '${d.month.toString().padLeft(2, '0')}/'
+      '${d.day.toString().padLeft(2, '0')}';
+
   Future<void> _fetch() async {
     if (!mounted) return;
     try {
       final auth = context.read<AuthService>();
-      final chart = await auth.getEquityChart(period: _selectedPeriod);
+      // period код биш — start/end огноогоор дуудна
+      final chart = await auth.getEquityChart(
+        start: _fmt(_startDate()),
+        end: _fmt(DateTime.now()),
+      );
       if (!mounted) return;
       setState(() => _chart = chart);
     } catch (e) {
@@ -45,10 +67,15 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
     _fetch();
   }
 
-  /// EquityPoint жагсаалт → FlSpot жагсаалт (X тэнхлэг нь index, Y нь value)
+  /// EquityPoint жагсаалт → FlSpot жагсаалт.
+  /// X тэнхлэг: 1 өдөр = 1 нэгж (эхний цэгийн огнооноос хойших хоног) —
+  /// огнооны завсар алгассан ч цэгүүд бодит зайгаараа байрлана.
   List<FlSpot> _toSpots(List<EquityPoint> points) {
+    if (points.isEmpty) return const [];
+    final first = points.first.date;
     return [
-      for (var i = 0; i < points.length; i++) FlSpot(i.toDouble(), points[i].value),
+      for (final p in points)
+        FlSpot(p.date.difference(first).inDays.toDouble(), p.value),
     ];
   }
 
@@ -73,9 +100,13 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
       children: [
         // spots хоосон бол FinanceChart нь sample data-аар (өөрийн default)
         // дүүргэгдэх — UI шууд харагдана.
-        FinanceChart(spots: spots.isEmpty ? null : spots, height: 100),
+        FinanceChart(
+          spots: spots.isEmpty ? null : spots,
+          height: 100,
+          startDate:
+              _chart.points.isEmpty ? null : _chart.points.first.date,
+        ),
         const SizedBox(height: 10),
-        CustomSvgIcon('meter', size: screenWidth * 0.15,),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: periodMap.entries

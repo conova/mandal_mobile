@@ -1413,14 +1413,18 @@ class AuthService with ChangeNotifier {
   }
 
   /// Equity (нийт хөрөнгө) график.
-  /// GET /portfolio/chart_data?period=1D|1W|1M|3M|1Y|ALL
-  /// Default period: '1Y'
-  /// Response: { points: [{date, value}], period }
-  Future<EquityChart> getEquityChart({String period = '1Y'}) async {
+  /// GET /portfolio/chart_data?start=yyyy/MM/dd&end=yyyy/MM/dd
+  /// Default: сүүлийн 1 жил.
+  /// Response: { points: [{date, value}] }
+  Future<EquityChart> getEquityChart({String? start, String? end}) async {
+    final now = DateTime.now();
+    final s =
+        start ?? _formatChartDate(DateTime(now.year - 1, now.month, now.day));
+    final e = end ?? _formatChartDate(now);
     try {
       final response = await _authedDio.get(
         ApiConfig.portfolioChartData,
-        queryParameters: {'period': period},
+        queryParameters: {'start': s, 'end': e},
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() != '0') {
@@ -1432,7 +1436,7 @@ class AuthService with ChangeNotifier {
           .map((p) => EquityPoint.fromJson(Map<String, dynamic>.from(p as Map)))
           .toList();
       return EquityChart(
-        period: (data['period'] as String?) ?? period,
+        period: (data['period'] as String?) ?? '',
         points: points,
       );
     } on DioException catch (e) {
@@ -1884,14 +1888,22 @@ class AuthService with ChangeNotifier {
     return false;
   }
 
-  bool _isRefreshing = false;
+  /// Явагдаж буй refresh хүсэлт — давхардлаас сэргийлнэ
+  Future<String?>? _refreshFuture;
 
   /// Token expire болсон үед refresh token ашиглан шинэ token авна.
   /// Амжилттай бол шинэ access token буцаана, амжилтгүй бол null.
-  Future<String?> refreshAccessToken() async {
-    if (_refreshToken == null || _isRefreshing) return null;
+  Future<String?> refreshAccessToken() {
+    if (_refreshToken == null) return Future.value(null);
+    // Зэрэг олон 401 ирэхэд нэг л refresh хүсэлт явуулж, бусад нь
+    // түүний үр дүнг хүлээнэ (өмнө нь null буцааж session-ийг
+    // буруугаар дуусгадаг байсан)
+    return _refreshFuture ??= _doRefreshToken().whenComplete(() {
+      _refreshFuture = null;
+    });
+  }
 
-    _isRefreshing = true;
+  Future<String?> _doRefreshToken() async {
     try {
       final dio = Dio(
         BaseOptions(
@@ -1932,8 +1944,6 @@ class AuthService with ChangeNotifier {
       }
     } catch (_) {
       return null;
-    } finally {
-      _isRefreshing = false;
     }
     return null;
   }

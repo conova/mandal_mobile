@@ -9,8 +9,9 @@ import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/empty_state.dart';
 
-/// API row: { TAGID, SYMBOL, STOCKNAME, CLOSEPRICE, OPENPRICE, PRICECHANGE,
-///            STOCKTYPE, TYPENAME, BOARDNAME }
+/// API row — stock list-тэй ижил бүтэцтэй:
+/// { STOCKCODE, SYMBOL, STOCKNAME, COMPNAME, CLOSEPRICE, OPENPRICE,
+///   PRICECHANGE, STOCKTYPE, TYPENAME, BOARDNAME, ISOPEN, ISFOREIGN, ... }
 class WatchlistStock {
   final String symbol;
   final String name;
@@ -18,21 +19,26 @@ class WatchlistStock {
   final String change;
   final bool? isPositive;
 
+  /// /stocks/info дуудахад хэрэглэгдэнэ (STOCKCODE)
+  final String stockcode;
+
   const WatchlistStock({
     required this.symbol,
     required this.name,
     required this.price,
     required this.change,
     this.isPositive,
+    this.stockcode = '',
   });
 
   factory WatchlistStock.fromApi(Map<String, dynamic> row) {
     final closePrice = row['CLOSEPRICE'];
     final priceChange = row['PRICECHANGE'];
+    final isForeign = row['ISFOREIGN']?.toString() == '1';
 
     final priceStr = closePrice == null
         ? '-'
-        : '${_formatNumber(closePrice.toString())}₮';
+        : '${_formatNumber(closePrice.toString())}${isForeign ? r'$' : '₮'}';
 
     String changeStr = '-';
     bool? positive;
@@ -49,8 +55,9 @@ class WatchlistStock {
     }
 
     return WatchlistStock(
+      stockcode: (row['STOCKCODE'] ?? row['SYMBOL'])?.toString() ?? '',
       symbol: row['SYMBOL']?.toString() ?? '',
-      name: row['STOCKNAME']?.toString() ?? '',
+      name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
       price: priceStr,
       change: changeStr,
       isPositive: positive,
@@ -387,6 +394,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
               'price': item.price,
               'change': item.change,
               'isGrowing': item.isPositive,
+              'stockcode': item.stockcode,
             },
           );
           // Detail дээр одоор нэмж/хассан байж болзошгүй тул шинэчилнэ

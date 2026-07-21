@@ -34,19 +34,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
+    // Web дээр URL-ээс (deep link) route аль хэдийн нээгдсэн байж болно —
+    // тэр үед splash нь стекийн доор байдаг тул дахин push хийвэл
+    // дэлгэц давхар үүсч бүх API хүсэлт 2 удаа дуудагддаг.
+    final splashIsOnTop = ModalRoute.of(context)?.isCurrent ?? true;
+
     if (isLoggedIn) {
-      Navigator.pushReplacementNamed(context, '/main');
-    } else {
-      if (!hasShownStory) {
-        // Navigate to login with a flag to show story
-        Navigator.pushReplacementNamed(
-          context,
-          '/login',
-          arguments: {'showStory': true},
-        );
-      } else {
-        Navigator.pushReplacementNamed(context, '/login');
+      // Deep link-ээр өөр дэлгэц нээгдсэн бол түүнийгээ үлдээнэ
+      if (splashIsOnTop) {
+        Navigator.pushReplacementNamed(context, '/main');
       }
+    } else {
+      // Нэвтрээгүй бол deep link байсан ч бүх стекийг цэвэрлэж login руу
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/login',
+        (route) => false,
+        arguments: !hasShownStory ? {'showStory': true} : null,
+      );
     }
   }
 

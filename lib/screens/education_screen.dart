@@ -47,58 +47,55 @@ class _EducationScreenState extends State<EducationScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      body: SafeArea(
-        bottom: false,
-        child: data == null
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _EducationHeader(l10n: l10n),
-                    const SizedBox(height: 8),
-                    ...data.courses.map(
-                      (c) => _CourseTile(
-                        course: c,
-                        done: EducationProgress.completedCount(_completed, c),
-                        lang: lang,
-                        onTap: () async {
-                          await Navigator.pushNamed(
-                            context,
-                            '/education_course',
-                            arguments: {'course': c},
-                          );
-                          _loadProgress();
-                        },
-                      ),
+      body: data == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _EducationHeader(l10n: l10n),
+                  const SizedBox(height: 8),
+                  ...data.courses.map(
+                    (c) => _CourseTile(
+                      course: c,
+                      done: EducationProgress.completedCount(_completed, c),
+                      lang: lang,
+                      onTap: () async {
+                        await Navigator.pushNamed(
+                          context,
+                          '/education_course',
+                          arguments: {'course': c},
+                        );
+                        _loadProgress();
+                      },
                     ),
-                    const SizedBox(height: 24),
-                    Divider(color: extendedColors.neutral500, height: 1),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 32, 16, 40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.appGuideTitle,
-                            style: theme.textTheme.headlineLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: extendedColors.neutral100,
-                            ),
+                  ),
+                  const SizedBox(height: 24),
+                  Divider(color: extendedColors.neutral500, height: 1),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 32, 16, 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.appGuideTitle,
+                          style: theme.textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.neutral100,
                           ),
-                          const SizedBox(height: 24),
-                          for (final section in data.sections) ...[
-                            _GuideSectionView(section: section, lang: lang),
-                            if (section != data.sections.last)
-                              const SizedBox(height: 40),
-                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        for (final section in data.sections) ...[
+                          _GuideSectionView(section: section, lang: lang),
+                          if (section != data.sections.last)
+                            const SizedBox(height: 40),
                         ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-      ),
+            ),
     );
   }
 }
@@ -125,46 +122,49 @@ class _EducationHeader extends StatelessWidget {
           ],
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: CircleBackButton(),
-            ),
-            // Гарчиг зургийн зүүн талд — доод ирмэгээрээ зэрэгцэнэ
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.educationTitle,
-                    style: theme.textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: CircleBackButton(),
+              ),
+              // Гарчиг зургийн зүүн талд — доод ирмэгээрээ зэрэгцэнэ
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.educationTitle,
+                      style: theme.textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                // Толгойн чимэглэл зураг (байхгүй бол юу ч харуулахгүй)
-                Image.asset(
-                  'assets/images/edu_intro.png',
-                  height: 149,
-                  errorBuilder: (_, _, _) => const SizedBox(height: 80),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.educationSubtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: AppTextStyles.light,
-                color: extendedColors.neutral200,
+                  const SizedBox(width: 12),
+                  // Толгойн чимэглэл зураг (байхгүй бол юу ч харуулахгүй)
+                  Image.asset(
+                    'assets/images/edu_intro.png',
+                    height: 149,
+                    errorBuilder: (_, _, _) => const SizedBox(height: 80),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                l10n.educationSubtitle,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: AppTextStyles.light,
+                  color: extendedColors.neutral200,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

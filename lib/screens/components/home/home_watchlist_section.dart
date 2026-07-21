@@ -31,7 +31,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
   void initState() {
     super.initState();
     _fetch();
-    _refreshTimer = Timer.periodic(_refreshInterval, (_) => _fetch());
+    // _refreshTimer = Timer.periodic(_refreshInterval, (_) => _fetch());
   }
 
   @override
@@ -213,6 +213,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
           'price': s.price,
           'change': s.change,
           'isGrowing': s.isPositive,
+          'stockcode': s.stockcode,
         },
       ),
       child: Padding(

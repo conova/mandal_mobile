@@ -342,10 +342,18 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         ? extendedColors.primaryMain
         : extendedColors.red;
 
-    // График — огноо тус бүрийн нийт хөрөнгө
+    // График — огноо тус бүрийн нийт хөрөнгө.
+    // X тэнхлэг: 1 өдөр = 1 нэгж (эхний огнооноос хойших хоног)
+    final firstDate = dates.isEmpty ? null : parseStockDate(dates.first);
     final spots = <FlSpot>[
       for (var i = 0; i < dates.length; i++)
-        FlSpot(i.toDouble(), _totalOf(dates[i])),
+        FlSpot(
+          firstDate == null
+              ? i.toDouble()
+              : (parseStockDate(dates[i])?.difference(firstDate).inDays ?? i)
+                    .toDouble(),
+          _totalOf(dates[i]),
+        ),
     ];
 
     return Scaffold(
@@ -472,7 +480,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  FinanceChart(spots: spots),
+                  FinanceChart(spots: spots, startDate: firstDate),
                   const SizedBox(height: 16),
                   _buildTimeFilters(l10n, theme, extendedColors),
                   const SizedBox(height: 32),

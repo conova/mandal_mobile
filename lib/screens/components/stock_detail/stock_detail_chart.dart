@@ -1,8 +1,11 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../common/stock_row_format.dart';
 import '../../../services/auth_service.dart';
+import '../../../widgets/finance_chart.dart';
 
 /// Stock chart — `/stocks/{SYMBOL}/chart` API-аас өгөгдөл татаж зурна.
 /// `symbol` дамжуулаагүй бол placeholder зурна (хуучин зан хадгална).
@@ -18,7 +21,10 @@ enum _Period { d1, d7, m1, m3, y1, all }
 
 class _StockDetailChartState extends State<StockDetailChart> {
   _Period _selected = _Period.d1;
-  List<double> _points = const [];
+  List<FlSpot> _spots = const [];
+
+  /// Эхний цэгийн огноо — tooltip дээр өдрийн огноо харуулахад
+  DateTime? _startDate;
   bool _isLoading = false;
   String? _error;
 
@@ -60,20 +66,40 @@ class _StockDetailChartState extends State<StockDetailChart> {
       final auth = context.read<AuthService>();
       final data = await auth.getStockChart(sym, start: _fmt(start), end: _fmt(end));
 
-      // Хариунаас close үнэ задлах. CLOSEPRICE / close / price гэх мэт түгээмэл түлхүүр шалгана.
-      final pts = data
-          .map((row) {
-            final v = row['CLOSEPRICE'] ?? row['close'] ?? row['price'] ?? row['CLOSE'];
-            if (v is num) return v.toDouble();
-            if (v is String) return double.tryParse(v) ?? 0.0;
-            return 0.0;
-          })
-          .where((v) => v > 0)
-          .toList();
+      // Хариунаас огноо + close үнийг задална. X тэнхлэг: 1 өдөр = 1 нэгж
+      // (эхний огнооноос хойших хоног) — завсарласан өдрүүд бодит
+      // зайгаараа харагдана.
+      final parsed = <({DateTime? date, double value})>[];
+      for (final row in data) {
+        final v =
+            row['CLOSEPRICE'] ?? row['close'] ?? row['price'] ?? row['CLOSE'];
+        final value = v is num
+            ? v.toDouble()
+            : double.tryParse(v?.toString() ?? '') ?? 0.0;
+        if (value <= 0) continue;
+        parsed.add((
+          date: parseStockDate(
+            row['DATE'] ?? row['date'] ?? row['TRADEDATE'] ?? row['TRADEDAY'],
+          ),
+          value: value,
+        ));
+      }
+      final firstDate =
+          parsed.isEmpty ? null : parsed.first.date;
+      final spots = <FlSpot>[
+        for (var i = 0; i < parsed.length; i++)
+          FlSpot(
+            firstDate == null || parsed[i].date == null
+                ? i.toDouble()
+                : parsed[i].date!.difference(firstDate).inDays.toDouble(),
+            parsed[i].value,
+          ),
+      ];
 
       if (!mounted) return;
       setState(() {
-        _points = pts;
+        _spots = spots;
+        _startDate = firstDate;
         _isLoading = false;
       });
     } catch (e) {
@@ -107,12 +133,10 @@ class _StockDetailChartState extends State<StockDetailChart> {
                         ),
                       ),
                     )
-                  : CustomPaint(
-                      painter: _ChartPainter(
-                        lineColor: extendedColors.primaryMain,
-                        areaColor: extendedColors.primaryMain.withOpacity(0.1),
-                        points: _points,
-                      ),
+                  : FinanceChart(
+                      spots: _spots.isEmpty ? null : _spots,
+                      height: 200,
+                      startDate: _startDate,
                     ),
         ),
         const SizedBox(height: 16),
@@ -161,75 +185,4 @@ class _StockDetailChartState extends State<StockDetailChart> {
       ),
     );
   }
-}
-
-class _ChartPainter extends CustomPainter {
-  final Color lineColor;
-  final Color areaColor;
-  final List<double> points;
-
-  _ChartPainter({
-    required this.lineColor,
-    required this.areaColor,
-    this.points = const [],
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = lineColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    final path = Path();
-
-    if (points.isEmpty) {
-      // Placeholder зам (хуучин зан)
-      path.moveTo(0, size.height * 0.7);
-      path.lineTo(size.width * 0.1, size.height * 0.65);
-      path.lineTo(size.width * 0.2, size.height * 0.7);
-      path.lineTo(size.width * 0.3, size.height * 0.85);
-      path.lineTo(size.width * 0.4, size.height * 0.5);
-      path.lineTo(size.width * 0.5, size.height * 0.45);
-      path.lineTo(size.width * 0.6, size.height * 0.6);
-      path.lineTo(size.width * 0.7, size.height * 0.3);
-      path.lineTo(size.width * 0.8, size.height * 0.35);
-      path.lineTo(size.width * 0.9, size.height * 0.55);
-      path.lineTo(size.width, size.height * 0.4);
-    } else {
-      // API өгөгдлийг normalize → path
-      final minV = points.reduce((a, b) => a < b ? a : b);
-      final maxV = points.reduce((a, b) => a > b ? a : b);
-      final range = (maxV - minV).abs() < 1e-6 ? 1.0 : (maxV - minV);
-      final stepX = points.length > 1 ? size.width / (points.length - 1) : size.width;
-
-      for (var i = 0; i < points.length; i++) {
-        final x = i * stepX;
-        // Дээш мөр болгонд: max → top (0.0), min → bottom (1.0)
-        final norm = (points[i] - minV) / range;
-        final y = size.height * (1 - norm) * 0.9 + size.height * 0.05;
-        if (i == 0) {
-          path.moveTo(x, y);
-        } else {
-          path.lineTo(x, y);
-        }
-      }
-    }
-
-    canvas.drawPath(path, paint);
-
-    final areaPath = Path.from(path);
-    areaPath.lineTo(size.width, size.height);
-    areaPath.lineTo(0, size.height);
-    areaPath.close();
-
-    final areaPaint = Paint()
-      ..color = areaColor
-      ..style = PaintingStyle.fill;
-    canvas.drawPath(areaPath, areaPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _ChartPainter oldDelegate) =>
-      oldDelegate.points != points;
 }
