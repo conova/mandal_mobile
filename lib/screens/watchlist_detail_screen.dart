@@ -97,6 +97,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
         _isLoading = false;
         _error = null;
       });
+      setState(() {});
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -119,10 +120,13 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
     WatchlistStock item,
     ExtendedColors c,
   ) async {
+    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('${item.symbol} устгах'),
+        backgroundColor: extendedColors.bgBase,
+
         content: Text(
           '${item.name} хувьцааг хадгалсан жагсаалтаас хасах уу?',
         ),
@@ -155,6 +159,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       CustomSnackbar.show(context, message: '${item.symbol} устгагдлаа');
       // Серверээс жагсаалтыг дахин татаж баталгаажуулна
       _fetchWatchlist();
+      setState(() {});
       return true;
     } catch (e) {
       if (!mounted) return false;

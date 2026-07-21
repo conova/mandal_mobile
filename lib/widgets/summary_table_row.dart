@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
+import '../theme/extended_colors.dart';
 
 class SummaryTableRow extends StatelessWidget {
   final String label;
   final String val1;
   final String val2;
-  final bool isHeader;
+  final bool isOdd;
 
   const SummaryTableRow({
     super.key,
     required this.label,
     required this.val1,
     this.val2 = '',
-    this.isHeader = false,
+    this.isOdd = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isHeader
-            ? colorScheme.surfaceContainerHighest.withOpacity(0.3)
-            : Colors.transparent,
-        borderRadius: isHeader ? BorderRadius.circular(12) : null,
+        color: isOdd
+            ? extendedColors.bgSecondary
+            : extendedColors.bgBase,
+        borderRadius: isOdd ? BorderRadius.circular(12) : null,
       ),
       child: Row(
         children: [
@@ -33,11 +34,8 @@ class SummaryTableRow extends StatelessWidget {
             flex: 3,
             child: Text(
               label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-                color: isHeader
-                    ? colorScheme.onSurface
-                    : colorScheme.onSurface.withOpacity(0.8),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral100
               ),
             ),
           ),
@@ -46,9 +44,8 @@ class SummaryTableRow extends StatelessWidget {
             child: Text(
               val1,
               textAlign: TextAlign.right,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-                color: isHeader ? colorScheme.onSurface : colorScheme.onSurface,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral100,
               ),
             ),
           ),
@@ -58,11 +55,8 @@ class SummaryTableRow extends StatelessWidget {
               child: Text(
                 val2,
                 textAlign: TextAlign.right,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-                  color: isHeader
-                      ? colorScheme.onSurface
-                      : colorScheme.onSurface,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral100,
                 ),
               ),
             ),

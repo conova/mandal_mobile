@@ -108,6 +108,7 @@
     "lastChanged": "Changed on 2025.10.20",
     "passwordChangedOn": "Changed on {date}",
     "connectedDevices": "Connected Devices",
+    "noConnectedDevices": "There is no Connected Devices",
     "devicesCount": "2 devices",
     "deviceCountLabel": "{count} devices",
     "biometricFaceTitle": "Enable Face ID?",
@@ -359,6 +360,7 @@
         }
     },
     "registrationProgress": "Registration progress: {percent}%",
+    "registrationProgressText": "Registration progress: ",
     "start": "Start",
     "preparationWork": "Preparation work",
     "preparationDesc": "You will be ready to trade after completing the following steps.",

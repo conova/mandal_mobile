@@ -59,7 +59,7 @@ class RegistrationProgressBanner extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            l10n.registrationProgress(percent.toString()),
+                            l10n.registrationProgressText,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: extendedColors.neutral200,
                             ),

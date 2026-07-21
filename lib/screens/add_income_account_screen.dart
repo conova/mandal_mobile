@@ -190,7 +190,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
               Text(
                 l10n.addIncomeAccPrompt,
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontSize: 28,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -205,7 +205,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
                 controller: _ibanController,
                 inputFormatters: [IbanPrefixFormatter()],
                 suffix: Padding(
-                  padding: const EdgeInsets.only(right: 14),
+                  padding: const EdgeInsets.only(left: 18),
                   child: CustomSvgIcon('copy-06', size: 24,),
                 ),
               ),

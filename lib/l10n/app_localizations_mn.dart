@@ -341,6 +341,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get connectedDevices => 'Холбогдсон төхөөрөмж';
 
   @override
+  String get noConnectedDevices => 'Холбоотой төхөөрөмж байхгүй';
+
+  @override
   String get devicesCount => '2 төхөөрөмж';
 
   @override
@@ -1062,6 +1065,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String registrationProgress(String percent) {
     return 'Бүртгэлийн явц: ';
   }
+
+  @override
+  String get registrationProgressText => 'Бүртгэлийн явц: ';
 
   @override
   String get start => 'Эхлэх';
