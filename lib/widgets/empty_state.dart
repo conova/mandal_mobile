@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../theme/extended_colors.dart';
+import 'custom_svg_icon.dart';
 
 /// Хоосон төлвийн нэгдсэн харагдац: дугуй дэвсгэртэй icon, гарчиг,
 /// нэмэлт тайлбар. Хайлтын илэрцгүй, хоосон жагсаалт г.м. бүх
 /// хоосон төлөвт үүнийг ашиглана.
 class EmptyState extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final String title;
   final String? hint;
 
@@ -25,19 +26,22 @@ class EmptyState extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 112,
-          height: 112,
+          width: 100,
+          height: 100,
           decoration: BoxDecoration(
             color: extendedColors.bgSecondary,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, size: 48, color: extendedColors.neutral100),
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: CustomSvgIcon(icon, size: 24, color: extendedColors.neutral100),
+          ),
         ),
         const SizedBox(height: 24),
         Text(
           title,
           textAlign: TextAlign.center,
-          style: theme.textTheme.headlineSmall?.copyWith(
+          style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: extendedColors.neutral100,
           ),
@@ -48,7 +52,7 @@ class EmptyState extends StatelessWidget {
             hint!,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: extendedColors.neutral300,
+              color: extendedColors.neutral100,
             ),
           ),
         ],

@@ -341,6 +341,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get connectedDevices => 'Холбогдсон төхөөрөмж';
 
   @override
+  String get noConnectedDevices => 'Холбоотой төхөөрөмж байхгүй';
+
+  @override
   String get devicesCount => '2 төхөөрөмж';
 
   @override
@@ -437,6 +440,9 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get save => 'Хадгалах';
+
+  @override
+  String get saving => 'Хадгалж байна...';
 
   @override
   String get growth => 'Өсөлт';
@@ -1064,6 +1070,9 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String get registrationProgressText => 'Бүртгэлийн явц: ';
+
+  @override
   String get start => 'Эхлэх';
 
   @override
@@ -1477,6 +1486,18 @@ class AppLocalizationsMn extends AppLocalizations {
   String timesRemaining(int cnt, int total) {
     return '$cnt/$total удаа үлдсэн';
   }
+
+  @override
+  String get error => 'Алдаа';
+
+  @override
+  String get listUpdated => 'Жагсаалт шинэчлэгдлээ';
+
+  @override
+  String get changed => 'Өөрчлөгдлөө';
+
+  @override
+  String get hasError => 'Алдаатай';
 
   @override
   String get childRegisterTitle => 'Хүүхдийнхээ регистрийн дугаарыг оруулна уу';

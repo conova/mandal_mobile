@@ -126,10 +126,13 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
     WatchlistStock item,
     ExtendedColors c,
   ) async {
+    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('${item.symbol} устгах'),
+        backgroundColor: extendedColors.bgBase,
+
         content: Text(
           '${item.name} хувьцааг хадгалсан жагсаалтаас хасах уу?',
         ),
@@ -270,7 +273,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 64),
               child: EmptyState(
-                icon: Icons.star_border,
+                icon: 'star',
                 title: AppLocalizations.of(context)!.emptyWatchlist,
                 hint: AppLocalizations.of(context)!.emptyWatchlistHint,
               ),

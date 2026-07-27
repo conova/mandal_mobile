@@ -736,6 +736,12 @@ abstract class AppLocalizations {
   /// **'Connected Devices'**
   String get connectedDevices;
 
+  /// No description provided for @noConnectedDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no Connected Devices'**
+  String get noConnectedDevices;
+
   /// No description provided for @devicesCount.
   ///
   /// In en, this message translates to:
@@ -921,6 +927,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
 
   /// No description provided for @growth.
   ///
@@ -2104,6 +2116,12 @@ abstract class AppLocalizations {
   /// **'Registration progress: {percent}%'**
   String registrationProgress(String percent);
 
+  /// No description provided for @registrationProgressText.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration progress: '**
+  String get registrationProgressText;
+
   /// No description provided for @start.
   ///
   /// In en, this message translates to:
@@ -2889,6 +2907,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{cnt}/{total} times remaining'**
   String timesRemaining(int cnt, int total);
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @listUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'List updated'**
+  String get listUpdated;
+
+  /// No description provided for @changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed'**
+  String get changed;
+
+  /// No description provided for @hasError.
+  ///
+  /// In en, this message translates to:
+  /// **'Has error'**
+  String get hasError;
 
   /// No description provided for @childRegisterTitle.
   ///

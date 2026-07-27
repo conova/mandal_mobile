@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final auth = context.watch<AuthService>();
     // KYC бүрэн дууссан үед registration banner-ыг харуулахгүй
-    final showRegistrationBanner = !auth.isKycComplete || auth.userInfo != null;
+    final showRegistrationBanner = !auth.isKycComplete && auth.userInfo != null;
     final progress = auth.kycProgress;
     // Гүйцээгээгүй эхний алхам: 1 — ХУР, 2 — гэрээ, 3 — бичиг баримт
     final currentStep = !auth.isDanVerified
@@ -209,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -11,7 +11,6 @@ import '../widgets/custom_input.dart';
 import '../widgets/custom_snackbar.dart';
 
 import 'components/my_info/info_card.dart';
-import 'components/my_info/my_info_back_button.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 class MyInfoScreen extends StatefulWidget {
@@ -144,13 +143,14 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 10,),
                   Text(
                     l10n.myInfo,
                     style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 22),
                   InfoCard(
                     label: l10n.surname,
                     value: userInfo['lastName']?.toString() ?? '-',

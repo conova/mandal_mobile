@@ -341,6 +341,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connectedDevices => 'Connected Devices';
 
   @override
+  String get noConnectedDevices => 'There is no Connected Devices';
+
+  @override
   String get devicesCount => '2 devices';
 
   @override
@@ -437,6 +440,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get save => 'Save';
+
+  @override
+  String get saving => 'Saving...';
 
   @override
   String get growth => 'Growth';
@@ -1065,6 +1071,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get registrationProgressText => 'Registration progress: ';
+
+  @override
   String get start => 'Start';
 
   @override
@@ -1481,6 +1490,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String timesRemaining(int cnt, int total) {
     return '$cnt/$total times remaining';
   }
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get listUpdated => 'List updated';
+
+  @override
+  String get changed => 'Changed';
+
+  @override
+  String get hasError => 'Has error';
 
   @override
   String get childRegisterTitle => 'Enter your child\'s registration number';

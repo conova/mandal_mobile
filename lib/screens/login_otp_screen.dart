@@ -87,11 +87,10 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '2/2'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -113,7 +112,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                 fontWeight: FontWeight.w300,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 36),
             AuthOtpForm(
               key: ValueKey(_sessionId ?? 'no-session'),
               sessionId: _sessionId,

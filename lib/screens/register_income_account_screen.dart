@@ -9,6 +9,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_dropdown.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
+import '../widgets/custom_svg_icon.dart';
 
 class RegisterIncomeAccountScreen extends StatefulWidget {
   const RegisterIncomeAccountScreen({super.key});
@@ -207,10 +208,9 @@ class _RegisterIncomeAccountScreenState
               hint: '',
               controller: _ibanController,
               inputFormatters: [IbanPrefixFormatter()],
-              suffix: Icon(
-                Icons.copy_outlined,
-                color: extendedColors.neutral400,
-                size: 20,
+              suffix: Padding(
+                padding: const EdgeInsets.only(left: 18),
+                child: CustomSvgIcon('copy-06', size: 24,),
               ),
             ),
             const SizedBox(height: 16),
