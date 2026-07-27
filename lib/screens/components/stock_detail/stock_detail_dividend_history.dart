@@ -68,7 +68,7 @@ class StockDetailDividendHistory extends StatelessWidget {
                   ),
                 ),
                 startChild: Container(
-                  padding: const EdgeInsets.only(right: 34, top: 12, bottom: 11),
+                  padding: const EdgeInsets.only(right: 16, top: 12, bottom: 11),
                   alignment: Alignment.centerRight,
                   child: Text(
                     item['year'] ?? '',

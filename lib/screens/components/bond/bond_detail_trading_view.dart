@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
