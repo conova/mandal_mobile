@@ -2889,6 +2889,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{cnt}/{total} times remaining'**
   String timesRemaining(int cnt, int total);
+
+  /// No description provided for @childRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your child\'s registration number'**
+  String get childRegisterTitle;
+
+  /// No description provided for @childRegisterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a legal guardian can open a child\'s account.'**
+  String get childRegisterDesc;
+
+  /// No description provided for @childDocTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a photo of the birth certificate'**
+  String get childDocTitle;
+
+  /// No description provided for @birthCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth certificate'**
+  String get birthCertificate;
+
+  /// No description provided for @childSuccessDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We are reviewing your child\'s information — the trading account will open within 2 business days.'**
+  String get childSuccessDesc;
 }
 
 class _AppLocalizationsDelegate

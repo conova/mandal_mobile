@@ -6,6 +6,11 @@ library;
 ///   null/хоосон → "-"
 /// [decimals] — бутархайн орны тоо (progress label г.м. дээр 0 ашиглана)
 String formatStockAmount(dynamic raw, {bool isForeign = false, int decimals = 2}) {
+  final formatted = formatNumbers(raw, decimals: decimals);
+  return isForeign ? '$formatted\$' : '$formatted₮';
+}
+
+String formatNumbers(dynamic raw, {int decimals = 0}) {
   if (raw == null || raw.toString().isEmpty) return '-';
   final n = num.tryParse(raw.toString().replaceAll(',', ''));
   if (n == null) return raw.toString();
@@ -13,11 +18,10 @@ String formatStockAmount(dynamic raw, {bool isForeign = false, int decimals = 2}
   final dotIdx = str.indexOf('.');
   final wholePart = dotIdx == -1 ? str : str.substring(0, dotIdx);
   final whole = wholePart.replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
         (m) => '${m[1]},',
-      );
-  final formatted = dotIdx == -1 ? whole : '$whole${str.substring(dotIdx)}';
-  return isForeign ? '$formatted\$' : '$formatted₮';
+  );
+  return dotIdx == -1 ? whole : '$whole${str.substring(dotIdx)}';
 }
 
 /// "2026/07/18", "2026.07.18", "2026-07-18" → DateTime (болохгүй бол null)

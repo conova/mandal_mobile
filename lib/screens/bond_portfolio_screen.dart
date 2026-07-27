@@ -511,7 +511,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     switch (_selectedFilter) {
       case 1:
         final yield_ = bond.rcvYield ?? 0;
-        amountText = formatStockAmount(yield_, isForeign: bond.isForeign);
+        amountText = formatStockAmount(yield_, isForeign: bond.curCode != 'MNT');
         // Өгөөж авсан бол ягаанаар тодруулна
         amountColor = yield_ > 0
             ? extendedColors.purple500
@@ -519,18 +519,18 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         subText = cnt > 0 ? l10n.timesReceived(cnt, total) : '$cnt/$total';
       case 2:
         final yield_ = bond.expYield ?? 0;
-        amountText = formatStockAmount(yield_, isForeign: bond.isForeign);
+        amountText = formatStockAmount(yield_, isForeign:  bond.curCode != 'MNT');
         amountColor = extendedColors.neutral100;
         subText = bond.term;
       default:
         // Эзэмшиж буй дүн = ширхэг × дундаж үнэ
         final bal = bond.currentBal ?? 0;
         final value = bal * (bond.avgPrice ?? 0);
-        amountText = formatStockAmount(value, isForeign: bond.isForeign);
+        amountText = formatStockAmount(value, isForeign:  bond.curCode != 'MNT');
         amountColor = extendedColors.neutral100;
         subText =
             '${l10n.interestRateShort} - ${formatIntRate(bond.intRate)} | '
-            '${formatStockAmount(bal, decimals: 0).replaceAll('₮', '')}${l10n.pieces}';
+            '${formatStockAmount(bal, decimals: 0, isForeign:  bond.curCode != 'MNT').replaceAll('₮', '')}${l10n.pieces}';
     }
 
     return Column(

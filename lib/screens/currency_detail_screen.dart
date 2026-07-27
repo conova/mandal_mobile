@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/circle_back_button.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
@@ -15,8 +16,15 @@ class CurrencyDetailScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final args = ModalRoute.of(context)?.settings.arguments as String?;
-    final currencyType = args == 'usd' ? CurrencyType.usd : CurrencyType.mnt;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    // Хуучин String args болон шинэ {'type', 'amount'} Map хоёуланг дэмжинэ
+    final typeArg = args is Map ? args['type']?.toString() : args as String?;
+    final headerAmount =
+        args is Map ? (args['amount'] as num?)?.toDouble() : null;
+    final currencyType =
+        typeArg == 'usd' || typeArg == 'dollar'
+            ? CurrencyType.usd
+            : CurrencyType.mnt;
 
     final isMnt = currencyType == CurrencyType.mnt;
     final accentColor = isMnt ? extendedColors.primaryMain : extendedColors.neutral100;
@@ -36,7 +44,8 @@ class CurrencyDetailScreen extends StatelessWidget {
               extendedColors: extendedColors,
               accentColor: accentColor,
               title: title,
-              amount: isMnt ? '0.00₮' : '0.00\$',
+              amount:
+                  '${formatStockAmount(headerAmount ?? 0, isForeign: !isMnt)}',
               currencySymbol: currencySymbol,
               isMnt: isMnt,
             ),

@@ -74,6 +74,9 @@ import 'screens/pep_definition_screen.dart';
 import 'screens/securities_agreement_screen.dart';
 import 'screens/document_verification_screen.dart';
 import 'screens/camera_overlay_screen.dart';
+import 'screens/child_account/child_account_document_screen.dart';
+import 'screens/child_account/child_account_register_screen.dart';
+import 'screens/child_account/child_account_success_screen.dart';
 import 'screens/education_course_screen.dart';
 import 'screens/education_guide_detail_screen.dart';
 import 'screens/education_lesson_screen.dart';
@@ -496,6 +499,12 @@ class MyApp extends StatelessWidget {
               '/onboarding_success': (context) =>
                   const OnboardingSuccessScreen(),
               '/education': (context) => const EducationScreen(),
+              '/child_account_register': (context) =>
+                  const ChildAccountRegisterScreen(),
+              '/child_account_document': (context) =>
+                  const ChildAccountDocumentScreen(),
+              '/child_account_success': (context) =>
+                  const ChildAccountSuccessScreen(),
               '/education_course': (context) =>
                   const EducationCourseScreen(),
               '/education_lesson': (context) =>

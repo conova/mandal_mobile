@@ -1483,4 +1483,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String timesRemaining(int cnt, int total) {
     return '$cnt/$total times remaining';
   }
+
+  @override
+  String get childRegisterTitle => 'Enter your child\'s registration number';
+
+  @override
+  String get childRegisterDesc =>
+      'Only a legal guardian can open a child\'s account.';
+
+  @override
+  String get childDocTitle => 'Upload a photo of the birth certificate';
+
+  @override
+  String get birthCertificate => 'Birth certificate';
+
+  @override
+  String get childSuccessDesc =>
+      'We are reviewing your child\'s information — the trading account will open within 2 business days.';
 }

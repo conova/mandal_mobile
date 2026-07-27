@@ -232,7 +232,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: const CustomSvgIcon('plus', size: 20),
               title: l10n.createNewAccount,
               subtitle: l10n.createNewAccountSubtitle,
-              onTap: () {},
+              onTap: () =>
+                  Navigator.pushNamed(context, '/child_account_register'),
             ),
 
             // Security Section

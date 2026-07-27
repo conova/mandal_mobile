@@ -46,6 +46,25 @@ class MarketInstrument {
   final double? dayTrade;
   final String divDate;
 
+  // /stocks/mystocks-ийн ашгийн талбарууд (бусад API-д null)
+  /// Ашиг +/- (PROFIT)
+  final double? profit;
+
+  /// Ашгийн хувь (UNREALIZEDRATE)
+  final double? unrealizedRate;
+
+  /// Нийт ашиг (TOTALPROFIT)
+  final double? totalProfit;
+
+  /// Хэрэгжсэн ашиг (REALIZED)
+  final double? realized;
+
+  /// Хэрэгжээгүй ашиг (UNREALIZED)
+  final double? unrealized;
+
+  /// Ногдол ашиг (DIVIDEND)
+  final double? dividend;
+
   // /stocks/mybonds-ийн нэмэлт талбарууд (бусад API-д null)
   /// Хүү авсан тоо / нийт авах тоо (DIVCNT / DIVTOTAL)
   final int? divCnt;
@@ -101,6 +120,12 @@ class MarketInstrument {
     this.avgTrade,
     this.dayTrade,
     this.divDate = '',
+    this.profit,
+    this.unrealizedRate,
+    this.totalProfit,
+    this.realized,
+    this.unrealized,
+    this.dividend,
     this.divCnt,
     this.divTotal,
     this.rcvYield,
@@ -155,6 +180,12 @@ class MarketInstrument {
       avgTrade: num_('AVGTRADE'),
       dayTrade: num_('DAYTRADE'),
       divDate: str('DIVDATE'),
+      profit: num_('PROFIT'),
+      unrealizedRate: num_('UNREALIZEDRATE'),
+      totalProfit: num_('TOTALPROFIT'),
+      realized: num_('REALIZED'),
+      unrealized: num_('UNREALIZED'),
+      dividend: num_('DIVIDEND'),
       divCnt: int.tryParse(str('DIVCNT')),
       divTotal: int.tryParse(str('DIVTOTAL')),
       rcvYield: num_('RCVYEILD'),

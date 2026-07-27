@@ -1477,4 +1477,21 @@ class AppLocalizationsMn extends AppLocalizations {
   String timesRemaining(int cnt, int total) {
     return '$cnt/$total удаа үлдсэн';
   }
+
+  @override
+  String get childRegisterTitle => 'Хүүхдийнхээ регистрийн дугаарыг оруулна уу';
+
+  @override
+  String get childRegisterDesc =>
+      'Хүүхдийн дансыг зөвхөн хууль ёсны асран хамгаалагч нь нээх боломжтой шүү.';
+
+  @override
+  String get childDocTitle => 'Төрсний гэрчилгээний зураг оруулна уу';
+
+  @override
+  String get birthCertificate => 'Төрсний гэрчилгээ';
+
+  @override
+  String get childSuccessDesc =>
+      'Таны хүүхдийн мэдээллийг шалгаж байх ажлын 2 өдөр дотор арилжааны данс нээгдэх болно.';
 }

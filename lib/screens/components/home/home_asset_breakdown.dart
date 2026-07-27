@@ -205,7 +205,11 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
               onTap: () => Navigator.pushNamed(
                 context,
                 meta.route,
-                arguments: type?.toLowerCase(),
+                // Дэлгэрэнгүй дэлгэцүүд header-ийн дүнг эндээс авна
+                arguments: {
+                  'type': type?.toLowerCase(),
+                  'amount': amount.toDouble(),
+                },
               ),
             );
           }),
