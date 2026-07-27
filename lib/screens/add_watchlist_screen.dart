@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/widgets/circle_back_button.dart';
@@ -7,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/empty_state.dart';
 
 class _AvailableStock {
   final String symbol;
@@ -30,11 +32,11 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
   List<_AvailableStock> _allStocks = const [];
   bool _isLoadingStocks = true;
 
-  // Track selected indices
+  // Track selected indices (includes already-added stocks, pre-checked)
   final Set<int> _selectedIndices = {};
 
-  /// Аль хэдийн watchlist-д нэмэгдсэн хувьцааны SYMBOL-ууд
-  final Set<String> _alreadyAddedSymbols = {};
+  /// Эхлээд watchlist-д байсан SYMBOL-ууд (save хийхэд дахин нэмэхгүй байхын тулд)
+  final Set<String> _originallyAddedSymbols = {};
 
   @override
   void initState() {
@@ -57,19 +59,32 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
     if (!mounted) return;
     final available = results[0];
     final current = results[1];
+
+    final stocks = available
+        .map((row) => _AvailableStock(
+      symbol: row['SYMBOL']?.toString() ?? '',
+      name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
+    ))
+        .where((s) => s.symbol.isNotEmpty)
+        .toList();
+
+    final originallyAdded = current
+        .map((row) => row['SYMBOL']?.toString() ?? '')
+        .where((s) => s.isNotEmpty)
+        .toSet();
+
     setState(() {
-      _allStocks = available
-          .map((row) => _AvailableStock(
-                symbol: row['SYMBOL']?.toString() ?? '',
-                name: (row['STOCKNAME'] ?? row['COMPNAME'])?.toString() ?? '',
-              ))
-          .where((s) => s.symbol.isNotEmpty)
-          .toList();
-      _alreadyAddedSymbols
+      _allStocks = stocks;
+      _originallyAddedSymbols
         ..clear()
-        ..addAll(current
-            .map((row) => row['SYMBOL']?.toString() ?? '')
-            .where((s) => s.isNotEmpty));
+        ..addAll(originallyAdded);
+      // Аль хэдийн нэмэгдсэн хувьцаануудыг selected болгож эхлүүлнэ
+      _selectedIndices
+        ..clear()
+        ..addAll([
+          for (int i = 0; i < stocks.length; i++)
+            if (originallyAdded.contains(stocks[i].symbol)) i,
+        ]);
       _isLoadingStocks = false;
     });
   }
@@ -95,44 +110,61 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
 
   bool _isSaving = false;
 
+  bool get _hasChanges {
+    final selectedSymbols =
+    _selectedIndices.map((i) => _allStocks[i].symbol).toSet();
+    return !setEquals(selectedSymbols, _originallyAddedSymbols);
+  }
+
   Future<void> _handleSave() async {
-    if (_isSaving || _selectedIndices.isEmpty) return;
+    if (_isSaving || !_hasChanges) return;
     setState(() => _isSaving = true);
     final auth = context.read<AuthService>();
+    final l10n = AppLocalizations.of(context)!;
+
     final selectedSymbols =
-        _selectedIndices.map((i) => _allStocks[i].symbol).toList();
+    _selectedIndices.map((i) => _allStocks[i].symbol).toSet();
+
+    final toAdd = selectedSymbols.difference(_originallyAddedSymbols).toList();
+    final toRemove =
+    _originallyAddedSymbols.difference(selectedSymbols).toList();
 
     final errors = <String>[];
-    for (final symbol in selectedSymbols) {
+
+    for (final symbol in toAdd) {
       try {
         await auth.addToWatchlist(symbol);
       } catch (e) {
-        errors.add(
-          '$symbol: ${e.toString().replaceFirst('Exception: ', '')}',
-        );
+        errors.add('$symbol: ${e.toString().replaceFirst('Exception: ', '')}');
+      }
+    }
+    for (final symbol in toRemove) {
+      try {
+        await auth.removeFromWatchlist(symbol);
+      } catch (e) {
+        errors.remove('$symbol: ${e.toString().replaceFirst('Exception: ', '')}');
       }
     }
 
     if (!mounted) return;
     setState(() => _isSaving = false);
 
+    final totalAttempted = toAdd.length + toRemove.length;
+    final succeeded = totalAttempted - errors.length;
+
     if (errors.isEmpty) {
-      CustomSnackbar.show(
-        context,
-        message: '${selectedSymbols.length} хувьцаа нэмэгдлээ',
-      );
+      CustomSnackbar.show(context, message: '${l10n.listUpdated}');
       Navigator.pop(context, true);
-    } else if (errors.length == selectedSymbols.length) {
+    } else if (errors.length == totalAttempted) {
       CustomSnackbar.show(
         context,
-        message: 'Алдаа: ${errors.first}',
+        message: '${l10n.error} ${errors.first}',
         type: CustomSnackbarType.error,
       );
     } else {
       CustomSnackbar.show(
         context,
-        message:
-            '${selectedSymbols.length - errors.length} нэмэгдлээ, ${errors.length} алдаатай',
+        message: '$succeeded ${l10n.changed}, ${errors.length} ${l10n.hasError}',
         type: CustomSnackbarType.info,
       );
       Navigator.pop(context, true);
@@ -145,7 +177,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final filteredIndices = _filteredIndices;
-    final hasSelections = _totalSelected > 0;
+    final hasChanges = _hasChanges;
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -191,7 +223,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding:
-                                    const EdgeInsets.symmetric(vertical: 8),
+                                const EdgeInsets.symmetric(vertical: 8),
                               ),
                             ),
                           ),
@@ -208,15 +240,23 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
               child: _isLoadingStocks
                   ? const Center(child: CircularProgressIndicator())
                   : _allStocks.isEmpty
-                      ? Center(
-                          child: Text(
-                            'Жагсаалт хоосон байна',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: extendedColors.neutral300,
-                            ),
-                          ),
-                        )
-                      : ListView.separated(
+                  ? Center(
+                child: EmptyState(
+                  icon: 'star',
+                  title: l10n.emptyWatchlist,
+                  hint: l10n.emptyWatchlistHint,
+                ),
+              )
+                  : filteredIndices.isEmpty
+                  ? Padding(
+                padding: EdgeInsets.only(top: 120),
+                child: EmptyState(
+                  icon: 'search-icon',
+                  title: l10n.noResults,
+                  hint: l10n.noResultsHint,
+                ),
+              )
+                  : ListView.separated(
                 padding: const EdgeInsets.only(bottom: 80),
                 itemCount: filteredIndices.length,
                 separatorBuilder: (context, index) => Divider(
@@ -228,22 +268,19 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                 itemBuilder: (context, index) {
                   final stockIndex = filteredIndices[index];
                   final stock = _allStocks[stockIndex];
-                  final isSelected = _selectedIndices.contains(stockIndex);
-                  final isAlreadyAdded =
-                      _alreadyAddedSymbols.contains(stock.symbol);
+                  final isSelected =
+                  _selectedIndices.contains(stockIndex);
 
                   return GestureDetector(
-                    onTap: isAlreadyAdded
-                        ? null
-                        : () {
-                            setState(() {
-                              if (isSelected) {
-                                _selectedIndices.remove(stockIndex);
-                              } else {
-                                _selectedIndices.add(stockIndex);
-                              }
-                            });
-                          },
+                    onTap: () {
+                      setState(() {
+                        if (isSelected) {
+                          _selectedIndices.remove(stockIndex);
+                        } else {
+                          _selectedIndices.add(stockIndex);
+                        }
+                      });
+                    },
                     child: Container(
                       color: isSelected
                           ? extendedColors.primary100
@@ -260,52 +297,47 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                                 Flexible(
                                   child: Text(
                                     stock.symbol,
-                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                    style: theme
+                                        .textTheme.bodyLarge
+                                        ?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color: isAlreadyAdded
-                                          ? extendedColors.neutral300
-                                          : extendedColors.neutral100,
+                                      color: extendedColors
+                                          .neutral100,
                                     ),
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow:
+                                    TextOverflow.ellipsis,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 Flexible(
                                   child: Text(
                                     stock.name,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: AppTextStyles.light,
-                                      color: isAlreadyAdded
-                                          ? extendedColors.neutral300
-                                          : extendedColors.neutral200,
+                                    style: theme
+                                        .textTheme.bodyMedium
+                                        ?.copyWith(
+                                      fontWeight:
+                                      AppTextStyles.light,
+                                      color: extendedColors
+                                          .neutral200,
                                     ),
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow:
+                                    TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          if (isAlreadyAdded)
-                            // Аль хэдийн нэмэгдсэн → "Нэмэгдсэн" пилл
-                            Icon(
-                              Icons.check,
-                              color: extendedColors.primaryMain,
-                              size: 24,
-                            )
-                          else if (isSelected)
-                            Icon(
-                              Icons.check,
-                              color: extendedColors.primaryMain,
-                              size: 24,
-                            )
-                          else
-                            Icon(
-                              Icons.add,
-                              color: extendedColors.neutral300,
-                              size: 24,
-                            ),
+                          Icon(
+                            isSelected
+                                ? Icons.check
+                                : Icons.add,
+                            color: isSelected
+                                ? extendedColors.primaryMain
+                                : extendedColors.neutral300,
+                            size: 24,
+                          ),
                         ],
                       ),
                     ),
@@ -321,21 +353,21 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                 width: double.infinity,
                 height: 52,
                 child: Material(
-                  color: hasSelections
+                  color: hasChanges
                       ? extendedColors.primaryMain
                       : extendedColors.bgTertiary,
                   borderRadius: BorderRadius.circular(26),
                   child: InkWell(
-                    onTap: (hasSelections && !_isSaving) ? _handleSave : null,
+                    onTap: (hasChanges && !_isSaving) ? _handleSave : null,
                     borderRadius: BorderRadius.circular(26),
                     child: Center(
                       child: Text(
                         _isSaving
-                            ? 'Хадгалж байна...'
-                            : 'Хадгалах ($_totalSelected)',
+                            ? l10n.saving
+                            : '${l10n.save} ($_totalSelected)',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: AppTextStyles.regular,
-                          color: hasSelections
+                          color: hasChanges
                               ? Colors.white
                               : extendedColors.neutral200,
                         ),

@@ -137,6 +137,7 @@
     "receiver": "Хүлээн авагч",
     "receiverHint": "Овог нэр гэсэн дарааллаар бичнэ",
     "save": "Хадгалах",
+    "saving": "Хадгалж байна...",
     "growth": "Өсөлт",
     "lastMonth": "Сүүлийн 1 сар",
     "cash": "Бэлэн мөнгө",
@@ -486,5 +487,9 @@
     "noStocksYet": "Танд хувьцаа байхгүй байна",
     "startInvestingPrompt": "Хөрөнгө оруулалт хийж эхлэх үү?",
     "timesReceived": "{cnt}/{total} удаа авсан",
-    "timesRemaining": "{cnt}/{total} удаа үлдсэн"
+    "timesRemaining": "{cnt}/{total} удаа үлдсэн",
+    "error": "Алдаа",
+    "listUpdated": "Жагсаалт шинэчлэгдлээ",
+    "changed": "Өөрчлөгдлөө",
+    "hasError": "Алдаатай"
 }

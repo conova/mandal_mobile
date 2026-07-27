@@ -928,6 +928,12 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
   /// No description provided for @growth.
   ///
   /// In en, this message translates to:
@@ -2901,6 +2907,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{cnt}/{total} times remaining'**
   String timesRemaining(int cnt, int total);
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @listUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'List updated'**
+  String get listUpdated;
+
+  /// No description provided for @changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed'**
+  String get changed;
+
+  /// No description provided for @hasError.
+  ///
+  /// In en, this message translates to:
+  /// **'Has error'**
+  String get hasError;
 }
 
 class _AppLocalizationsDelegate

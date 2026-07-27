@@ -153,16 +153,6 @@ class MyBondCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20,),
-          SizedBox(
-            height: 1,
-            width: double.infinity,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: extendedColors.neutral400,
-              ),
-            )
-          ),
         ],
       ),
     );

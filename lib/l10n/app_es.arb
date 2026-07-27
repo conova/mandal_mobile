@@ -27,5 +27,10 @@
     "languageLabel": "Idioma",
     "darkTheme": "Tema Oscuro",
     "lightTheme": "Tema Claro",
+    "saving": "Guardando...",
+    "error": "Error",
+    "listUpdated": "Lista actualizada",
+    "changed": "Cambiado",
+    "hasError": "Tiene error",
     "helloWorld": "¡Hola Mundo!"
 }
