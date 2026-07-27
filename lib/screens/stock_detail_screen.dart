@@ -137,6 +137,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _checkWatchlist();
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
 

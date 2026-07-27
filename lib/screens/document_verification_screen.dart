@@ -447,7 +447,13 @@ class _DocItem extends StatelessWidget {
   ///   • локал path (камераас дөнгөж авсан, mobile) → Image.file
   ///   • 'done' sentinel эсвэл зураггүй → камерын icon
   Widget _buildThumbnail(ExtendedColors extendedColors) {
-    final placeholder = CustomSvgIcon('camera-plus');
+    final placeholder = Padding(
+      padding: EdgeInsets.all(20),
+      child: CustomSvgIcon(
+        'camera-plus',
+        color: extendedColors.neutral300,
+      ),
+    );
 
     final path = imagePath;
     if (!isDone || path == null || path == 'done') return placeholder;
