@@ -236,7 +236,7 @@ class _BondMainScreenState extends State<BondMainScreen>
     ThemeData theme,
   ) {
     return ListView(
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50, top: 16),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
       children: [
         PledgeBondBanner(
           onPledgePressed: () {

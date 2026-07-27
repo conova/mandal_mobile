@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../common/stock_row_format.dart';
 import '../models/market_instrument.dart';
 import '../services/auth_service.dart';
+import '../widgets/custom_svg_icon.dart';
 import '../widgets/stock_price_row.dart';
 import '../widgets/custom_button.dart';
 
@@ -189,13 +190,13 @@ class _StockScreenState extends State<StockScreen> {
                             color: theme.disabledColor,
                           ),
                           border: InputBorder.none,
-                          icon: Icon(Icons.search, color: theme.disabledColor),
+                          icon: CustomSvgIcon('search-icon', color: extendedColors.neutral100),
                           suffixIcon: _searchQuery.isNotEmpty
                               ? IconButton(
-                                  icon: Icon(
-                                    Icons.close,
-                                    size: 18,
-                                    color: theme.disabledColor,
+                                  icon: CustomSvgIcon(
+                                    'x-icon',
+                                    size: 24,
+                                    color: extendedColors.neutral100,
                                   ),
                                   onPressed: () {
                                     _searchController.clear();
@@ -388,7 +389,7 @@ class _StockScreenState extends State<StockScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           EmptyState(
-                            icon: Icons.search,
+                            icon: 'search-icon',
                             title: locale.noResults,
                             hint: locale.noResultsHint,
                           ),
@@ -399,7 +400,7 @@ class _StockScreenState extends State<StockScreen> {
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                padding: const EdgeInsets.only(bottom: 55),
                 sliver: SliverList.builder(
                   itemCount: _filteredStocks.length,
                   itemBuilder: (context, i) {

@@ -444,6 +444,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get saving => 'Guardando...';
+
+  @override
   String get growth => 'Growth';
 
   @override
@@ -1489,4 +1492,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String timesRemaining(int cnt, int total) {
     return '$cnt/$total times remaining';
   }
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get listUpdated => 'Lista actualizada';
+
+  @override
+  String get changed => 'Cambiado';
+
+  @override
+  String get hasError => 'Tiene error';
 }

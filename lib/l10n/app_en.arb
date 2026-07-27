@@ -145,6 +145,7 @@
     "save": "Save",
     "summaryReport": "Summary Report",
     "totalAssets": "Total Assets",
+    "saving": "Saving...",
     "growth": "Growth",
     "lastMonth": "Last 1 month",
     "cash": "Cash",
@@ -562,5 +563,9 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "error": "Error",
+    "listUpdated": "List updated",
+    "changed": "Changed",
+    "hasError": "Has error"
 }

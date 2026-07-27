@@ -442,6 +442,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get save => 'Хадгалах';
 
   @override
+  String get saving => 'Хадгалж байна...';
+
+  @override
   String get growth => 'Өсөлт';
 
   @override
@@ -1483,4 +1486,16 @@ class AppLocalizationsMn extends AppLocalizations {
   String timesRemaining(int cnt, int total) {
     return '$cnt/$total удаа үлдсэн';
   }
+
+  @override
+  String get error => 'Алдаа';
+
+  @override
+  String get listUpdated => 'Жагсаалт шинэчлэгдлээ';
+
+  @override
+  String get changed => 'Өөрчлөгдлөө';
+
+  @override
+  String get hasError => 'Алдаатай';
 }

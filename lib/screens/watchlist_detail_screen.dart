@@ -273,7 +273,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 64),
               child: EmptyState(
-                icon: Icons.star_border,
+                icon: 'star',
                 title: AppLocalizations.of(context)!.emptyWatchlist,
                 hint: AppLocalizations.of(context)!.emptyWatchlistHint,
               ),
