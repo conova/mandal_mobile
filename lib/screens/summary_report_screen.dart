@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -205,7 +206,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
               : extendedColors.neutral400,
           width: selected ? 7 : 2,
         ),
-        color: Colors.white,
+        color: extendedColors.bgBase,
       ),
     );
   }
@@ -359,10 +360,13 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        title: Text(
-          l10n.summaryReport,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: extendedColors.neutral100,
+        title: Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Text(
+            l10n.summaryReport,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: extendedColors.neutral100,
+            ),
           ),
         ),
         centerTitle: true,
@@ -451,13 +455,14 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
                         color: theme.dividerColor,
                       ),
                       const SizedBox(width: 8),
-                      Icon(
+                      CustomSvgIcon(
                         isPositive
-                            ? Icons.arrow_drop_up
-                            : Icons.arrow_drop_down,
+                            ? 'button-up'
+                            : 'button-down',
                         color: changeColor,
-                        size: 20,
+                        size: 6,
                       ),
+                      const SizedBox(width: 4),
                       Text(
                         '${pct.abs().toStringAsFixed(2)}%',
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -485,7 +490,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
                   _buildTimeFilters(l10n, theme, extendedColors),
                   const SizedBox(height: 32),
                   _buildAssetTable(l10n, theme, dates),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 36),
+                  Divider(height: 1, color: extendedColors.neutral500,),
+                  const SizedBox(height: 36),
                   _buildCashFlowSection(l10n, theme),
                 ],
               ),
@@ -612,27 +619,31 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
             label: l10n.type,
             val1: first,
             val2: hasTwo ? last : '',
-            isHeader: true,
+            isOdd: true,
           ),
           SummaryTableRow(
             label: l10n.totalAssets,
             val1: _money(_totalOf(first)),
             val2: col2('total'),
+            isOdd: false,
           ),
           SummaryTableRow(
             label: l10n.cash,
             val1: _money(_typeOf(first, 'cash')),
             val2: col2('cash'),
+            isOdd: true,
           ),
           SummaryTableRow(
             label: l10n.stocks,
             val1: _money(_typeOf(first, 'stock')),
             val2: col2('stock'),
+            isOdd: false,
           ),
           SummaryTableRow(
             label: l10n.bonds,
             val1: _money(_typeOf(first, 'bond')),
             val2: col2('bond'),
+            isOdd: true,
           ),
         ],
       ),
@@ -646,27 +657,32 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         SummaryTableRow(
           label: l10n.incomeExpense,
           val1: l10n.selectedPeriod,
-          isHeader: true,
+          isOdd: true,
         ),
         SummaryTableRow(
           label: l10n.incomeSalary,
           val1: _money(_txnAmount('cash')),
+          isOdd: false,
         ),
         SummaryTableRow(
           label: l10n.stockProfit,
           val1: _money(_txnAmount('stock')),
+          isOdd: true,
         ),
         SummaryTableRow(
           label: l10n.interestIncome,
           val1: _money(_txnAmount('rateincome')),
+          isOdd: false,
         ),
         SummaryTableRow(
           label: l10n.bondPrincipal,
           val1: _money(_txnAmount('bond')),
+          isOdd: true,
         ),
         SummaryTableRow(
           label: l10n.dividendProfit,
           val1: _money(_txnAmount('dividend')),
+          isOdd: false,
         ),
       ],
     );

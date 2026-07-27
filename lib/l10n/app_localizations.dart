@@ -736,6 +736,12 @@ abstract class AppLocalizations {
   /// **'Connected Devices'**
   String get connectedDevices;
 
+  /// No description provided for @noConnectedDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no Connected Devices'**
+  String get noConnectedDevices;
+
   /// No description provided for @devicesCount.
   ///
   /// In en, this message translates to:
@@ -2103,6 +2109,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Registration progress: {percent}%'**
   String registrationProgress(String percent);
+
+  /// No description provided for @registrationProgressText.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration progress: '**
+  String get registrationProgressText;
 
   /// No description provided for @start.
   ///

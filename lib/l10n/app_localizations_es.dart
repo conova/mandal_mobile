@@ -343,6 +343,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get connectedDevices => 'Connected Devices';
 
   @override
+  String get noConnectedDevices => 'There is no Connected Devices';
+
+  @override
   String get devicesCount => '2 devices';
 
   @override
@@ -1065,6 +1068,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String registrationProgress(String percent) {
     return 'Registration progress: $percent%';
   }
+
+  @override
+  String get registrationProgressText => 'Registration progress: ';
 
   @override
   String get start => 'Start';
