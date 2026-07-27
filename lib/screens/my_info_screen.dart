@@ -4,6 +4,7 @@ import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/validators.dart';
 import '../l10n/app_localizations.dart';
+import '../models/sub_account.dart';
 import '../services/auth_service.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
@@ -29,6 +30,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     // notifyListeners()-р дамжаад автомат шинэчлэгдэнэ.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      // Хүүхдийн мэдээлэл харж байгаа бол info endpoint дуудахгүй
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args?['child'] != null) return;
       context.read<AuthService>().refreshUserInfo();
     });
   }
@@ -116,9 +121,22 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
 
+    // Хүүхдийн данс args-аар ирсэн бол түүний мэдээллийг харуулна
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final child = args?['child'] as SubAccount?;
+
     // Cache-аас шууд авах. Хоосон бол loader харагдана.
     final userInfo = context.watch<AuthService>().userInfo;
-    final isLoading = userInfo == null;
+    final isLoading = child == null && userInfo == null;
+
+    // Харуулах утгууд — хүүхэд бол subAcnts-ийн, үгүй бол өөрийн мэдээлэл
+    final lastName = child?.lastName ?? userInfo?['lastName']?.toString();
+    final firstName = child?.firstName ?? userInfo?['firstName']?.toString();
+    final regNo = child?.register ?? userInfo?['registerNumber']?.toString();
+    final email = child?.email ?? userInfo?['email']?.toString();
+    final phone = child?.phone ?? userInfo?['phone']?.toString();
+    final address = child?.address ?? userInfo?['address']?.toString();
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -145,7 +163,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                 children: [
                   const SizedBox(height: 10,),
                   Text(
-                    l10n.myInfo,
+                    // Хүүхдийн мэдээлэл үзэж байгаа бол "Миний" гэхгүй
+                    child != null ? l10n.information : l10n.myInfo,
                     style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -153,40 +172,46 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   const SizedBox(height: 22),
                   InfoCard(
                     label: l10n.surname,
-                    value: userInfo['lastName']?.toString() ?? '-',
+                    value: lastName ?? '-',
                   ),
                   InfoCard(
                     label: l10n.firstName,
-                    value: userInfo['firstName']?.toString() ?? '-',
+                    value: firstName ?? '-',
                   ),
                   InfoCard(
                     label: l10n.regNo,
-                    value: userInfo['registerNumber']?.toString() ?? '-',
+                    value: regNo ?? '-',
                   ),
                   InfoCard(
                     label: l10n.email,
-                    value: userInfo['email']?.toString() ?? '-',
-                    onTap: () =>
-                        _showEmailDialog(userInfo['email']?.toString()),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (userInfo['emailVerified'] == false)
-                          const CustomSvgIcon('info-circle', size: 20, color: AppColors.yellowMain,),
-                        const SizedBox(width: 8),
-                        const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
-                      ],
-                    ),
+                    value: email ?? '-',
+                    // Хүүхдийн мэдээлэл зөвхөн харах горимтой — засварлахгүй
+                    onTap: child == null ? () => _showEmailDialog(email) : null,
+                    trailing: child != null
+                        ? null
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (userInfo?['emailVerified'] == false)
+                                const CustomSvgIcon('info-circle', size: 20, color: AppColors.yellowMain,),
+                              const SizedBox(width: 8),
+                              const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
+                            ],
+                          ),
                   ),
                   InfoCard(
                     label: l10n.phoneNumber,
-                    value: userInfo['phone']?.toString() ?? '-',
-                    trailing: const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
+                    value: phone ?? '-',
+                    trailing: child != null
+                        ? null
+                        : const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
                   ),
                   InfoCard(
                     label: l10n.address,
-                    value: userInfo['address']?.toString() ?? '-',
-                    trailing: const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
+                    value: address ?? '-',
+                    trailing: child != null
+                        ? null
+                        : const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
                   ),
                   const SizedBox(height: 40),
                 ],

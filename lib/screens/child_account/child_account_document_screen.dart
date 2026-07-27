@@ -27,7 +27,11 @@ class _ChildAccountDocumentScreenState
     final result = await Navigator.pushNamed(
       context,
       '/camera_overlay',
-      arguments: 'id',
+      arguments: {
+        'type': 'id',
+        // Header дээр "Төрсний гэрчилгээ" гэж гарна
+        'title': AppLocalizations.of(context)!.birthCertificate,
+      },
     );
     if (result != null && mounted) {
       setState(() => _photoResult = result);
@@ -106,6 +110,7 @@ class _ChildAccountDocumentScreenState
                     Container(
                       width: 64,
                       height: 64,
+                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                       decoration: BoxDecoration(
                         color: extendedColors.bgSecondary,
                         borderRadius: BorderRadius.circular(16),
@@ -127,7 +132,6 @@ class _ChildAccountDocumentScreenState
                               color: extendedColors.neutral100,
                             ),
                           ),
-                          const SizedBox(height: 4),
                           Text(
                             hasPhoto ? l10n.success : l10n.addPhoto,
                             style: theme.textTheme.bodyMedium?.copyWith(

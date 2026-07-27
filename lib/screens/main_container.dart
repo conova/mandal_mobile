@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import '../services/auth_service.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../l10n/app_localizations.dart';
 import 'home_screen.dart';
@@ -51,9 +53,18 @@ class _MainContainerState extends State<MainContainer> {
     final theme = Theme.of(context);
     final footerColor = theme.extension<ExtendedColors>()?.footerColor ?? Colors.black;
 
+    // Профайл (өөрийн/хүүхдийн) солигдоход бүх tab-ийн state дахин үүсэж,
+    // дэлгэц бүр шинэ token-той датагаа дахин татна
+    final profileKey =
+        context.watch<AuthService>().activeSubAccount?.custId ?? 'own';
+
     return Scaffold(
       extendBody: true,
-      body: IndexedStack(index: _selectedIndex, children: _screens),
+      body: IndexedStack(
+        key: ValueKey(profileKey),
+        index: _selectedIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),

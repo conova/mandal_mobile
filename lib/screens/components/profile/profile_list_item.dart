@@ -53,16 +53,14 @@ class ProfileListItem extends StatelessWidget {
           title: Text(
             title,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w300,
               color: titleColor ?? extendedColors.neutral100,
             ),
           ),
           subtitle: subtitle != null
               ? Text(
                   subtitle!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontSize: 12,
+                  style: theme.textTheme.labelLarge?.copyWith(
                     color: extendedColors.neutral200,
                   ),
                 )

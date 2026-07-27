@@ -29,7 +29,7 @@ class ChildAccountSuccessScreen extends StatelessWidget {
               children: [
                 const Spacer(flex: 2),
                 Image.asset(
-                  'assets/images/success_check.png',
+                  'assets/images/success.png',
                   height: 220,
                   errorBuilder: (_, _, _) => Icon(
                     Icons.check_circle,
@@ -40,7 +40,7 @@ class ChildAccountSuccessScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 Text(
                   l10n.registrationSuccess,
-                  style: theme.textTheme.headlineLarge?.copyWith(
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
                   ),

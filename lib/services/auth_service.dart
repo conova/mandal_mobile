@@ -9,6 +9,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:dio/dio.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../common/api_message.dart';
+import '../models/sub_account.dart';
 import '../config/api_config.dart';
 
 /// Login хариуны төрөл
@@ -109,6 +110,49 @@ class AuthService with ChangeNotifier {
       v is Map ? Map<String, dynamic>.from(v) : null;
 
   Map<String, dynamic>? get _kyc => _asMap(_userInfo?['kyc']);
+
+  /// Home дээр сонгогдсон хүүхдийн данс (null — өөрийн данс)
+  SubAccount? _activeSubAccount;
+  SubAccount? get activeSubAccount => _activeSubAccount;
+
+  /// Профайл солих — auth/switch_profile API дуудаж шинэ token авна
+  /// (хариу нь refresh_token-тэй ижил бүтэцтэй). [child] null бол
+  /// өөрийн данс руу буцна. Өөрийн info кэшийг (нэр, subAcnts) хөндөхгүй.
+  Future<void> switchProfile(SubAccount? child) async {
+    final custId = child?.custId ?? _uid;
+    if (custId == null || custId.isEmpty) {
+      throw Exception('cust_id олдсонгүй');
+    }
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.switchProfile,
+        data: {
+          'api': 'switch_profile',
+          'data': {'cust_id': custId},
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() != '0') {
+        throw Exception(apiMessage(body) ?? 'Профайл солиход алдаа гарлаа');
+      }
+      final data = body['data'] as Map<String, dynamic>;
+      await saveTokens(
+        accessToken: data['token'],
+        refreshToken: data['refreshToken'] ?? _refreshToken ?? '',
+      );
+      _activeSubAccount = child;
+      notifyListeners();
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Бүртгэлтэй хүүхдийн (дэд) данснууд — /user/info-ийн `subAcnts`
+  List<SubAccount> get subAccounts {
+    final raw = _userInfo?['subAcnts'];
+    if (raw is! List) return const [];
+    return SubAccount.listFromJson(raw);
+  }
 
   /// Үнэт цаасны гэрээ зурсан эсэх
   bool get hasAgreement => _parseBool(_kyc?['agreement']);
