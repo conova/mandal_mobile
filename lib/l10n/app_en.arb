@@ -564,7 +564,7 @@
     "error": "Error",
     "listUpdated": "List updated",
     "changed": "Changed",
-    "hasError": "Has error"
+    "hasError": "Has error",
     "childRegisterTitle": "Enter your child's registration number",
     "childRegisterDesc": "Only a legal guardian can open a child's account.",
     "childDocTitle": "Upload a photo of the birth certificate",

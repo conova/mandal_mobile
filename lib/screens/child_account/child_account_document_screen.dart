@@ -110,7 +110,7 @@ class _ChildAccountDocumentScreenState
                         color: extendedColors.bgSecondary,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: CustomSvgIcon('camera-plus'),
+                      child: CustomSvgIcon('camera-plus', size: 24,),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
