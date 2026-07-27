@@ -6,6 +6,7 @@ import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
 import '../../../widgets/custom_snackbar.dart';
+import 'profile_switcher.dart';
 
 class HomeHeader extends StatefulWidget implements PreferredSizeWidget {
   final double showSummaryOpacity;
@@ -47,10 +48,14 @@ class _HomeHeaderState extends State<HomeHeader> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
 
+    // Хүүхдийн данс идэвхтэй бол түүний дүнг харуулна
+    final activeChild = context.watch<AuthService>().activeSubAccount;
+    final displayTotal = activeChild?.amount ?? _totalAssets;
+
     // "50,628,000.53₮" → бүхэл ба бутархай хэсгийг тусад нь загварчилна
-    final formatted = _totalAssets == null
+    final formatted = displayTotal == null
         ? ''
-        : formatStockAmount(_totalAssets, decimals: 2);
+        : formatStockAmount(displayTotal, decimals: 2);
     final dotIdx = formatted.indexOf('.');
     final whole = dotIdx == -1 ? formatted : formatted.substring(0, dotIdx);
     final fraction = dotIdx == -1 ? '' : formatted.substring(dotIdx);
@@ -58,6 +63,15 @@ class _HomeHeaderState extends State<HomeHeader> {
     return AppBar(
       backgroundColor: extendedColors.bgBase,
       elevation: 0,
+      // Зүүн талд профайл солигч (өөрийн/хүүхдийн данс)
+      leadingWidth: 84,
+      leading: const Padding(
+        padding: EdgeInsets.only(left: 16),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: ProfileSwitcher(),
+        ),
+      ),
       // Scroll хийхэд өнгө өөрчлөгдөхөөс сэргийлнэ (M3 surface tint)
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
@@ -83,7 +97,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            if (_totalAssets != null)
+            if (displayTotal != null)
               Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.baseline,

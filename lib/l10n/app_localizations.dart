@@ -2961,6 +2961,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We are reviewing your child\'s information — the trading account will open within 2 business days.'**
   String get childSuccessDesc;
+
+  /// No description provided for @information.
+  ///
+  /// In en, this message translates to:
+  /// **'Information'**
+  String get information;
 }
 
 class _AppLocalizationsDelegate

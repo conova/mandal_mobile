@@ -1515,4 +1515,7 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get childSuccessDesc =>
       'Таны хүүхдийн мэдээллийг шалгаж байх ажлын 2 өдөр дотор арилжааны данс нээгдэх болно.';
+
+  @override
+  String get information => 'Мэдээлэл';
 }

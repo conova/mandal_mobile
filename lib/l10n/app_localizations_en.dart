@@ -1519,4 +1519,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get childSuccessDesc =>
       'We are reviewing your child\'s information — the trading account will open within 2 business days.';
+
+  @override
+  String get information => 'Information';
 }

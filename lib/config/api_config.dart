@@ -141,6 +141,9 @@ class ApiConfig {
 
   // ─── Legacy ───
   static const String refreshToken = '/bdc/api/auth/refresh.php';
+
+  /// Профайл солих (өөрийн ↔ хүүхдийн данс) — refresh-тэй ижил хариу
+  static const String switchProfile = '/bdc/api/auth/switch_profile';
   static const String profile = '/bdc/api/auth/profile.php';
   static const String accounts = '/bdc/api/auth/accounts.php';
 }

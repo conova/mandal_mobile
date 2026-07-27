@@ -21,11 +21,20 @@ class _CameraOverlayScreenState extends State<CameraOverlayScreen> {
   bool _isCameraInitialized = false;
   String _type = 'id';
 
+  /// Гарчгийг дарж бичих утга (null бол type-аас default гарчиг гарна)
+  String? _customTitle;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isCameraInitialized && _controller == null) {
-      _type = ModalRoute.of(context)!.settings.arguments as String? ?? 'id';
+      final args = ModalRoute.of(context)!.settings.arguments;
+      if (args is Map) {
+        _type = args['type']?.toString() ?? 'id';
+        _customTitle = args['title']?.toString();
+      } else {
+        _type = args as String? ?? 'id';
+      }
       _initCamera();
     }
   }
@@ -82,7 +91,8 @@ class _CameraOverlayScreenState extends State<CameraOverlayScreen> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    final String title = _type == 'selfie' ? l10n.selfiePhoto : l10n.idFront;
+    final String title =
+        _customTitle ?? (_type == 'selfie' ? l10n.selfiePhoto : l10n.idFront);
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,

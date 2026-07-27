@@ -8,11 +8,16 @@ class ProfileHeader extends StatelessWidget {
   /// null эсвэл хоосон бол одоогийн байдлаар person icon харуулна.
   final String? photoUrl;
 
+  /// Өгвөл зураг/person icon-ий оронд энэ widget-ийг харуулна
+  /// (жишээ нь хүүхдийн үсэгтэй InitialAvatar)
+  final Widget? avatar;
+
   const ProfileHeader({
     super.key,
     required this.name,
     required this.phoneNumber,
     this.photoUrl,
+    this.avatar,
   });
 
   @override
@@ -29,6 +34,9 @@ class ProfileHeader extends StatelessWidget {
     return Center(
       child: Column(
         children: [
+          if (avatar != null)
+            avatar!
+          else
           CircleAvatar(
             radius: 45,
             backgroundColor: colorScheme.surfaceContainerHighest,

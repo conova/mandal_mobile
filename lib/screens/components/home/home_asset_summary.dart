@@ -71,10 +71,16 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    final (whole, decimal) = _splitAmount(_summary.totalAssets);
-    final changeStr = _formatChange(_summary.totalChange);
-    final percentStr = '${_summary.changePercent.abs().toStringAsFixed(2)}%';
-    final isUp = _summary.totalChange >= 0;
+    // Хүүхдийн данс идэвхтэй бол түүний нийт дүнг (өөрчлөлт 0) харуулна
+    final activeChild = context.watch<AuthService>().activeSubAccount;
+    final totalAssets = activeChild?.amount ?? _summary.totalAssets;
+    final totalChange = activeChild == null ? _summary.totalChange : 0.0;
+    final changePercent = activeChild == null ? _summary.changePercent : 0.0;
+
+    final (whole, decimal) = _splitAmount(totalAssets);
+    final changeStr = _formatChange(totalChange);
+    final percentStr = '${changePercent.abs().toStringAsFixed(2)}%';
+    final isUp = totalChange >= 0;
     final changeColor =
         isUp ? extendedColors.primaryMain : extendedColors.red;
 
