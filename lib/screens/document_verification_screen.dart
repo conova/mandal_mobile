@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
@@ -446,10 +447,7 @@ class _DocItem extends StatelessWidget {
   ///   • локал path (камераас дөнгөж авсан, mobile) → Image.file
   ///   • 'done' sentinel эсвэл зураггүй → камерын icon
   Widget _buildThumbnail(ExtendedColors extendedColors) {
-    final placeholder = Icon(
-      Icons.camera_alt_outlined,
-      color: extendedColors.neutral300,
-    );
+    final placeholder = CustomSvgIcon('camera-plus');
 
     final path = imagePath;
     if (!isDone || path == null || path == 'done') return placeholder;

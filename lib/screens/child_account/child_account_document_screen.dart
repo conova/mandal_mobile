@@ -124,7 +124,6 @@ class _ChildAccountDocumentScreenState
                               color: extendedColors.neutral100,
                             ),
                           ),
-                          const SizedBox(height: 4),
                           Text(
                             hasPhoto ? l10n.success : l10n.addPhoto,
                             style: theme.textTheme.bodyMedium?.copyWith(
