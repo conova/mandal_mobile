@@ -135,7 +135,7 @@ class _BondMainScreenState extends State<BondMainScreen>
     final secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
 
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50),
       children: [
         const SizedBox(height: 24),
         if (_bondListLoading)
@@ -236,7 +236,7 @@ class _BondMainScreenState extends State<BondMainScreen>
     ThemeData theme,
   ) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50, top: 16),
       children: [
         PledgeBondBanner(
           onPledgePressed: () {
@@ -273,11 +273,33 @@ class _BondMainScreenState extends State<BondMainScreen>
             ),
           )
         else
-          ..._myBonds.map(
-            (bond) => _buildMyBondCard(bond, l10n, extendedColors),
-          ),
+          ..._buildMyBondCards(_myBonds, l10n, extendedColors),
       ],
     );
+  }
+
+  /// Миний бондын картуудыг хооронд нь Divider-тэй жагсаана
+  List<Widget> _buildMyBondCards(
+    List<MarketInstrument> bonds,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+  ) {
+    final widgets = <Widget>[];
+    for (var i = 0; i < bonds.length; i++) {
+      if (i > 0) {
+        widgets.add(
+          SizedBox(height: 10,)
+        );
+        widgets.add(
+          Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
+        );
+        widgets.add(
+          SizedBox(height: 25,)
+        );
+      }
+      widgets.add(_buildMyBondCard(bonds[i], l10n, extendedColors));
+    }
+    return widgets;
   }
 
   /// /stocks/mybonds мөрөөс MyBondCard угсарна
@@ -312,5 +334,4 @@ class _BondMainScreenState extends State<BondMainScreen>
       ),
     );
   }
-
 }
