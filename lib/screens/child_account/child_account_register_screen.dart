@@ -38,7 +38,7 @@ class _ChildAccountRegisterScreenState
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

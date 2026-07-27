@@ -61,7 +61,7 @@ class _ChildAccountDocumentScreenState
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -110,7 +110,10 @@ class _ChildAccountDocumentScreenState
                         color: extendedColors.bgSecondary,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: CustomSvgIcon('camera-plus'),
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: CustomSvgIcon('camera-plus'),
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
