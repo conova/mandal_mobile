@@ -12,7 +12,6 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return AppBar(
@@ -34,7 +33,7 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
             margin: const EdgeInsets.only(right: 16, top: 22, bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: colorScheme.secondary,
+              color: extendedColors.bgSecondary,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(

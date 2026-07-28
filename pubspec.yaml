@@ -120,6 +120,7 @@ flutter:
     - assets/images/success.png
     - assets/images/stamp.png
     - assets/images/document.png
+    - assets/images/Notification.png
     # SVG icon-ууд — хавтсаар нь бүртгэсэн тул шинэ icon нэмэхэд
     # pubspec засах шаардлагагүй (CustomSvgIcon-оор нэрээр нь дуудна)
     - assets/images/icons/

@@ -76,7 +76,6 @@ class _ChangePasswordCodeScreenState extends State<ChangePasswordCodeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
@@ -90,15 +89,15 @@ class _ChangePasswordCodeScreenState extends State<ChangePasswordCodeScreen> {
             const SizedBox(height: 40),
             Text(
               l10n.enterCodeTitle,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
               ),
             ),
             Text(
               l10n.codeSentTo(_value),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface,
+                color: extendedColors.neutral100,
                 fontWeight: FontWeight.w300,
               ),
             ),

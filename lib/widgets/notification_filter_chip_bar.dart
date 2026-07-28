@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../theme/extended_colors.dart';
 
-class FilterChipBar extends StatelessWidget {
+class NotificationFilterChipBar extends StatelessWidget {
   final List<String> filters;
   final String selectedFilter;
   final ValueChanged<String> onFilterSelected;
   final double horizontalPadding;
 
-  const FilterChipBar({
+  const NotificationFilterChipBar({
     super.key,
     required this.filters,
     required this.selectedFilter,
@@ -27,9 +27,9 @@ class FilterChipBar extends StatelessWidget {
         children: filters.map((filter) {
           final bool isSelected = selectedFilter == filter;
           return Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 8.0,),
             child: ChoiceChip(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
               labelPadding: const EdgeInsets.symmetric(horizontal: 4),
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -40,16 +40,19 @@ class FilterChipBar extends StatelessWidget {
                   onFilterSelected(filter);
                 }
               },
-              selectedColor: theme.primaryColor,
-              side: BorderSide.none,
-              backgroundColor: extendedColors.bgSecondary,
+              selectedColor: extendedColors.bgSecondary,
+              avatarBorder: Border.all(
+                color: extendedColors.neutral500,
+                width: 1,
+              ),
+              backgroundColor: extendedColors.bgBase,
               labelStyle: theme.textTheme.labelLarge?.copyWith(
                 color: isSelected
-                    ? extendedColors.bgBase
-                    : extendedColors.neutral100,
+                    ? extendedColors.neutral100
+                    : extendedColors.neutral200,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(18),
                 side: BorderSide.none,
               ),
               showCheckmark: false,

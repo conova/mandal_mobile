@@ -2401,7 +2401,7 @@ abstract class AppLocalizations {
   /// No description provided for @historyAll.
   ///
   /// In en, this message translates to:
-  /// **'Total return'**
+  /// **'History (All)'**
   String get historyAll;
 
   /// No description provided for @view.
@@ -2968,47 +2968,11 @@ abstract class AppLocalizations {
   /// **'Information'**
   String get information;
 
-  /// No description provided for @totalReturnReceivedInfo.
+  /// No description provided for @noNotifications.
   ///
   /// In en, this message translates to:
-  /// **'Bond interest income you have earned in the past.'**
-  String get totalReturnReceivedInfo;
-
-  /// No description provided for @futureReturnInfo.
-  ///
-  /// In en, this message translates to:
-  /// **'Bond interest income you will earn in the future.'**
-  String get futureReturnInfo;
-
-  /// No description provided for @noActiveOrders.
-  ///
-  /// In en, this message translates to:
-  /// **'No active orders'**
-  String get noActiveOrders;
-
-  /// No description provided for @noActiveOrdersDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'To see completed or canceled orders, tap “Order History”'**
-  String get noActiveOrdersDesc;
-
-  /// No description provided for @noHistoryFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No history found'**
-  String get noHistoryFound;
-
-  /// No description provided for @done.
-  ///
-  /// In en, this message translates to:
-  /// **'Done'**
-  String get done;
-
-  /// No description provided for @canceled.
-  ///
-  /// In en, this message translates to:
-  /// **'Canceled'**
-  String get canceled;
+  /// **'No notifications at the moment.'**
+  String get noNotifications;
 }
 
 class _AppLocalizationsDelegate
