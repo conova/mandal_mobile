@@ -561,8 +561,7 @@
     "birthCertificate": "Birth certificate",
     "childSuccessDesc": "We are reviewing your child's information — the trading account will open within 2 business days.",
     "information": "Information",
-    "noNotifications": "No notifications at the moment."
-    "information": "Information",
+    "noNotifications": "No notifications at the moment.",
     "totalReturnReceivedInfo": "Bond interest income you have earned in the past.",
     "futureReturnInfo": "Bond interest income you will earn in the future.",
     "noActiveOrders": "No active orders",

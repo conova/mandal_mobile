@@ -1220,7 +1220,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profitPlusMinus => 'Profit (+ -)';
 
   @override
-  String get historyAll => 'History (All)';
+  String get historyAll => 'Total return';
 
   @override
   String get view => 'View';
@@ -1527,4 +1527,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noNotifications => 'No notifications at the moment.';
+
+  @override
+  String get totalReturnReceivedInfo =>
+      'Bond interest income you have earned in the past.';
+
+  @override
+  String get futureReturnInfo =>
+      'Bond interest income you will earn in the future.';
+
+  @override
+  String get noActiveOrders => 'No active orders';
+
+  @override
+  String get noActiveOrdersDesc =>
+      'To see completed or canceled orders, tap “Order History”';
+
+  @override
+  String get noHistoryFound => 'No history found';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get canceled => 'Canceled';
 }
