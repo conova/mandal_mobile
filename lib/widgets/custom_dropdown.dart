@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
+import '../theme/app_colors.dart';
+
 class CustomDropdown<T> extends StatefulWidget {
   final String label;
   final T? value;
@@ -27,7 +29,6 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final bool hasError = widget.errorText != null;
 
@@ -49,9 +50,9 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: hasError
-                    ? colorScheme.error
+                    ? AppColors.redMain
                     : (_isFocused
-                        ? theme.primaryColor
+                        ? extendedColors.primaryMain
                         : extendedColors.neutral500),
                 width: _isFocused ? 2 : 1,
               ),
@@ -99,7 +100,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             child: Text(
               widget.errorText!,
               style: theme.textTheme.labelLarge?.copyWith(
-                color: colorScheme.error,
+                color: AppColors.redMain,
               ),
             ),
           ),

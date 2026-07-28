@@ -5,11 +5,12 @@ import '../l10n/app_localizations.dart';
 import '../models/api_notification.dart';
 import '../services/notification_api_service.dart';
 import '../services/notification_mocks.dart';
+import '../theme/app_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
-import '../widgets/filter_chip_bar.dart';
 import '../widgets/mark_read_bottom_sheet.dart';
+import '../widgets/notification_filter_chip_bar.dart';
 import '../widgets/notification_item.dart';
 import 'notification_detail_screen.dart' show notificationIconForType;
 
@@ -146,7 +147,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final categories = {
       'All': l10n.allNotifications,
@@ -177,18 +177,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
               onPressed: _unreadCount > 0 ? () => _showMarkReadPopup() : null,
               icon: CustomSvgIcon(
                 'checked',
-                size: 8,
-                color: colorScheme.onSurfaceVariant,
+                size: 10,
+                color: (_unreadCount > 0)
+                  ?extendedColors.neutral200
+                  :extendedColors.neutral100,
               ),
               label: Text(
                 l10n.markAllAsRead,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.bold,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: (_unreadCount > 0)
+                    ?extendedColors.neutral200
+                    :extendedColors.neutral100,
                 ),
               ),
               style: TextButton.styleFrom(
-                backgroundColor: colorScheme.surfaceContainerHighest,
+                backgroundColor: (_unreadCount > 0)
+                  ?extendedColors.bgTertiary
+                  :extendedColors.bgSecondary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -202,7 +207,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
             child: Row(
               children: [
                 Text(
@@ -219,13 +224,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: colorScheme.error,
-                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.redMain,
+                      borderRadius: BorderRadius.circular(13),
                     ),
                     child: Text(
                       _unreadCount.toString(),
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: colorScheme.onPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -235,7 +240,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          FilterChipBar(
+          NotificationFilterChipBar(
             filters: categories.values.toList(),
             selectedFilter: categories[_selectedCategory]!,
             onFilterSelected: (selectedLabel) {
@@ -293,7 +298,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         const SizedBox(height: 120),
-        Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+        Icon(Icons.error_outline, size: 48, color: AppColors.redMain),
         const SizedBox(height: 16),
         Text(
           _error ?? '',
