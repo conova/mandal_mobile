@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 
+import '../theme/app_colors.dart';
 import 'custom_svg_icon.dart';
 
 class CustomInput extends StatefulWidget {
@@ -97,7 +98,6 @@ class _CustomInputState extends State<CustomInput> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     // Priority: External errorText > Internal validation error
@@ -121,9 +121,9 @@ class _CustomInputState extends State<CustomInput> {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: hasError
-                    ? colorScheme.error
+                    ? AppColors.redMain
                     : (_isFocused
-                          ? theme.primaryColor
+                          ? extendedColors.primaryMain
                           : extendedColors.neutral500),
                 width: _isFocused ? 2 : 1,
               ),
@@ -207,7 +207,7 @@ class _CustomInputState extends State<CustomInput> {
               currentError,
               style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: AppTextStyles.light,
-                color: theme.colorScheme.error,
+                color: AppColors.redMain,
               ),
             ),
           ),

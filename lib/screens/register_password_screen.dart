@@ -15,7 +15,6 @@ class RegisterPasswordScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final colorScheme = theme.colorScheme;
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
         const {};

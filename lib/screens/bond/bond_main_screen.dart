@@ -92,20 +92,16 @@ class _BondMainScreenState extends State<BondMainScreen>
           child: Container(
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: theme.dividerColor, width: 1),
+                bottom: BorderSide(color: extendedColors.neutral500, width: 1),
               ),
             ),
             child: TabBar(
               controller: _tabController,
               labelColor: extendedColors.neutral100,
-              unselectedLabelColor: extendedColors.neutral400,
               indicatorColor: extendedColors.primaryMain,
-              indicatorWeight: 3,
-              labelStyle: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-              unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.normal,
+              indicatorWeight: 4,
+              labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w400,
               ),
               tabs: [
                 Tab(text: l10n.buyBond),

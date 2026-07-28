@@ -141,7 +141,6 @@ class _StockScreenState extends State<StockScreen> {
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>();
 
     if (locale == null || extendedColors == null) {
@@ -178,7 +177,7 @@ class _StockScreenState extends State<StockScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: colorScheme.secondary,
+                        color: extendedColors.bgSecondary,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: TextField(
@@ -187,7 +186,7 @@ class _StockScreenState extends State<StockScreen> {
                         decoration: InputDecoration(
                           hintText: locale.searchByName,
                           hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.disabledColor,
+                            color: extendedColors.neutral200,
                           ),
                           border: InputBorder.none,
                           icon: CustomSvgIcon('search-icon', color: extendedColors.neutral100),

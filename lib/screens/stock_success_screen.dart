@@ -8,7 +8,6 @@ class StockSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
@@ -25,7 +24,7 @@ class StockSuccessScreen extends StatelessWidget {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: colorScheme.onPrimary,
+                  color: extendedColors.primaryMain,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -41,7 +40,7 @@ class StockSuccessScreen extends StatelessWidget {
                 l10n.orderRegistered,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  color: colorScheme.onPrimary,
+                  color: extendedColors.primaryMain,
                   fontWeight: FontWeight.bold,
                   height: 1.2,
                 ),
@@ -51,7 +50,7 @@ class StockSuccessScreen extends StatelessWidget {
                 l10n.orderPlacedDesc,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onPrimary.withOpacity(0.8),
+                  color: extendedColors.primaryMain,
                   height: 1.5,
                 ),
               ),
@@ -66,8 +65,8 @@ class StockSuccessScreen extends StatelessWidget {
                     arguments: 3,
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.onPrimary.withOpacity(0.9),
-                    foregroundColor: theme.colorScheme.onSurface,
+                    backgroundColor: extendedColors.primaryMain,
+                    foregroundColor: extendedColors.bgBase,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),

@@ -159,7 +159,7 @@ class _LoginFormState extends State<LoginForm>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Column(
       children: [
@@ -169,22 +169,19 @@ class _LoginFormState extends State<LoginForm>
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: theme.dividerColor.withOpacity(0.1),
+                  color: extendedColors.neutral500,
                   width: 1.0,
                 ),
               ),
             ),
             child: TabBar(
               controller: _tabController,
-              labelColor: colorScheme.primary,
-              unselectedLabelColor: colorScheme.onSurface,
-              indicatorColor: colorScheme.primary,
-              indicatorWeight: 3,
+              labelColor: extendedColors.primaryMain,
+              unselectedLabelColor: extendedColors.neutral200,
+              indicatorColor: extendedColors.primaryMain,
+              indicatorWeight: 4,
               indicatorSize: TabBarIndicatorSize.label,
-              labelStyle: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w400,
-              ),
-              unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
+              labelStyle: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w400,
               ),
               dividerColor: Colors.transparent,
@@ -203,8 +200,8 @@ class _LoginFormState extends State<LoginForm>
           child: TabBarView(
             controller: _tabController,
             children: [
-              _buildPhoneForm(l10n, theme),
-              _buildEmailForm(l10n, theme),
+              _buildPhoneForm(l10n, theme, extendedColors),
+              _buildEmailForm(l10n, theme, extendedColors),
             ],
           ),
         ),
@@ -212,7 +209,7 @@ class _LoginFormState extends State<LoginForm>
     );
   }
 
-  Widget _buildPhoneForm(AppLocalizations l10n, ThemeData theme) {
+  Widget _buildPhoneForm(AppLocalizations l10n, ThemeData theme, ExtendedColors extendedColors) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -238,7 +235,7 @@ class _LoginFormState extends State<LoginForm>
                 l10n.forgotPasswordBtn,
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w400,
-                  color: theme.colorScheme.primary,
+                  color: extendedColors.primaryMain,
                 ),
               ),
             ),
@@ -260,7 +257,7 @@ class _LoginFormState extends State<LoginForm>
     );
   }
 
-  Widget _buildEmailForm(AppLocalizations l10n, ThemeData theme) {
+  Widget _buildEmailForm(AppLocalizations l10n, ThemeData theme, ExtendedColors extendedColors) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -287,7 +284,7 @@ class _LoginFormState extends State<LoginForm>
                 l10n.forgotPasswordBtn,
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w400,
-                  color: theme.colorScheme.primary,
+                  color: extendedColors.primaryMain,
                 ),
               ),
             ),

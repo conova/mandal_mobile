@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+import '../theme/extended_colors.dart';
 import 'custom_svg_icon.dart';
 
 class StockPriceRow extends StatelessWidget {
@@ -23,7 +25,7 @@ class StockPriceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return InkWell(
       onTap: onTap,
@@ -68,8 +70,8 @@ class StockPriceRow extends StatelessWidget {
                               ? 'button-up'
                               : 'button-down',
                           color: isGrowing!
-                              ? theme.primaryColor
-                              : colorScheme.error,
+                              ? extendedColors.primaryMain
+                              : AppColors.redMain,
                           size: 6,
                         ),
                       const SizedBox(width: 4),
@@ -80,8 +82,8 @@ class StockPriceRow extends StatelessWidget {
                           color: isGrowing == null || change == '0.00%'
                               ? theme.textTheme.bodySmall?.color ?? Colors.grey
                               : (isGrowing!
-                                    ? theme.primaryColor
-                                    : colorScheme.error),
+                                    ? extendedColors.primaryMain
+                                    : AppColors.redMain),
                         ),
                       ),
                     ],

@@ -32,7 +32,6 @@ class _OrderScreenState extends State<OrderScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final List<String> filters = [l10n.all, l10n.bond, l10n.stocks];
     _selectedFilter ??= l10n.all;
@@ -47,11 +46,10 @@ class _OrderScreenState extends State<OrderScreen>
           child: TabBar(
             controller: _tabController,
             indicatorColor: extendedColors.primaryMain,
-            indicatorWeight: 3,
-            labelColor: colorScheme.onSurface,
-            unselectedLabelColor: extendedColors.neutral500,
-            labelStyle: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+            indicatorWeight: 4,
+            labelColor: extendedColors.neutral100,
+            labelStyle: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w400,
             ),
             tabs: [
               Tab(text: l10n.activeOrders),

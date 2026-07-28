@@ -110,7 +110,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
         currencyCode: 'MNT',
       ),
       TransactionItem(
-        title: 'GLMT ноогдол ашиг',
+        title: 'GLMT ногдол ашиг',
         date: '2025.08.20 18:23',
         amount: '1,000,000.00₮',
         isPositive: true,
@@ -220,7 +220,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                       labelColor: extendedColors.neutral100,
                       unselectedLabelColor: extendedColors.neutral400,
                       indicatorColor: extendedColors.primaryMain,
-                      indicatorWeight: 3,
+                      indicatorWeight: 4,
                       labelStyle: theme.textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

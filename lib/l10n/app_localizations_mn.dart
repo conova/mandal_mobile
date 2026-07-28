@@ -472,7 +472,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get bondPrincipal => 'Бондын үндсэн төлбөр';
 
   @override
-  String get dividendProfit => 'Ноогдол ашиг';
+  String get dividendProfit => 'Ногдол ашиг';
 
   @override
   String get downloadReport => 'Тайлан татах';
@@ -995,7 +995,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get dailyVolume => 'Өдрийн арилжааны хэмжээ';
 
   @override
-  String get pastDividends => 'Өнгөрсөн хугацаанд олгосон ноогдол ашиг';
+  String get pastDividends => 'Өнгөрсөн хугацаанд олгосон ногдол ашиг';
 
   @override
   String get trade => 'Арилжаа хийх';
