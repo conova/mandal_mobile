@@ -2967,6 +2967,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Information'**
   String get information;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications at the moment.'**
+  String get noNotifications;
 }
 
 class _AppLocalizationsDelegate

@@ -1524,4 +1524,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get information => 'Information';
+
+  @override
+  String get noNotifications => 'No notifications at the moment.';
 }

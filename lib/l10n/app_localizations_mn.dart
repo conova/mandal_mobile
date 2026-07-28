@@ -1518,4 +1518,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get information => 'Мэдээлэл';
+
+  @override
+  String get noNotifications => 'Одоогоор мэдэгдэл байхгүй.';
 }
