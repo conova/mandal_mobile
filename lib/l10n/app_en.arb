@@ -395,7 +395,7 @@
     "bondName": "Bond Name",
     "amountPieces": "Amount | Pieces",
     "profitPlusMinus": "Profit (+ -)",
-    "historyAll": "History (All)",
+    "historyAll": "Total return",
     "view": "View",
     "pieces": "pieces",
     "interestRateShort": "Interest",
@@ -560,5 +560,12 @@
     "childDocTitle": "Upload a photo of the birth certificate",
     "birthCertificate": "Birth certificate",
     "childSuccessDesc": "We are reviewing your child's information — the trading account will open within 2 business days.",
-    "information": "Information"
+    "information": "Information",
+    "totalReturnReceivedInfo": "Bond interest income you have earned in the past.",
+    "futureReturnInfo": "Bond interest income you will earn in the future.",
+    "noActiveOrders": "No active orders",
+    "noActiveOrdersDesc": "To see completed or canceled orders, tap “Order History”",
+    "noHistoryFound": "No history found",
+    "done": "Done",
+    "canceled": "Canceled"
 }

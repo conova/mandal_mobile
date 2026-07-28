@@ -1217,7 +1217,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get profitPlusMinus => 'Ашиг (+ -)';
 
   @override
-  String get historyAll => 'Түүх (Бүгд)';
+  String get historyAll => 'Нийлбэр өгөөж';
 
   @override
   String get view => 'Харах';
@@ -1518,4 +1518,27 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get information => 'Мэдээлэл';
+
+  @override
+  String get totalReturnReceivedInfo =>
+      'Таны өнгөрсөн хугацаанд олсон бондын хүүгийн орлого';
+
+  @override
+  String get futureReturnInfo => 'Таны ирээдүйд олох бондын хүүгийн орлого.';
+
+  @override
+  String get noActiveOrders => 'Идэвхтэй захиалга байхгүй';
+
+  @override
+  String get noActiveOrdersDesc =>
+      'Биелсэн эсвэл цуцалсан захиалга харах бол “Захиалгийн түүх” дээр дарна уу';
+
+  @override
+  String get noHistoryFound => 'Түүх олдсонгүй';
+
+  @override
+  String get done => 'Биелсэн';
+
+  @override
+  String get canceled => 'Цуцалсан';
 }

@@ -1,36 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/order.dart';
 import 'order_detail_summary_item.dart';
 
 class OrderDetailSummary extends StatelessWidget {
-  const OrderDetailSummary({super.key});
+  final Order order;
+  const OrderDetailSummary({super.key, required this.order});
+
+  /// "2025/04/30 00:00:00" → "2025.04.30" (хоосон бол '-')
+  String _dateOnly(String raw) {
+    if (raw.isEmpty) return '-';
+    return raw.split(' ').first.replaceAll('/', '.');
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
+    final lang = Localizations.localeOf(context).languageCode;
+
+    final isForeign = order.isForeignCurrency;
+    final yieldRaw = order.raw['YIELD']?.toString() ?? '';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          OrderDetailSummaryItem(label: l10n.tradeAmount, value: '42,042,000₮'),
+          OrderDetailSummaryItem(
+            label: l10n.tradeAmount,
+            value: formatStockAmount(order.totalAmount, isForeign: isForeign),
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.unitPrice,
-                  value: '100,000₮',
+                  value: formatStockAmount(order.price, isForeign: isForeign),
                 ),
               ),
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.executionQuantity.split('/')[0],
-                  value: '21/42 (50%)',
+                  value: order.executionLabel,
                   valueColor: extendedColors.primaryMain,
                 ),
               ),
@@ -42,13 +58,13 @@ class OrderDetailSummary extends StatelessWidget {
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.orderTypeLabel,
-                  value: l10n.limitPrice,
+                  value: order.orderNameOf(lang),
                 ),
               ),
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.orderStatusLabel,
-                  value: l10n.partiallyFilled,
+                  value: order.statusNameOf(lang),
                 ),
               ),
             ],
@@ -59,13 +75,13 @@ class OrderDetailSummary extends StatelessWidget {
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.yieldLabel,
-                  value: '18.0%',
+                  value: yieldRaw.isEmpty ? '-' : '$yieldRaw%',
                 ),
               ),
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.settlementDate,
-                  value: '2025.06.04',
+                  value: _dateOnly(order.settleDate),
                 ),
               ),
             ],
@@ -76,13 +92,18 @@ class OrderDetailSummary extends StatelessWidget {
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.orderDate,
-                  value: '2025.11.3 17:22',
+                  value: order.orderDateLabel,
                 ),
               ),
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.commissionLabel,
-                  value: '₮1,000',
+                  value: order.feeAmount == null
+                      ? '-'
+                      : formatStockAmount(
+                          order.feeAmount,
+                          isForeign: isForeign,
+                        ),
                 ),
               ),
             ],
