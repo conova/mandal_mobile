@@ -560,5 +560,6 @@
     "childDocTitle": "Upload a photo of the birth certificate",
     "birthCertificate": "Birth certificate",
     "childSuccessDesc": "We are reviewing your child's information — the trading account will open within 2 business days.",
-    "information": "Information"
+    "information": "Information",
+    "noNotifications": "No notifications at the moment."
 }

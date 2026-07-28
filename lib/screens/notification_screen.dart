@@ -262,7 +262,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : _error != null && _items.isEmpty
                       ? _buildErrorState(theme, extendedColors)
-                      : _buildList(),
+                      : _buildList(l10n, extendedColors, theme),
             ),
           ),
         ],
@@ -309,14 +309,31 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Widget _buildList() {
+  Widget _buildList(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
     final list = _filtered;
     if (list.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: const [
-          SizedBox(height: 120),
-          Center(child: Text('Мэдэгдэл байхгүй')),
+        children: [
+          const SizedBox(height: 120),
+          Center(
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/images/Notification.png',
+                  height: 177,
+                  width: 177,
+                ),
+                const SizedBox(height: 10,),
+                Text(
+                  l10n.noNotifications,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       );
     }
