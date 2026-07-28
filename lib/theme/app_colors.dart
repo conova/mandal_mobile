@@ -4,7 +4,7 @@ class AppColors {
   // --- Light Mode ---
 
   // Primary (Blue/Teal section in image)
-  static const Color primaryMain = Color(0xFF29A396);
+  static const Color primaryMain = Color(0xFF1F847C);
   static const Color primary500 = Color(0xFF43BEB0);
   static const Color primary400 = Color(0xFF70D8C8);
   static const Color primary300 = Color(0xFF78C9BD);

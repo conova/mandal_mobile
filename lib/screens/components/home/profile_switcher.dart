@@ -6,11 +6,13 @@ import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_snackbar.dart';
+import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/initial_avatar.dart';
 
 /// Home header-ийн зүүн талын профайл солигч — аватар + сум.
 /// Дарахад өөрийн болон хүүхдийн данснуудын жагсаалт бүхий
 /// bottom sheet нээгдэж, сонгосон данс руу шилжинэ.
+/// Хүүхдийн данс байхгүй бол харагдахгүй.
 class ProfileSwitcher extends StatelessWidget {
   const ProfileSwitcher({super.key});
 
@@ -26,7 +28,8 @@ class ProfileSwitcher extends StatelessWidget {
         (ownName.isNotEmpty ? ownName[0].toUpperCase() : '?');
     final color =
         child == null ? extendedColors.primaryMain : extendedColors.purple;
-
+    ///Хүүхдийн account байхгүй бол нууна.
+    if (child == null && auth.subAccounts.isEmpty) return const SizedBox();
     return InkWell(
       onTap: () => _showSwitchSheet(context),
       borderRadius: BorderRadius.circular(12),
@@ -35,10 +38,10 @@ class ProfileSwitcher extends StatelessWidget {
         children: [
           InitialAvatar(initial: initial, color: color, size: 32),
           const SizedBox(width: 2),
-          Icon(
-            Icons.keyboard_arrow_down,
+          CustomSvgIcon(
+            'chevron-down',
             size: 20,
-            color: theme.colorScheme.onSurface,
+            color: extendedColors.neutral100,
           ),
         ],
       ),
@@ -73,64 +76,69 @@ class ProfileSwitcher extends StatelessWidget {
         final ownName = auth.custName ?? '';
 
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: theme.disabledColor.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+          child: Container(
+            decoration: BoxDecoration(
+              color: extendedColors.bgBase,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: extendedColors.neutral300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Данснууд олон үед sheet-ийн өндөрт багтаж scroll болно
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Өөрийн данс
-                      _AccountRow(
-                        initial: ownName.isNotEmpty
-                            ? ownName[0].toUpperCase()
-                            : '?',
-                        color: extendedColors.primaryMain,
-                        name: ownName,
-                        isSelected: active == null,
-                        onTap: () => _switch(ctx, auth, null),
-                      ),
-                      // Хүүхдийн данснууд
-                      ...auth.subAccounts.map(
-                        (child) => _AccountRow(
-                          initial: child.initial,
-                          color: extendedColors.purple,
-                          name: child.nameOf(lang),
-                          isSelected: active?.register == child.register,
-                          onTap: () => _switch(ctx, auth, child),
+                const SizedBox(height: 16),
+                // Данснууд олон үед sheet-ийн өндөрт багтаж scroll болно
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Өөрийн данс
+                        _AccountRow(
+                          initial: ownName.isNotEmpty
+                              ? ownName[0].toUpperCase()
+                              : '?',
+                          color: extendedColors.primaryMain,
+                          name: ownName,
+                          isSelected: active == null,
+                          onTap: () => _switch(ctx, auth, null),
                         ),
-                      ),
-                    ],
+                        // Хүүхдийн данснууд
+                        ...auth.subAccounts.map(
+                              (child) => _AccountRow(
+                            initial: child.initial,
+                            color: extendedColors.purple,
+                            name: child.nameOf(lang),
+                            isSelected: active?.register == child.register,
+                            onTap: () => _switch(ctx, auth, child),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              Divider(height: 1, color: extendedColors.neutral500),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: CustomButton(
-                    label: l10n.back,
-                    variant: CustomButtonVariant.tertiary,
-                    onPressed: () => Navigator.pop(ctx),
+                const SizedBox(height: 24),
+                Divider(height: 1, color: extendedColors.neutral500),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      label: l10n.back,
+                      variant: CustomButtonVariant.tertiary,
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          )
         );
       },
     );

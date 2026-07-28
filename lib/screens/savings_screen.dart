@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 import '../widgets/savings_card.dart';
 
 class SavingsScreen extends StatefulWidget {
@@ -29,6 +30,7 @@ class _SavingsScreenState extends State<SavingsScreen> with SingleTickerProvider
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -62,7 +64,7 @@ class _SavingsScreenState extends State<SavingsScreen> with SingleTickerProvider
               labelColor: theme.primaryColor,
               unselectedLabelColor: theme.disabledColor,
               indicatorColor: theme.primaryColor,
-              indicatorWeight: 3,
+              indicatorWeight: 4,
               labelPadding: const EdgeInsets.only(right: 32),
               tabs: [
                 Tab(text: l10n.mySavings),

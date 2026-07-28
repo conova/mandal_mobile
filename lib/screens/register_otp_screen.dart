@@ -66,7 +66,6 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
