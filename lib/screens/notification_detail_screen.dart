@@ -3,6 +3,7 @@ import '../l10n/app_localizations.dart';
 import '../models/api_notification.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 
 /// Notification дэлгэрэнгүй харах дэлгэц.
@@ -16,7 +17,6 @@ class NotificationDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     final rawArgs = ModalRoute.of(context)?.settings.arguments;
@@ -50,19 +50,22 @@ class NotificationDetailScreen extends StatelessWidget {
     final icon = notificationIconForType(type);
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
       ),
       body: SafeArea(
         top: false,
         child: Column(
           children: [
+            const SizedBox(height: 10,),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -143,9 +146,10 @@ class NotificationDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
+            Divider(height: 1, color: extendedColors.neutral500,),
             // Footer button
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
               child: CustomButton(
                 label: l10n.back,
                 onPressed: () => Navigator.pop(context),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/extended_colors.dart';
+
 class NotificationItem extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -21,7 +23,7 @@ class NotificationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return InkWell(
       onTap: onTap,
@@ -29,10 +31,10 @@ class NotificationItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: isUnread
-              ? theme.primaryColor.withOpacity(0.05)
+              ? extendedColors.bgSecondary
               : Colors.transparent,
           border: Border(
-            bottom: BorderSide(color: theme.dividerColor, width: 0.5),
+            bottom: BorderSide(color: extendedColors.neutral500, width: 0.5),
           ),
         ),
         child: Row(
@@ -43,10 +45,11 @@ class NotificationItem extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest,
-                    shape: BoxShape.circle,
+                    color: extendedColors.bgSecondary,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  child: Icon(icon, color: theme.primaryColor, size: 24),
+                  child: Icon(icon, color: extendedColors.primaryMain, size: 24),
                 ),
                 if (isUnread)
                   Positioned(
@@ -56,10 +59,10 @@ class NotificationItem extends StatelessWidget {
                       width: 10,
                       height: 10,
                       decoration: BoxDecoration(
-                        color: theme.primaryColor,
+                        color: extendedColors.primaryMain,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: colorScheme.surface,
+                          color: extendedColors.bgSecondary,
                           width: 2,
                         ),
                       ),
