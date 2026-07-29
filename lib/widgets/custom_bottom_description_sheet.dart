@@ -50,7 +50,7 @@ class CustomBottomDescriptionSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: theme.dividerColor,
+                color: extendedColors.neutral300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -61,12 +61,12 @@ class CustomBottomDescriptionSheet extends StatelessWidget {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: extendedColors.bgTertiary,
+                  color: extendedColors.bgSecondary,
                   shape: BoxShape.circle,
                 ),
                 child: CustomSvgIcon(icon ?? 'info-circle', size: 20, color: extendedColors.neutral100,),
               ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 24,),
             Text(
               title,
               style: theme.textTheme.titleLarge?.copyWith(

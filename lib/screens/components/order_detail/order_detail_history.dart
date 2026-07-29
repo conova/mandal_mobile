@@ -38,7 +38,7 @@ class OrderDetailHistory extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Text(
             l10n.executionHistory,
-            style: theme.textTheme.headlineSmall?.copyWith(
+            style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: extendedColors.neutral100,
             ),
