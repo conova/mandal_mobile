@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_bottom_sheet.dart';
+import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/empty_state.dart';
 
@@ -126,29 +128,23 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
     WatchlistStock item,
     ExtendedColors c,
   ) async {
-    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
-    final confirmed = await showDialog<bool>(
+    final l10n = AppLocalizations.of(context)!;
+    
+    final confirmed = await showModalBottomSheet<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('${item.symbol} устгах'),
-        backgroundColor: extendedColors.bgBase,
-
-        content: Text(
-          '${item.name} хувьцааг хадгалсан жагсаалтаас хасах уу?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Болих'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: c.red),
-            child: const Text('Устгах'),
-          ),
-        ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => CustomBottomSheet(
+        title: '${item.symbol} ${l10n.remove}',
+        description: l10n.removeFromList(item.name),
+        confirmText: l10n.remove,
+        cancelText: l10n.back,
+        onConfirm: () => Navigator.pop(ctx, true),
+        onCancel: () => Navigator.pop(ctx, false),
+        buttonVariantTop: CustomButtonVariant.primary,
       ),
     );
+
     if (confirmed != true) return false;
 
     try {
@@ -306,7 +302,6 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
             ReorderableListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
               proxyDecorator: (child, index, animation) {
                 return AnimatedBuilder(
                   animation: animation,
@@ -404,7 +399,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
           if (mounted) _fetchWatchlist();
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           child: Row(
             children: [
               CustomSvgIcon('menu-item', color: extendedColors.neutral300, size: 24),

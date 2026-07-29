@@ -2973,6 +2973,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No notifications at the moment.'**
   String get noNotifications;
+
+  /// No description provided for @removeFromList.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to remove {name} stock from your watchlist?'**
+  String removeFromList(String name);
+
+  /// No description provided for @holdAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold Amount'**
+  String get holdAmount;
+
+  /// No description provided for @holdAmountDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The total amount ordered to purchase stocks and bonds is called the hold amount. If the order is not executed, the hold amount can be canceled to increase cash balance.'**
+  String get holdAmountDesc;
+
+  /// No description provided for @cashDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'It refers to the total available cash amount that can be used to purchase securities such as stocks and bonds.'**
+  String get cashDesc;
 }
 
 class _AppLocalizationsDelegate
