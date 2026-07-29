@@ -1527,6 +1527,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noNotifications => 'No notifications at the moment.';
 
   @override
+  String removeFromList(String name) {
+    return 'Do you want to remove $name stock from your watchlist?';
+  }
+
+  @override
+  String get holdAmount => 'Hold Amount';
+
+  @override
+  String get holdAmountDesc =>
+      'The total amount ordered to purchase stocks and bonds is called the hold amount. If the order is not executed, the hold amount can be canceled to increase cash balance.';
+
+  @override
+  String get cashDesc =>
+      'It refers to the total available cash amount that can be used to purchase securities such as stocks and bonds.';
   String get totalReturnReceivedInfo =>
       'Bond interest income you have earned in the past.';
 

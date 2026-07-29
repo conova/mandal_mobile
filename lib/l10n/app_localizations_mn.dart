@@ -1523,6 +1523,20 @@ class AppLocalizationsMn extends AppLocalizations {
   String get noNotifications => 'Одоогоор мэдэгдэл байхгүй.';
 
   @override
+  String removeFromList(String name) {
+    return '$name хувьцааг хадгалсан жагсаалтаас хасах уу?';
+  }
+
+  @override
+  String get holdAmount => 'Түгжигдсэн дүн';
+
+  @override
+  String get holdAmountDesc =>
+      'Хувьцаа болон бонд худалдан авахаар захиалга өгсөн нийт дүнг түгжигдсэн дүн гэнэ. Захиалга биелээгүй үед түгжигдсэн дүнг цуцлаж бэлэн мөнгө ихэсгэх боломжтой.';
+
+  @override
+  String get cashDesc =>
+      'Хувьцаа болон бонд зэрэг үнэт цаас худалдан авахад ашиглаж болох нийт боломжит мөнгөн дүнг хэлнэ.';
   String get totalReturnReceivedInfo =>
       'Таны өнгөрсөн хугацаанд олсон бондын хүүгийн орлого';
 

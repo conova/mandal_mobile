@@ -562,6 +562,17 @@
     "childSuccessDesc": "We are reviewing your child's information — the trading account will open within 2 business days.",
     "information": "Information",
     "noNotifications": "No notifications at the moment.",
+    "removeFromList": "Do you want to remove {name} stock from your watchlist?",
+    "@removeFromList": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "holdAmount": "Hold Amount",
+    "holdAmountDesc": "The total amount ordered to purchase stocks and bonds is called the hold amount. If the order is not executed, the hold amount can be canceled to increase cash balance.",
+    "cashDesc": "It refers to the total available cash amount that can be used to purchase securities such as stocks and bonds."
     "totalReturnReceivedInfo": "Bond interest income you have earned in the past.",
     "futureReturnInfo": "Bond interest income you will earn in the future.",
     "noActiveOrders": "No active orders",
