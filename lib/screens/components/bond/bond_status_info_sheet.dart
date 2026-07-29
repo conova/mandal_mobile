@@ -85,15 +85,16 @@ class BondStatusInfoSheet extends StatelessWidget {
           const SizedBox(height: 40),
           // Дугуй дэвсгэртэй info icon
           Container(
-            width: 88,
-            height: 88,
+            width: 64,
+            height: 64,
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             decoration: BoxDecoration(
               color: extendedColors.bgSecondary,
               shape: BoxShape.circle,
             ),
             child: CustomSvgIcon(
               icon,
-              size: 40,
+              size: 32,
               color: extendedColors.neutral100,
             ),
           ),
@@ -110,7 +111,7 @@ class BondStatusInfoSheet extends StatelessWidget {
           Text(
             description,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: AppTextStyles.light,
               color: extendedColors.neutral200,
               height: 1.5,

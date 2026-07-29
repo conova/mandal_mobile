@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:provider/provider.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../models/order.dart';
+import '../services/auth_service.dart';
+import '../widgets/custom_snackbar.dart';
+import 'components/order/order_history_tab.dart';
 import '../widgets/filter_chip_bar.dart';
 import '../widgets/order_card.dart';
 
@@ -16,16 +22,50 @@ class _OrderScreenState extends State<OrderScreen>
   late TabController _tabController;
   String? _selectedFilter;
 
+  bool _isLoading = true;
+  List<Order> _orders = const [];
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetch());
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  /// Сонгосон chip → API scope. Chip солиход API-г шинээр дуудна.
+  String _scopeForFilter(AppLocalizations l10n) {
+    if (_selectedFilter == l10n.bond) return 'bond';
+    if (_selectedFilter == l10n.stocks) return 'stock';
+    return 'all';
+  }
+
+  Future<void> _fetch() async {
+    // Өмнөх шүүлтийн жагсаалт үлдэж харагдахгүйн тулд цэвэрлэнэ
+    setState(() {
+      _isLoading = true;
+      _orders = const [];
+    });
+    try {
+      final l10n = AppLocalizations.of(context)!;
+      final rows = await context
+          .read<AuthService>()
+          .getActiveOrders(scope: _scopeForFilter(l10n));
+      if (!mounted) return;
+      setState(() {
+        _orders = Order.listFromJson(rows);
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
+    }
   }
 
   @override
@@ -41,6 +81,8 @@ class _OrderScreenState extends State<OrderScreen>
       appBar: AppBar(
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0),
           child: TabBar(
@@ -61,8 +103,8 @@ class _OrderScreenState extends State<OrderScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildOrderList(context, theme, l10n, filters),
-          Center(child: Text('History WIP', style: theme.textTheme.bodyMedium)),
+          _buildOrderList(context, theme, extendedColors, l10n, filters),
+          const OrderHistoryTab(),
         ],
       ),
     );
@@ -71,78 +113,108 @@ class _OrderScreenState extends State<OrderScreen>
   Widget _buildOrderList(
     BuildContext context,
     ThemeData theme,
+    ExtendedColors extendedColors,
     AppLocalizations l10n,
     List<String> filters,
   ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FilterChipBar(
-            filters: filters,
-            selectedFilter: _selectedFilter!,
-            onFilterSelected: (selected) {
-              setState(() {
-                _selectedFilter = selected;
-              });
-            },
-            horizontalPadding: 0,
-          ),
-          const SizedBox(height: 16),
-          OrderCard(
-            companyName: 'GSB Capital',
-            subtitle: 'ЖИЭСБ капитал',
-            amount: '9,955,000₮',
-            price: '1,001,000₮',
-            execution: '0/10 (0%)',
-            date: '2025.11.3 17:22',
-            type: OrderType.buy,
-            status: OrderStatus.open,
-            market: MarketType.bond,
-            onEdit: () {},
-            onTap: () => Navigator.pushNamed(context, '/order_detail'),
-          ),
-          OrderCard(
-            companyName: 'Net Capital',
-            subtitle: 'Нэт Капитал',
-            amount: '9,910,000₮',
-            price: '991,000₮',
-            execution: '0/10 (0%)',
-            date: '2025.11.3 17:22',
-            type: OrderType.sell,
-            status: OrderStatus.closed,
-            market: MarketType.bond,
-            onEdit: () {},
-            onTap: () => Navigator.pushNamed(context, '/order_detail'),
-          ),
-          OrderCard(
-            companyName: 'MIK',
-            subtitle: 'Мик',
-            amount: '2,468.53\$',
-            price: '494.2\$',
-            execution: '0/5 (0%)',
-            date: '2025.11.3 17:22',
-            type: OrderType.sell,
-            status: OrderStatus.open,
-            market: MarketType.foreign,
-            onEdit: () {},
-            onTap: () => Navigator.pushNamed(context, '/order_detail'),
-          ),
-          OrderCard(
-            companyName: 'Net Capital',
-            subtitle: 'Нэт Капитал',
-            amount: '42,042,000₮',
-            price: '1,001,000₮',
-            execution: '0/42 (0%)',
-            date: '2025.11.3 17:22',
-            type: OrderType.buy,
-            status: OrderStatus.closed,
-            market: MarketType.bond,
-            onEdit: () {},
-          ),
-          const SizedBox(height: 100),
-        ],
+    final lang = Localizations.localeOf(context).languageCode;
+    final orders = _orders;
+
+    return RefreshIndicator(
+      onRefresh: _fetch,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            FilterChipBar(
+              filters: filters,
+              selectedFilter: _selectedFilter!,
+              onFilterSelected: (selected) {
+                setState(() => _selectedFilter = selected);
+                // Chip солиход харгалзах endpoint-оос дахин татна
+                _fetch();
+              },
+            ),
+            const SizedBox(height: 8),
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 48),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (orders.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 48),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'assets/images/empty_orders.png',
+                        height: 160,
+                        errorBuilder: (_, _, _) => Icon(
+                          Icons.receipt_long_outlined,
+                          size: 80,
+                          color: extendedColors.neutral400,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Text(
+                        l10n.noActiveOrders,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: extendedColors.neutral100,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          l10n.noActiveOrdersDesc,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            color: extendedColors.neutral300,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              ...orders.map(
+                (order) => OrderCard(
+                  companyName: order.symbol.isNotEmpty &&
+                          order.symbol != order.name
+                      ? order.symbol
+                      : order.nameOf(lang),
+                  subtitle: order.nameOf(lang),
+                  amount: formatStockAmount(
+                    order.totalAmount,
+                    isForeign: order.isForeignCurrency,
+                  ),
+                  price: formatStockAmount(
+                    order.price,
+                    isForeign: order.isForeignCurrency,
+                  ),
+                  execution: order.executionLabel,
+                  date: order.orderDateLabel,
+                  type: order.isBuy ? OrderType.buy : OrderType.sell,
+                  status: order.isOpen ? OrderStatus.open : OrderStatus.closed,
+                  market: order.isForeign
+                      ? MarketType.foreign
+                      : (order.isBond ? MarketType.bond : MarketType.stock),
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    '/order_detail',
+                    arguments: {'order': order},
+                  ),
+                ),
+              ),
+            const SizedBox(height: 100),
+          ],
+        ),
       ),
     );
   }

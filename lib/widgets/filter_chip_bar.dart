@@ -29,7 +29,7 @@ class FilterChipBar extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: ChoiceChip(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
               labelPadding: const EdgeInsets.symmetric(horizontal: 4),
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

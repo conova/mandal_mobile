@@ -1196,6 +1196,67 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Идэвхтэй захиалгууд.
+  /// [scope]: 'all' → /orders/active, 'bond' → /orders/activebonds,
+  /// 'stock' → /orders/activestocks.
+  /// `Authorization: Bearer <token>` шаардана.
+  Future<List<Map<String, dynamic>>> getActiveOrders({
+    String scope = 'all',
+  }) async {
+    final endpoint = switch (scope) {
+      'bond' => ApiConfig.ordersActiveBonds,
+      'stock' => ApiConfig.ordersActiveStocks,
+      _ => ApiConfig.ordersActive,
+    };
+    try {
+      final response = await _authedDio.get(endpoint);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      // Захиалга байхгүй үед код 0-ээс өөр ирдэг — алдаа биш, хоосон жагсаалт
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Захиалгын түүх.
+  /// POST /orders/history — body: {"data": {type?, status?, start, end}}
+  /// type: bond|stock, status: done|canceled (заагаагүй бол бүгд).
+  Future<List<Map<String, dynamic>>> getOrderHistory({
+    String? type,
+    String? status,
+    required String start,
+    required String end,
+  }) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.ordersHistory,
+        data: {
+          'data': {
+            if (type != null) 'type': type,
+            if (status != null) 'status': status,
+            'start': start,
+            'end': end,
+          },
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      // Түүх байхгүй үед алдаа биш — хоосон жагсаалт
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Watchlist — хэрэглэгчийн хадгалсан хувьцаа авна.
   /// `Authorization: Bearer <token>` шаардана.
   /// Локалд хадгалагдсан дарааллыг автоматаар хэрэглэнэ.

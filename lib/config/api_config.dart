@@ -144,6 +144,19 @@ class ApiConfig {
 
   /// Профайл солих (өөрийн ↔ хүүхдийн данс) — refresh-тэй ижил хариу
   static const String switchProfile = '/bdc/api/auth/switch_profile';
+
+  // ── Захиалга (orders) ────────────────────────────────────────────
+  /// Идэвхтэй бүх захиалга
+  static const String ordersActive = '/bdc/api/orders/active';
+
+  /// Идэвхтэй бондын захиалгууд
+  static const String ordersActiveBonds = '/bdc/api/orders/activebond';
+
+  /// Идэвхтэй хувьцааны захиалгууд
+  static const String ordersActiveStocks = '/bdc/api/orders/activestocks';
+
+  /// Захиалгын түүх (type/status/start/end шүүлттэй POST)
+  static const String ordersHistory = '/bdc/api/orders/history';
   static const String profile = '/bdc/api/auth/profile.php';
   static const String accounts = '/bdc/api/auth/accounts.php';
 }

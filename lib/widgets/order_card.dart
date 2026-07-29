@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/extended_colors.dart';
 
 enum OrderType { buy, sell }
 
@@ -40,11 +43,12 @@ class OrderCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -65,7 +69,9 @@ class OrderCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           companyName,
-                          style: theme.textTheme.titleMedium,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: extendedColors.neutral100
+                          ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -74,7 +80,9 @@ class OrderCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           subtitle,
-                          style: theme.textTheme.bodyMedium,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                              color: extendedColors.neutral200
+                          ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -86,8 +94,8 @@ class OrderCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     amount,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: extendedColors.neutral100
                     ),
                     textAlign: TextAlign.right,
                     maxLines: 1,
@@ -96,7 +104,7 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Row(
               children: [
                 _buildBadge(
@@ -129,23 +137,27 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             _buildInfoRow(
               theme,
               type == OrderType.buy ? l10n.unitPrice : l10n.sellingPrice,
               price,
+              extendedColors
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.executionQuantity, style: theme.textTheme.bodyMedium),
+                Text(l10n.executionQuantity, style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                    fontWeight: FontWeight.w200
+                )),
                 Row(
                   children: [
                     Text(
                       execution,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral100
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -164,11 +176,11 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             Text(
               date,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.disabledColor,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: extendedColors.neutral200,
               ),
             ),
           ],
@@ -184,16 +196,16 @@ class OrderCard extends StatelessWidget {
     Color textColor,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        text,
-        style: theme.textTheme.labelSmall?.copyWith(
+        text.toUpperCase(),
+        style: theme.textTheme.labelMedium?.copyWith(
           color: textColor,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w400,
         ),
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
@@ -201,14 +213,17 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(ThemeData theme, String label, String value) {
+  Widget _buildInfoRow(ThemeData theme, String label, String value, extendedColors) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
           child: Text(
             label,
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w200,
+                color: extendedColors.neutral200
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -218,7 +233,8 @@ class OrderCard extends StatelessWidget {
           child: Text(
             value,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w400,
+              color: extendedColors.neutral100
             ),
             textAlign: TextAlign.right,
             maxLines: 1,

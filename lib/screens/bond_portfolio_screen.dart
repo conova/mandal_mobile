@@ -5,6 +5,7 @@ import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import 'components/bond/bond_status_info_sheet.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_svg_icon.dart';
@@ -274,6 +275,12 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               theme: theme,
               extendedColors: extendedColors,
               icon: 'coins-stacked',
+              onInfoTap: () => BondStatusInfoSheet.show(
+                context,
+                title: l10n.totalReturnReceived,
+                description: l10n.totalReturnReceivedInfo,
+                icon: 'coins-stacked',
+              ),
               label: l10n.totalReturnReceived,
               amount: '0.00₮',
               buttonLabel: l10n.view,
@@ -283,6 +290,12 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               theme: theme,
               extendedColors: extendedColors,
               icon: 'calendar-check',
+              onInfoTap: () => BondStatusInfoSheet.show(
+                context,
+                title: l10n.futureReturn,
+                description: l10n.futureReturnInfo,
+                icon: 'calendar-check',
+              ),
               label: l10n.futureReturn,
               amount: '0.00₮',
               buttonLabel: l10n.view,
@@ -565,6 +578,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     required String label,
     required String amount,
     required String buttonLabel,
+    VoidCallback? onInfoTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -596,7 +610,14 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    CustomSvgIcon('info-circle', size: 16, color: extendedColors.neutral400),
+                    GestureDetector(
+                      onTap: onInfoTap,
+                      child: CustomSvgIcon(
+                        'info-circle',
+                        size: 16,
+                        color: extendedColors.neutral400,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),

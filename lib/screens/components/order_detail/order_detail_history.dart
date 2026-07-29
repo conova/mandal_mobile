@@ -1,16 +1,35 @@
 import 'package:flutter/material.dart';
+import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/order.dart';
 import '../../../theme/extended_colors.dart';
 import 'order_detail_summary_item.dart';
 
+/// Захиалгын биелэлтийн түүх — API мөр бүр нэг биелэлтийг илэрхийлдэг
+/// тул тухайн захиалгын done мэдээллийг харуулна.
 class OrderDetailHistory extends StatelessWidget {
-  const OrderDetailHistory({super.key});
+  final Order order;
+  const OrderDetailHistory({super.key, required this.order});
+
+  /// "2025/04/28 20:53:03" → "2025.04.28 20:53"
+  String _fmtDate(String raw) {
+    if (raw.isEmpty) return '-';
+    final parts = raw.split(' ');
+    final date = parts.first.replaceAll('/', '.');
+    final time =
+        parts.length > 1 ? parts[1].split(':').take(2).join(':') : '';
+    return time.isEmpty ? date : '$date $time';
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
+
+    final isForeign = order.isForeignCurrency;
+    final doneCnt = order.doneCnt ?? 0;
+    final doneAmount = doneCnt * (order.donePrice ?? 0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,28 +46,11 @@ class OrderDetailHistory extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         _buildHistoryItem(
-          '2025.11.5 10:00',
-          '10,010,000₮',
-          '100,100₮',
-          '10 ${l10n.quantityLabel.toLowerCase()}',
-          theme,
-          l10n,
-          extendedColors,
-        ),
-        _buildHistoryItem(
-          '2025.11.4 18:00',
-          '6,000,000₮',
-          '100,000₮',
-          '6 ${l10n.quantityLabel.toLowerCase()}',
-          theme,
-          l10n,
-          extendedColors,
-        ),
-        _buildHistoryItem(
-          '2025.11.3 22:21',
-          '5,000,000₮',
-          '100,000₮',
-          '5 ${l10n.quantityLabel.toLowerCase()}',
+          _fmtDate(order.doneDate),
+          formatStockAmount(doneAmount, isForeign: isForeign),
+          formatStockAmount(order.donePrice, isForeign: isForeign),
+          '${formatStockAmount(doneCnt, decimals: 0).replaceAll('₮', '')} '
+              '${l10n.quantityLabel.toLowerCase()}',
           theme,
           l10n,
           extendedColors,
