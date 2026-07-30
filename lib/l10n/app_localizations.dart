@@ -3039,6 +3039,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Canceled'**
   String get canceled;
+
+  /// No description provided for @cancelAllOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel all orders'**
+  String get cancelAllOrders;
 }
 
 class _AppLocalizationsDelegate

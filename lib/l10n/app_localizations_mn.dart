@@ -1560,4 +1560,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get canceled => 'Цуцалсан';
+
+  @override
+  String get cancelAllOrders => 'Бүх захиалгыг цуцлах';
 }

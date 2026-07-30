@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
@@ -212,7 +213,28 @@ class _OrderScreenState extends State<OrderScreen>
                   ),
                 ),
               ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 20,),
+            if (!_isLoading && orders.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+
+                    },
+                    child: Text(
+                      '${l10n.cancelAllOrders} (${orders.length})',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.red,
+                        decoration: TextDecoration.underline,
+                        decorationColor: extendedColors.red,
+                        decorationThickness: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 80),
           ],
         ),
       ),

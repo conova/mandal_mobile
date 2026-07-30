@@ -579,5 +579,6 @@
     "noActiveOrdersDesc": "To see completed or canceled orders, tap “Order History”",
     "noHistoryFound": "No history found",
     "done": "Done",
-    "canceled": "Canceled"
+    "canceled": "Canceled",
+    "cancelAllOrders": "Cancel all orders"
 }

@@ -1565,4 +1565,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get canceled => 'Canceled';
+
+  @override
+  String get cancelAllOrders => 'Cancel all orders';
 }
