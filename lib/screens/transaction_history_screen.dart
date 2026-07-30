@@ -304,7 +304,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
             Text(
               label,
               style: theme.textTheme.labelLarge?.copyWith(
-                color: isActive ? Colors.black : extendedColors.neutral100,
+                color: isActive ? extendedColors.bgBase : extendedColors.neutral100,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -312,7 +312,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
             CustomSvgIcon(
               'button-down',
               size: 6,
-              color: isActive ? Colors.black : extendedColors.neutral200,
+              color: isActive ? extendedColors.bgBase : extendedColors.neutral200,
             ),
           ],
         ),
