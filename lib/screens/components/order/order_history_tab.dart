@@ -6,6 +6,7 @@ import '../../../models/order.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_snackbar.dart';
+import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/order_card.dart';
 import '../transaction_history/transaction_period_sheet.dart';
 
@@ -125,7 +126,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
   /// "Шүүлтүүр" / "Шүүлтүүр 2" — сонгосон шүүлтийн тоо
   String _filterLabel(AppLocalizations l10n) {
     final count = (_type != null ? 1 : 0) + (_status != null ? 1 : 0);
-    return count == 0 ? l10n.filter : '${l10n.filter} $count';
+    return count == 0 ? l10n.filter : '${l10n.filter} ($count)';
   }
 
   String _periodLabel(AppLocalizations l10n) {
@@ -271,25 +272,25 @@ class _DropdownChip extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
         decoration: BoxDecoration(
           color: isActive
               ? extendedColors.primaryMain
               : extendedColors.bgSecondary,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w400,
                 color: fg,
               ),
             ),
-            const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down, size: 20, color: fg),
+            const SizedBox(width: 6),
+            CustomSvgIcon('button-down', size: 6, color: fg),
           ],
         ),
       ),
@@ -313,6 +314,8 @@ class _OrderHistoryFilterSheet extends StatefulWidget {
 class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
   String? _type;
   String? _status;
+
+  bool get _hasFilter => _type != null || _status != null;
 
   @override
   void initState() {
@@ -409,7 +412,9 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       _status = null;
                     }),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: extendedColors.bgSecondary,
+                      backgroundColor: _hasFilter
+                          ? extendedColors.primary100
+                          : extendedColors.bgTertiary,
                       foregroundColor: extendedColors.neutral100,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -417,10 +422,14 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       ),
                     ),
                     child: Text(
-                      l10n.clearFilter,
+                      !_hasFilter
+                          ? l10n.clearFilter
+                          : '${l10n.clearFilter} (${(_type != null ? 1 : 0) + (_status != null ? 1 : 0)})',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
+                        color: _hasFilter
+                            ? extendedColors.primaryMain
+                            : extendedColors.neutral200,
                       ),
                     ),
                   ),
@@ -436,7 +445,9 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       {'type': _type, 'status': _status},
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: extendedColors.bgSecondary,
+                      backgroundColor: _hasFilter
+                          ? extendedColors.primaryMain
+                          : extendedColors.bgTertiary,
                       foregroundColor: extendedColors.neutral100,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -447,7 +458,9 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       l10n.filterAction,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
+                        color: _hasFilter
+                            ? extendedColors.bgBase
+                            : extendedColors.neutral200,
                       ),
                     ),
                   ),
@@ -468,21 +481,23 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(24),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? extendedColors.bgSecondary : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: isSelected
-                ? extendedColors.primaryMain
-                : extendedColors.neutral400,
+                ? extendedColors.bgSecondary
+                : extendedColors.neutral500,
           ),
         ),
         child: Text(
           label,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w300,
-            color: extendedColors.neutral100,
+            color: isSelected
+              ? extendedColors.neutral100
+              : extendedColors.neutral200,
           ),
         ),
       ),

@@ -291,24 +291,24 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
         decoration: BoxDecoration(
           color: isActive
               ? extendedColors.primaryMain
               : extendedColors.bgSecondary,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: theme.textTheme.labelLarge?.copyWith(
                 color: isActive ? Colors.black : extendedColors.neutral100,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
             CustomSvgIcon(
               'button-down',
               size: 6,
