@@ -42,7 +42,7 @@ class ReleaseLockedAmountList extends StatelessWidget {
                     border: Border.all(
                       color: isSelected
                           ? extendedColors.primaryMain
-                          : extendedColors.neutral500,
+                          : extendedColors.neutral400,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(6),
@@ -51,7 +51,10 @@ class ReleaseLockedAmountList extends StatelessWidget {
                         : Colors.transparent,
                   ),
                   child: isSelected
-                      ? const CustomSvgIcon('checked', size: 18, color: Colors.white)
+                      ? const Padding(
+                        padding: EdgeInsets.all(3),
+                        child: CustomSvgIcon('checked', size: 18, color: Colors.white),
+                      )
                       : null,
                 ),
                 const SizedBox(width: 16),
@@ -81,7 +84,7 @@ class ReleaseLockedAmountList extends StatelessWidget {
                             item['subtitle'],
                             style: theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: AppTextStyles.light,
-                              color: extendedColors.neutral400,
+                              color: extendedColors.neutral200,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -98,7 +101,9 @@ class ReleaseLockedAmountList extends StatelessWidget {
                   '${item['amount'].toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: AppTextStyles.regular,
-                    color: extendedColors.neutral200,
+                    color: isSelected
+                      ? extendedColors.neutral100
+                      : extendedColors.neutral200,
                   ),
                 ),
               ],

@@ -3045,6 +3045,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel all orders'**
   String get cancelAllOrders;
+
+  /// No description provided for @dailyStockRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily stock rate'**
+  String get dailyStockRate;
 }
 
 class _AppLocalizationsDelegate

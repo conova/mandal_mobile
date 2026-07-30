@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
+import '../../../widgets/currency_suffix_formatter.dart';
+
 class StockTradingInputBox extends StatelessWidget {
   final String label;
   final TextEditingController controller;
@@ -62,23 +64,27 @@ class StockTradingInputBox extends StatelessWidget {
                           ? extendedColors.primaryMain
                           : extendedColors.neutral100,
                     ),
+                    inputFormatters: [
+                      CurrencySuffixFormatter(suffix: '₮'),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
-                      suffixText: '₮',
                     ),
                   ),
                 ),
-                if (suffixText != null)
+
+                // RIGHT SIDE: Action button
+                if (suffixText != null) ...[
+                  const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () {
-                      // paste text from clipboard
-                      Clipboard.getData('text/plain').then((value) {
-                        if (value != null) {
-                          controller.text = value.text ?? '';
-                        }
-                      });
+                    onTap: () async {
+                      final data = await Clipboard.getData('text/plain');
+                      if (data?.text != null) {
+                        // Strip any non-digits/decimal if needed when pasting
+                        controller.text = data!.text!.replaceAll(RegExp(r'[^\d.]'), '');
+                      }
                     },
                     child: Text(
                       suffixText!,
@@ -88,6 +94,7 @@ class StockTradingInputBox extends StatelessWidget {
                       ),
                     ),
                   ),
+                ],
               ],
             ),
           ],

@@ -81,10 +81,9 @@ class CustomBottomDescriptionSheet extends StatelessWidget {
                 description,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w300,
                   color: extendedColors.neutral100,
                   fontSize: 14,
-                  fontFamily: 'Geologica',
                 ),
               ),
             ),

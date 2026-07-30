@@ -1563,4 +1563,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get cancelAllOrders => 'Бүх захиалгыг цуцлах';
+
+  @override
+  String get dailyStockRate => 'Өдрийн ханш';
 }

@@ -211,7 +211,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                     value: address ?? '-',
                     trailing: child != null
                         ? null
-                        : const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
+                        : null///const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
                   ),
                   const SizedBox(height: 40),
                 ],

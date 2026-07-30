@@ -339,7 +339,7 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: extendedColors.neutral400,
+                color: extendedColors.neutral300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),

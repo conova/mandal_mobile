@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 enum TimePeriod { last7Days, last1Month, last3Months, last6Months, custom }
 
@@ -109,7 +110,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: extendedColors.neutral400,
+                color: extendedColors.neutral300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -248,13 +249,17 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
             GestureDetector(
               onTap: _prevMonth,
               child: Container(
-                width: 44,
+                width: 56,
                 height: 44,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  shape: BoxShape.rectangle,
                   color: extendedColors.bgSecondary,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.chevron_left, color: extendedColors.neutral100),
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: CustomSvgIcon('chevron-left', color: extendedColors.neutral100),
+                ),
               ),
             ),
             Text(
@@ -267,13 +272,17 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
             GestureDetector(
               onTap: _nextMonth,
               child: Container(
-                width: 44,
+                width: 56,
                 height: 44,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  shape: BoxShape.rectangle,
                   color: extendedColors.bgSecondary,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.chevron_right, color: extendedColors.neutral100),
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: CustomSvgIcon('chevron-right', color: extendedColors.neutral100),
+                ),
               ),
             ),
           ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/circle_back_button.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_svg_icon.dart';
 
 class StockConfirmationScreen extends StatefulWidget {
   const StockConfirmationScreen({super.key});
@@ -185,23 +187,8 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: GestureDetector(
-                                  onTap: () => Navigator.pop(context),
-                                  child: Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: extendedColors.bgSecondary,
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_back,
-                                      color: extendedColors.neutral100,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
+                                padding: const EdgeInsets.all(20),
+                                child: CircleBackButton(),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -211,11 +198,12 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
                                         Flexible(
                                           child: Text(
                                             'MNDL',
-                                            style: theme.textTheme.headlineSmall
+                                            style: theme.textTheme.headlineLarge
                                                 ?.copyWith(
                                                   fontWeight: FontWeight.bold,
                                                   color:
@@ -227,15 +215,18 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                                         ),
                                         const SizedBox(width: 12),
                                         Flexible(
-                                          child: Text(
-                                            'Мандал даатгал ХК',
-                                            style: theme.textTheme.bodyMedium
-                                                ?.copyWith(
-                                                  color:
-                                                      extendedColors.neutral300,
-                                                ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(bottom: 2),
+                                            child: Text(
+                                              'Мандал даатгал ХК',
+                                              style: theme.textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                color:
+                                                extendedColors.neutral200,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -291,8 +282,8 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.keyboard_double_arrow_up,
+                                  const CustomSvgIcon(
+                                    'triple-chevron',
                                     color: Colors.white,
                                     size: 28,
                                   ),
@@ -373,7 +364,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
               child: Text(
                 l10n.totalPaymentLabel,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral300,
+                  color: extendedColors.neutral200,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -411,7 +402,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
           child: Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.neutral300,
+              color: extendedColors.neutral200,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -450,8 +441,8 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
               child: Container(
                 width: 140,
                 height: 140,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: extendedColors.bgBase,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -470,8 +461,10 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                   l10n.orderRegistered,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
+                    color: extendedColors.bgBase,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Oswald',
+                    fontSize: 36,
                   ),
                 ),
               ),
@@ -485,7 +478,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                   l10n.orderPlacedDesc,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: Colors.white,
+                    color: extendedColors.bgBase,
                   ),
                 ),
               ),
@@ -506,7 +499,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                       );
                     },
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: extendedColors.bgBase,
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32),

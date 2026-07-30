@@ -171,7 +171,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
                 ),
               ),
               Text(
-                l10n.lastPrice24h,
+                l10n.dailyStockRate,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: extendedColors.neutral200,
                 ),
@@ -217,7 +217,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
         },
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0,),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

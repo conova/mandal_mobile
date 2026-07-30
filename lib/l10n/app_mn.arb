@@ -518,5 +518,6 @@
     "noHistoryFound": "Түүх олдсонгүй",
     "done": "Биелсэн",
     "canceled": "Цуцалсан",
-    "cancelAllOrders": "Бүх захиалгыг цуцлах"
+    "cancelAllOrders": "Бүх захиалгыг цуцлах",
+    "dailyStockRate": "Өдрийн ханш"
 }

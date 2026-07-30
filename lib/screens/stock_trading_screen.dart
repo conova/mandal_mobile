@@ -6,7 +6,9 @@ import '../l10n/app_localizations.dart';
 import '../models/order_book_entry.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 import 'components/stock_trading/stock_trading_input_box.dart';
 import 'components/stock_trading/stock_trading_quantity_selector.dart';
 import 'components/stock_trading/stock_trading_percentage_selector.dart';
@@ -44,7 +46,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   @override
   void initState() {
     super.initState();
-    _priceController = TextEditingController(text: '0.00');
+    _priceController = TextEditingController(text: '0.00₮');
     _quantityController = TextEditingController(text: '1');
     _priceFocusNode = FocusNode();
     _quantityFocusNode = FocusNode();
@@ -119,19 +121,22 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        backgroundColor: extendedColors.bgBase,
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16, top: 10),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
+                color: extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(30),
               ),
               // mainAxisSize.min + Flexible-гүй — AppBar actions хязгааргүй
@@ -140,17 +145,17 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.keyboard_arrow_down,
+                  CustomSvgIcon(
+                    'chevron-down',
                     size: 20,
-                    color: theme.colorScheme.onSurface,
+                    color: extendedColors.neutral100,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     l10n.limitPrice,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.onSurface,
+                      color: extendedColors.neutral100,
                     ),
                     maxLines: 1,
                   ),
@@ -159,7 +164,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
             ),
           ),
         ],
-        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
       ),
       body: Stack(
@@ -174,7 +178,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${_args['symbol']} ${l10n.buyTab}',
+                        '${_args['symbol']} - ${l10n.buyTab}',
                         style: theme.textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.neutral100,
@@ -254,7 +258,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     children: [
                       Text(
                         l10n.orderBoardTitle,
-                        style: theme.textTheme.headlineSmall?.copyWith(
+                        style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
