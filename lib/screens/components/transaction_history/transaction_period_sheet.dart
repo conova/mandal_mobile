@@ -230,7 +230,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                   border: Border.all(
                     color: isSelected
                         ? extendedColors.bgSecondary
-                        : extendedColors.neutral400,
+                        : extendedColors.neutral500,
                     width: 1,
                   ),
                   borderRadius: BorderRadius.circular(30),
@@ -574,7 +574,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
           border: Border.all(
             color: isActive
                 ? extendedColors.primaryMain
-                : extendedColors.neutral400,
+                : extendedColors.neutral500,
             width: isActive ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
