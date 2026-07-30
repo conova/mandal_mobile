@@ -222,21 +222,25 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: extendedColors.bgBase,
+                  color: (_selectedPeriod == p.$1)
+                      ? extendedColors.bgSecondary
+                      : extendedColors.bgBase,
                   border: Border.all(
                     color: isSelected
-                        ? extendedColors.neutral100
+                        ? extendedColors.bgSecondary
                         : extendedColors.neutral400,
-                    width: isSelected ? 1.5 : 1,
+                    width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: Text(
                   p.$2,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral100,
+                    color: (_selectedPeriod == p.$1)
+                      ?extendedColors.neutral100
+                      :extendedColors.neutral200,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -258,22 +262,24 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                     )
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: extendedColors.primaryMain,
+              backgroundColor: (_selectedPeriod == TimePeriod.custom || _selectedPeriod == TimePeriod.last3Months)
+                ? extendedColors.bgTertiary
+                : extendedColors.primaryMain,
               foregroundColor: Colors.white,
-              disabledBackgroundColor: extendedColors.bgSecondary,
+              disabledBackgroundColor: extendedColors.bgTertiary,
               disabledForegroundColor: extendedColors.neutral300,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(26),
               ),
             ),
             child: Text(
               l10n.filterAction,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: _selectedPeriod != TimePeriod.custom
+                color: (_selectedPeriod != TimePeriod.custom && _selectedPeriod != TimePeriod.last3Months)
                     ? extendedColors.bgBase
-                    : extendedColors.neutral100,
+                    : extendedColors.neutral200,
               ),
             ),
           ),
@@ -525,7 +531,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: extendedColors.primaryMain,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: extendedColors.bgSecondary,
+                    disabledBackgroundColor: extendedColors.bgTertiary,
                     disabledForegroundColor: extendedColors.neutral300,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -538,7 +544,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                       fontWeight: FontWeight.w600,
                       color: canFilter
                           ? extendedColors.bgBase
-                          : extendedColors.neutral100,
+                          : extendedColors.neutral200,
                     ),
                   ),
                 ),
