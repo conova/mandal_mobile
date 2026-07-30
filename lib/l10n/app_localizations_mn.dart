@@ -1537,6 +1537,8 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get cashDesc =>
       'Хувьцаа болон бонд зэрэг үнэт цаас худалдан авахад ашиглаж болох нийт боломжит мөнгөн дүнг хэлнэ.';
+
+  @override
   String get totalReturnReceivedInfo =>
       'Таны өнгөрсөн хугацаанд олсон бондын хүүгийн орлого';
 
@@ -1558,4 +1560,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get canceled => 'Цуцалсан';
+
+  @override
+  String get cancelAllOrders => 'Бүх захиалгыг цуцлах';
 }

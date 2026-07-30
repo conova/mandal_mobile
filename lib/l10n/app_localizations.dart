@@ -2997,6 +2997,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'It refers to the total available cash amount that can be used to purchase securities such as stocks and bonds.'**
   String get cashDesc;
+
   /// No description provided for @totalReturnReceivedInfo.
   ///
   /// In en, this message translates to:
@@ -3038,6 +3039,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Canceled'**
   String get canceled;
+
+  /// No description provided for @cancelAllOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel all orders'**
+  String get cancelAllOrders;
 }
 
 class _AppLocalizationsDelegate

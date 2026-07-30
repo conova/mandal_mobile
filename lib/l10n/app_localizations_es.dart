@@ -1543,6 +1543,8 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get cashDesc =>
       'It refers to the total available cash amount that can be used to purchase securities such as stocks and bonds.';
+
+  @override
   String get totalReturnReceivedInfo =>
       'Bond interest income you have earned in the past.';
 
@@ -1565,4 +1567,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get canceled => 'Canceled';
+
+  @override
+  String get cancelAllOrders => 'Cancel all orders';
 }

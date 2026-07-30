@@ -1,8 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import 'custom_svg_icon.dart';
 
 enum OrderType { buy, sell }
 
@@ -42,7 +42,6 @@ class OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return InkWell(
@@ -52,7 +51,7 @@ class OrderCard extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: theme.dividerTheme.color ?? theme.dividerColor,
+              color: theme.dividerTheme.color ?? extendedColors.neutral500,
               width: 1,
             ),
           ),
@@ -65,6 +64,7 @@ class OrderCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Flexible(
                         child: Text(
@@ -81,7 +81,9 @@ class OrderCard extends StatelessWidget {
                         child: Text(
                           subtitle,
                           style: theme.textTheme.labelLarge?.copyWith(
-                              color: extendedColors.neutral200
+                            color: extendedColors.neutral200,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 13
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -111,18 +113,18 @@ class OrderCard extends StatelessWidget {
                   theme,
                   type == OrderType.buy ? l10n.buy : l10n.sell,
                   type == OrderType.buy
-                      ? theme.primaryColor.withOpacity(0.12)
-                      : colorScheme.error.withOpacity(0.12),
+                      ? extendedColors.primary100
+                      : AppColors.redMain.withOpacity(0.12),
                   type == OrderType.buy
-                      ? theme.primaryColor
-                      : colorScheme.error,
+                      ? extendedColors.primaryMain
+                      : AppColors.redMain,
                 ),
                 const SizedBox(width: 8),
                 _buildBadge(
                   theme,
                   status == OrderStatus.open ? l10n.open : l10n.closed,
-                  colorScheme.surfaceContainerHighest,
-                  colorScheme.onSurfaceVariant,
+                  extendedColors.bgSecondary,
+                  extendedColors.neutral100,
                 ),
                 const SizedBox(width: 8),
                 _buildBadge(
@@ -132,8 +134,8 @@ class OrderCard extends StatelessWidget {
                       : (market == MarketType.stock
                             ? l10n.stock
                             : l10n.foreign),
-                  colorScheme.surfaceContainerHighest,
-                  colorScheme.onSurfaceVariant,
+                  extendedColors.bgSecondary,
+                  extendedColors.neutral100,
                 ),
               ],
             ),
@@ -149,8 +151,8 @@ class OrderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.executionQuantity, style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral200,
-                    fontWeight: FontWeight.w200
+                  color: extendedColors.neutral200,
+                  fontWeight: FontWeight.w200,
                 )),
                 Row(
                   children: [
@@ -163,10 +165,10 @@ class OrderCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     if (onEdit != null)
                       IconButton(
-                        icon: Icon(
-                          Icons.edit_square,
+                        icon: CustomSvgIcon(
+                          'edit',
                           size: 20,
-                          color: theme.primaryColor,
+                          color: extendedColors.primaryMain,
                         ),
                         onPressed: onEdit,
                         padding: EdgeInsets.zero,
@@ -181,6 +183,7 @@ class OrderCard extends StatelessWidget {
               date,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: extendedColors.neutral200,
+                fontWeight: FontWeight.w300
               ),
             ),
           ],
@@ -221,8 +224,8 @@ class OrderCard extends StatelessWidget {
           child: Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w200,
-                color: extendedColors.neutral200
+              fontWeight: FontWeight.w200,
+              color: extendedColors.neutral200,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -234,7 +237,7 @@ class OrderCard extends StatelessWidget {
             value,
             style: theme.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w400,
-              color: extendedColors.neutral100
+              color: extendedColors.neutral100,
             ),
             textAlign: TextAlign.right,
             maxLines: 1,

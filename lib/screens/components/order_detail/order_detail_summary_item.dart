@@ -23,15 +23,15 @@ class OrderDetailSummaryItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: extendedColors.neutral300,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: extendedColors.neutral200,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 5),
         Text(
           value,
           style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w300,
             color: valueColor ?? extendedColors.neutral100,
           ),
         ),
