@@ -34,23 +34,40 @@ class TransactionPeriodSheet extends StatefulWidget {
 }
 
 class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
-  late TimePeriod _selectedPeriod;
+  // Initialize everything with defaults to avoid any LateInitializationError
+  TimePeriod _selectedPeriod = TimePeriod.last3Months;
   bool _showDatePicker = false;
-  late DateTime _displayMonth;
+  DateTime _displayMonth = DateTime.now();
   DateTime? _startDate;
   DateTime? _endDate;
   bool _selectingStart = true;
 
+  final TextEditingController _startController = TextEditingController();
+  final TextEditingController _endController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    // Safely update state from widget properties
     _selectedPeriod = widget.initialPeriod;
     _startDate = widget.initialStartDate;
     _endDate = widget.initialEndDate;
-    _displayMonth = DateTime.now();
+    _displayMonth = _startDate ?? DateTime.now();
+
+    // Update controllers
+    _startController.text = _startDate != null ? _formatDate(_startDate!) : '';
+    _endController.text = _endDate != null ? _formatDate(_endDate!) : '';
+
     if (_selectedPeriod == TimePeriod.custom) {
       _showDatePicker = true;
     }
+  }
+
+  @override
+  void dispose() {
+    _startController.dispose();
+    _endController.dispose();
+    super.dispose();
   }
 
   void _prevMonth() {
@@ -69,22 +86,63 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
     setState(() {
       if (_selectingStart) {
         _startDate = day;
+        _startController.text = _formatDate(day);
         _selectingStart = false;
-        // Reset end if start is after end
         if (_endDate != null && day.isAfter(_endDate!)) {
           _endDate = null;
+          _endController.text = '';
         }
       } else {
         if (day.isBefore(_startDate!)) {
-          // If selecting end before start, swap
           _endDate = _startDate;
           _startDate = day;
+          _startController.text = _formatDate(_startDate!);
+          _endController.text = _formatDate(_endDate!);
         } else {
           _endDate = day;
+          _endController.text = _formatDate(day);
         }
         _selectingStart = true;
       }
     });
+  }
+
+  void _onDateTyped(String value, bool isStart) {
+    if (value.length < 8) return;
+
+    final parts = value.split('.');
+    if (parts.length == 3) {
+      final year = int.tryParse(parts[0]);
+      final month = int.tryParse(parts[1]);
+      final day = int.tryParse(parts[2]);
+
+      if (year != null && month != null && day != null) {
+        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+          try {
+            final date = DateTime(year, month, day);
+            setState(() {
+              if (isStart) {
+                _startDate = date;
+                _displayMonth = DateTime(date.year, date.month);
+                if (_endDate != null && date.isAfter(_endDate!)) {
+                  _endDate = null;
+                  _endController.text = '';
+                }
+              } else {
+                if (_startDate != null && date.isBefore(_startDate!)) {
+                  _endDate = _startDate;
+                  _startDate = date;
+                  _startController.text = _formatDate(_startDate!);
+                  _endController.text = _formatDate(_endDate!);
+                } else {
+                  _endDate = date;
+                }
+              }
+            });
+          } catch (_) {}
+        }
+      }
+    }
   }
 
   String _formatDate(DateTime date) {
@@ -104,7 +162,6 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Drag handle
           Center(
             child: Container(
               width: 40,
@@ -167,9 +224,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? extendedColors.bgBase
-                      : extendedColors.bgBase,
+                  color: extendedColors.bgBase,
                   border: Border.all(
                     color: isSelected
                         ? extendedColors.neutral100
@@ -190,7 +245,6 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
           }).toList(),
         ),
         const SizedBox(height: 24),
-        // Filter button
         Divider(height: 1, color: extendedColors.neutral500),
         const SizedBox(height: 16),
         SizedBox(
@@ -217,6 +271,9 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
               l10n.filterAction,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: _selectedPeriod != TimePeriod.custom
+                    ? extendedColors.bgBase
+                    : extendedColors.neutral100,
               ),
             ),
           ),
@@ -237,12 +294,10 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
     final offset = firstWeekday - 1;
 
     final weekdays = ['ДА', 'МЯ', 'ЛХ', 'ПҮ', 'БА', 'БЯ', 'НЯ'];
-
     final bool canFilter = _startDate != null && _endDate != null;
 
     return Column(
       children: [
-        // Month navigator
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -252,13 +307,13 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                 width: 56,
                 height: 44,
                 decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
                   color: extendedColors.bgSecondary,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: CustomSvgIcon('chevron-left', color: extendedColors.neutral100),
+                  padding: const EdgeInsets.all(10),
+                  child: CustomSvgIcon('chevron-left',
+                      color: extendedColors.neutral100),
                 ),
               ),
             ),
@@ -275,51 +330,47 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                 width: 56,
                 height: 44,
                 decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
                   color: extendedColors.bgSecondary,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: CustomSvgIcon('chevron-right', color: extendedColors.neutral100),
+                  padding: const EdgeInsets.all(10),
+                  child: CustomSvgIcon('chevron-right',
+                      color: extendedColors.neutral100),
                 ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        // Date input boxes
         Row(
           children: [
             Expanded(
               child: _buildDateInput(
                 label: l10n.startDate,
-                date: _startDate,
+                controller: _startController,
                 isActive: _selectingStart,
                 extendedColors: extendedColors,
                 theme: theme,
                 onTap: () => setState(() => _selectingStart = true),
+                onChanged: (val) => _onDateTyped(val, true),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildDateInput(
                 label: l10n.endDate,
-                date: _endDate,
+                controller: _endController,
                 isActive: !_selectingStart,
                 extendedColors: extendedColors,
                 theme: theme,
-                onTap: () {
-                  if (_startDate != null) {
-                    setState(() => _selectingStart = false);
-                  }
-                },
+                onTap: () => setState(() => _selectingStart = false),
+                onChanged: (val) => _onDateTyped(val, false),
               ),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        // Weekday headers
         Row(
           children: weekdays.map((day) {
             return Expanded(
@@ -336,7 +387,6 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
           }).toList(),
         ),
         const SizedBox(height: 8),
-        // Calendar grid
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -344,10 +394,9 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
             crossAxisCount: 7,
             childAspectRatio: 1,
           ),
-          itemCount: offset + daysInMonth + _trailingDays(offset, daysInMonth),
+          itemCount: 42, // Always show 6 rows (6 * 7 = 42) for constant height
           itemBuilder: (context, index) {
             if (index < offset) {
-              // Previous month trailing days
               final prevMonthDays =
                   DateTime(_displayMonth.year, _displayMonth.month, 0).day;
               final day = prevMonthDays - offset + index + 1;
@@ -363,7 +412,6 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
 
             final dayNum = index - offset + 1;
             if (dayNum > daysInMonth) {
-              // Next month leading days
               final nextDay = dayNum - daysInMonth;
               return Center(
                 child: Text(
@@ -400,7 +448,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                   color: (isStartSelected || isEndSelected)
                       ? extendedColors.primaryMain
                       : isInRange
-                          ? extendedColors.primary100.withValues(alpha: 0.2)
+                          ? extendedColors.primary100.withOpacity(0.2)
                           : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
@@ -416,9 +464,10 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                               : isToday
                                   ? extendedColors.primaryMain
                                   : extendedColors.neutral100,
-                          fontWeight: (isStartSelected || isEndSelected || isToday)
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                          fontWeight:
+                              (isStartSelected || isEndSelected || isToday)
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                         ),
                       ),
                       if (isToday && !isStartSelected && !isEndSelected)
@@ -440,7 +489,6 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         const SizedBox(height: 16),
         Divider(height: 1, color: extendedColors.neutral500),
         const SizedBox(height: 16),
-        // Bottom: back + filter
         Row(
           children: [
             GestureDetector(
@@ -452,7 +500,11 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                   shape: BoxShape.circle,
                   color: extendedColors.bgSecondary,
                 ),
-                child: Icon(Icons.arrow_back, color: extendedColors.neutral100, size: 20),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: CustomSvgIcon('close-button',
+                      color: extendedColors.neutral100, size: 20),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -477,13 +529,16 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                     disabledForegroundColor: extendedColors.neutral300,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(26),
                     ),
                   ),
                   child: Text(
                     l10n.filterAction,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: canFilter
+                          ? extendedColors.bgBase
+                          : extendedColors.neutral100,
                     ),
                   ),
                 ),
@@ -497,19 +552,23 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
 
   Widget _buildDateInput({
     required String label,
-    required DateTime? date,
+    required TextEditingController controller,
     required bool isActive,
     required ExtendedColors extendedColors,
     required ThemeData theme,
     required VoidCallback onTap,
+    required ValueChanged<String> onChanged,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        height: 72,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isActive ? extendedColors.primaryMain : extendedColors.neutral400,
+            color: isActive
+                ? extendedColors.primaryMain
+                : extendedColors.neutral400,
             width: isActive ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -523,16 +582,24 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                 color: extendedColors.neutral300,
               ),
             ),
-            if (date != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                _formatDate(date),
-                style: theme.textTheme.bodyMedium?.copyWith(
+            Expanded(
+              child: TextField(
+                controller: controller,
+                onTap: onTap,
+                onChanged: onChanged,
+                keyboardType: TextInputType.datetime,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
+                  hintText: 'YYYY.MM.DD',
+                ),
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: extendedColors.neutral100,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-            ],
+            ),
           ],
         ),
       ),
