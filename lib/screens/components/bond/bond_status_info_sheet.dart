@@ -114,7 +114,6 @@ class BondStatusInfoSheet extends StatelessWidget {
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: extendedColors.neutral100,
-              fontFamily: 'Geologica'
             ),
           ),
           const SizedBox(height: 12),
@@ -125,7 +124,6 @@ class BondStatusInfoSheet extends StatelessWidget {
               fontWeight: FontWeight.w500,
               color: extendedColors.neutral100,
               fontSize: 14,
-              fontFamily: 'Geologica',
             ),
           ),
           const SizedBox(height: 32),

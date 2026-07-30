@@ -61,17 +61,15 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
+        toolbarHeight: 70,
         leadingWidth: 60,
-        leading: Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: EdgeInsets.only(left: 20, top: 20),
-            child: CircleBackButton(),
-          ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16, top: 10),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -105,6 +103,7 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const ReleaseLockedAmountHeader(),
+          const SizedBox(height: 10,),
           Expanded(
             child: ReleaseLockedAmountList(
               items: _items,

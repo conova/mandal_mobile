@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../theme/extended_colors.dart';
+
 class StockTradingPercentageSelector extends StatelessWidget {
   final ValueChanged<String>? onPercentageSelected;
 
@@ -9,6 +11,7 @@ class StockTradingPercentageSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final percentages = ['25%', '50%', '75%', '100%'];
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -18,7 +21,7 @@ class StockTradingPercentageSelector extends StatelessWidget {
           child: Text(
             p,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: extendedColors.neutral300,
             ),
           ),
         );

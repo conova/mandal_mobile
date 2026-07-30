@@ -1570,4 +1570,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cancelAllOrders => 'Cancel all orders';
+
+  @override
+  String get dailyStockRate => 'Daily stock rate';
 }

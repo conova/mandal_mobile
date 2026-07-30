@@ -169,6 +169,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
         message: e.toString().replaceFirst('Exception: ', ''),
         type: CustomSnackbarType.error,
       );
+      _fetchWatchlist();
       return false;
     }
   }
@@ -228,7 +229,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         const SizedBox(height: 120),
-        Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+        CustomSvgIcon('info-circle', size: 48, color: theme.colorScheme.error),
         const SizedBox(height: 16),
         Text(
           _error ?? '',
@@ -290,7 +291,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                     ),
                   ),
                   Text(
-                    l10n.lastPrice24h,
+                    l10n.dailyStockRate,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.neutral200,
                     ),
@@ -340,8 +341,8 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     color: extendedColors.red.withOpacity(0.1),
-                    child: Icon(
-                      Icons.delete_outline,
+                    child: CustomSvgIcon(
+                      'trash-bin',
                       color: extendedColors.red,
                       size: 28,
                     ),

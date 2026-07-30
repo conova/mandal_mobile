@@ -62,7 +62,7 @@ class OnboardingStepsSheet extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: theme.disabledColor.withOpacity(0.3),
+                    color: extendedColors.neutral300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

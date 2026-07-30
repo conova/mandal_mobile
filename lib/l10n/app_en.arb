@@ -580,5 +580,6 @@
     "noHistoryFound": "No history found",
     "done": "Done",
     "canceled": "Canceled",
-    "cancelAllOrders": "Cancel all orders"
+    "cancelAllOrders": "Cancel all orders",
+    "dailyStockRate": "Daily stock rate"
 }
