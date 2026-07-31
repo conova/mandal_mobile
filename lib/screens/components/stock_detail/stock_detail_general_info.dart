@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 class StockDetailGeneralInfo extends StatelessWidget {
   final String marketCap;
@@ -153,8 +154,8 @@ class StockDetailGeneralInfo extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Icon(
-                    Icons.info_outline,
+                  CustomSvgIcon(
+                    'info-circle',
                     size: 16,
                     color: extendedColors.neutral200,
                   ),

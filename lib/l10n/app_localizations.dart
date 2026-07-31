@@ -535,7 +535,7 @@ abstract class AppLocalizations {
   /// No description provided for @history.
   ///
   /// In en, this message translates to:
-  /// **'History'**
+  /// **'Statement'**
   String get history;
 
   /// No description provided for @assetBreakdown.
@@ -2974,6 +2974,30 @@ abstract class AppLocalizations {
   /// **'No notifications at the moment.'**
   String get noNotifications;
 
+  /// No description provided for @removeFromList.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to remove {name} stock from your watchlist?'**
+  String removeFromList(String name);
+
+  /// No description provided for @holdAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold Amount'**
+  String get holdAmount;
+
+  /// No description provided for @holdAmountDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The total amount ordered to purchase stocks and bonds is called the hold amount. If the order is not executed, the hold amount can be canceled to increase cash balance.'**
+  String get holdAmountDesc;
+
+  /// No description provided for @cashDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'It refers to the total available cash amount that can be used to purchase securities such as stocks and bonds.'**
+  String get cashDesc;
+
   /// No description provided for @totalReturnReceivedInfo.
   ///
   /// In en, this message translates to:
@@ -3015,6 +3039,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Canceled'**
   String get canceled;
+
+  /// No description provided for @cancelAllOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel all orders'**
+  String get cancelAllOrders;
+
+  /// No description provided for @dailyStockRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily stock rate'**
+  String get dailyStockRate;
+
+  /// No description provided for @last1Year.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 1 year'**
+  String get last1Year;
+
+  /// No description provided for @orderedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered date'**
+  String get orderedDate;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @exchangeRateGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate gain'**
+  String get exchangeRateGain;
 }
 
 class _AppLocalizationsDelegate

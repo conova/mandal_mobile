@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/custom_bottom_sheet.dart';
+import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/empty_state.dart';
 
@@ -126,29 +128,23 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
     WatchlistStock item,
     ExtendedColors c,
   ) async {
-    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
-    final confirmed = await showDialog<bool>(
+    final l10n = AppLocalizations.of(context)!;
+    
+    final confirmed = await showModalBottomSheet<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('${item.symbol} устгах'),
-        backgroundColor: extendedColors.bgBase,
-
-        content: Text(
-          '${item.name} хувьцааг хадгалсан жагсаалтаас хасах уу?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Болих'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: c.red),
-            child: const Text('Устгах'),
-          ),
-        ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => CustomBottomSheet(
+        title: '${item.symbol} ${l10n.remove}',
+        description: l10n.removeFromList(item.name),
+        confirmText: l10n.remove,
+        cancelText: l10n.back,
+        onConfirm: () => Navigator.pop(ctx, true),
+        onCancel: () => Navigator.pop(ctx, false),
+        buttonVariantTop: CustomButtonVariant.primary,
       ),
     );
+
     if (confirmed != true) return false;
 
     try {
@@ -173,6 +169,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
         message: e.toString().replaceFirst('Exception: ', ''),
         type: CustomSnackbarType.error,
       );
+      _fetchWatchlist();
       return false;
     }
   }
@@ -232,7 +229,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         const SizedBox(height: 120),
-        Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+        CustomSvgIcon('info-circle', size: 48, color: theme.colorScheme.error),
         const SizedBox(height: 16),
         Text(
           _error ?? '',
@@ -294,7 +291,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                     ),
                   ),
                   Text(
-                    l10n.lastPrice24h,
+                    l10n.dailyStockRate,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.neutral200,
                     ),
@@ -306,7 +303,6 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
             ReorderableListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
               proxyDecorator: (child, index, animation) {
                 return AnimatedBuilder(
                   animation: animation,
@@ -345,8 +341,8 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     color: extendedColors.red.withOpacity(0.1),
-                    child: Icon(
-                      Icons.delete_outline,
+                    child: CustomSvgIcon(
+                      'trash-bin',
                       color: extendedColors.red,
                       size: 28,
                     ),
@@ -404,7 +400,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
           if (mounted) _fetchWatchlist();
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           child: Row(
             children: [
               CustomSvgIcon('menu-item', color: extendedColors.neutral300, size: 24),

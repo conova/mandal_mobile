@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../theme/extended_colors.dart';
 
 class StockTradingQuantitySelector extends StatelessWidget {
   final TextEditingController controller;
@@ -22,6 +24,7 @@ class StockTradingQuantitySelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
 
     return GestureDetector(
       onTap: () => focusNode.requestFocus(),
@@ -29,7 +32,7 @@ class StockTradingQuantitySelector extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+          border: Border.all(color: extendedColors.neutral500),
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(16),
             bottomRight: Radius.circular(16),
@@ -40,8 +43,8 @@ class StockTradingQuantitySelector extends StatelessWidget {
           children: [
             Text(
               l10n.quantityLabel,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral200,
                 fontWeight: FontWeight.w200,
               ),
             ),
@@ -67,9 +70,9 @@ class StockTradingQuantitySelector extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    _buildCircleButton(Icons.remove, onDecrease, theme),
+                    _buildCircleButton('minus', onDecrease, extendedColors),
                     const SizedBox(width: 8),
-                    _buildCircleButton(Icons.add, onIncrease, theme),
+                    _buildCircleButton('plus', onIncrease, extendedColors),
                   ],
                 ),
               ],
@@ -81,20 +84,20 @@ class StockTradingQuantitySelector extends StatelessWidget {
   }
 
   Widget _buildCircleButton(
-    IconData icon,
+    String icon,
     VoidCallback onTap,
-    ThemeData theme,
+    ExtendedColors extendedColors,
   ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: theme.colorScheme.secondary,
+          color: extendedColors.bgSecondary,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Icon(icon, size: 20, color: theme.colorScheme.onSurface),
+        child: CustomSvgIcon(icon, size: 20, color: extendedColors.neutral100),
       ),
     );
   }

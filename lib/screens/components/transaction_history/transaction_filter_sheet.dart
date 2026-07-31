@@ -59,7 +59,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: extendedColors.neutral400,
+                color: extendedColors.neutral300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -115,18 +115,24 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                   child: ElevatedButton(
                     onPressed: _clearAll,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: extendedColors.bgSecondary,
+                      backgroundColor: _selectedTags.isEmpty
+                        ? extendedColors.bgTertiary
+                        : extendedColors.primary100,
                       foregroundColor: extendedColors.neutral100,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(26),
                       ),
                     ),
                     child: Text(
-                      l10n.clearFilter,
+                      _selectedTags.isEmpty
+                          ? l10n.clearFilter
+                          : '${l10n.clearFilter} (${_selectedTags.length})',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: extendedColors.neutral100,
+                        color: _selectedTags.isEmpty
+                            ? extendedColors.neutral200
+                            : extendedColors.primaryMain,
                       ),
                     ),
                   ),
@@ -139,18 +145,22 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context, _selectedTags),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: extendedColors.primaryMain,
-                      foregroundColor: Colors.white,
+                      backgroundColor: _selectedTags.isEmpty
+                        ? extendedColors.bgTertiary
+                        : extendedColors.primaryMain,
+                      foregroundColor: extendedColors.neutral100,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(26),
                       ),
                     ),
                     child: Text(
                       l10n.filterAction,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: _selectedTags.isEmpty
+                            ? extendedColors.neutral200
+                            : extendedColors.bgBase,
                       ),
                     ),
                   ),
@@ -184,18 +194,18 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
     return GestureDetector(
       onTap: () => _toggle(tag),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? extendedColors.primaryMain : extendedColors.bgBase,
+          color: isSelected ? extendedColors.bgSecondary : extendedColors.bgBase,
           border: Border.all(
-            color: isSelected ? extendedColors.primaryMain : extendedColors.neutral400,
+            color: isSelected ? extendedColors.bgSecondary : extendedColors.neutral500,
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(30),
         ),
         child: Text(
           label,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: isSelected ? Colors.white : extendedColors.neutral100,
+            color: isSelected ? extendedColors.neutral100 : extendedColors.neutral200,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),

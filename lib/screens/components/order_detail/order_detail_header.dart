@@ -25,13 +25,14 @@ class OrderDetailHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 10,),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Flexible(
                 child: Text(
                   title,
-                  style: theme.textTheme.headlineSmall?.copyWith(
+                  style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
                   ),
@@ -43,11 +44,11 @@ class OrderDetailHeader extends StatelessWidget {
                 const SizedBox(width: 8),
                 Flexible(
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
+                    padding: const EdgeInsets.only(bottom: 2),
                     child: Text(
                       subtitle,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral400,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.neutral200,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -104,9 +105,9 @@ class OrderDetailHeader extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: theme.textTheme.labelSmall?.copyWith(
+        style: theme.textTheme.labelMedium?.copyWith(
           color: textColor,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w400,
         ),
       ),
     );

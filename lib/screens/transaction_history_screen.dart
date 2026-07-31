@@ -19,7 +19,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   Set<FilterTag> _activeFilters = {};
-  TimePeriod _timePeriod = TimePeriod.last3Months;
+  TimePeriod _timePeriod = TimePeriod.last1Year;
   DateTime? _customStart;
   DateTime? _customEnd;
 
@@ -151,9 +151,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
         return l10n.last3Months;
       case TimePeriod.last6Months:
         return l10n.last6Months;
+      case TimePeriod.last1Year:
+        return l10n.last1Year;
       case TimePeriod.custom:
         if (_customStart != null && _customEnd != null) {
-          return '${_customStart!.month.toString().padLeft(2, '0')}.${_customStart!.day.toString().padLeft(2, '0')} - ${_customEnd!.month.toString().padLeft(2, '0')}.${_customEnd!.day.toString().padLeft(2, '0')}';
+          return '${_customStart!.year.toString().padLeft(2, '0')}.${_customStart!.month.toString().padLeft(2, '0')}.${_customStart!.day.toString().padLeft(2, '0')} - ${_customStart!.year.toString().padLeft(2, '0')}.${_customEnd!.month.toString().padLeft(2, '0')}.${_customEnd!.day.toString().padLeft(2, '0')}';
         }
         return l10n.selectDateRange;
     }
@@ -218,14 +220,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                     child: TabBar(
                       controller: _tabController,
                       labelColor: extendedColors.neutral100,
-                      unselectedLabelColor: extendedColors.neutral400,
                       indicatorColor: extendedColors.primaryMain,
                       indicatorWeight: 4,
                       labelStyle: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.normal,
+                        fontWeight: FontWeight.w400,
                       ),
                       tabs: [
                         Tab(text: l10n.all),
@@ -259,7 +257,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
                     extendedColors: extendedColors,
                     theme: theme,
                     onTap: _showPeriodSheet,
-                    isActive: false,
+                    isActive: _timePeriod != TimePeriod.last1Year,
                   ),
                 ],
               ),
@@ -291,28 +289,28 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
         decoration: BoxDecoration(
           color: isActive
               ? extendedColors.primaryMain
               : extendedColors.bgSecondary,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: isActive ? Colors.black : extendedColors.neutral100,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: isActive ? extendedColors.bgBase : extendedColors.neutral100,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
             CustomSvgIcon(
               'button-down',
               size: 6,
-              color: isActive ? Colors.black : extendedColors.neutral200,
+              color: isActive ? extendedColors.bgBase : extendedColors.neutral200,
             ),
           ],
         ),

@@ -174,7 +174,7 @@ class _OrderScreenState extends State<OrderScreen>
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.w300,
-                            color: extendedColors.neutral300,
+                            color: extendedColors.neutral200,
                           ),
                         ),
                       ),
@@ -212,7 +212,28 @@ class _OrderScreenState extends State<OrderScreen>
                   ),
                 ),
               ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 20,),
+            if (!_isLoading && orders.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      //
+                    },
+                    child: Text(
+                      '${l10n.cancelAllOrders} (${orders.length})',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.red,
+                        decoration: TextDecoration.underline,
+                        decorationColor: extendedColors.red,
+                        decorationThickness: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 80),
           ],
         ),
       ),

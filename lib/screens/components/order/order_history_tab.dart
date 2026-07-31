@@ -6,6 +6,7 @@ import '../../../models/order.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_snackbar.dart';
+import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/order_card.dart';
 import '../transaction_history/transaction_period_sheet.dart';
 
@@ -53,6 +54,8 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
           (DateTime(now.year, now.month - 3, now.day), now),
       TimePeriod.last6Months =>
           (DateTime(now.year, now.month - 6, now.day), now),
+      TimePeriod.last1Year =>
+          (DateTime(now.year - 1, now.month, now.day), now),
       TimePeriod.custom => (
           _customStart ?? DateTime(now.year, now.month - 3, now.day),
           _customEnd ?? now,
@@ -125,7 +128,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
   /// "Шүүлтүүр" / "Шүүлтүүр 2" — сонгосон шүүлтийн тоо
   String _filterLabel(AppLocalizations l10n) {
     final count = (_type != null ? 1 : 0) + (_status != null ? 1 : 0);
-    return count == 0 ? l10n.filter : '${l10n.filter} $count';
+    return count == 0 ? l10n.filter : '${l10n.filter} ($count)';
   }
 
   String _periodLabel(AppLocalizations l10n) {
@@ -134,9 +137,10 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
       TimePeriod.last1Month => l10n.last1MonthFilter,
       TimePeriod.last3Months => l10n.last3Months,
       TimePeriod.last6Months => l10n.last6Months,
+      TimePeriod.last1Year => l10n.last1Year,
       TimePeriod.custom => () {
           final (start, end) = _dateRange();
-          return '${start.month}.${start.day} - ${end.month}.${end.day}';
+          return '${start.year}.${start.month}.${start.day} - ${start.year}.${end.month}.${end.day}';
         }(),
     };
   }
@@ -168,7 +172,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
                 const SizedBox(width: 8),
                 _DropdownChip(
                   label: _periodLabel(l10n),
-                  isActive: false,
+                  isActive: _period != TimePeriod.last3Months,
                   onTap: _openPeriodSheet,
                 ),
               ],
@@ -200,6 +204,18 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.neutral100,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          l10n.noActiveOrdersDesc,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            color: extendedColors.neutral200,
+                          ),
                         ),
                       ),
                     ],
@@ -265,31 +281,32 @@ class _DropdownChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final fg = isActive ? extendedColors.bgBase : extendedColors.neutral100;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
         decoration: BoxDecoration(
           color: isActive
               ? extendedColors.primaryMain
               : extendedColors.bgSecondary,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w400,
-                color: fg,
+                color: isActive
+                  ? extendedColors.bgBase
+                  : extendedColors.neutral100,
               ),
             ),
-            const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down, size: 20, color: fg),
+            const SizedBox(width: 6),
+            CustomSvgIcon('button-down', size: 6, color: isActive ? extendedColors.bgBase : extendedColors.neutral300),
           ],
         ),
       ),
@@ -313,6 +330,8 @@ class _OrderHistoryFilterSheet extends StatefulWidget {
 class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
   String? _type;
   String? _status;
+
+  bool get _hasFilter => _type != null || _status != null;
 
   @override
   void initState() {
@@ -339,7 +358,7 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: extendedColors.neutral400,
+                color: extendedColors.neutral300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -409,7 +428,9 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       _status = null;
                     }),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: extendedColors.bgSecondary,
+                      backgroundColor: _hasFilter
+                          ? extendedColors.primary100
+                          : extendedColors.bgTertiary,
                       foregroundColor: extendedColors.neutral100,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -417,10 +438,14 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       ),
                     ),
                     child: Text(
-                      l10n.clearFilter,
+                      !_hasFilter
+                          ? l10n.clearFilter
+                          : '${l10n.clearFilter} (${(_type != null ? 1 : 0) + (_status != null ? 1 : 0)})',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
+                        color: _hasFilter
+                            ? extendedColors.primaryMain
+                            : extendedColors.neutral200,
                       ),
                     ),
                   ),
@@ -436,7 +461,9 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       {'type': _type, 'status': _status},
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: extendedColors.bgSecondary,
+                      backgroundColor: _hasFilter
+                          ? extendedColors.primaryMain
+                          : extendedColors.bgTertiary,
                       foregroundColor: extendedColors.neutral100,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -447,7 +474,9 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                       l10n.filterAction,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
+                        color: _hasFilter
+                            ? extendedColors.bgBase
+                            : extendedColors.neutral200,
                       ),
                     ),
                   ),
@@ -468,21 +497,23 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(24),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? extendedColors.bgSecondary : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: isSelected
-                ? extendedColors.primaryMain
-                : extendedColors.neutral400,
+                ? extendedColors.bgSecondary
+                : extendedColors.neutral500,
           ),
         ),
         child: Text(
           label,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w300,
-            color: extendedColors.neutral100,
+            color: isSelected
+              ? extendedColors.neutral100
+              : extendedColors.neutral200,
           ),
         ),
       ),

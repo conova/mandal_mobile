@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import 'custom_svg_icon.dart';
 
 class LockedAmountBottomSheet extends StatelessWidget {
   final String amount;
@@ -20,10 +21,10 @@ class LockedAmountBottomSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(color: extendedColors.primary100),
+      decoration: BoxDecoration(color: extendedColors.primary200),
       child: Row(
         children: [
-          Icon(Icons.info, color: extendedColors.primaryMain, size: 22),
+          CustomSvgIcon('info-circle', color: extendedColors.primaryMain, size: 22),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

@@ -5,6 +5,7 @@ import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_info_popup_bottom_sheet.dart';
 
 enum CurrencyType { mnt, usd }
 
@@ -59,7 +60,7 @@ class CurrencyDetailScreen extends StatelessWidget {
                     child: CustomButton(
                       label: l10n.income,
                       size: CustomButtonSize.small,
-                      icon: const Icon(Icons.add),
+                      icon: CustomSvgIcon('plus'),
                       variant: isMnt ? CustomButtonVariant.primary : CustomButtonVariant.neutral,
                       onPressed: () =>
                           Navigator.pushNamed(context, '/income_method'),
@@ -70,7 +71,7 @@ class CurrencyDetailScreen extends StatelessWidget {
                     child: CustomButton(
                       label: l10n.expense,
                       size: CustomButtonSize.small,
-                      icon: const Icon(Icons.sync),
+                      icon: CustomSvgIcon('reverse-right'),
                       variant: CustomButtonVariant.tertiary,
                       onPressed: () =>
                           Navigator.pushNamed(context, '/withdraw_method'),
@@ -101,6 +102,9 @@ class CurrencyDetailScreen extends StatelessWidget {
               icon: 'coins-hand',
               label: l10n.cash,
               amount: isMnt ? '0.00₮' : '0.00\$',
+              l10n: l10n,
+              descTitle: l10n.cash,
+              descText: l10n.cashDesc
             ),
             const SizedBox(height: 20),
             _buildInfoRow(
@@ -118,6 +122,9 @@ class CurrencyDetailScreen extends StatelessWidget {
                 onPressed: () =>
                     Navigator.pushNamed(context, '/release_locked'),
               ),
+              l10n: l10n,
+              descTitle: l10n.holdAmount,
+              descText: l10n.holdAmountDesc
             ),
             const SizedBox(height: 24),
             Divider(height: 1, color: extendedColors.neutral500),
@@ -263,6 +270,9 @@ class CurrencyDetailScreen extends StatelessWidget {
     required String icon,
     required String label,
     required String amount,
+    required AppLocalizations l10n,
+    required descTitle,
+    required descText,
     Widget? trailing,
   }) {
     return Padding(
@@ -293,8 +303,14 @@ class CurrencyDetailScreen extends StatelessWidget {
                         color: extendedColors.neutral200,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    CustomSvgIcon('info-circle', size: 20, color: extendedColors.neutral300,)
+                    const SizedBox(width: 8),
+                    CustomInfoPopupBottomSheet(
+                      title: descTitle,
+                      description: descText,
+                      extendedColors: extendedColors,
+                      l10n: l10n,
+                      icon: icon,
+                    )
                   ],
                 ),
                 const SizedBox(height: 4),

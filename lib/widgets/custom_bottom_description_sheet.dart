@@ -1,32 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 
 import '../theme/extended_colors.dart';
 
-class CustomBottomSheet extends StatelessWidget {
+class CustomBottomDescriptionSheet extends StatelessWidget {
   final String title;
   final String description;
-  final String confirmText;
   final String cancelText;
-  final VoidCallback onConfirm;
   final VoidCallback onCancel;
   final String? icon;
   final Color? confirmColor;
-  final CustomButtonVariant? buttonVariantTop;
-  final CustomButtonVariant? buttonVariantBottom;
+  final CustomButtonVariant? buttonVariant;
 
-  const CustomBottomSheet({
+  const CustomBottomDescriptionSheet({
     super.key,
     required this.title,
     required this.description,
-    required this.confirmText,
     required this.cancelText,
-    required this.onConfirm,
     required this.onCancel,
     this.icon,
     this.confirmColor,
-    this.buttonVariantTop,
-    this.buttonVariantBottom,
+    this.buttonVariant
   });
 
   @override
@@ -37,14 +32,14 @@ class CustomBottomSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: extendedColors.bgBase,
-          boxShadow: [
-            BoxShadow(
-              color: extendedColors.neutral400,
-              offset: Offset(0, -4),
-              blurRadius: 40,
-            )
-          ]
+        color: extendedColors.bgBase,
+        boxShadow: [
+          BoxShadow(
+            color: extendedColors.neutral400,
+            offset: Offset(0, -4),
+            blurRadius: 40,
+          )
+        ]
       ),
       // Жижиг дэлгэц/keyboard үед агуулга багтахгүй бол scroll болно
       child: SingleChildScrollView(
@@ -61,37 +56,44 @@ class CustomBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             if (icon != null)
-              Image.asset(icon ?? 'assets/images/log_out.png', height: 130),
+              Container(
+                padding: EdgeInsets.all(20),
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: extendedColors.bgSecondary,
+                  shape: BoxShape.circle,
+                ),
+                child: CustomSvgIcon(icon ?? 'info-circle', size: 20, color: extendedColors.neutral100,),
+              ),
+            const SizedBox(height: 24,),
             Text(
               title,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: extendedColors.neutral100
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                description,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w300,
+                  color: extendedColors.neutral100,
+                  fontSize: 14,
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: CustomButton(
-                label: confirmText,
-                onPressed: onConfirm,
-                variant: buttonVariantTop ?? CustomButtonVariant.red,
-              ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 26),
             CustomButton(
               label: cancelText,
               onPressed: onCancel,
-              variant: buttonVariantBottom ?? CustomButtonVariant.tertiary,
+              variant: buttonVariant ?? CustomButtonVariant.tertiary,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 26),
           ],
         ),
       ),

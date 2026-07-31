@@ -68,7 +68,16 @@ class BondStatusInfoSheet extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      decoration: BoxDecoration(color: extendedColors.bgBase),
+      decoration: BoxDecoration(
+        color: extendedColors.bgBase,
+        boxShadow: [
+          BoxShadow(
+            color: extendedColors.neutral400,
+            offset: Offset(0, -4),
+            blurRadius: 40,
+          )
+        ]
+      ),
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -78,16 +87,16 @@ class BondStatusInfoSheet extends StatelessWidget {
             width: 44,
             height: 4,
             decoration: BoxDecoration(
-              color: extendedColors.neutral400,
+              color: extendedColors.neutral300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(height: 40),
           // Дугуй дэвсгэртэй info icon
           Container(
-            width: 64,
-            height: 64,
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            width: 80,
+            height: 80,
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: extendedColors.bgSecondary,
               shape: BoxShape.circle,
@@ -103,7 +112,7 @@ class BondStatusInfoSheet extends StatelessWidget {
             title,
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
               color: extendedColors.neutral100,
             ),
           ),
@@ -112,9 +121,9 @@ class BondStatusInfoSheet extends StatelessWidget {
             description,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: AppTextStyles.light,
-              color: extendedColors.neutral200,
-              height: 1.5,
+              fontWeight: FontWeight.w500,
+              color: extendedColors.neutral100,
+              fontSize: 14,
             ),
           ),
           const SizedBox(height: 32),

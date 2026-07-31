@@ -235,7 +235,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get last1Month => 'Сүүлийн 1 сар';
 
   @override
-  String get history => 'Түүх';
+  String get history => 'Хуулга';
 
   @override
   String get assetBreakdown => 'Хөрөнгийн задаргаа';
@@ -1523,6 +1523,22 @@ class AppLocalizationsMn extends AppLocalizations {
   String get noNotifications => 'Одоогоор мэдэгдэл байхгүй.';
 
   @override
+  String removeFromList(String name) {
+    return '$name хувьцааг хадгалсан жагсаалтаас хасах уу?';
+  }
+
+  @override
+  String get holdAmount => 'Түгжигдсэн дүн';
+
+  @override
+  String get holdAmountDesc =>
+      'Хувьцаа болон бонд худалдан авахаар захиалга өгсөн нийт дүнг түгжигдсэн дүн гэнэ. Захиалга биелээгүй үед түгжигдсэн дүнг цуцлаж бэлэн мөнгө ихэсгэх боломжтой.';
+
+  @override
+  String get cashDesc =>
+      'Хувьцаа болон бонд зэрэг үнэт цаас худалдан авахад ашиглаж болох нийт боломжит мөнгөн дүнг хэлнэ.';
+
+  @override
   String get totalReturnReceivedInfo =>
       'Таны өнгөрсөн хугацаанд олсон бондын хүүгийн орлого';
 
@@ -1544,4 +1560,22 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get canceled => 'Цуцалсан';
+
+  @override
+  String get cancelAllOrders => 'Бүх захиалгыг цуцлах';
+
+  @override
+  String get dailyStockRate => 'Өдрийн ханш';
+
+  @override
+  String get last1Year => 'Сүүлийн 1 жил';
+
+  @override
+  String get orderedDate => 'Захиалга өгсөн огноо';
+
+  @override
+  String get account => 'Данс';
+
+  @override
+  String get exchangeRateGain => 'Ханшийн ашиг';
 }

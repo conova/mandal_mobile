@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
@@ -109,8 +110,8 @@ class BondMarketCard extends StatelessWidget {
                         GestureDetector(
                           onTap: onInfoTap,
                           behavior: HitTestBehavior.opaque,
-                          child: Icon(
-                            Icons.info_outline,
+                          child: CustomSvgIcon(
+                            'info-circle',
                             size: 20,
                             color: extendedColors.neutral300,
                           ),

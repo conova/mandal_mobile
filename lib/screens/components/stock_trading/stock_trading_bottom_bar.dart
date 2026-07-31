@@ -30,7 +30,7 @@ class StockTradingBottomBar extends StatelessWidget {
         ),
         Container(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          color: theme.colorScheme.surface,
+          color: extendedColors.bgBase,
           child: SafeArea(
             bottom: true,
             child: SizedBox(
@@ -50,7 +50,7 @@ class StockTradingBottomBar extends StatelessWidget {
                   l10n.placeOrder,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimary,
+                    color: extendedColors.bgBase,
                   ),
                 ),
               ),
