@@ -583,5 +583,7 @@
     "cancelAllOrders": "Cancel all orders",
     "dailyStockRate": "Daily stock rate",
     "last1Year": "Last 1 year",
-    "orderedDate": "Ordered date"
+    "orderedDate": "Ordered date",
+    "account": "Account",
+    "exchangeRateGain": "Exchange rate gain"
 }

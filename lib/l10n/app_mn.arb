@@ -521,5 +521,7 @@
     "cancelAllOrders": "Бүх захиалгыг цуцлах",
     "dailyStockRate": "Өдрийн ханш",
     "last1Year": "Сүүлийн 1 жил",
-    "orderedDate": "Захиалга өгсөн огноо"
+    "orderedDate": "Захиалга өгсөн огноо",
+    "account": "Данс",
+    "exchangeRateGain": "Ханшийн ашиг"
 }

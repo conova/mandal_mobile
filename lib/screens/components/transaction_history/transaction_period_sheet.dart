@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_svg_icon.dart';
+import '../../../widgets/date_input_formatter.dart';
 
 enum TimePeriod { last7Days, last1Month, last3Months, last6Months, last1Year, custom }
 
@@ -37,6 +39,10 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
   // Initialize everything with defaults to avoid any LateInitializationError
   late TimePeriod _selectedPeriod;
   bool _showDatePicker = false;
+  bool _showMonthYearPicker = false;
+  bool _monthChanged = false;
+  bool _yearChanged = false;
+
   DateTime _displayMonth = DateTime.now();
   DateTime? _startDate;
   DateTime? _endDate;
@@ -108,7 +114,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
   }
 
   void _onDateTyped(String value, bool isStart) {
-    if (value.length < 8) return;
+    if (value.length < 10) return;
 
     final parts = value.split('.');
     if (parts.length == 3) {
@@ -306,193 +312,220 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: _showMonthYearPicker
+              ? MainAxisAlignment.center
+              : MainAxisAlignment.spaceBetween,
           children: [
-            GestureDetector(
-              onTap: _prevMonth,
-              child: Container(
-                width: 56,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: extendedColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: CustomSvgIcon('chevron-left',
-                      color: extendedColors.neutral100),
-                ),
-              ),
-            ),
-            Text(
-              '${_displayMonth.year}.${_displayMonth.month.toString().padLeft(2, '0')} ${l10n.monthLabel}',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: extendedColors.neutral100,
-              ),
-            ),
-            GestureDetector(
-              onTap: _nextMonth,
-              child: Container(
-                width: 56,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: extendedColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: CustomSvgIcon('chevron-right',
-                      color: extendedColors.neutral100),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildDateInput(
-                label: l10n.startDate,
-                controller: _startController,
-                isActive: _selectingStart,
-                extendedColors: extendedColors,
-                theme: theme,
-                onTap: () => setState(() => _selectingStart = true),
-                onChanged: (val) => _onDateTyped(val, true),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildDateInput(
-                label: l10n.endDate,
-                controller: _endController,
-                isActive: !_selectingStart,
-                extendedColors: extendedColors,
-                theme: theme,
-                onTap: () => setState(() => _selectingStart = false),
-                onChanged: (val) => _onDateTyped(val, false),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: weekdays.map((day) {
-            return Expanded(
-              child: Center(
-                child: Text(
-                  day,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: extendedColors.neutral300,
-                    fontWeight: FontWeight.w600,
+            if (!_showMonthYearPicker)
+              GestureDetector(
+                onTap: _prevMonth,
+                child: Container(
+                  width: 56,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: CustomSvgIcon('chevron-left',
+                        color: extendedColors.neutral100),
                   ),
                 ),
               ),
-            );
-          }).toList(),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _showMonthYearPicker = !_showMonthYearPicker;
+                  _monthChanged = false;
+                  _yearChanged = false;
+                });
+              },
+              child: Row(
+                children: [
+                  Text(
+                    '${_displayMonth.year}.${_displayMonth.month.toString().padLeft(2, '0')} ${l10n.monthLabel}',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  CustomSvgIcon(
+                    _showMonthYearPicker ? 'chevron-up' : 'chevron-down',
+                    color: extendedColors.neutral100,
+                    size: 16,
+                  ),
+                ],
+              ),
+            ),
+            if (!_showMonthYearPicker)
+              GestureDetector(
+                onTap: _nextMonth,
+                child: Container(
+                  width: 56,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: CustomSvgIcon('chevron-right',
+                        color: extendedColors.neutral100),
+                  ),
+                ),
+              ),
+          ],
         ),
-        const SizedBox(height: 8),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 7,
-            childAspectRatio: 1,
+        const SizedBox(height: 16),
+        if (_showMonthYearPicker)
+          _buildMonthYearPicker(theme, l10n, extendedColors)
+        else ...[
+          Row(
+            children: [
+              Expanded(
+                child: _buildDateInput(
+                  label: l10n.startDate,
+                  controller: _startController,
+                  isActive: _selectingStart,
+                  extendedColors: extendedColors,
+                  theme: theme,
+                  onTap: () => setState(() => _selectingStart = true),
+                  onChanged: (val) => _onDateTyped(val, true),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildDateInput(
+                  label: l10n.endDate,
+                  controller: _endController,
+                  isActive: !_selectingStart,
+                  extendedColors: extendedColors,
+                  theme: theme,
+                  onTap: () => setState(() => _selectingStart = false),
+                  onChanged: (val) => _onDateTyped(val, false),
+                ),
+              ),
+            ],
           ),
-          itemCount: 42, // Always show 6 rows (6 * 7 = 42) for constant height
-          itemBuilder: (context, index) {
-            if (index < offset) {
-              final prevMonthDays =
-                  DateTime(_displayMonth.year, _displayMonth.month, 0).day;
-              final day = prevMonthDays - offset + index + 1;
-              return Center(
-                child: Text(
-                  '$day',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral400,
-                  ),
-                ),
-              );
-            }
-
-            final dayNum = index - offset + 1;
-            if (dayNum > daysInMonth) {
-              final nextDay = dayNum - daysInMonth;
-              return Center(
-                child: Text(
-                  '$nextDay',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral400,
-                  ),
-                ),
-              );
-            }
-
-            final date = DateTime(_displayMonth.year, _displayMonth.month, dayNum);
-            final isToday = date.year == now.year &&
-                date.month == now.month &&
-                date.day == now.day;
-            final isStartSelected = _startDate != null &&
-                date.year == _startDate!.year &&
-                date.month == _startDate!.month &&
-                date.day == _startDate!.day;
-            final isEndSelected = _endDate != null &&
-                date.year == _endDate!.year &&
-                date.month == _endDate!.month &&
-                date.day == _endDate!.day;
-            final isInRange = _startDate != null &&
-                _endDate != null &&
-                date.isAfter(_startDate!.subtract(const Duration(days: 1))) &&
-                date.isBefore(_endDate!.add(const Duration(days: 1)));
-
-            return GestureDetector(
-              onTap: () => _selectDay(date),
-              child: Container(
-                margin: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: (isStartSelected || isEndSelected)
-                      ? extendedColors.primaryMain
-                      : isInRange
-                          ? extendedColors.primary100.withOpacity(0.2)
-                          : Colors.transparent,
-                  shape: BoxShape.circle,
-                ),
+          const SizedBox(height: 16),
+          Row(
+            children: weekdays.map((day) {
+              return Expanded(
                 child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '$dayNum',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: (isStartSelected || isEndSelected)
-                              ? Colors.white
-                              : isToday
-                                  ? extendedColors.primaryMain
-                                  : extendedColors.neutral100,
-                          fontWeight:
-                              (isStartSelected || isEndSelected || isToday)
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                        ),
-                      ),
-                      if (isToday && !isStartSelected && !isEndSelected)
-                        Container(
-                          width: 4,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: extendedColors.primaryMain,
-                            shape: BoxShape.circle,
+                  child: Text(
+                    day,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: extendedColors.neutral300,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              childAspectRatio: 1,
+            ),
+            itemCount: 42, // Always show 6 rows (6 * 7 = 42) for constant height
+            itemBuilder: (context, index) {
+              if (index < offset) {
+                final prevMonthDays =
+                    DateTime(_displayMonth.year, _displayMonth.month, 0).day;
+                final day = prevMonthDays - offset + index + 1;
+                return Center(
+                  child: Text(
+                    '$day',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral400,
+                    ),
+                  ),
+                );
+              }
+
+              final dayNum = index - offset + 1;
+              if (dayNum > daysInMonth) {
+                final nextDay = dayNum - daysInMonth;
+                return Center(
+                  child: Text(
+                    '$nextDay',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral400,
+                    ),
+                  ),
+                );
+              }
+
+              final date = DateTime(_displayMonth.year, _displayMonth.month, dayNum);
+              final isToday = date.year == now.year &&
+                  date.month == now.month &&
+                  date.day == now.day;
+              final isStartSelected = _startDate != null &&
+                  date.year == _startDate!.year &&
+                  date.month == _startDate!.month &&
+                  date.day == _startDate!.day;
+              final isEndSelected = _endDate != null &&
+                  date.year == _endDate!.year &&
+                  date.month == _endDate!.month &&
+                  date.day == _endDate!.day;
+              final isInRange = _startDate != null &&
+                  _endDate != null &&
+                  date.isAfter(_startDate!.subtract(const Duration(days: 1))) &&
+                  date.isBefore(_endDate!.add(const Duration(days: 1)));
+
+              return GestureDetector(
+                onTap: () => _selectDay(date),
+                child: Container(
+                  margin: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: (isStartSelected || isEndSelected)
+                        ? extendedColors.primaryMain
+                        : isInRange
+                            ? extendedColors.primary100
+                            : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '$dayNum',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: (isStartSelected || isEndSelected)
+                                ? Colors.white
+                                : isToday
+                                    ? extendedColors.primaryMain
+                                    : extendedColors.neutral100,
+                            fontWeight:
+                                (isStartSelected || isEndSelected || isToday)
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                           ),
                         ),
-                    ],
+                        if (isToday && !isStartSelected && !isEndSelected)
+                          Container(
+                            width: 4,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: extendedColors.primaryMain,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
+        ],
         const SizedBox(height: 16),
         Divider(height: 1, color: extendedColors.neutral500),
         const SizedBox(height: 16),
@@ -557,6 +590,96 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
     );
   }
 
+  Widget _buildMonthYearPicker(
+    ThemeData theme,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+  ) {
+    final months = List.generate(12, (index) => index + 1);
+    final currentYear = DateTime.now().year;
+    // Show months and years back and current year
+    final years = List.generate((DateTime.now().year - 1990) + 1, (index) => currentYear - index);
+
+    return SizedBox(
+      height: 462, // Match the height of calendar grid roughly
+      child: Row(
+        children: [
+          // Month Selection
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+              ),
+              itemCount: months.length,
+              itemBuilder: (context, index) {
+                final month = months[index];
+                final isSelected = month == _displayMonth.month;
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _displayMonth = DateTime(_displayMonth.year, month);
+                      _monthChanged = true;
+                      if (_yearChanged) {
+                        _showMonthYearPicker = false;
+                      }
+                    });
+                  },
+                  child: Center(
+                    child: Text(
+                      '${month.toString().padLeft(2, '0')}',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: isSelected ? extendedColors.primaryMain : extendedColors.neutral100,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          VerticalDivider(width: 1, color: extendedColors.neutral500),
+          // Year Selection
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+              ),
+              itemCount: years.length,
+              itemBuilder: (context, index) {
+                final year = years[index];
+                final isSelected = year == _displayMonth.year;
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _displayMonth = DateTime(year, _displayMonth.month);
+                      _yearChanged = true;
+                      if (_monthChanged) {
+                        _showMonthYearPicker = false;
+                      }
+                    });
+                  },
+                  child: Center(
+                    child: Text(
+                      '$year',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: isSelected ? extendedColors.primaryMain : extendedColors.neutral100,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDateInput({
     required String label,
     required TextEditingController controller,
@@ -594,6 +717,11 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                 controller: controller,
                 onTap: onTap,
                 onChanged: onChanged,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(10),
+                  DateInputFormatter(),
+                ],
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   isDense: true,
