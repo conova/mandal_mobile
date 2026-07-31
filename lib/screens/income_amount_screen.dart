@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../common/payment_webview.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import '../widgets/custom_snackbar.dart';
 
 class IncomeAmountScreen extends StatefulWidget {
   const IncomeAmountScreen({super.key});
@@ -57,6 +59,38 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
         }
       }
     });
+  }
+
+  bool _isSubmitting = false;
+
+  /// Орлого нэмэх — NEGDI төлбөрийн линкийг app доторх webview-ээр нээнэ
+  Future<void> _submit() async {
+    if (_isSubmitting) return;
+    final amount = double.tryParse(_amount.replaceAll(',', '')) ?? 0.0;
+    setState(() => _isSubmitting = true);
+    try {
+      final result = await openPaymentWebview(
+        context,
+        amount: amount,
+        title: 'Орлого нэмэх',
+      );
+      if (!mounted) return;
+      if (result == 'success') {
+        CustomSnackbar.show(context, message: 'Төлбөр амжилттай боллоо');
+        Navigator.pop(context);
+        return;
+      } else if (result != null) {
+        CustomSnackbar.show(
+          context,
+          message: 'Төлбөр амжилтгүй боллоо',
+          type: CustomSnackbarType.error,
+        );
+      }
+    } catch (e) {
+      if (mounted) CustomSnackbar.showError(context, e);
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   void _onDelete() {
@@ -162,22 +196,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _hasValue
-                      ? () {
-                          final amount = double.tryParse(
-                                _amount.replaceAll(',', ''),
-                              ) ??
-                              0.0;
-                          Navigator.pushNamed(
-                            context,
-                            '/payment_qpay',
-                            arguments: {
-                              'amount': amount,
-                              'description': 'Орлого нэмэх',
-                            },
-                          );
-                        }
-                      : null,
+                  onPressed: _hasValue && !_isSubmitting ? _submit : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _hasValue
                         ? extendedColors.primaryMain

@@ -52,7 +52,6 @@ import 'screens/forgot_password_new_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/register_otp_screen.dart';
 import 'screens/register_password_screen.dart';
-import 'screens/register_bank_selection_screen.dart';
 import 'screens/register_income_account_screen.dart';
 import 'screens/register_success_screen.dart';
 import 'screens/bond/bond_detail_screen.dart';
@@ -83,7 +82,6 @@ import 'screens/education_lesson_screen.dart';
 import 'screens/education_guide_list_screen.dart';
 import 'screens/education_screen.dart';
 import 'screens/onboarding_success_screen.dart';
-import 'screens/payment_qpay_screen.dart';
 import 'screens/payment_result_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
@@ -116,8 +114,8 @@ const Set<String> _publicRoutes = {
   '/register',
   '/register_otp',
   '/register_password',
-  '/register_bank_selection',
   '/register_income_account',
+  '/webview',
   '/register_success',
 };
 
@@ -516,12 +514,9 @@ class MyApp extends StatelessWidget {
               '/dan_verification': (context) => const DanVerificationScreen(),
               '/register_otp': (context) => const RegisterOtpScreen(),
               '/register_password': (context) => const RegisterPasswordScreen(),
-              '/register_bank_selection': (context) =>
-                  const RegisterBankSelectionScreen(),
               '/register_income_account': (context) =>
                   const RegisterIncomeAccountScreen(),
               '/register_success': (context) => const RegisterSuccessScreen(),
-              '/payment_qpay': (context) => const PaymentQpayScreen(),
               '/payment_result': (context) => const PaymentResultScreen(),
               '/bond_detail': (context) => const BondDetailScreen(),
               '/bond_main': (context) => const BondMainScreen(),

@@ -22,6 +22,9 @@ class ApiConfig {
   static const String notificationsMarkAllRead = '/v1/notifications/read-all';
   // DAN (E-Mongolia) service base URL
   static const String danServiceUrl = 'https://mandalcapital.mn/dan';
+
+  /// NEGDI төлбөрийн линк авах (custid, amount, txntype, action)
+  static const String paymentLink = '$danServiceUrl/api/payment/link';
   static const String danEUri = '/api/e/uri';
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 15);

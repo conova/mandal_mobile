@@ -64,7 +64,9 @@ class NotificationApiService {
   /// POST /v1/notifications/:id/read → 204 No Content
   Future<void> markRead(int id) async {
     try {
-      await _dio.post(ApiConfig.notificationMarkRead(id));
+      // body хоосон бол "Body cannot be empty when content-type is
+      // application/json" алдаа өгдөг тул хоосон JSON объект явуулна
+      await _dio.post(ApiConfig.notificationMarkRead(id), data: const {});
     } on DioException catch (e) {
       throw NotificationApiException(_extractError(e));
     }
@@ -73,7 +75,7 @@ class NotificationApiService {
   /// POST /v1/notifications/read-all → 204 No Content
   Future<void> markAllRead() async {
     try {
-      await _dio.post(ApiConfig.notificationsMarkAllRead);
+      await _dio.post(ApiConfig.notificationsMarkAllRead, data: const {});
     } on DioException catch (e) {
       throw NotificationApiException(_extractError(e));
     }

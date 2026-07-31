@@ -68,22 +68,6 @@ class PaymentResultScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 _buildDetails(status, theme, extendedColors),
                 const Spacer(flex: 3),
-                if (status.category == PaymentStatusCategory.warning ||
-                    status.category == PaymentStatusCategory.error)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: CustomButton(
-                      label: 'Дахин оролдох',
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/payment_qpay',
-                          arguments: {'amount': status.amount},
-                        );
-                      },
-                      variant: CustomButtonVariant.secondary,
-                    ),
-                  ),
                 CustomButton(
                   label: 'Дуусгах',
                   onPressed: () => _finish(context),

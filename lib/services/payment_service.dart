@@ -54,6 +54,39 @@ class PaymentService {
     }
   }
 
+  /// NEGDI төлбөрийн линк авах — negdiurl буцаана.
+  /// POST https://mandalcapital.mn/dan/api/payment/link
+  /// Body: {custid, amount, txntype, action}
+  Future<String> getPaymentLink({
+    required String custid,
+    required num amount,
+    String txntype = 'FEE',
+    String action = 'QR',
+  }) async {
+    try {
+      final response = await _dio.post(
+        // Бүтэн URL — payment gateway-ийн biш dan сервисийн base ашиглана
+        ApiConfig.paymentLink,
+        data: {
+          'custid': custid,
+          'amount': amount,
+          'txntype': txntype,
+          'action': action,
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['response'] is Map) {
+        final url = (body['response'] as Map)['negdiurl']?.toString();
+        if (url != null && url.isNotEmpty) return url;
+      }
+      throw PaymentException(
+        body['title']?.toString() ?? 'Төлбөрийн линк авахад алдаа гарлаа',
+      );
+    } on DioException catch (e) {
+      throw PaymentException(_extractError(e));
+    }
+  }
+
   /// Картаар (3DS) гүйлгээ эхлүүлэх — энэ хувилбарт WebView/browser хэрэгтэй
   /// (redirect_url-г задлан үзүүлнэ). Одоо ашиглахгүй.
   Future<InitPaymentResult> initCard({

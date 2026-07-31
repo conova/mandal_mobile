@@ -71,34 +71,33 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _onItemTap(ApiNotification n) async {
-    // Дэлгэрэнгүй харах + read болгох — бүх холбогдох мэдээлэл (type, data,
-    // target_kind) дэлгэрэнгүй screen руу дамжина.
-    final wasUnread = !n.isRead;
+    // Нээгдмэгц шууд read болгоно — detail дэлгэцээс буцахыг хүлээхгүй
+    // (өмнө нь буцаж ирсний дараа л API дуудагддаг байсан тул detail
+    // дээрээс өөр тийш явахад уншсан тэмдэглэгээ хийгдэхгүй байсан).
+    if (!n.isRead) {
+      // Mock mode-д API дуудалгүй зөвхөн local тэмдэглэгээ хийнэ.
+      if (!_usingMock) {
+        // fire-and-forget — алдаа гарвал чимээгүй (UX-д нөлөөлөхгүй)
+        context
+            .read<NotificationApiService>()
+            .markRead(n.id)
+            .catchError((_) {});
+      }
+      setState(() {
+        final idx = _items.indexWhere((x) => x.id == n.id);
+        if (idx >= 0) {
+          _items[idx] = _items[idx].copyWith(isRead: true);
+        }
+      });
+    }
+
+    // Дэлгэрэнгүй харах — бүх холбогдох мэдээлэл (type, data, target_kind)
+    // дэлгэрэнгүй screen руу дамжина.
     await Navigator.pushNamed(
       context,
       '/notification_detail',
       arguments: n,
     );
-
-    if (wasUnread) {
-      // Mock mode-д API дуудалгүй шууд local тэмдэглэгээ хийнэ.
-      Future<void> remote = _usingMock
-          ? Future.value()
-          : context.read<NotificationApiService>().markRead(n.id);
-      try {
-        await remote;
-        // Локалд тэмдэглээд UI-г шинэчилнэ — server-аас дахин татах хэрэггүй
-        if (!mounted) return;
-        setState(() {
-          final idx = _items.indexWhere((x) => x.id == n.id);
-          if (idx >= 0) {
-            _items[idx] = _items[idx].copyWith(isRead: true);
-          }
-        });
-      } catch (_) {
-        // алдаа гарвал чимээгүй (хэрэглэгчийн UX-д хүчтэй нөлөөлөхгүй)
-      }
-    }
   }
 
   Future<void> _markAllRead() async {

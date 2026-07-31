@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../common/iban_prefix_formatter.dart';
+import '../common/payment_webview.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
@@ -159,8 +160,28 @@ class _RegisterIncomeAccountScreenState
         accountName: _recipientController.text.trim(),
       );
       if (!mounted) return;
+
+      // Данс нээлгэх хураамж — банк сонгох дэлгэцийн оронд NEGDI линкийг
+      // app доторх webview-ээр шууд нээж, амжилттай болмогц дараагийн
+      // алхам руу шилжинэ
+      // homeRoute — төлбөрийн хуудас `mandalapp://home` эсвэл
+      // `MandalApp.postMessage(...)`-ээр шууд register_success руу шилжинэ
+      final result = await openPaymentWebview(
+        context,
+        amount: 10000,
+        homeRoute: '/register_success',
+      );
+      if (!mounted) return;
       setState(() => _isSaving = false);
-      Navigator.pushNamed(context, '/register_bank_selection', arguments: args);
+      if (result == 'success') {
+        Navigator.pushNamed(context, '/register_success', arguments: args);
+      } else if (result != null) {
+        CustomSnackbar.show(
+          context,
+          message: 'Төлбөр амжилтгүй боллоо',
+          type: CustomSnackbarType.error,
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
