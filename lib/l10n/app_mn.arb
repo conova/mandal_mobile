@@ -71,7 +71,7 @@
     "orderUpdated": "Захиалга шинэчлэгдлээ",
     "totalAssets": "Нийт хөрөнгө",
     "last1Month": "Сүүлийн 1 сар",
-    "history": "Түүх",
+    "history": "Хуулга",
     "assetBreakdown": "Хөрөнгийн задаргаа",
     "tugrik": "Төгрөг",
     "dollar": "Доллар",
@@ -519,5 +519,7 @@
     "done": "Биелсэн",
     "canceled": "Цуцалсан",
     "cancelAllOrders": "Бүх захиалгыг цуцлах",
-    "dailyStockRate": "Өдрийн ханш"
+    "dailyStockRate": "Өдрийн ханш",
+    "last1Year": "Сүүлийн 1 жил",
+    "orderedDate": "Захиалга өгсөн огноо"
 }

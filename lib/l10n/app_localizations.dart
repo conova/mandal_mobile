@@ -535,7 +535,7 @@ abstract class AppLocalizations {
   /// No description provided for @history.
   ///
   /// In en, this message translates to:
-  /// **'History'**
+  /// **'Statement'**
   String get history;
 
   /// No description provided for @assetBreakdown.
@@ -3051,6 +3051,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Daily stock rate'**
   String get dailyStockRate;
+
+  /// No description provided for @last1Year.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 1 year'**
+  String get last1Year;
+
+  /// No description provided for @orderedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered date'**
+  String get orderedDate;
 }
 
 class _AppLocalizationsDelegate

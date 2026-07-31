@@ -235,7 +235,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get last1Month => 'Сүүлийн 1 сар';
 
   @override
-  String get history => 'Түүх';
+  String get history => 'Хуулга';
 
   @override
   String get assetBreakdown => 'Хөрөнгийн задаргаа';
@@ -1566,4 +1566,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get dailyStockRate => 'Өдрийн ханш';
+
+  @override
+  String get last1Year => 'Сүүлийн 1 жил';
+
+  @override
+  String get orderedDate => 'Захиалга өгсөн огноо';
 }

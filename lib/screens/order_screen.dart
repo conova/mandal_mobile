@@ -174,7 +174,7 @@ class _OrderScreenState extends State<OrderScreen>
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.w300,
-                            color: extendedColors.neutral300,
+                            color: extendedColors.neutral200,
                           ),
                         ),
                       ),
@@ -219,7 +219,7 @@ class _OrderScreenState extends State<OrderScreen>
                 child: Center(
                   child: GestureDetector(
                     onTap: () {
-
+                      //
                     },
                     child: Text(
                       '${l10n.cancelAllOrders} (${orders.length})',

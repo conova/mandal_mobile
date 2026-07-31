@@ -237,7 +237,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get last1Month => 'Last 1 month';
 
   @override
-  String get history => 'History';
+  String get history => 'Statement';
 
   @override
   String get assetBreakdown => 'Asset Breakdown';
@@ -1573,4 +1573,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dailyStockRate => 'Daily stock rate';
+
+  @override
+  String get last1Year => 'Last 1 year';
+
+  @override
+  String get orderedDate => 'Ordered date';
 }

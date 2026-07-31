@@ -204,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: RefreshIndicator(
         onRefresh: () async {
           await context.read<AuthService>().refreshUserInfo();
+          setState(() { });
         },
         child: SingleChildScrollView(
           controller: _scrollController,
