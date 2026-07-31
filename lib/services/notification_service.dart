@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart' show navigatorKey;
 
@@ -68,6 +69,19 @@ class NotificationService extends ChangeNotifier {
   NotificationService._();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+
+  /// Foreground үед notification bar-д давхар харуулах локал notification.
+  /// Android дээр FCM foreground message-ийг систем өөрөө харуулдаггүй
+  /// тул үүгээр харуулна; iOS дээр setForegroundNotificationPresentationOptions
+  /// хангалттай.
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
+  static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
+    'mandal_high_importance',
+    'Мэдэгдэл',
+    description: 'Mandal Capital мэдэгдлүүд',
+    importance: Importance.high,
+  );
 
   /// FCM token
   String? _fcmToken;
@@ -153,6 +167,16 @@ class NotificationService extends ChangeNotifier {
     // Хадгалсан notification-уудыг унших
     await _loadNotifications();
 
+    // Локал notification тохируулах (foreground үед bar-д харуулах)
+    await _initLocalNotifications();
+
+    // iOS: foreground үед FCM notification-ийг систем шууд харуулна
+    await _messaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     // Foreground message listener
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
@@ -179,6 +203,76 @@ class NotificationService extends ChangeNotifier {
     _hasUnseen = true;
     notifyListeners();
     onNotificationReceived?.call(item);
+
+    // Notification bar-д давхар харуулна (Android; iOS-ийг
+    // setForegroundNotificationPresentationOptions хариуцна)
+    _showLocalNotification(message, item);
+  }
+
+  /// Локал notification plugin init — дарахад notification_detail руу шилжинэ
+  Future<void> _initLocalNotifications() async {
+    if (kIsWeb) return;
+    const initSettings = InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/launcher_icon'),
+      iOS: DarwinInitializationSettings(
+        // Зөвшөөрлийг FCM requestPermission аль хэдийн авсан
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
+      ),
+    );
+    await _localNotifications.initialize(
+      settings: initSettings,
+      onDidReceiveNotificationResponse: (response) {
+        final payload = response.payload;
+        if (payload == null || payload.isEmpty) return;
+        try {
+          final item = NotificationItem.fromJson(
+            Map<String, dynamic>.from(jsonDecode(payload)),
+          );
+          navigatorKey.currentState?.pushNamed(
+            '/notification_detail',
+            arguments: detailArgsOf(item),
+          );
+        } catch (_) {
+          // payload эвдэрсэн — үл тооцно
+        }
+      },
+    );
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(_channel);
+  }
+
+  /// Foreground үед ирсэн FCM message-ийг notification bar-д харуулна
+  Future<void> _showLocalNotification(
+    RemoteMessage message,
+    NotificationItem item,
+  ) async {
+    // iOS foreground-ийг FCM өөрөө харуулдаг тул давхардуулахгүй
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      return;
+    }
+    if (item.title.isEmpty && item.body.isEmpty) return;
+    await _localNotifications.show(
+      id: message.hashCode,
+      title: item.title,
+      body: item.body,
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channel.id,
+          _channel.name,
+          channelDescription: _channel.description,
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/launcher_icon',
+        ),
+      ),
+      payload: jsonEncode(item.toJson()),
+    );
   }
 
   /// Notification bar-аас дарж app нээгдэхэд — notification_detail руу

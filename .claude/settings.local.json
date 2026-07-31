@@ -84,7 +84,8 @@
       "Bash(sed -n '1,60p' ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/base/axis_chart/transformation_config.dart)",
       "Bash(grep -n \"getTooltipColor\\\\|this.getTooltipItems\\\\|class LineTouchTooltipData\" ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/line_chart/line_chart_data.dart | head -5)",
       "Bash(grep -rn \"scaleAxis\\\\|Matrix4\\\\|getMaxScaleOnAxis\\\\|translation\" ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/base/custom_interactive_viewer.dart 2>/dev/null | head -20; ls ~/.pub-cache/hosted/pub.dev/fl_chart-1.1.1/lib/src/chart/base/)",
-      "Bash(python3 -c \"import json; json.load\\(open\\('lib/l10n/app_mn.arb'\\)\\); json.load\\(open\\('lib/l10n/app_en.arb'\\)\\); print\\('json valid'\\)\")"
+      "Bash(python3 -c \"import json; json.load\\(open\\('lib/l10n/app_mn.arb'\\)\\); json.load\\(open\\('lib/l10n/app_en.arb'\\)\\); print\\('json valid'\\)\")",
+      "Bash(grep -n \"Future<bool?> initialize\\\\|Future<void> show\" -A 8 ~/.pub-cache/hosted/pub.dev/flutter_local_notifications-22.*/lib/src/flutter_local_notifications_plugin.dart | head -30)"
     ]
   }
 }
