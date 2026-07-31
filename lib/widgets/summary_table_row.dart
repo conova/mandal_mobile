@@ -6,6 +6,7 @@ class SummaryTableRow extends StatelessWidget {
   final String val1;
   final String val2;
   final bool isOdd;
+  final bool? isLast;
 
   const SummaryTableRow({
     super.key,
@@ -13,18 +14,22 @@ class SummaryTableRow extends StatelessWidget {
     required this.val1,
     this.val2 = '',
     this.isOdd = false,
+    this.isLast = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final isLast = this.isLast ?? false;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: isOdd
-            ? extendedColors.bgSecondary
+            ? isLast
+                ? extendedColors.primaryMain
+                : extendedColors.bgSecondary
             : extendedColors.bgBase,
         borderRadius: isOdd ? BorderRadius.circular(12) : null,
       ),
@@ -35,7 +40,9 @@ class SummaryTableRow extends StatelessWidget {
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral100
+                color: isLast
+                  ? extendedColors.bgBase
+                  : extendedColors.neutral100,
               ),
             ),
           ),
@@ -45,7 +52,9 @@ class SummaryTableRow extends StatelessWidget {
               val1,
               textAlign: TextAlign.right,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral100,
+                color: isLast
+                    ? extendedColors.bgBase
+                    : extendedColors.neutral100,
               ),
             ),
           ),
@@ -56,7 +65,9 @@ class SummaryTableRow extends StatelessWidget {
                 val2,
                 textAlign: TextAlign.right,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral100,
+                  color: isLast
+                      ? extendedColors.bgBase
+                      : extendedColors.neutral100,
                 ),
               ),
             ),

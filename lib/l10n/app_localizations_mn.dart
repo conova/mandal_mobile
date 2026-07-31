@@ -1572,4 +1572,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get orderedDate => 'Захиалга өгсөн огноо';
+
+  @override
+  String get account => 'Данс';
+
+  @override
+  String get exchangeRateGain => 'Ханшийн ашиг';
 }

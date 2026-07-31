@@ -41,6 +41,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   String _formatQueryDate(DateTime d) =>
       '${d.year}/${d.month.toString().padLeft(2, '0')}/${d.day.toString().padLeft(2, '0')}';
 
+  String _formatQueryDateDot(DateTime d) =>
+      '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}';
+
   /// Сонгосон шүүлтүүрийн эхлэх огноо
   DateTime _startDate() {
     final now = DateTime.now();
@@ -324,7 +327,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   double _typeOf(String date, String type) => _report.typeOf(date, type);
   double _txnAmount(String type) => _report.txnAmount(type);
 
-  String _money(double v) => formatStockAmount(v, decimals: 0);
+  String _money(double v) => formatStockAmount(v, decimals: 2);
 
   @override
   Widget build(BuildContext context) {
@@ -621,28 +624,29 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
             isOdd: true,
           ),
           SummaryTableRow(
-            label: l10n.totalAssets,
-            val1: _money(_totalOf(first)),
-            val2: col2('total'),
-            isOdd: false,
-          ),
-          SummaryTableRow(
             label: l10n.cash,
             val1: _money(_typeOf(first, 'cash')),
             val2: col2('cash'),
-            isOdd: true,
+            isOdd: false,
           ),
           SummaryTableRow(
             label: l10n.stocks,
             val1: _money(_typeOf(first, 'stock')),
             val2: col2('stock'),
-            isOdd: false,
+            isOdd: true,
           ),
           SummaryTableRow(
             label: l10n.bonds,
             val1: _money(_typeOf(first, 'bond')),
             val2: col2('bond'),
+            isOdd: false,
+          ),
+          SummaryTableRow(
+            label: l10n.totalAssets,
+            val1: _money(_totalOf(first)),
+            val2: col2('total'),
             isOdd: true,
+            isLast: true,
           ),
         ],
       ),
@@ -651,36 +655,49 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
   /// Орлого/зарлага — transactions-ийн төрөл бүрээс нэг мөр (байхгүй бол 0₮)
   Widget _buildCashFlowSection(AppLocalizations l10n, ThemeData theme) {
+    final start = _formatQueryDateDot(_startDate());
+    final end = _formatQueryDateDot(DateTime.now());
+
     return Column(
       children: [
+        // SummaryTableRow(
+        //   label: l10n.incomeExpense,
+        //   val1: l10n.selectedPeriod,
+        //   isOdd: true,
+        // ),
+        // SummaryTableRow(
+        //   label: l10n.incomeSalary,
+        //   val1: _money(_txnAmount('cash')),
+        //   isOdd: false,
+        // ),
+        // SummaryTableRow(
+        //   label: l10n.stockProfit,
+        //   val1: _money(_txnAmount('stock')),
+        //   isOdd: true,
+        // ),
+        // SummaryTableRow(
+        //   label: l10n.bondPrincipal,
+        //   val1: _money(_txnAmount('bond')),
+        //   isOdd: true,
+        // ),
         SummaryTableRow(
-          label: l10n.incomeExpense,
-          val1: l10n.selectedPeriod,
+          label: l10n.account,
+          val1: '$start - $end',
           isOdd: true,
         ),
         SummaryTableRow(
-          label: l10n.incomeSalary,
-          val1: _money(_txnAmount('cash')),
+          label: l10n.exchangeRateGain,
+          val1: _money(_txnAmount('rateincome')),
           isOdd: false,
         ),
         SummaryTableRow(
-          label: l10n.stockProfit,
-          val1: _money(_txnAmount('stock')),
+          label: l10n.dividendProfit,
+          val1: _money(_txnAmount('dividend')),
           isOdd: true,
         ),
         SummaryTableRow(
           label: l10n.interestIncome,
           val1: _money(_txnAmount('rateincome')),
-          isOdd: false,
-        ),
-        SummaryTableRow(
-          label: l10n.bondPrincipal,
-          val1: _money(_txnAmount('bond')),
-          isOdd: true,
-        ),
-        SummaryTableRow(
-          label: l10n.dividendProfit,
-          val1: _money(_txnAmount('dividend')),
           isOdd: false,
         ),
       ],

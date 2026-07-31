@@ -115,13 +115,15 @@ class OrderCard extends StatelessWidget {
                       : AppColors.redMain,
                 ),
                 const SizedBox(width: 8),
-                _buildBadge(
-                  theme,
-                  status == OrderStatus.open ? l10n.open : l10n.closed,
-                  extendedColors.bgSecondary,
-                  extendedColors.neutral100,
-                ),
-                const SizedBox(width: 8),
+                if (market == MarketType.bond)
+                  _buildBadge(
+                    theme,
+                    status == OrderStatus.open ? l10n.open : l10n.closed,
+                    extendedColors.bgSecondary,
+                    extendedColors.neutral100,
+                  ),
+                if (market == MarketType.bond)
+                  const SizedBox(width: 8),
                 _buildBadge(
                   theme,
                   market == MarketType.bond

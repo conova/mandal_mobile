@@ -1577,4 +1577,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderedDate => 'Ordered date';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get exchangeRateGain => 'Exchange rate gain';
 }

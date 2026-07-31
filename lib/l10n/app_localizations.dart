@@ -3063,6 +3063,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ordered date'**
   String get orderedDate;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @exchangeRateGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate gain'**
+  String get exchangeRateGain;
 }
 
 class _AppLocalizationsDelegate

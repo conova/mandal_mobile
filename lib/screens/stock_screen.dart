@@ -319,13 +319,13 @@ class _StockScreenState extends State<StockScreen> {
                       children: [
                         Text(
                           locale.stock,
-                          style: theme.textTheme.labelMedium?.copyWith(
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         Text(
-                          locale.lastPrice24h,
-                          style: theme.textTheme.labelMedium?.copyWith(
+                          locale.dailyStockRate,
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
                         ),
