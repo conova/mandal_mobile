@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../widgets/circle_back_button.dart';
+import '../../widgets/custom_svg_icon.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_payment_details.dart';
 import '../../l10n/app_localizations.dart';
@@ -25,9 +27,11 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
@@ -38,11 +42,12 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Flexible(
                   child: Text(
                     'Net Capital',
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
                     ),
@@ -52,24 +57,38 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 ),
                 const SizedBox(width: 12),
                 Flexible(
-                  child: Text(
-                    'Нэт Капитал',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral400,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 2),
+                    child: Text(
+                      'Нэт Капитал',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              '${l10n.availableCash}: 10,000,000₮',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.primaryMain,
-                fontWeight: AppTextStyles.bold,
-              ),
+            Row(
+              children: [
+                Text(
+                  '${l10n.availableCash}: ',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral100,
+                    fontWeight: AppTextStyles.bold,
+                  ),
+                ),
+                Text(
+                  '10,000,000₮',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.primaryMain,
+                    fontWeight: AppTextStyles.bold,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 32),
             BondQuantitySelector(
@@ -118,10 +137,10 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info,
-                      color: extendedColors.neutral100,
-                      size: 24,
+                    CustomSvgIcon(
+                      'info-circle',
+                      color: extendedColors.primaryMain,
+                      size: 22,
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -140,8 +159,8 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Icon(
-                      Icons.expand_less,
+                    CustomSvgIcon(
+                      'chevron-up',
                       color: extendedColors.neutral100,
                     ),
                   ],

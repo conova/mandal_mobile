@@ -1,6 +1,9 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 class BondQuantitySelector extends StatefulWidget {
   final int initialQuantity;
@@ -20,18 +23,32 @@ class BondQuantitySelector extends StatefulWidget {
 
 class _BondQuantitySelectorState extends State<BondQuantitySelector> {
   late int _quantity;
+  late TextEditingController _controller;
+
+  int get _effectiveMax => min(widget.maxQuantity, 8000);
 
   @override
   void initState() {
     super.initState();
-    _quantity = widget.initialQuantity;
+    _quantity = widget.initialQuantity.clamp(0, _effectiveMax);
+    _controller = TextEditingController(text: '$_quantity');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _updateQuantity(int delta) {
-    setState(() {
-      _quantity = (_quantity + delta).clamp(0, widget.maxQuantity);
-      widget.onChanged(_quantity);
-    });
+    final newQuantity = (_quantity + delta).clamp(0, _effectiveMax);
+    if (newQuantity != _quantity) {
+      setState(() {
+        _quantity = newQuantity;
+        _controller.text = '$_quantity';
+        widget.onChanged(_quantity);
+      });
+    }
   }
 
   @override
@@ -47,49 +64,82 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: extendedColors.neutral500),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            l10n.buyQuantity,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: extendedColors.neutral300,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.buyQuantity,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _controller,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    _MaxQuantityFormatter(_effectiveMax),
+                  ],
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  onChanged: (value) {
+                    final newQuantity = int.tryParse(value) ?? 0;
+                    if (newQuantity != _quantity) {
+                      setState(() {
+                        _quantity = newQuantity;
+                      });
+                      widget.onChanged(_quantity);
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text(
+                      '${l10n.availableQuantity}: ',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                    ),
+                    Text(
+                      '$_effectiveMax ш',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(width: 16),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '$_quantity',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
-                ),
+              _buildButton(
+                'minus',
+                () => _updateQuantity(-1),
+                extendedColors,
               ),
-              Row(
-                children: [
-                  _buildButton(
-                    Icons.remove,
-                    () => _updateQuantity(-1),
-                    extendedColors,
-                  ),
-                  const SizedBox(width: 12),
-                  _buildButton(
-                    Icons.add,
-                    () => _updateQuantity(1),
-                    extendedColors,
-                  ),
-                ],
+              const SizedBox(width: 12),
+              _buildButton(
+                'plus',
+                () => _updateQuantity(1),
+                extendedColors,
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            '${l10n.availableQuantity}: ${widget.maxQuantity} ш',
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: extendedColors.neutral300,
-            ),
           ),
         ],
       ),
@@ -97,20 +147,44 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
   }
 
   Widget _buildButton(
-    IconData icon,
+    String icon,
     VoidCallback onPressed,
     ExtendedColors extendedColors,
   ) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: extendedColors.bgSecondary,
-          shape: BoxShape.circle,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(30),
         ),
-        child: Icon(icon, size: 24, color: extendedColors.neutral100),
+        child: CustomSvgIcon(icon, size: 24, color: extendedColors.neutral100),
       ),
     );
+  }
+}
+
+class _MaxQuantityFormatter extends TextInputFormatter {
+  final int max;
+
+  _MaxQuantityFormatter(this.max);
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) return newValue;
+    final intValue = int.tryParse(newValue.text);
+    if (intValue == null) return oldValue;
+    if (intValue > max) {
+      return TextEditingValue(
+        text: max.toString(),
+        selection: TextSelection.collapsed(offset: max.toString().length),
+      );
+    }
+    return newValue;
   }
 }

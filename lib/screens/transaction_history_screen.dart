@@ -155,7 +155,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
         return l10n.last1Year;
       case TimePeriod.custom:
         if (_customStart != null && _customEnd != null) {
-          return '${_customStart!.year.toString().padLeft(2, '0')}.${_customStart!.month.toString().padLeft(2, '0')}.${_customStart!.day.toString().padLeft(2, '0')} - ${_customStart!.year.toString().padLeft(2, '0')}.${_customEnd!.month.toString().padLeft(2, '0')}.${_customEnd!.day.toString().padLeft(2, '0')}';
+          return '${_customStart!.year.toString().padLeft(2, '0')}.${_customStart!.month.toString().padLeft(2, '0')}.${_customStart!.day.toString().padLeft(2, '0')} - ${_customEnd!.year.toString().padLeft(2, '0')}.${_customEnd!.month.toString().padLeft(2, '0')}.${_customEnd!.day.toString().padLeft(2, '0')}';
         }
         return l10n.selectDateRange;
     }
