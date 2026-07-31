@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../l10n/app_localizations.dart';
 import 'home_screen.dart';
@@ -27,6 +28,30 @@ class _MainContainerState extends State<MainContainer> {
     const StockScreen(),
     const OrderScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // App хаалттай байхад notification bar-аас дарж нээсэн бол — app
+    // бүрэн ачаалж дуусмагц notification_detail руу шилжинэ
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      NotificationService? service;
+      try {
+        service = context.read<NotificationService>();
+      } on ProviderNotFoundException {
+        return; // FCM ажиллаагүй орчин
+      }
+      final pending = service.takePendingOpen();
+      if (pending != null) {
+        Navigator.pushNamed(
+          context,
+          '/notification_detail',
+          arguments: NotificationService.detailArgsOf(pending),
+        );
+      }
+    });
+  }
 
   /// Route args-аар эхлэх tab зааж болно:
   ///   Navigator.pushNamed(context, '/main', arguments: {'tab': 1})

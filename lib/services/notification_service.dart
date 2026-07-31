@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../main.dart' show navigatorKey;
 
 /// Background message handler — top-level function байх ёстой
 @pragma('vm:entry-point')
@@ -60,7 +61,7 @@ class NotificationItem {
   }
 }
 
-class NotificationService {
+class NotificationService extends ChangeNotifier {
   static const String _storageKey = 'fcm_notifications';
   static final NotificationService _instance = NotificationService._();
   factory NotificationService() => _instance;
@@ -81,6 +82,39 @@ class NotificationService {
 
   /// Callback — шинэ notification ирэхэд дуудна
   void Function(NotificationItem)? onNotificationReceived;
+
+  /// Шинэ (хараагүй) push ирсэн эсэх — home header-ийн хонхны улаан цэг.
+  /// Notification жагсаалтын дэлгэц нээгдэхэд [markSeen]-ээр арилна.
+  bool _hasUnseen = false;
+  bool get hasUnseen => _hasUnseen;
+
+  /// Terminated байхад notification bar-аас нээсэн мессеж — app бүрэн
+  /// ачаалж дуусаад (MainContainer) '/notification_detail' руу шилжихэд
+  /// ашиглана.
+  NotificationItem? _pendingOpen;
+  NotificationItem? takePendingOpen() {
+    final item = _pendingOpen;
+    _pendingOpen = null;
+    return item;
+  }
+
+  /// Notification жагсаалтын дэлгэц нээгдэхэд — хонхны цэгийг арилгана
+  void markSeen() {
+    if (!_hasUnseen) return;
+    _hasUnseen = false;
+    markAllAsRead();
+    notifyListeners();
+  }
+
+  /// NotificationItem → notification_detail дэлгэцийн Map args
+  static Map<String, dynamic> detailArgsOf(NotificationItem item) => {
+        'type': item.data?['type']?.toString() ?? 'system',
+        'title': item.title,
+        'body': item.body,
+        'time': item.time,
+        'targetKind': item.data?['target_kind']?.toString(),
+        'data': item.data ?? const {},
+      };
 
   /// Callback — FCM token шинэчлэгдэхэд дуудна (deviceId шинэчлэхэд)
   void Function(String)? onTokenRefresh;
@@ -132,7 +166,9 @@ class NotificationService {
     }
   }
 
-  /// Foreground дээр notification ирэхэд
+  /// Foreground дээр notification ирэхэд — unseen туг тавьж сонсогчдод
+  /// мэдэгдэнэ: notification жагсаалтын дэлгэц нээлттэй бол жагсаалтаа
+  /// шинэчилнэ, бусад дэлгэц дээр home header-ийн хонх цэгтэй болно
   void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('[FCM] Foreground: ${message.notification?.title}');
 
@@ -140,10 +176,13 @@ class NotificationService {
     _notifications.insert(0, item);
     _saveNotifications();
 
+    _hasUnseen = true;
+    notifyListeners();
     onNotificationReceived?.call(item);
   }
 
-  /// Background/terminated-оос app нээхэд
+  /// Notification bar-аас дарж app нээгдэхэд — notification_detail руу
+  /// шууд шилжинэ
   void _handleMessageOpenedApp(RemoteMessage message) {
     debugPrint('[FCM] Opened app from: ${message.notification?.title}');
 
@@ -154,8 +193,16 @@ class NotificationService {
       _saveNotifications();
     }
 
-    // TODO: data дотор route байвал navigate хийх
-    // Жишээ: message.data['route'] == '/order_detail'
+    final nav = navigatorKey.currentState;
+    if (nav != null) {
+      // App аль хэдийн ажиллаж байсан (background) — шууд шилжинэ
+      nav.pushNamed('/notification_detail', arguments: detailArgsOf(item));
+    } else {
+      // Terminated-оос нээгдэж байна — app ачаалж дуусахаар
+      // (MainContainer) шилжүүлэхээр хадгална
+      _pendingOpen = item;
+    }
+    notifyListeners();
   }
 
   /// RemoteMessage → NotificationItem
@@ -196,6 +243,9 @@ class NotificationService {
       _notifications = list
           .map((e) => NotificationItem.fromJson(Map<String, dynamic>.from(e)))
           .toList();
+      // Background-д ирж хадгалагдсан, хараахан үзээгүй push байвал
+      // хонхны цэгийг сэргээнэ
+      _hasUnseen = _notifications.any((n) => !n.isRead);
     }
   }
 

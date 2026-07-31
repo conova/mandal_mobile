@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../models/api_notification.dart';
 import '../services/notification_api_service.dart';
 import '../services/notification_mocks.dart';
+import '../services/notification_service.dart' show NotificationService;
 import '../theme/app_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
@@ -28,9 +29,39 @@ class _NotificationScreenState extends State<NotificationScreen> {
   String? _error;
   bool _usingMock = false;
 
+  /// FCM push сонсогч — дэлгэц нээлттэй байхад шинэ push ирвэл
+  /// жагсаалтыг server-ээс дахин татаж дээр нь нэмэгдсэн байдлаар харуулна
+  NotificationService? _fcmService;
+
   @override
   void initState() {
     super.initState();
+    _fetch();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      try {
+        _fcmService = context.read<NotificationService>();
+      } on ProviderNotFoundException {
+        return; // FCM ажиллаагүй орчин
+      }
+      _fcmService!.addListener(_onPushReceived);
+      // Дэлгэц нээгдмэгц хонхны цэгийг арилгана
+      _fcmService!.markSeen();
+    });
+  }
+
+  @override
+  void dispose() {
+    _fcmService?.removeListener(_onPushReceived);
+    super.dispose();
+  }
+
+  void _onPushReceived() {
+    final service = _fcmService;
+    // markSeen-ийн notify давталтаас сэргийлж зөвхөн шинэ push ирсэн
+    // (hasUnseen=true) үед л ажиллана
+    if (!mounted || service == null || !service.hasUnseen) return;
+    service.markSeen();
     _fetch();
   }
 

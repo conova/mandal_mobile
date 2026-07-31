@@ -198,7 +198,7 @@ void main() async {
         Provider.value(value: notificationApiService),
         Provider.value(value: danService),
         if (notificationService != null)
-          Provider.value(value: notificationService),
+          ChangeNotifierProvider.value(value: notificationService),
       ],
       child: const MyApp(),
     ),

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/notification_service.dart';
 import '../../../widgets/custom_snackbar.dart';
 import 'profile_switcher.dart';
 
@@ -47,6 +48,15 @@ class _HomeHeaderState extends State<HomeHeader> {
     final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
+
+    // Шинэ (хараагүй) push notification байвал хонхон дээр улаан цэг гарна.
+    // Firebase init амжилтгүй үед provider бүртгэгдээгүй байж болно.
+    bool hasUnseenNotification = false;
+    try {
+      hasUnseenNotification = context.watch<NotificationService>().hasUnseen;
+    } on ProviderNotFoundException {
+      // FCM ажиллаагүй орчин — цэг харуулахгүй
+    }
 
     // Хүүхдийн данс идэвхтэй бол түүний дүнг харуулна
     final activeChild = context.watch<AuthService>().activeSubAccount;
@@ -134,18 +144,19 @@ class _HomeHeaderState extends State<HomeHeader> {
               onPressed: () => Navigator.pushNamed(context, '/notifications'),
               icon: const CustomSvgIcon('bell-02', size: 24),
             ),
-            Positioned(
-              right: 12,
-              top: 12,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: colorScheme.error,
-                  shape: BoxShape.circle,
+            if (hasUnseenNotification)
+              Positioned(
+                right: 12,
+                top: 12,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: colorScheme.error,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
         IconButton(
