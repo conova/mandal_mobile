@@ -71,7 +71,7 @@
     "orderUpdated": "Order Updated",
     "totalAssets": "Total Assets",
     "last1Month": "Last 1 month",
-    "history": "History",
+    "history": "Statement",
     "assetBreakdown": "Asset Breakdown",
     "tugrik": "Tugrik",
     "dollar": "Dollar",
@@ -581,5 +581,7 @@
     "done": "Done",
     "canceled": "Canceled",
     "cancelAllOrders": "Cancel all orders",
-    "dailyStockRate": "Daily stock rate"
+    "dailyStockRate": "Daily stock rate",
+    "last1Year": "Last 1 year",
+    "orderedDate": "Ordered date"
 }

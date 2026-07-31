@@ -29,7 +29,7 @@ class ProfileHeader extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: extendedColors.bgBase,
           appBar: AppBar(
             backgroundColor: extendedColors.bgBase,
             elevation: 0,

@@ -3,7 +3,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_svg_icon.dart';
 
-enum TimePeriod { last7Days, last1Month, last3Months, last6Months, custom }
+enum TimePeriod { last7Days, last1Month, last3Months, last6Months, last1Year, custom }
 
 class PeriodResult {
   final TimePeriod period;
@@ -35,7 +35,7 @@ class TransactionPeriodSheet extends StatefulWidget {
 
 class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
   // Initialize everything with defaults to avoid any LateInitializationError
-  TimePeriod _selectedPeriod = TimePeriod.last3Months;
+  late TimePeriod _selectedPeriod;
   bool _showDatePicker = false;
   DateTime _displayMonth = DateTime.now();
   DateTime? _startDate;
@@ -193,6 +193,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
       (TimePeriod.last1Month, l10n.last1MonthFilter),
       (TimePeriod.last3Months, l10n.last3Months),
       (TimePeriod.last6Months, l10n.last6Months),
+      (TimePeriod.last1Year, l10n.last1Year),
       (TimePeriod.custom, l10n.selectDateRange),
     ];
 
@@ -262,7 +263,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                     )
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: (_selectedPeriod == TimePeriod.custom || _selectedPeriod == TimePeriod.last3Months)
+              backgroundColor: (_selectedPeriod == TimePeriod.custom || _selectedPeriod == widget.initialPeriod)
                 ? extendedColors.bgTertiary
                 : extendedColors.primaryMain,
               foregroundColor: Colors.white,
@@ -277,7 +278,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
               l10n.filterAction,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: (_selectedPeriod != TimePeriod.custom && _selectedPeriod != TimePeriod.last3Months)
+                color: (_selectedPeriod != TimePeriod.custom && _selectedPeriod != widget.initialPeriod)
                     ? extendedColors.bgBase
                     : extendedColors.neutral200,
               ),
@@ -593,7 +594,6 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                 controller: controller,
                 onTap: onTap,
                 onChanged: onChanged,
-                keyboardType: TextInputType.datetime,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   isDense: true,

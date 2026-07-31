@@ -54,6 +54,8 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
           (DateTime(now.year, now.month - 3, now.day), now),
       TimePeriod.last6Months =>
           (DateTime(now.year, now.month - 6, now.day), now),
+      TimePeriod.last1Year =>
+          (DateTime(now.year - 1, now.month, now.day), now),
       TimePeriod.custom => (
           _customStart ?? DateTime(now.year, now.month - 3, now.day),
           _customEnd ?? now,
@@ -135,6 +137,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
       TimePeriod.last1Month => l10n.last1MonthFilter,
       TimePeriod.last3Months => l10n.last3Months,
       TimePeriod.last6Months => l10n.last6Months,
+      TimePeriod.last1Year => l10n.last1Year,
       TimePeriod.custom => () {
           final (start, end) = _dateRange();
           return '${start.month}.${start.day} - ${end.month}.${end.day}';
@@ -169,7 +172,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
                 const SizedBox(width: 8),
                 _DropdownChip(
                   label: _periodLabel(l10n),
-                  isActive: false,
+                  isActive: _period != TimePeriod.last3Months,
                   onTap: _openPeriodSheet,
                 ),
               ],
@@ -201,6 +204,18 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.neutral100,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          l10n.noActiveOrdersDesc,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            color: extendedColors.neutral200,
+                          ),
                         ),
                       ),
                     ],
@@ -266,7 +281,6 @@ class _DropdownChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final fg = isActive ? extendedColors.bgBase : extendedColors.neutral100;
 
     return InkWell(
       onTap: onTap,
@@ -286,11 +300,13 @@ class _DropdownChip extends StatelessWidget {
               label,
               style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w400,
-                color: fg,
+                color: isActive
+                  ? extendedColors.bgBase
+                  : extendedColors.neutral100,
               ),
             ),
             const SizedBox(width: 6),
-            CustomSvgIcon('button-down', size: 6, color: fg),
+            CustomSvgIcon('button-down', size: 6, color: isActive ? extendedColors.bgBase : extendedColors.neutral300),
           ],
         ),
       ),

@@ -60,7 +60,6 @@ class OrderCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Row(
@@ -92,17 +91,13 @@ class OrderCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    amount,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral100
-                    ),
-                    textAlign: TextAlign.right,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  amount,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: extendedColors.neutral100
                   ),
+                  textAlign: TextAlign.right,
+                  maxLines: 1,
                 ),
               ],
             ),
@@ -179,12 +174,11 @@ class OrderCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            Text(
-              date,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: extendedColors.neutral200,
-                fontWeight: FontWeight.w300
-              ),
+            _buildInfoRow(
+                theme,
+                l10n.orderedDate,
+                date,
+                extendedColors
             ),
           ],
         ),
