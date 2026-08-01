@@ -162,6 +162,17 @@ class NotificationService extends ChangeNotifier {
         debugPrint('[FCM] Token refreshed: $newToken');
         onTokenRefresh?.call(newToken);
       });
+
+      // Бүх хэрэглэгчийг "all" topic-д сувагчлуулна — broadcast мэдэгдэл
+      // илгээхэд ашиглана. (Web дээр topic subscription дэмжигдэхгүй.)
+      if (!kIsWeb) {
+        try {
+          await _messaging.subscribeToTopic('all');
+          debugPrint('[FCM] Subscribed to topic: all');
+        } catch (e) {
+          debugPrint('[FCM] Topic subscribe алдаа: $e');
+        }
+      }
     }
 
     // Хадгалсан notification-уудыг унших
