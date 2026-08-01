@@ -31,7 +31,7 @@ class IncomeMethodScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 l10n.incomeMethod,
-                style: theme.textTheme.headlineMedium?.copyWith(
+                style: theme.textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: extendedColors.neutral100,
                 ),
@@ -42,9 +42,8 @@ class IncomeMethodScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 l10n.incomeMethodDesc,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral300,
-                  height: 1.5,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral200,
                 ),
               ),
             ),
@@ -54,7 +53,7 @@ class IncomeMethodScreen extends StatelessWidget {
               context: context,
               theme: theme,
               extendedColors: extendedColors,
-              icon: '₮',
+              icon: 'tugrug-01',
               iconColor: extendedColors.primaryMain,
               title: l10n.tugrik,
               subtitle: l10n.qpay,
@@ -77,7 +76,7 @@ class IncomeMethodScreen extends StatelessWidget {
               context: context,
               theme: theme,
               extendedColors: extendedColors,
-              icon: '\$',
+              icon: 'currency-dollar',
               iconColor: extendedColors.neutral100,
               title: l10n.dollar,
               subtitle: l10n.qpayAndCard,
@@ -116,7 +115,7 @@ class IncomeMethodScreen extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
           children: [
             Container(
@@ -127,14 +126,7 @@ class IncomeMethodScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
-                child: Text(
-                  icon,
-                  style: TextStyle(
-                    color: extendedColors.bgBase,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: CustomSvgIcon(icon, color: Colors.white,)
               ),
             ),
             const SizedBox(width: 16),
@@ -144,16 +136,15 @@ class IncomeMethodScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       color: extendedColors.neutral100,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: extendedColors.neutral300,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: extendedColors.neutral200,
                     ),
                   ),
                 ],
@@ -161,16 +152,16 @@ class IncomeMethodScreen extends StatelessWidget {
             ),
             if (showRecommend && recommendLabel != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: extendedColors.primary100.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(16),
+                  color: extendedColors.primary100,
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   recommendLabel,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: extendedColors.primaryMain,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ),

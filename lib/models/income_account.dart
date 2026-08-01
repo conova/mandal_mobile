@@ -6,6 +6,7 @@ class IncomeAccount {
   final String bankName; // BANKNAME (монгол)
   final String bankName2; // BANKNAME2 (англи)
   final bool isPrimary; // ISPRIMARY == "1"
+  final String curCode; // CURCODE ("MNT" | "USD")
 
   const IncomeAccount({
     required this.accountNumber,
@@ -14,6 +15,7 @@ class IncomeAccount {
     required this.bankName,
     required this.bankName2,
     required this.isPrimary,
+    this.curCode = '',
   });
 
   factory IncomeAccount.fromJson(Map<String, dynamic> json) => IncomeAccount(
@@ -23,6 +25,7 @@ class IncomeAccount {
         bankName: json['BANKNAME']?.toString() ?? '',
         bankName2: json['BANKNAME2']?.toString() ?? '',
         isPrimary: json['ISPRIMARY']?.toString() == '1',
+        curCode: json['CURCODE']?.toString() ?? '',
       );
 
   /// Locale-ийн дагуу банкны нэр (аль нь хоосон бол нөгөөгөөр нөхнө)

@@ -1015,6 +1015,7 @@ class AuthService with ChangeNotifier {
     required String bankCode,
     required String iban,
     required String accountName,
+    String? currency,
     bool isPrimary = false,
   }) async {
     final dio = isAuthenticated ? _authedDio : _dio;
@@ -1023,6 +1024,7 @@ class AuthService with ChangeNotifier {
         'bankCode': bankCode,
         'iban': iban,
         'accountName': accountName,
+        if (currency != null && currency.isNotEmpty) 'curCode': currency,
         if (isPrimary) 'isPrimary': '1',
       };
       if (!isAuthenticated) {

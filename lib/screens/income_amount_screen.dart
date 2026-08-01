@@ -3,6 +3,7 @@ import '../common/payment_webview.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 
 class IncomeAmountScreen extends StatefulWidget {
@@ -14,6 +15,9 @@ class IncomeAmountScreen extends StatefulWidget {
 
 class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
   String _amount = '0';
+
+  /// Сонгогдсон quick amount (сая) — гараар оруулбал арилна
+  int? _selectedQuickAmount;
 
   bool get _hasValue => _amount != '0';
 
@@ -46,6 +50,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
 
   void _onDigit(String digit) {
     setState(() {
+      _selectedQuickAmount = null;
       if (_amount == '0' && digit != '.') {
         _amount = digit;
       } else if (digit == '.') {
@@ -95,6 +100,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
 
   void _onDelete() {
     setState(() {
+      _selectedQuickAmount = null;
       if (_amount.length <= 1) {
         _amount = '0';
       } else {
@@ -105,6 +111,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
 
   void _onQuickAmount(int amount) {
     setState(() {
+      _selectedQuickAmount = amount;
       _amount = amount.toString();
     });
   }
@@ -136,7 +143,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
             Text(
               l10n.enterAmount,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral300,
+                color: extendedColors.neutral200,
               ),
             ),
             const SizedBox(height: 16),
@@ -160,23 +167,34 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [1, 5, 10, 50].map((amount) {
+                  final isSelected =
+                      _selectedQuickAmount == amount * 1000000;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: GestureDetector(
                       onTap: () => _onQuickAmount(amount * 1000000),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
+                          horizontal: 12,
+                          vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          border: Border.all(color: extendedColors.neutral400),
-                          borderRadius: BorderRadius.circular(20),
+                          color: isSelected
+                              ? extendedColors.primaryMain
+                              : Colors.transparent,
+                          border: Border.all(
+                            color: isSelected
+                                ? extendedColors.primaryMain
+                                : extendedColors.neutral500,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           '$amount ${l10n.million}',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: extendedColors.neutral100,
+                            color: isSelected
+                                ? extendedColors.bgBase
+                                : extendedColors.neutral100,
                           ),
                         ),
                       ),
@@ -185,7 +203,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
                 }).toList(),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             // Number pad
             _buildNumberPad(theme, extendedColors),
             const SizedBox(height: 8),
@@ -195,32 +213,11 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: CustomButton(
+                  label: l10n.makeIncome,
+                  isLoading: _isSubmitting,
                   onPressed: _hasValue && !_isSubmitting ? _submit : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _hasValue
-                        ? extendedColors.primaryMain
-                        : extendedColors.bgSecondary,
-                    foregroundColor: _hasValue
-                        ? Colors.white
-                        : extendedColors.neutral300,
-                    disabledBackgroundColor: extendedColors.bgSecondary,
-                    disabledForegroundColor: extendedColors.neutral300,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Text(
-                    l10n.makeIncome,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: _hasValue
-                          ? Colors.white
-                          : extendedColors.neutral300,
-                    ),
-                  ),
+                  variant: CustomButtonVariant.primary,
                 ),
               ),
             ),
@@ -246,6 +243,9 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
             children: row.map((key) {
               return Expanded(
                 child: GestureDetector(
+                  // opaque — зөвхөн текст/icon дээр биш нүдний бүх талбайд
+                  // (хоосон зайд ч) tap бүртгэгдэнэ
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     if (key == 'del') {
                       _onDelete();
@@ -254,17 +254,17 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
                     }
                   },
                   child: Container(
-                    height: 64,
+                    height: 72,
                     alignment: Alignment.center,
                     child: key == 'del'
                         ? Icon(
                             Icons.backspace_outlined,
                             color: extendedColors.neutral100,
-                            size: 24,
+                            size: 28,
                           )
                         : Text(
                             key,
-                            style: theme.textTheme.headlineMedium?.copyWith(
+                            style: theme.textTheme.headlineLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: extendedColors.neutral100,
                             ),

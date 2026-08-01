@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import '../widgets/custom_button.dart';
 
 class WithdrawAmountScreen extends StatefulWidget {
   const WithdrawAmountScreen({super.key});
@@ -12,6 +14,9 @@ class WithdrawAmountScreen extends StatefulWidget {
 
 class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   String _amount = '0';
+
+  /// Сонгогдсон хувь (25/50/75/100) — гараар оруулбал арилна
+  int? _selectedPercent;
 
   bool get _hasValue => _amount != '0';
 
@@ -44,6 +49,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
 
   void _onDigit(String digit) {
     setState(() {
+      _selectedPercent = null;
       if (_amount == '0' && digit != '.') {
         _amount = digit;
       } else if (digit == '.') {
@@ -61,6 +67,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
 
   void _onDelete() {
     setState(() {
+      _selectedPercent = null;
       if (_amount.length <= 1) {
         _amount = '0';
       } else {
@@ -69,9 +76,19 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
     });
   }
 
-  void _onQuickAmount(int amount) {
+  /// Боломжит дүнгийн хувиар (25/50/75/100%) дүнг бөглөнө
+  void _onPercent(int percent, double balance) {
+    final value = balance * percent / 100;
+    // 2 орны нарийвчлалтай, төгсгөлийн 0-уудыг хасна ("32000.10" → "32000.1")
+    var text = value.toStringAsFixed(2);
+    if (text.contains('.')) {
+      text = text
+          .replaceFirst(RegExp(r'0+$'), '')
+          .replaceFirst(RegExp(r'\.$'), '');
+    }
     setState(() {
-      _amount = amount.toString();
+      _selectedPercent = percent;
+      _amount = text.isEmpty || text == '0' ? '0' : text;
     });
   }
 
@@ -80,8 +97,19 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final args = ModalRoute.of(context)?.settings.arguments as String?;
-    final isMnt = args != 'usd';
+    // Args: Map {'currency': 'mnt'|'usd', 'balance': double} эсвэл
+    // хуучин хэлбэрээр шууд String ('mnt'|'usd')
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    final String? currency = rawArgs is Map
+        ? rawArgs['currency']?.toString()
+        : rawArgs as String?;
+    final double balance = rawArgs is Map
+        ? ((rawArgs['balance'] as num?)?.toDouble() ?? 0)
+        : 0;
+    final double rate = rawArgs is Map
+        ? ((rawArgs['rate'] as num?)?.toDouble() ?? 0)
+        : 0;
+    final isMnt = currency != 'usd';
     final currencySymbol = isMnt ? '₮' : '\$';
 
     return Scaffold(
@@ -102,7 +130,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
             Text(
               l10n.enterAmount,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral300,
+                color: extendedColors.neutral200,
               ),
             ),
             const SizedBox(height: 16),
@@ -111,7 +139,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  '$_formattedAmount$currencySymbol',
+                  '$currencySymbol$_formattedAmount',
                   style: theme.textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
@@ -119,30 +147,60 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            // Боломжит үлдэгдэл
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${l10n.availableAmountLabel}: ',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                  ),
+                ),
+                Text(
+                  formatStockAmount(balance, isForeign: !isMnt, decimals: 2),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                ),
+              ],
+            ),
             const Spacer(),
-            // Quick amount chips
+            // Percent chips
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [1, 5, 10, 50].map((amount) {
+                children: [25, 50, 75, 100].map((percent) {
+                  final isSelected = _selectedPercent == percent;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: GestureDetector(
-                      onTap: () => _onQuickAmount(amount * 1000000),
+                      onTap: () => _onPercent(percent, balance),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          border: Border.all(color: extendedColors.neutral400),
-                          borderRadius: BorderRadius.circular(20),
+                          color: isSelected
+                              ? extendedColors.primaryMain
+                              : Colors.transparent,
+                          border: Border.all(
+                            color: isSelected
+                                ? extendedColors.primaryMain
+                                : extendedColors.neutral500,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
                         ),
                         child: Text(
-                          '$amount ${l10n.million}',
+                          '$percent%',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: extendedColors.neutral100,
+                            color: isSelected
+                                ? extendedColors.bgBase
+                                : extendedColors.neutral100,
                           ),
                         ),
                       ),
@@ -151,7 +209,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                 }).toList(),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             // Number pad
             _buildNumberPad(theme, extendedColors),
             const SizedBox(height: 8),
@@ -161,37 +219,23 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: CustomButton(
+                  label: l10n.continueLabel,
                   onPressed: _hasValue
-                      ? () => Navigator.pushReplacementNamed(
+                      ? () => Navigator.pushNamed(
                             context,
-                            '/withdraw_success',
+                            '/withdraw_account',
+                            arguments: {
+                              'currency': isMnt ? 'mnt' : 'usd',
+                              'amount': double.tryParse(
+                                    _amount.replaceAll(',', ''),
+                                  ) ??
+                                  0.0,
+                              'rate': rate,
+                            },
                           )
                       : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _hasValue
-                        ? extendedColors.red
-                        : extendedColors.bgSecondary,
-                    foregroundColor: _hasValue
-                        ? Colors.white
-                        : extendedColors.neutral300,
-                    disabledBackgroundColor: extendedColors.bgSecondary,
-                    disabledForegroundColor: extendedColors.neutral300,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Text(
-                    l10n.makeWithdraw,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: _hasValue
-                          ? Colors.white
-                          : extendedColors.neutral300,
-                    ),
-                  ),
+                  variant: CustomButtonVariant.primary,
                 ),
               ),
             ),
@@ -217,6 +261,9 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
             children: row.map((key) {
               return Expanded(
                 child: GestureDetector(
+                  // opaque — зөвхөн текст/icon дээр биш нүдний бүх талбайд
+                  // (хоосон зайд ч) tap бүртгэгдэнэ
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     if (key == 'del') {
                       _onDelete();
@@ -225,17 +272,17 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                     }
                   },
                   child: Container(
-                    height: 64,
+                    height: 72,
                     alignment: Alignment.center,
                     child: key == 'del'
                         ? Icon(
                             Icons.backspace_outlined,
                             color: extendedColors.neutral100,
-                            size: 24,
+                            size: 28,
                           )
                         : Text(
                             key,
-                            style: theme.textTheme.headlineMedium?.copyWith(
+                            style: theme.textTheme.headlineLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: extendedColors.neutral100,
                             ),

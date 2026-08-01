@@ -1104,6 +1104,21 @@ class AppLocalizationsMn extends AppLocalizations {
   String get document => 'Бичиг баримт';
 
   @override
+  String get currencyLabel => 'Валют';
+
+  @override
+  String get termsOfService => 'Үйлчилгээний нөхцөл';
+
+  @override
+  String get securitiesStatement => 'Үнэт цаасны тодорхойлолт';
+
+  @override
+  String get securitiesStatementSubtitle => 'Эзэмшиж буй үнэт цаас';
+
+  @override
+  String get agreementLabel => 'Гэрээ';
+
+  @override
   String get documentDesc => 'Иргэний үнэмлэх, селфи зураг';
 
   @override
@@ -1263,16 +1278,26 @@ class AppLocalizationsMn extends AppLocalizations {
   String get withdrawMethod => 'Зарлагын хэлбэр';
 
   @override
-  String get withdrawMethodDesc => 'Та данснаасаа мөнгө гаргах боломжтой.';
+  String get withdrawMethodDesc => 'Татан авалт хийх данс сонгоно уу';
 
   @override
-  String get makeWithdraw => 'Зарлага хийх';
+  String get makeWithdraw => 'Зарлага гаргах';
+
+  @override
+  String get addAccountLabel => 'Данс нэмэх';
+
+  @override
+  String get receiveAccount => 'Хүлээн авах данс';
+
+  @override
+  String get withdrawAmountTitle => 'Зарлага гаргах дүн';
 
   @override
   String get withdrawSuccess => 'Зарлага хийгдлээ';
 
   @override
-  String get withdrawSuccessDesc => 'Таны зарлага амжилттай хийгдлээ!';
+  String get withdrawSuccessDesc =>
+      'Олон өөр данснаас нэгтгэж гүйлгээ хийгддэг учраас та түр хүлээж байгаарай.';
 
   @override
   String get bankTransfer => 'Банкны шилжүүлэг';

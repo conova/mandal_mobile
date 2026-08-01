@@ -54,7 +54,6 @@ class TransactionListItem extends StatelessWidget {
                 Text(
                   transaction.title,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
                     color: extendedColors.neutral100,
                   ),
                   maxLines: 1,
@@ -63,8 +62,8 @@ class TransactionListItem extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   transaction.date,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: extendedColors.neutral300,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: extendedColors.neutral200,
                   ),
                 ),
               ],
@@ -74,7 +73,6 @@ class TransactionListItem extends StatelessWidget {
           Text(
             transaction.amount,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w600,
               color: transaction.isPositive
                   ? extendedColors.primaryMain
                   : extendedColors.neutral100,
