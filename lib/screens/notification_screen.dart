@@ -77,13 +77,65 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.dispose();
   }
 
+  /// Home header-ийн хонхны badge-ийг шинэчилнэ
+  void _syncBadge(int count) {
+    try {
+      context.read<NotificationService>().setUnreadCount(count);
+    } on ProviderNotFoundException {
+      // FCM ажиллаагүй орчин — badge home header-ийн локал тоогоор үлдэнэ
+    }
+  }
+
   void _onPushReceived() {
     final service = _fcmService;
     // markSeen-ийн notify давталтаас сэргийлж зөвхөн шинэ push ирсэн
     // (hasUnseen=true) үед л ажиллана
     if (!mounted || service == null || !service.hasUnseen) return;
-    service.markSeen();
-    _fetch();
+    // notifyListeners-ийн дундаас дахин notify хийхээс сэргийлж хойшлуулна
+    Future.microtask(service.markSeen);
+    _refreshAfterPush();
+  }
+
+  /// Push ирмэгц server рүү шууд хандахад мэдэгдэл DB-д бичигдэж амжаагүй
+  /// байж болзошгүй тул богино хоцролттойгоор хэд хэдэн удаа шалгана —
+  /// шинэ мөр олдмогц зогсоно
+  Future<void> _refreshAfterPush() async {
+    const delays = [
+      Duration(milliseconds: 400)
+    ];
+    for (final delay in delays) {
+      await Future.delayed(delay);
+      if (!mounted) return;
+      final foundNew = await _refreshNewest();
+      if (foundNew) return;
+    }
+  }
+
+  /// Эхний хуудсыг татаж, жагсаалтад байхгүй ШИНЭ мэдэгдлүүдийг дээр нь
+  /// нэмнэ — ачаалагдсан хуудсуудыг (scroll байрлалыг) алдагдуулахгүй.
+  /// Шинэ мөр нэмэгдсэн бол true буцаана.
+  Future<bool> _refreshNewest() async {
+    if (_usingMock || _isLoading || !mounted) return false;
+    try {
+      final feed =
+          await context.read<NotificationApiService>().list(limit: _pageSize);
+      if (!mounted) return false;
+      final ids = _items.map((e) => e.id).toSet();
+      final fresh = feed.items.where((e) => !ids.contains(e.id)).toList();
+      setState(() {
+        if (fresh.isNotEmpty) {
+          _items.insertAll(0, fresh);
+          // Шинэ мөрүүд нэмэгдсэн тул дараагийн хуудасны offset гулсана
+          _nextOffset += fresh.length;
+        }
+        _serverUnread = feed.unreadCount;
+      });
+      _syncBadge(feed.unreadCount);
+      return fresh.isNotEmpty;
+    } catch (_) {
+      // Дараагийн шалгалт дээр дахин оролдоно
+      return false;
+    }
   }
 
   /// Эхний хуудсыг татна (нээх үед болон pull-to-refresh)
@@ -113,6 +165,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         _nextOffset = feed.nextOffset;
         _serverUnread = feed.unreadCount;
       });
+      _syncBadge(feed.unreadCount);
     } catch (e) {
       if (!mounted) return;
       // Backend холбогдоогүй / алдаа — UI-аа preview-р mock-аар дүүргэнэ.
@@ -146,6 +199,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         _serverUnread = feed.unreadCount;
         _isLoadingMore = false;
       });
+      _syncBadge(feed.unreadCount);
     } catch (_) {
       // Дараагийн scroll дээр дахин оролдоно
       if (mounted) setState(() => _isLoadingMore = false);
@@ -172,6 +226,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         }
         if (_serverUnread > 0) _serverUnread--;
       });
+      if (!_usingMock) _syncBadge(_serverUnread);
     }
 
     // Дэлгэрэнгүй харах — бүх холбогдох мэдээлэл (type, data, target_kind)
@@ -193,6 +248,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         _items = _items.map((n) => n.copyWith(isRead: true)).toList();
         _serverUnread = 0;
       });
+      _syncBadge(0);
     } catch (e) {
       if (!mounted) return;
       CustomSnackbar.show(

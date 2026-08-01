@@ -91,8 +91,20 @@ class NotificationService extends ChangeNotifier {
   List<NotificationItem> _notifications = [];
   List<NotificationItem> get notifications => List.unmodifiable(_notifications);
 
-  /// Уншаагүй notification тоо
-  int get unreadCount => _notifications.where((n) => !n.isRead).length;
+  /// Уншаагүй мэдэгдлийн тоо — home header-ийн хонхны badge.
+  /// Notification API-ийн unread_count-аас эх авч, FCM push ирэх бүрд
+  /// 1-ээр нэмэгдэнэ; жагсаалтын дэлгэц дээр уншихад буурна.
+  int _unreadCount = 0;
+  int get unreadCount => _unreadCount;
+
+  /// Server-ийн unread_count-аар badge-ийг шинэчилнэ (home нээгдэхэд,
+  /// мэдэгдлийн жагсаалт татахад)
+  void setUnreadCount(int value) {
+    final v = value < 0 ? 0 : value;
+    if (_unreadCount == v) return;
+    _unreadCount = v;
+    notifyListeners();
+  }
 
   /// Callback — шинэ notification ирэхэд дуудна
   void Function(NotificationItem)? onNotificationReceived;
@@ -212,6 +224,7 @@ class NotificationService extends ChangeNotifier {
     _saveNotifications();
 
     _hasUnseen = true;
+    _unreadCount++;
     notifyListeners();
     onNotificationReceived?.call(item);
 
