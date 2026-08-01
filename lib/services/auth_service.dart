@@ -54,6 +54,7 @@ class AuthService with ChangeNotifier {
   static const String _lastUserNameKey = 'last_user_name';
   static const String _lastUserIdKey = 'last_user_id';
   static const String _biometricEnabledKey = 'biometric_enabled';
+  static const String _biometricUserKey = 'biometric_user_id';
   static const String _uidKey = 'user_uid';
   static const String _custNameKey = 'user_cust_name';
   static const String _rolesKey = 'user_roles';
@@ -70,6 +71,11 @@ class AuthService with ChangeNotifier {
   String? _lastUserName;
   String? _lastUserId;
   bool _isBiometricEnabled = false;
+
+  /// Биометрикийг идэвхжүүлсэн хэрэглэгчийн uid — өөр хэрэглэгч нэвтрэхэд
+  /// тохиргоог автоматаар унтраахад ашиглана (logout _lastUserId-г
+  /// цэвэрлэдэг тул тусад нь хадгална)
+  String? _biometricUserId;
   String? _uid;
   String? _custName;
   Map<String, String> _roles = {};
@@ -244,8 +250,15 @@ class AuthService with ChangeNotifier {
     _lastUserName = prefs.getString(_lastUserNameKey);
     _lastUserId = prefs.getString(_lastUserIdKey);
     _isBiometricEnabled = prefs.getBool(_biometricEnabledKey) ?? false;
+    _biometricUserId = prefs.getString(_biometricUserKey);
     _uid = prefs.getString(_uidKey);
     _custName = prefs.getString(_custNameKey);
+
+    // Хуучин хувилбарт эзэн хадгалагдаагүй — одоогийн хэрэглэгчээр нөхнө
+    if (_isBiometricEnabled && _biometricUserId == null && _uid != null) {
+      _biometricUserId = _uid;
+      await prefs.setString(_biometricUserKey, _uid!);
+    }
 
     final rolesJson = prefs.getString(_rolesKey);
     if (rolesJson != null) {
@@ -382,6 +395,14 @@ class AuthService with ChangeNotifier {
     _isBiometricEnabled = enabled;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_biometricEnabledKey, enabled);
+    // Идэвхжүүлсэн эзнийг цээжилнэ — өөр хэрэглэгч нэвтрэхэд унтраана
+    if (enabled && _uid != null) {
+      _biometricUserId = _uid;
+      await prefs.setString(_biometricUserKey, _uid!);
+    } else if (!enabled) {
+      _biometricUserId = null;
+      await prefs.remove(_biometricUserKey);
+    }
     notifyListeners();
   }
 
@@ -632,21 +653,19 @@ class AuthService with ChangeNotifier {
     final String accessToken = data['token'];
     final String refreshToken = data['refreshToken'] ?? '';
 
-    // Өмнөх saved user-ийг шинэ нэвтрэлтийн өмнө цээжлэх (saveLastUser нь
-    // _lastUserId-г дарж бичих учир)
-    final previousUserId = _lastUserId;
-
     await saveTokens(accessToken: accessToken, refreshToken: refreshToken);
     await _saveUserInfoFromToken(accessToken);
 
-    // Шинэ хэрэглэгч өөр (өмнөх биометрик идэвхжсэн user-ийнх биш) бол
-    // биометрик тохиргоог автоматаар унтрааж аюулгүй болгоно.
-    if (previousUserId != null &&
+    // Нэвтэрсэн хэрэглэгч биометрикийг идэвхжүүлсэн эзнээс өөр бол
+    // тохиргоог автоматаар унтрааж аюулгүй болгоно. (Эзнийг _lastUserId-с
+    // биш тусдаа key-ээс харьцуулна — logout _lastUserId-г цэвэрлэдэг.)
+    if (_isBiometricEnabled &&
         _uid != null &&
-        previousUserId != _uid &&
-        _isBiometricEnabled) {
+        _biometricUserId != null &&
+        _biometricUserId != _uid) {
+      final previousOwner = _biometricUserId;
       await setBiometricEnabled(false);
-      debugPrint('[Auth] Биометрик тохиргоо унтраав ($previousUserId → $_uid)');
+      debugPrint('[Auth] Биометрик тохиргоо унтраав ($previousOwner → $_uid)');
     }
 
     if (_custName != null && _uid != null) {

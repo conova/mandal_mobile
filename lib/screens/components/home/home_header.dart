@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/notification_api_service.dart';
 import '../../../services/notification_service.dart';
 import '../../../widgets/custom_snackbar.dart';
 import 'profile_switcher.dart';
@@ -24,10 +25,34 @@ class _HomeHeaderState extends State<HomeHeader> {
   /// Нийт хөрөнгө — /portfolio/summary-аас (null бол хараахан ирээгүй)
   double? _totalAssets;
 
+  /// FCM ажиллаагүй орчинд (NotificationService provider байхгүй)
+  /// unread_count-ыг локалд хадгална
+  int _localUnread = 0;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(_fetchTotal);
+    Future.microtask(_fetchUnreadCount);
+  }
+
+  /// Нүүр нээгдэхэд notification list-ийг эхний байдлаар (limit 1) дуудаж
+  /// unread_count-ыг хонхны badge-д тавина
+  Future<void> _fetchUnreadCount() async {
+    try {
+      final feed =
+          await context.read<NotificationApiService>().list(limit: 1);
+      if (!mounted) return;
+      try {
+        // NotificationService-д тавьснаар FCM push ирэхэд +1 нэмэгдэж,
+        // мэдэгдлийн дэлгэц дээр уншихад буурна
+        context.read<NotificationService>().setUnreadCount(feed.unreadCount);
+      } on ProviderNotFoundException {
+        setState(() => _localUnread = feed.unreadCount);
+      }
+    } catch (_) {
+      // Badge-гүй үлдээнэ — дараагийн нээлтэд дахин татна
+    }
   }
 
   Future<void> _fetchTotal() async {
@@ -49,13 +74,13 @@ class _HomeHeaderState extends State<HomeHeader> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
 
-    // Шинэ (хараагүй) push notification байвал хонхон дээр улаан цэг гарна.
+    // Уншаагүй мэдэгдлийн тоо — хонхон дээр badge-ээр гарна.
     // Firebase init амжилтгүй үед provider бүртгэгдээгүй байж болно.
-    bool hasUnseenNotification = false;
+    int unreadBadge = _localUnread;
     try {
-      hasUnseenNotification = context.watch<NotificationService>().hasUnseen;
+      unreadBadge = context.watch<NotificationService>().unreadCount;
     } on ProviderNotFoundException {
-      // FCM ажиллаагүй орчин — цэг харуулахгүй
+      // FCM ажиллаагүй орчин — API-с татсан локал тоог харуулна
     }
 
     // Хүүхдийн данс идэвхтэй бол түүний дүнг харуулна
@@ -143,17 +168,31 @@ class _HomeHeaderState extends State<HomeHeader> {
             IconButton(
               onPressed: () => Navigator.pushNamed(context, '/notifications'),
               icon: const CustomSvgIcon('bell-02', size: 24),
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
             ),
-            if (hasUnseenNotification)
+            if (unreadBadge > 0)
               Positioned(
-                right: 12,
-                top: 12,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: colorScheme.error,
-                    shape: BoxShape.circle,
+                right: 0,
+                top: 0,
+                child: IgnorePointer(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 22),
+                    decoration: BoxDecoration(
+                      color: colorScheme.error,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: extendedColors.bgBase, width: 2)
+                    ),
+                    child: Text(
+                      unreadBadge > 99 ? '99+' : unreadBadge.toString(),
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
