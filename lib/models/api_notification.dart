@@ -1,9 +1,20 @@
-/// Notification Gateway-ийн feed хариу
+/// Notification Gateway-ийн feed хариу (pagination дэмжинэ)
 class NotificationFeed {
   final List<ApiNotification> items;
   final int count;
+  final bool hasMore;
+  final int nextOffset;
+  final int totalCount;
+  final int unreadCount;
 
-  const NotificationFeed({required this.items, required this.count});
+  const NotificationFeed({
+    required this.items,
+    required this.count,
+    this.hasMore = false,
+    this.nextOffset = 0,
+    this.totalCount = 0,
+    this.unreadCount = 0,
+  });
 }
 
 /// Gateway-ийн буцаасан notification (DB row).

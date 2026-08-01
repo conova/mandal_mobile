@@ -29,6 +29,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
   String? _error;
   bool _usingMock = false;
 
+  /// Pagination — 10-аар хуудаслаж татна, scroll доошлоход дараагийн
+  /// хуудсыг дуудна
+  static const int _pageSize = 10;
+  bool _hasMore = false;
+  int _nextOffset = 0;
+  bool _isLoadingMore = false;
+
+  /// Server-ийн unread_count — жагсаалт бүрэн ачаалагдаагүй ч нийт
+  /// уншаагүй тоог зөв харуулна
+  int _serverUnread = 0;
+
+  final ScrollController _scrollController = ScrollController();
+
   /// FCM push сонсогч — дэлгэц нээлттэй байхад шинэ push ирвэл
   /// жагсаалтыг server-ээс дахин татаж дээр нь нэмэгдсэн байдлаар харуулна
   NotificationService? _fcmService;
@@ -37,6 +50,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void initState() {
     super.initState();
     _fetch();
+    // Жагсаалтын төгсгөлд ойртоход дараагийн 10-ыг татна
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        _loadMore();
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       try {
@@ -52,6 +72,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _fcmService?.removeListener(_onPushReceived);
     super.dispose();
   }
@@ -65,10 +86,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     _fetch();
   }
 
+  /// Эхний хуудсыг татна (нээх үед болон pull-to-refresh)
   Future<void> _fetch() async {
     try {
       final service = context.read<NotificationApiService>();
-      final feed = await service.list(limit: 100);
+      final feed = await service.list(limit: _pageSize);
       if (!mounted) return;
       // API хариу хоосон бол dev preview-д mock fallback харуулна.
       // Production-д backend feed-тэй болсон даруйд энэ branch ажиллахгүй.
@@ -78,6 +100,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           _isLoading = false;
           _error = null;
           _usingMock = true;
+          _hasMore = false;
         });
         return;
       }
@@ -86,6 +109,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         _isLoading = false;
         _error = null;
         _usingMock = false;
+        _hasMore = feed.hasMore;
+        _nextOffset = feed.nextOffset;
+        _serverUnread = feed.unreadCount;
       });
     } catch (e) {
       if (!mounted) return;
@@ -97,7 +123,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
         _isLoading = false;
         _error = e.toString().replaceFirst('Exception: ', '');
         _usingMock = true;
+        _hasMore = false;
       });
+    }
+  }
+
+  /// Scroll төгсгөлд хүрэхэд дараагийн хуудсыг нэмж татна
+  Future<void> _loadMore() async {
+    if (_isLoadingMore || !_hasMore || _usingMock || _isLoading) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final feed = await context
+          .read<NotificationApiService>()
+          .list(limit: _pageSize, offset: _nextOffset);
+      if (!mounted) return;
+      setState(() {
+        // Шинэ мэдэгдэл нэмэгдсэнээс offset гулссан бол давхардлыг хасна
+        final ids = _items.map((e) => e.id).toSet();
+        _items.addAll(feed.items.where((e) => !ids.contains(e.id)));
+        _hasMore = feed.hasMore;
+        _nextOffset = feed.nextOffset;
+        _serverUnread = feed.unreadCount;
+        _isLoadingMore = false;
+      });
+    } catch (_) {
+      // Дараагийн scroll дээр дахин оролдоно
+      if (mounted) setState(() => _isLoadingMore = false);
     }
   }
 
@@ -119,6 +170,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         if (idx >= 0) {
           _items[idx] = _items[idx].copyWith(isRead: true);
         }
+        if (_serverUnread > 0) _serverUnread--;
       });
     }
 
@@ -139,6 +191,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       if (!mounted) return;
       setState(() {
         _items = _items.map((n) => n.copyWith(isRead: true)).toList();
+        _serverUnread = 0;
       });
     } catch (e) {
       if (!mounted) return;
@@ -171,7 +224,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }).toList();
   }
 
-  int get _unreadCount => _items.where((n) => !n.isRead).length;
+  /// Нийт уншаагүй тоо — server-ийн unread_count (жагсаалт хуудасласан
+  /// тул зөвхөн ачаалагдсан хэсгээс тоолж болохгүй); mock үед local
+  int get _unreadCount => _usingMock
+      ? _items.where((n) => !n.isRead).length
+      : _serverUnread;
 
   @override
   Widget build(BuildContext context) {
@@ -368,9 +425,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
       );
     }
     return ListView.builder(
+      controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: list.length,
+      // Дараагийн хуудас ачаалж байгааг үзүүлэх сүүлийн мөр
+      itemCount: list.length + (_isLoadingMore ? 1 : 0),
       itemBuilder: (context, i) {
+        if (i >= list.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
         final n = list[i];
         return NotificationItem(
           title: n.title,

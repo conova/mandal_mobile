@@ -55,6 +55,11 @@ class NotificationApiService {
       return NotificationFeed(
         items: items,
         count: (body['count'] as num?)?.toInt() ?? items.length,
+        hasMore: body['has_more'] == true,
+        nextOffset: (body['next_offset'] as num?)?.toInt() ??
+            offset + items.length,
+        totalCount: (body['total_count'] as num?)?.toInt() ?? items.length,
+        unreadCount: (body['unread_count'] as num?)?.toInt() ?? 0,
       );
     } on DioException catch (e) {
       throw NotificationApiException(_extractError(e));
