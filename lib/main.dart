@@ -27,6 +27,7 @@ import 'screens/stock_portfolio_screen.dart';
 import 'screens/income_method_screen.dart';
 import 'screens/income_amount_screen.dart';
 import 'screens/income_success_screen.dart';
+import 'screens/withdraw_account_screen.dart';
 import 'screens/withdraw_method_screen.dart';
 import 'screens/withdraw_amount_screen.dart';
 import 'screens/withdraw_success_screen.dart';
@@ -545,6 +546,7 @@ class MyApp extends StatelessWidget {
               '/income_amount': (context) => const IncomeAmountScreen(),
               '/income_success': (context) => const IncomeSuccessScreen(),
               '/withdraw_method': (context) => const WithdrawMethodScreen(),
+              '/withdraw_account': (context) => const WithdrawAccountScreen(),
               '/withdraw_amount': (context) => const WithdrawAmountScreen(),
               '/withdraw_success': (context) => const WithdrawSuccessScreen(),
               '/transaction_history': (context) =>

@@ -23,6 +23,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
   final TextEditingController _ibanController = TextEditingController();
   final TextEditingController _receiverController = TextEditingController();
   String? _selectedBankCode;
+  String _selectedCurrency = 'MNT';
   bool _isButtonEnabled = false;
   bool _isSaving = false;
 
@@ -62,6 +63,22 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
     _ibanController.addListener(_onIbanChanged);
     _receiverController.addListener(_checkFields);
     _loadBanks();
+    _fillReceiverFromInfo();
+  }
+
+  /// Хүлээн авагчийн нэрийг хэрэглэгчийн info-оос шууд бөглөнө
+  /// (гараар засах эрхгүй)
+  Future<void> _fillReceiverFromInfo() async {
+    final auth = context.read<AuthService>();
+    Map<String, dynamic>? info = auth.userInfo;
+    info ??= await auth.refreshUserInfo();
+    if (!mounted || info == null) return;
+    final name =
+        '${info['lastName'] ?? ''} ${info['firstName'] ?? ''}'.trim();
+    if (name.isNotEmpty) {
+      _receiverController.text = name;
+      _checkFields();
+    }
   }
 
   void _onIbanChanged() {
@@ -140,6 +157,7 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
         bankCode: _selectedBankCode!,
         iban: _ibanController.text.trim(),
         accountName: _receiverController.text.trim(),
+        currency: _selectedCurrency,
       );
       if (!mounted) return;
       setState(() => _isSaving = false);
@@ -215,33 +233,54 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
                   child: Center(child: CircularProgressIndicator()),
                 )
               else
-                CustomDropdown<String>(
-                  label: l10n.bank,
-                  value: _selectedBankCode,
-                  items: _banks.map((bank) {
-                    final code = bank['code']?.toString() ?? '';
-                    final name = bank['name']?.toString() ?? code;
-                    return DropdownMenuItem<String>(
-                      value: code,
-                      child: Text(name),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedBankCode = newValue;
-                      _checkFields();
-                    });
-                  },
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: CustomDropdown<String>(
+                        label: l10n.bank,
+                        value: _selectedBankCode,
+                        items: _banks.map((bank) {
+                          final code = bank['code']?.toString() ?? '';
+                          final name = bank['name']?.toString() ?? code;
+                          return DropdownMenuItem<String>(
+                            value: code,
+                            child: Text(name, overflow: TextOverflow.ellipsis),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedBankCode = newValue;
+                            _checkFields();
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: CustomDropdown<String>(
+                        label: l10n.currencyLabel,
+                        value: _selectedCurrency,
+                        items: const [
+                          DropdownMenuItem(value: 'MNT', child: Text('MNT')),
+                          DropdownMenuItem(value: 'USD', child: Text('USD')),
+                        ],
+                        onChanged: (String? newValue) {
+                          if (newValue == null) return;
+                          setState(() => _selectedCurrency = newValue);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               const SizedBox(height: 20),
+              // Хүлээн авагч — info-оос автоматаар бөглөгдөнө, засах эрхгүй
               CustomInput(
                 label: l10n.receiver,
                 controller: _receiverController,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.receiverHint,
-                style: TextStyle(color: theme.disabledColor, fontSize: 12),
+                enabled: false,
               ),
               const SizedBox(height: 60),
               CustomButton(

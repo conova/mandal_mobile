@@ -1105,6 +1105,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get document => 'Documents';
 
   @override
+  String get currencyLabel => 'Currency';
+
+  @override
+  String get termsOfService => 'Terms of service';
+
+  @override
+  String get securitiesStatement => 'Securities statement';
+
+  @override
+  String get securitiesStatementSubtitle => 'Securities you own';
+
+  @override
+  String get agreementLabel => 'Agreement';
+
+  @override
   String get documentDesc => 'ID card, selfie photo';
 
   @override
@@ -1264,17 +1279,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withdrawMethod => 'Withdraw Method';
 
   @override
-  String get withdrawMethodDesc => 'You can withdraw money from your account.';
+  String get withdrawMethodDesc => 'Select an account to withdraw from';
 
   @override
   String get makeWithdraw => 'Withdraw';
+
+  @override
+  String get addAccountLabel => 'Add account';
+
+  @override
+  String get receiveAccount => 'Receiving account';
+
+  @override
+  String get withdrawAmountTitle => 'Withdrawal amount';
 
   @override
   String get withdrawSuccess => 'Withdrawal completed';
 
   @override
   String get withdrawSuccessDesc =>
-      'Your withdrawal has been processed successfully!';
+      'Transactions are consolidated from multiple accounts, so please wait a moment.';
 
   @override
   String get bankTransfer => 'Bank Transfer';

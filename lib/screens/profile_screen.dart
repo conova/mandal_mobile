@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _userPhone = data['phone']?.toString() ?? '';
           _photoUrl = data['photo']?.toString();
           _passDate = _formatPassDate(data['passDate']?.toString());
-          _deviceCount = int.tryParse(data['deviceCount']?.toString() ?? '');
+          // _deviceCount = int.tryParse(data['deviceCount']?.toString() ?? '');
         });
       }
     } catch (_) {
@@ -245,6 +245,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               subtitle: l10n.summaryReportSubtitle,
               onTap: () => Navigator.pushNamed(context, '/summary_report'),
             ),
+            ProfileListItem(
+              icon: const CustomSvgIcon('file-02', size: 20),
+              title: l10n.termsOfService,
+              onTap: () {
+                // TODO: үйлчилгээний нөхцөлийн дэлгэц/линк холбогдоно
+              },
+            ),
 
             // Child Account Section — хүүхдийн профайлд харагдахгүй
             if (!isChildProfile) ...[
@@ -316,6 +323,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ? l10n.deviceCountLabel(_deviceCount!)
                     : null,
                 onTap: () => Navigator.pushNamed(context, '/connected_devices'),
+              ),
+
+              // Documents Section
+              const SizedBox(height: 24),
+              ProfileSectionHeader(title: l10n.document),
+              ProfileListItem(
+                icon: const CustomSvgIcon('file-check-03', size: 20),
+                title: l10n.securitiesStatement,
+                subtitle: l10n.securitiesStatementSubtitle,
+                onTap: () {
+                  // TODO: үнэт цаасны тодорхойлолтын дэлгэц/API холбогдоно
+                },
+              ),
+              ProfileListItem(
+                icon: const CustomSvgIcon('file-download-02', size: 20),
+                title: l10n.agreementLabel,
+                onTap: () {
+                  // TODO: гэрээний дэлгэц/API холбогдоно
+                },
               ),
             ],
 

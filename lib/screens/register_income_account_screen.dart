@@ -168,7 +168,7 @@ class _RegisterIncomeAccountScreenState
       // `MandalApp.postMessage(...)`-ээр шууд register_success руу шилжинэ
       final result = await openPaymentWebview(
         context,
-        amount: 10000,
+        amount: 5000,
         homeRoute: '/register_success',
       );
       if (!mounted) return;

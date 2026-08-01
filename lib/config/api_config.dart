@@ -44,6 +44,10 @@ class ApiConfig {
   static const String sendOtp = '/bdc/api/auth/send_otp';
   static const String verifyOtp = '/bdc/api/auth/verify_otp';
 
+  /// Банкны лого (bankCode = TXNBANKNO, жнь "21")
+  static String bankLogoUrl(String bankCode) =>
+      '$baseUrl/bdc/api/images/banks/$bankCode.png';
+
   // ─── KYC ───
   static const String banksList = '/bdc/api/banks/list';
   static const String pepStatus = '/bdc/api/kyc/pep_status';

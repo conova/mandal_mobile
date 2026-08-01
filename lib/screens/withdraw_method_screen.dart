@@ -1,10 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 
-class WithdrawMethodScreen extends StatelessWidget {
+class WithdrawMethodScreen extends StatefulWidget {
   const WithdrawMethodScreen({super.key});
+
+  @override
+  State<WithdrawMethodScreen> createState() => _WithdrawMethodScreenState();
+}
+
+class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
+  /// Боломжит үлдэгдэл — /portfolio/breakdown-ийн mnt/usd мөрөөс
+  double _mntBalance = 0;
+  double _usdBalance = 0;
+
+  /// 1 USD-ийн ₮ ханш — breakdown-ийн usd мөрийн amountMnt/amount
+  double _usdRate = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_fetchBalances);
+  }
+
+  Future<void> _fetchBalances() async {
+    try {
+      final breakdown = await context.read<AuthService>().getAssetBreakdown();
+      if (!mounted) return;
+      double byType(String type) {
+        final row = breakdown.firstWhere(
+          (b) => b['type']?.toString() == type,
+          orElse: () => const {},
+        );
+        return (row['amount'] as num?)?.toDouble() ?? 0;
+      }
+
+      double byKey(String type, String key) {
+        final row = breakdown.firstWhere(
+          (b) => b['type']?.toString() == type,
+          orElse: () => const {},
+        );
+        return (row[key] as num?)?.toDouble() ?? 0;
+      }
+
+      setState(() {
+        _mntBalance = byType('mnt');
+        _usdBalance = byType('usd');
+        final usdMnt = byKey('usd', 'amountMnt');
+        _usdRate = _usdBalance > 0 ? usdMnt / _usdBalance : 0;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
+    }
+  }
+
+  void _onOptionTap({required bool isMnt}) {
+    if (_isLoading) return;
+    final balance = isMnt ? _mntBalance : _usdBalance;
+    if (balance <= 0) {
+      // Үлдэгдэлгүй — дараагийн алхам руу оруулахгүй toast харуулна
+      CustomSnackbar.show(
+        context,
+        message: isMnt
+            ? 'Төгрөгийн үлдэгдэл байхгүй байна'
+            : 'Долларын үлдэгдэл байхгүй байна',
+        type: CustomSnackbarType.info,
+      );
+      return;
+    }
+    Navigator.pushNamed(
+      context,
+      '/withdraw_amount',
+      arguments: {
+        'currency': isMnt ? 'mnt' : 'usd',
+        'balance': balance,
+        'rate': isMnt ? 1.0 : _usdRate,
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +112,8 @@ class WithdrawMethodScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                l10n.withdrawMethod,
-                style: theme.textTheme.headlineMedium?.copyWith(
+                l10n.expense,
+                style: theme.textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: extendedColors.neutral100,
                 ),
@@ -41,29 +124,22 @@ class WithdrawMethodScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 l10n.withdrawMethodDesc,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral300,
-                  height: 1.5,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral200,
                 ),
               ),
             ),
             const SizedBox(height: 32),
             // Tugrik option
             _buildMethodOption(
-              context: context,
               theme: theme,
               extendedColors: extendedColors,
-              icon: '₮',
-              iconColor: extendedColors.primaryMain,
+              icon: 'tugrug-01',
               title: l10n.tugrik,
-              subtitle: l10n.bankTransfer,
-              showRecommend: true,
-              recommendLabel: l10n.recommend,
-              onTap: () => Navigator.pushNamed(
-                context,
-                '/withdraw_amount',
-                arguments: 'mnt',
-              ),
+              balanceLabel: formatStockAmount(_mntBalance, decimals: 2),
+              hasBalance: _mntBalance > 0,
+              activeIconColor: extendedColors.primaryMain,
+              onTap: () => _onOptionTap(isMnt: true),
             ),
             Divider(
               height: 1,
@@ -73,19 +149,18 @@ class WithdrawMethodScreen extends StatelessWidget {
             ),
             // Dollar option
             _buildMethodOption(
-              context: context,
               theme: theme,
               extendedColors: extendedColors,
-              icon: '\$',
-              iconColor: extendedColors.neutral100,
+              icon: 'currency-dollar',
               title: l10n.dollar,
-              subtitle: l10n.bankTransferDesc,
-              showRecommend: false,
-              onTap: () => Navigator.pushNamed(
-                context,
-                '/withdraw_amount',
-                arguments: 'usd',
+              balanceLabel: formatStockAmount(
+                _usdBalance,
+                isForeign: true,
+                decimals: 2,
               ),
+              hasBalance: _usdBalance > 0,
+              activeIconColor: extendedColors.neutral100,
+              onTap: () => _onOptionTap(isMnt: false),
             ),
             Divider(
               height: 1,
@@ -100,40 +175,36 @@ class WithdrawMethodScreen extends StatelessWidget {
   }
 
   Widget _buildMethodOption({
-    required BuildContext context,
     required ThemeData theme,
     required ExtendedColors extendedColors,
     required String icon,
-    required Color iconColor,
     required String title,
-    required String subtitle,
+    required String balanceLabel,
+    required bool hasBalance,
+    required Color activeIconColor,
     required VoidCallback onTap,
-    bool showRecommend = false,
-    String? recommendLabel,
   }) {
+    final l10n = AppLocalizations.of(context)!;
+    // Үлдэгдэлгүй үед icon бүдэг (цайвар дэвсгэр, бараан тэмдэг) харагдана
+    final iconBg = hasBalance ? activeIconColor : extendedColors.bgSecondary;
+    final iconColor = hasBalance ? Colors.white : extendedColors.neutral100;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
           children: [
             Container(
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: iconColor,
+                color: iconBg,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
-                child: Text(
-                  icon,
-                  style: TextStyle(
-                    color: extendedColors.bgBase,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: CustomSvgIcon(icon, color: iconColor),
               ),
             ),
             const SizedBox(width: 16),
@@ -143,40 +214,41 @@ class WithdrawMethodScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       color: extendedColors.neutral100,
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: extendedColors.neutral300,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        '${l10n.availableAmountLabel}: ',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: extendedColors.neutral200,
+                        ),
+                      ),
+                      if (_isLoading)
+                        const SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(strokeWidth: 1.5),
+                        )
+                      else
+                        Text(
+                          balanceLabel,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
             ),
-            if (showRecommend && recommendLabel != null)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: extendedColors.primary100.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  recommendLabel,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: extendedColors.primaryMain,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
-              color: extendedColors.neutral300,
+            CustomSvgIcon(
+              'chevron-right',
+              color: extendedColors.neutral200,
               size: 24,
             ),
           ],

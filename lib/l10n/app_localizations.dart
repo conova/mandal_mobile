@@ -2182,6 +2182,36 @@ abstract class AppLocalizations {
   /// **'Documents'**
   String get document;
 
+  /// No description provided for @currencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currencyLabel;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service'**
+  String get termsOfService;
+
+  /// No description provided for @securitiesStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Securities statement'**
+  String get securitiesStatement;
+
+  /// No description provided for @securitiesStatementSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Securities you own'**
+  String get securitiesStatementSubtitle;
+
+  /// No description provided for @agreementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement'**
+  String get agreementLabel;
+
   /// No description provided for @documentDesc.
   ///
   /// In en, this message translates to:
@@ -2491,7 +2521,7 @@ abstract class AppLocalizations {
   /// No description provided for @withdrawMethodDesc.
   ///
   /// In en, this message translates to:
-  /// **'You can withdraw money from your account.'**
+  /// **'Select an account to withdraw from'**
   String get withdrawMethodDesc;
 
   /// No description provided for @makeWithdraw.
@@ -2499,6 +2529,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Withdraw'**
   String get makeWithdraw;
+
+  /// No description provided for @addAccountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add account'**
+  String get addAccountLabel;
+
+  /// No description provided for @receiveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving account'**
+  String get receiveAccount;
+
+  /// No description provided for @withdrawAmountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal amount'**
+  String get withdrawAmountTitle;
 
   /// No description provided for @withdrawSuccess.
   ///
@@ -2509,7 +2557,7 @@ abstract class AppLocalizations {
   /// No description provided for @withdrawSuccessDesc.
   ///
   /// In en, this message translates to:
-  /// **'Your withdrawal has been processed successfully!'**
+  /// **'Transactions are consolidated from multiple accounts, so please wait a moment.'**
   String get withdrawSuccessDesc;
 
   /// No description provided for @bankTransfer.
