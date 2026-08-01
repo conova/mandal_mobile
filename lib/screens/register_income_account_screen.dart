@@ -26,8 +26,12 @@ class _RegisterIncomeAccountScreenState
   final TextEditingController _ibanController = TextEditingController();
   final TextEditingController _recipientController = TextEditingController();
   String? _selectedBankCode;
+  String _selectedCurrency = 'MNT';
   bool _isButtonEnabled = false;
   bool _isSaving = false;
+
+  /// Хүлээн авагчийн нэр info-оос амжилттай бөглөгдсөн бол засах эрхгүй
+  bool _receiverLocked = false;
 
   // Банкны жагсаалт ({ code, name })
   List<Map<String, dynamic>> _banks = const [];
@@ -65,6 +69,27 @@ class _RegisterIncomeAccountScreenState
     _ibanController.addListener(_onIbanChanged);
     _recipientController.addListener(_checkFields);
     _loadBanks();
+    _fillReceiverFromInfo();
+  }
+
+  /// Хүлээн авагчийн нэрийг хэрэглэгчийн info-оос шууд бөглөнө.
+  /// (Бүртгэлийн явцад info байхгүй бол гараар бичих боломж үлдэнэ.)
+  Future<void> _fillReceiverFromInfo() async {
+    final auth = context.read<AuthService>();
+    Map<String, dynamic>? info = auth.userInfo;
+    if (info == null && auth.isAuthenticated) {
+      info = await auth.refreshUserInfo();
+    }
+    if (!mounted || info == null) return;
+    final name =
+        '${info['lastName'] ?? ''} ${info['firstName'] ?? ''}'.trim();
+    if (name.isNotEmpty) {
+      setState(() {
+        _recipientController.text = name;
+        _receiverLocked = true;
+      });
+      _checkFields();
+    }
   }
 
   void _onIbanChanged() {
@@ -158,6 +183,7 @@ class _RegisterIncomeAccountScreenState
         bankCode: _selectedBankCode!,
         iban: _ibanController.text.trim(),
         accountName: _recipientController.text.trim(),
+        currency: _selectedCurrency,
       );
       if (!mounted) return;
 
@@ -240,37 +266,65 @@ class _RegisterIncomeAccountScreenState
                 child: Center(child: CircularProgressIndicator()),
               )
             else
-              CustomDropdown<String>(
-                label: l10n.bankName,
-                value: _selectedBankCode,
-                items: _banks.map((bank) {
-                  final code = bank['code']?.toString() ?? '';
-                  final name = bank['name']?.toString() ?? code;
-                  return DropdownMenuItem<String>(
-                    value: code,
-                    child: Text(name),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedBankCode = newValue;
-                    _checkFields();
-                  });
-                },
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: CustomDropdown<String>(
+                      label: l10n.bankName,
+                      value: _selectedBankCode,
+                      items: _banks.map((bank) {
+                        final code = bank['code']?.toString() ?? '';
+                        final name = bank['name']?.toString() ?? code;
+                        return DropdownMenuItem<String>(
+                          value: code,
+                          child: Text(name, overflow: TextOverflow.ellipsis),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedBankCode = newValue;
+                          _checkFields();
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: CustomDropdown<String>(
+                      label: l10n.currencyLabel,
+                      value: _selectedCurrency,
+                      items: const [
+                        DropdownMenuItem(value: 'MNT', child: Text('MNT')),
+                        DropdownMenuItem(value: 'USD', child: Text('USD')),
+                      ],
+                      onChanged: (String? newValue) {
+                        if (newValue == null) return;
+                        setState(() => _selectedCurrency = newValue);
+                      },
+                    ),
+                  ),
+                ],
               ),
             const SizedBox(height: 16),
+            // Хүлээн авагч — info-оос автоматаар бөглөгдсөн бол засах эрхгүй
             CustomInput(
               label: l10n.recipientName,
               hint: '',
               controller: _recipientController,
+              enabled: !_receiverLocked,
             ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.lastNameOrFirstNameNote,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: extendedColors.neutral200,
+            if (!_receiverLocked) ...[
+              const SizedBox(height: 16),
+              Text(
+                l10n.lastNameOrFirstNameNote,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: extendedColors.neutral200,
+                ),
               ),
-            ),
+            ],
             const SizedBox(height: 48),
             CustomButton(
               label: l10n.save,
