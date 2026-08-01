@@ -77,6 +77,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
       final result = await openPaymentWebview(
         context,
         amount: amount,
+        txntype: 'CHARGE',
         title: 'Орлого нэмэх',
       );
       if (!mounted) return;

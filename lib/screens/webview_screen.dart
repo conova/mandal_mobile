@@ -112,6 +112,21 @@ class _WebViewScreenState extends State<WebViewScreen> {
             if (mounted) setState(() => _isLoading = true);
           },
           onPageFinished: (_) {
+            // Viewport meta байхгүй хуудас (жнь: NEGDI төлбөрийн хуудас)
+            // зарим утсан дээр контентоо нарийн баганад шахаж харуулдаг —
+            // device-width viewport-ыг албадан тохируулна
+            controller.runJavaScript('''
+              (function() {
+                var m = document.querySelector('meta[name="viewport"]');
+                if (!m) {
+                  m = document.createElement('meta');
+                  m.setAttribute('name', 'viewport');
+                  document.head.appendChild(m);
+                }
+                m.setAttribute('content',
+                    'width=device-width, initial-scale=1.0, maximum-scale=5.0');
+              })();
+            ''');
             if (mounted) setState(() => _isLoading = false);
           },
           onWebResourceError: (err) {
