@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/screens/components/bond/bond_trading_input_box.dart';
+import 'package:mandal_capital/screens/components/bond/bond_trading_quantity_selector.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import 'package:mandal_capital/widgets/currency_suffix_formatter.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
-import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 import 'bond_order_board.dart';
 import 'bond_payment_details.dart';
 import 'bond_quantity_selector.dart';
@@ -139,7 +142,7 @@ class BondDetailTradingBottomBar extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info, color: extendedColors.neutral100, size: 24),
+                  CustomSvgIcon('info-circle', color: extendedColors.primaryMain, size: 24),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
@@ -157,7 +160,7 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Icon(Icons.expand_less, color: extendedColors.neutral100),
+                  CustomSvgIcon('chevron-up', color: extendedColors.primaryMain),
                 ],
               ),
             ),

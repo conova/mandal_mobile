@@ -1607,4 +1607,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exchangeRateGain => 'Exchange rate gain';
+
+  @override
+  String get bondsPiece => 'bonds';
 }

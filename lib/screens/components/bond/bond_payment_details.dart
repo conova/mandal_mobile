@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 class BondPaymentDetails extends StatelessWidget {
   final String totalPayment;
@@ -26,82 +27,76 @@ class BondPaymentDetails extends StatelessWidget {
         color: extendedColors.bgSecondary,
         borderRadius: BorderRadius.circular(24),
       ),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: onDetailsPressed,
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Text(
+      child: GestureDetector(
+        onTap: onDetailsPressed,
+        behavior: HitTestBehavior.opaque,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
                     l10n.totalPayment,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral300,
+                      color: extendedColors.neutral200,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          totalPayment,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: extendedColors.neutral100,
-                          ),
-                          textAlign: TextAlign.right,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.chevron_right,
-                        color: extendedColors.neutral100,
-                        size: 20,
-                      ),
-                    ],
+                  const SizedBox(height: 20),
+                  Text(
+                    l10n.totalReturn,
+                    style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral200),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                ]
+              ),
+            ),
+            Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      totalPayment,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 20,),
+                    Text(
+                      totalReturn,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ]
+                )
+            ),
+            Column(
+              children: [
+                const SizedBox(height: 4,),
+                CustomSvgIcon(
+                  'chevron-right',
+                  color: extendedColors.neutral100,
+                  size: 24,
                 ),
               ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Text(
-                  l10n.totalReturn,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  totalReturn,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                  textAlign: TextAlign.right,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+            )
+          ]
+        ),
+      )
     );
   }
 }

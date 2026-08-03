@@ -24,19 +24,28 @@ class BondQuantitySelector extends StatefulWidget {
 class _BondQuantitySelectorState extends State<BondQuantitySelector> {
   late int _quantity;
   late TextEditingController _controller;
+  late FocusNode _focusNode;
 
-  int get _effectiveMax => min(widget.maxQuantity, 8000);
+  int get _effectiveMax => widget.maxQuantity;
 
   @override
   void initState() {
     super.initState();
     _quantity = widget.initialQuantity.clamp(0, _effectiveMax);
     _controller = TextEditingController(text: '$_quantity');
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus && _controller.text.isEmpty) {
+        _controller.text = '0';
+      }
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -62,7 +71,15 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: extendedColors.neutral500),
+        border: _focusNode.hasFocus
+          ? Border.all(
+            color: extendedColors.primaryMain,
+            width: 2,
+          )
+          : Border.all(
+            color: extendedColors.neutral500,
+            width: 1,
+          ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,6 +98,7 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
                 const SizedBox(height: 10),
                 TextField(
                   controller: _controller,
+                  focusNode: _focusNode,
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -115,7 +133,7 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
                       ),
                     ),
                     Text(
-                      '$_effectiveMax ш',
+                      '$_effectiveMax ${l10n.bondsPiece}',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: extendedColors.neutral100,
                       ),

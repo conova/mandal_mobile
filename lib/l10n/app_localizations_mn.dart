@@ -1603,4 +1603,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get exchangeRateGain => 'Ханшийн ашиг';
+
+  @override
+  String get bondsPiece => 'ш';
 }

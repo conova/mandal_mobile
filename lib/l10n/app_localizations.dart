@@ -3123,6 +3123,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exchange rate gain'**
   String get exchangeRateGain;
+
+  /// No description provided for @bondsPiece.
+  ///
+  /// In en, this message translates to:
+  /// **'bonds'**
+  String get bondsPiece;
 }
 
 class _AppLocalizationsDelegate

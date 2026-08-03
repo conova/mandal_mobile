@@ -593,5 +593,6 @@
     "last1Year": "Last 1 year",
     "orderedDate": "Ordered date",
     "account": "Account",
-    "exchangeRateGain": "Exchange rate gain"
+    "exchangeRateGain": "Exchange rate gain",
+    "bondsPiece": "bonds"
 }
