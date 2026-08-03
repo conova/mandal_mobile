@@ -5,6 +5,7 @@ import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 import 'bond_detail_info_list.dart';
 import 'bond_progress.dart';
 
@@ -51,8 +52,8 @@ class BondDetailForeignView extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.info_outline,
+                CustomSvgIcon(
+                  'info-circle',
                   color: extendedColors.primaryMain,
                   size: 24,
                 ),

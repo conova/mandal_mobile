@@ -72,9 +72,9 @@ class BondProgress extends StatelessWidget {
           borderRadius: BorderRadius.circular(2),
           child: LinearProgressIndicator(
             value: percentage,
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: extendedColors.neutral500,
             valueColor: AlwaysStoppedAnimation<Color>(
-              theme.colorScheme.onSurface,
+              extendedColors.neutral100,
             ),
             minHeight: 4,
           ),

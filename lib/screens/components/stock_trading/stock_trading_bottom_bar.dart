@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../widgets/custom_button.dart';
 import '../../../widgets/locked_amount_bottom_sheet.dart';
 
 class StockTradingBottomBar extends StatelessWidget {
@@ -17,8 +17,6 @@ class StockTradingBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -29,33 +27,17 @@ class StockTradingBottomBar extends StatelessWidget {
           onRelease: onReleaseLocked,
         ),
         Container(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          color: extendedColors.bgBase,
-          child: SafeArea(
-            bottom: true,
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onPlaceOrder,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: extendedColors.primaryMain,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  l10n.placeOrder,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.bgBase,
-                  ),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: SafeArea(
+              bottom: true,
+              child: SizedBox(
+                width: double.infinity,
+                child: CustomButton(
+                  label: l10n.placeOrder,
+                  onPressed: onPlaceOrder
                 ),
               ),
-            ),
-          ),
+            )
         ),
       ],
     );

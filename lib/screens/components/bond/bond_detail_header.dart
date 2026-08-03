@@ -67,12 +67,23 @@ class BondDetailHeader extends StatelessWidget {
         ),
         if (showAvailableCash) ...[
           const SizedBox(height: 8),
-          Text(
-            '${l10n.availableCash}: 10,000,000₮',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.primaryMain,
-              fontWeight: AppTextStyles.bold,
-            ),
+          Row(
+            children: [
+              Text(
+                '${l10n.availableCash}: ',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral100,
+                  fontWeight: AppTextStyles.bold,
+                ),
+              ),
+              Text(
+                '10,000,000₮',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.primaryMain,
+                  fontWeight: AppTextStyles.bold,
+                ),
+              ),
+            ],
           ),
         ],
         const SizedBox(height: 16),

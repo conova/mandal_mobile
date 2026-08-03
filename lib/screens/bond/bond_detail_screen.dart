@@ -76,19 +76,6 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
             child: CircleBackButton(),
           ),
         ),
-        actions: [
-          if (_isTrading)
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: IconButton(
-                icon: Icon(
-                  Icons.plagiarism_outlined,
-                  color: theme.colorScheme.onSurface,
-                ),
-                onPressed: () {},
-              ),
-            ),
-        ],
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),

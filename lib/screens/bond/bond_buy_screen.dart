@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../widgets/circle_back_button.dart';
+import '../../widgets/custom_svg_icon.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_payment_details.dart';
 import '../../l10n/app_localizations.dart';
@@ -25,9 +27,11 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: extendedColors.neutral100),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
@@ -38,11 +42,12 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Flexible(
                   child: Text(
                     'Net Capital',
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
                     ),
@@ -52,24 +57,38 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 ),
                 const SizedBox(width: 12),
                 Flexible(
-                  child: Text(
-                    'Нэт Капитал',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral400,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 2),
+                    child: Text(
+                      'Нэт Капитал',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              '${l10n.availableCash}: 10,000,000₮',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.primaryMain,
-                fontWeight: AppTextStyles.bold,
-              ),
+            Row(
+              children: [
+                Text(
+                  '${l10n.availableCash}: ',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral100,
+                    fontWeight: AppTextStyles.bold,
+                  ),
+                ),
+                Text(
+                  '10,000,000₮',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.primaryMain,
+                    fontWeight: AppTextStyles.bold,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 32),
             BondQuantitySelector(
@@ -93,12 +112,11 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
         ),
       ),
       bottomSheet: Container(
-        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: extendedColors.bgBase,
           boxShadow: [
             BoxShadow(
-              color: extendedColors.neutral500,
+              color: extendedColors.neutral500.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -107,56 +125,68 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/release_locked'),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: extendedColors.primary100,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info,
-                      color: extendedColors.neutral100,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        '${l10n.lockedAmountLabel}: 500,000₮',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: AppTextStyles.bold,
-                          color: extendedColors.neutral100,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      l10n.release,
-                      style: theme.textTheme.labelLarge?.copyWith(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(color: extendedColors.primary200),
+              child: Row(
+                children: [
+                  CustomSvgIcon('info-circle',
+                      color: extendedColors.primaryMain, size: 22),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${l10n.lockedAmountLabel}: 500,000₮',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w300,
                         color: extendedColors.neutral100,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Icon(
-                      Icons.expand_less,
-                      color: extendedColors.neutral100,
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/release_locked'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                  ],
-                ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.release,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            color: extendedColors.primaryMain,
+                          ),
+                        ),
+                        CustomSvgIcon(
+                          'chevron-up',
+                          color: extendedColors.primaryMain,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: CustomButton(
-                label: l10n.placeOrder,
-                onPressed: _quantity > 0
-                    ? () =>
-                        Navigator.pushNamed(context, '/bond_confirmation')
-                    : null,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                    label: l10n.placeOrder,
+                    onPressed: _quantity > 0
+                        ? () => Navigator.pushNamed(
+                              context,
+                              '/bond_confirmation',
+                            )
+                        : null,
+                  ),
+                ),
               ),
             ),
           ],

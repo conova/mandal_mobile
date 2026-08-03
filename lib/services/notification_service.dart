@@ -147,6 +147,46 @@ class NotificationService extends ChangeNotifier {
 
   /// Firebase Messaging тохируулах
   Future<void> init() async {
+    // Зөвшөөрөл авах
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: false,
+    );
+    debugPrint('[FCM] Permission: ${settings.authorizationStatus}');
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
+      // FCM token авах
+      // Web push-д VAPID key шаардлагатай — Firebase Console → Project Settings →
+      // Cloud Messaging → Web configuration → Web Push certificates
+      _fcmToken = await _messaging.getToken(
+        vapidKey: kIsWeb
+            ? 'BEb-ahqOqkHywzlILnxM5_rpMDIMbncCJw4E5c2IspRf7Pbrs-1EqwP9G8J8-5BV9vuP7VbebIryqMGyQFskeJM'
+            : null,
+      );
+      debugPrint('[FCM] Token: $_fcmToken');
+
+      // Token шинэчлэгдэхэд
+      _messaging.onTokenRefresh.listen((newToken) {
+        _fcmToken = newToken;
+        debugPrint('[FCM] Token refreshed: $newToken');
+        onTokenRefresh?.call(newToken);
+      });
+
+      // Бүх хэрэглэгчийг "all" topic-д сувагчлуулна — broadcast мэдэгдэл
+      // илгээхэд ашиглана. (Web дээр topic subscription дэмжигдэхгүй.)
+      if (!kIsWeb) {
+        try {
+          await _messaging.subscribeToTopic('all');
+          debugPrint('[FCM] Subscribed to topic: all');
+        } catch (e) {
+          debugPrint('[FCM] Topic subscribe алдаа: $e');
+        }
+      }
+    }
+
     // Хадгалсан notification-уудыг унших
     await _loadNotifications();
 

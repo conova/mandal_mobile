@@ -140,7 +140,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
       TimePeriod.last1Year => l10n.last1Year,
       TimePeriod.custom => () {
           final (start, end) = _dateRange();
-          return '${start.year}.${start.month}.${start.day} - ${start.year}.${end.month}.${end.day}';
+          return '${start.year}.${start.month}.${start.day} - ${end.year}.${end.month}.${end.day}';
         }(),
     };
   }

@@ -938,7 +938,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get bondClosingDateLabel => 'Closing Date';
 
   @override
-  String get viewBondPresentation => 'View Presentation';
+  String get viewBondPresentation => 'View Bond Presentation';
 
   @override
   String get buyBond => 'Buy Bond';
@@ -1609,4 +1609,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get exchangeRateGain => 'Exchange rate gain';
+
+  @override
+  String get bondsPiece => 'bonds';
+
+  @override
+  String get lastInterestPaymentDate => 'Last interest payment date';
 }

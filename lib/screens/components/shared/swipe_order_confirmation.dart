@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/circle_back_button.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 /// Баталгаажуулалтын дэлгэцийн нэг мөр (шошго + утга)
 class OrderDetailItem {
@@ -257,12 +258,12 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                                       Flexible(
                                         child: Text(
                                           widget.title,
-                                          style: theme.textTheme.headlineSmall
+                                          style: theme.textTheme.headlineLarge
                                               ?.copyWith(
                                             fontWeight: FontWeight.bold,
                                             color: extendedColors.neutral100,
                                           ),
-                                          maxLines: 1,
+                                          maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -271,12 +272,12 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                                         Flexible(
                                           child: Text(
                                             widget.subtitle,
-                                            style: theme.textTheme.bodyMedium
+                                            style: theme.textTheme.bodyLarge
                                                 ?.copyWith(
                                               color:
-                                                  extendedColors.neutral300,
+                                                  extendedColors.neutral200,
                                             ),
-                                            maxLines: 1,
+                                            maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -330,8 +331,8 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.keyboard_double_arrow_up,
+                                  const CustomSvgIcon(
+                                    'triple-chevron',
                                     color: Colors.white,
                                     size: 28,
                                   ),
@@ -402,7 +403,7 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
               child: Text(
                 widget.totalLabel,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral300,
+                  color: extendedColors.neutral200,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -440,7 +441,7 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
           child: Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.neutral300,
+              color: extendedColors.neutral200,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -454,7 +455,7 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
               fontWeight: FontWeight.w500,
               color: extendedColors.neutral100,
             ),
-            textAlign: TextAlign.right,
+            textAlign: TextAlign.left,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -475,8 +476,8 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
               child: Container(
                 width: 140,
                 height: 140,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: extendedColors.bgBase,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -495,8 +496,10 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                   widget.successTitle,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
+                    color: extendedColors.bgBase,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Oswald',
+                    fontSize: 36,
                   ),
                 ),
               ),
@@ -510,7 +513,7 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                   widget.successDescription,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: Colors.white,
+                    color: extendedColors.bgBase,
                   ),
                 ),
               ),
@@ -525,7 +528,7 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                   child: TextButton(
                     onPressed: _handleFinish,
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: extendedColors.bgBase,
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32),

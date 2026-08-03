@@ -52,7 +52,7 @@ class LockedAmountBottomSheet extends StatelessWidget {
                     color: extendedColors.primaryMain,
                   ),
                 ),
-                Icon(Icons.expand_less, color: extendedColors.primaryMain),
+                CustomSvgIcon('chevron-up', color: extendedColors.primaryMain, size: 16,),
               ],
             ),
           ),

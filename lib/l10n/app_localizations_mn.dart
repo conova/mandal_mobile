@@ -935,7 +935,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get bondClosingDateLabel => 'Хаалтын огноо';
 
   @override
-  String get viewBondPresentation => 'Танилцуулга харах';
+  String get viewBondPresentation => 'Бондын танилцуулга үзэх';
 
   @override
   String get buyBond => 'Бонд авах';
@@ -1603,4 +1603,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get exchangeRateGain => 'Ханшийн ашиг';
+
+  @override
+  String get bondsPiece => 'ш';
+
+  @override
+  String get lastInterestPaymentDate => 'Сүүлд хүү төлөгдсөн өдөр';
 }
