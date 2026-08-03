@@ -62,6 +62,7 @@ class PaymentService {
     required num amount,
     String txntype = 'FEE',
     String action = 'QR',
+    String currency = 'MNT',
   }) async {
     try {
       final response = await _dio.post(
@@ -72,6 +73,7 @@ class PaymentService {
           'amount': amount,
           'txntype': txntype,
           'action': action,
+          'currency': currency,
         },
       );
       final body = response.data as Map<String, dynamic>;

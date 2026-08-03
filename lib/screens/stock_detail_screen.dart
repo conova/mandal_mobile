@@ -105,9 +105,11 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
     final stockcode = _args['stockcode']?.toString() ?? '';
     if (stockcode.isEmpty) return;
     try {
+      final hadSymbol = _symbol.isNotEmpty;
       final rows = await context.read<AuthService>().getStockInfo(stockcode);
       if (!mounted || rows.isEmpty) return;
       setState(() => _infoRows = MarketInstrument.listFromJson(rows));
+      if (!hadSymbol && _symbol.isNotEmpty) _checkWatchlist();
     } catch (e) {
       // Args-аар ирсэн утгуудаа харуулсаар байх ч алдааг мэдэгдэнэ
       if (!mounted) return;
@@ -137,7 +139,6 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //_checkWatchlist();
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
 

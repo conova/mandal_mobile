@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HTTP (cleartext) зөвшөөрөх — NEGDI төлбөрийн линк болон dev API
+     http:// байдаг. iOS талын NSAppTransportSecurity-тэй ижил үүрэгтэй. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

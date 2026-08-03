@@ -162,10 +162,19 @@ void main() async {
       await authService.setDeviceId(fcmToken);
     }
 
-    // Token шинэчлэгдэхэд deviceId-г бас шинэчлэх
+    // Token шинэчлэгдэхэд (permission хожуу зөвшөөрөгдөж token анх ирэхэд ч)
+    // deviceId-г шинэчлэх
     notificationService.onTokenRefresh = (newToken) {
       authService.setDeviceId(newToken);
     };
+
+    // Мэдэгдлийн зөвшөөрлийг app нээгдэж эхний frame зурагдсаны ДАРАА
+    // асууна — runApp-аас өмнө асуувал permission popup-ын ард app
+    // гацсан мэт харагддаг
+    final service = notificationService;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      service.requestPermission();
+    });
   }
 
   final apiService = ApiService(
@@ -219,6 +228,13 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           navigatorKey: navigatorKey,
           title: 'Mandal Capital',
+          // Input-аас гадуур товшиход keyboard-ыг хаана (iOS дээр
+          // default-оор хаагддаггүй) — бүх дэлгэцэд глобал үйлчилнэ
+          builder: (context, child) => GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: child,
+          ),
           themeMode: state.themeMode,
           theme: ThemeData(
             useMaterial3: true,
