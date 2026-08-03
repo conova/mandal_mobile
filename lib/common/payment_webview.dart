@@ -24,6 +24,7 @@ Future<String?> openPaymentWebview(
   required num amount,
   String txntype = 'FEE',
   String action = 'QR',
+  String currency = 'MNT',
   String title = 'Төлбөр төлөх',
   String homeRoute = '/main',
 }) async {
@@ -33,6 +34,7 @@ Future<String?> openPaymentWebview(
         amount: amount,
         txntype: txntype,
         action: action,
+        currency: currency,
       );
   if (!context.mounted) return null;
 

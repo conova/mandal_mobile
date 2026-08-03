@@ -72,12 +72,16 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
   Future<void> _submit() async {
     if (_isSubmitting) return;
     final amount = double.tryParse(_amount.replaceAll(',', '')) ?? 0.0;
+    // Валют — route args ('mnt' | 'usd')
+    final args = ModalRoute.of(context)?.settings.arguments as String?;
+    final currency = args == 'usd' ? 'USD' : 'MNT';
     setState(() => _isSubmitting = true);
     try {
       final result = await openPaymentWebview(
         context,
         amount: amount,
         txntype: 'CHARGE',
+        currency: currency,
         title: 'Орлого нэмэх',
       );
       if (!mounted) return;
