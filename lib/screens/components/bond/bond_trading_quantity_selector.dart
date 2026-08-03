@@ -32,7 +32,16 @@ class _BondTradingQuantitySelectorState extends State<BondTradingQuantitySelecto
   void initState() {
     super.initState();
     widget.focusNode.addListener(_handleFocusChange);
-    widget.controller.text = CurrencySuffixFormatter.format(widget.controller.text, suffix: '');
+    
+    // Use addPostFrameCallback to avoid triggering setState in parent during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final formatted = CurrencySuffixFormatter.format(widget.controller.text, suffix: '');
+        if (widget.controller.text != formatted) {
+          widget.controller.text = formatted;
+        }
+      }
+    });
   }
 
   @override
@@ -76,26 +85,25 @@ class _BondTradingQuantitySelectorState extends State<BondTradingQuantitySelecto
             bottomRight: Radius.circular(16),
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n.quantityLabel,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral200,
-                fontWeight: FontWeight.w200,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: TextField(
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.quantityLabel,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral200,
+                      fontWeight: FontWeight.w200,
+                    ),
+                  ),
+                  TextField(
                     controller: widget.controller,
                     focusNode: widget.focusNode,
                     keyboardType: TextInputType.number,
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: widget.focusNode.hasFocus
                           ? extendedColors.primaryMain
@@ -112,7 +120,11 @@ class _BondTradingQuantitySelectorState extends State<BondTradingQuantitySelecto
                     ),
                     onChanged: widget.onChanged,
                   ),
-                ),
+                ]
+              )
+            ),
+            Column(
+              children: [
                 Row(
                   children: [
                     _buildCircleButton('minus', widget.onDecrease, extendedColors),
@@ -120,9 +132,9 @@ class _BondTradingQuantitySelectorState extends State<BondTradingQuantitySelecto
                     _buildCircleButton('plus', widget.onIncrease, extendedColors),
                   ],
                 ),
-              ],
-            ),
-          ],
+              ]
+            )
+          ]
         ),
       ),
     );

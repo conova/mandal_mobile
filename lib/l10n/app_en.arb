@@ -295,7 +295,7 @@
     "medium": "Medium",
     "low": "Low",
     "bondClosingDateLabel": "Closing Date",
-    "viewBondPresentation": "View Presentation",
+    "viewBondPresentation": "View Bond Presentation",
     "buyBond": "Buy Bond",
     "availableAmountLabel": "Available Amount",
     "costLabel": "Interest Rate",
@@ -594,5 +594,6 @@
     "orderedDate": "Ordered date",
     "account": "Account",
     "exchangeRateGain": "Exchange rate gain",
-    "bondsPiece": "bonds"
+    "bondsPiece": "bonds",
+    "lastInterestPaymentDate": "Last interest payment date"
 }

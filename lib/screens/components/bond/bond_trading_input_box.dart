@@ -8,16 +8,14 @@ class BondTradingInputBox extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final FocusNode focusNode;
-  final String? suffixText;
-  final VoidCallback? onSuffixTap;
+  final String currencySymbol;
 
   const BondTradingInputBox({
     super.key,
     required this.label,
     required this.controller,
     required this.focusNode,
-    this.suffixText,
-    this.onSuffixTap,
+    this.currencySymbol = '₮',
   });
 
   @override
@@ -29,7 +27,19 @@ class _BondTradingInputBoxState extends State<BondTradingInputBox> {
   void initState() {
     super.initState();
     widget.focusNode.addListener(_handleFocusChange);
-    widget.controller.text = CurrencySuffixFormatter.format(widget.controller.text, suffix: '');
+    
+    // Ensure initial text is formatted with the correct currency symbol
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.controller.text.isNotEmpty) {
+        final formatted = CurrencySuffixFormatter.format(
+          widget.controller.text, 
+          suffix: widget.currencySymbol,
+        );
+        if (widget.controller.text != formatted) {
+          widget.controller.text = formatted;
+        }
+      }
+    });
   }
 
   @override
@@ -49,7 +59,7 @@ class _BondTradingInputBoxState extends State<BondTradingInputBox> {
 
   void _handleFocusChange() {
     if (!widget.focusNode.hasFocus && widget.controller.text.isEmpty) {
-      widget.controller.text = '0';
+      widget.controller.text = CurrencySuffixFormatter.format('0', suffix: widget.currencySymbol);
     }
     setState(() {});
   }
@@ -98,7 +108,7 @@ class _BondTradingInputBoxState extends State<BondTradingInputBox> {
                     ),
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      CurrencySuffixFormatter(suffix: '₮'),
+                      CurrencySuffixFormatter(suffix: widget.currencySymbol),
                     ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
@@ -107,32 +117,6 @@ class _BondTradingInputBoxState extends State<BondTradingInputBox> {
                     ),
                   ),
                 ),
-
-                // RIGHT SIDE: Action button
-                if (widget.suffixText != null) ...[
-                  const SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () async {
-                      if (widget.onSuffixTap != null) {
-                        widget.onSuffixTap!();
-                      } else {
-                        final data = await Clipboard.getData('text/plain');
-                        if (data?.text != null) {
-                          // Strip any non-digits if needed when pasting
-                          widget.controller.text =
-                              data!.text!.replaceAll(RegExp(r'[^\d]'), '');
-                        }
-                      }
-                    },
-                    child: Text(
-                      widget.suffixText!,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.primaryMain,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
               ],
             ),
           ],

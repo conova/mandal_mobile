@@ -292,7 +292,7 @@
     "medium": "Дунд",
     "low": "Бага",
     "bondClosingDateLabel": "Хаалтын огноо",
-    "viewBondPresentation": "Танилцуулга харах",
+    "viewBondPresentation": "Бондын танилцуулга үзэх",
     "buyBond": "Бонд авах",
     "availableAmountLabel": "Боломжит дүн",
     "costLabel": "Зээлийн хүү",
@@ -532,5 +532,6 @@
     "orderedDate": "Захиалга өгсөн огноо",
     "account": "Данс",
     "exchangeRateGain": "Ханшийн ашиг",
-    "bondsPiece": "ш"
+    "bondsPiece": "ш",
+    "lastInterestPaymentDate": "Сүүлд хүү төлөгдсөн өдөр"
 }

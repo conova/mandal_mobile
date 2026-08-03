@@ -57,6 +57,14 @@ class BondDetailInfoList extends StatelessWidget {
             l10n.annualYield,
             bond == null ? '12.5%' : (intRate == null ? '-' : '$intRate%'),
           ),
+          const SizedBox(height: 20,),
+          _buildInfoRow(
+            theme,
+            extendedColors,
+            'bank-note-01',
+            l10n.lastInterestPaymentDate,
+            bond == null ? '2026.2.10 (${l10n.daysCount('122')})' : _dateWithDays(bond!.payday, l10n),
+          ),
           const SizedBox(height: 20),
           _buildInfoRow(
             theme,

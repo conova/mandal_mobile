@@ -1861,7 +1861,7 @@ abstract class AppLocalizations {
   /// No description provided for @viewBondPresentation.
   ///
   /// In en, this message translates to:
-  /// **'View Presentation'**
+  /// **'View Bond Presentation'**
   String get viewBondPresentation;
 
   /// No description provided for @buyBond.
@@ -3129,6 +3129,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'bonds'**
   String get bondsPiece;
+
+  /// No description provided for @lastInterestPaymentDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last interest payment date'**
+  String get lastInterestPaymentDate;
 }
 
 class _AppLocalizationsDelegate

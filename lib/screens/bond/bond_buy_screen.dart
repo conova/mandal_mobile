@@ -112,12 +112,11 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
         ),
       ),
       bottomSheet: Container(
-        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: extendedColors.bgBase,
           boxShadow: [
             BoxShadow(
-              color: extendedColors.neutral500,
+              color: extendedColors.neutral500.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -126,56 +125,68 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/release_locked'),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: extendedColors.primary100,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    CustomSvgIcon(
-                      'info-circle',
-                      color: extendedColors.primaryMain,
-                      size: 22,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        '${l10n.lockedAmountLabel}: 500,000₮',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: AppTextStyles.bold,
-                          color: extendedColors.neutral100,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      l10n.release,
-                      style: theme.textTheme.labelLarge?.copyWith(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(color: extendedColors.primary200),
+              child: Row(
+                children: [
+                  CustomSvgIcon('info-circle',
+                      color: extendedColors.primaryMain, size: 22),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${l10n.lockedAmountLabel}: 500,000₮',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w300,
                         color: extendedColors.neutral100,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    CustomSvgIcon(
-                      'chevron-up',
-                      color: extendedColors.neutral100,
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/release_locked'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                  ],
-                ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.release,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            color: extendedColors.primaryMain,
+                          ),
+                        ),
+                        CustomSvgIcon(
+                          'chevron-up',
+                          color: extendedColors.primaryMain,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: CustomButton(
-                label: l10n.placeOrder,
-                onPressed: _quantity > 0
-                    ? () =>
-                        Navigator.pushNamed(context, '/bond_confirmation')
-                    : null,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                    label: l10n.placeOrder,
+                    onPressed: _quantity > 0
+                        ? () => Navigator.pushNamed(
+                              context,
+                              '/bond_confirmation',
+                            )
+                        : null,
+                  ),
+                ),
               ),
             ),
           ],
