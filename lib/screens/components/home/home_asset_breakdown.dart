@@ -77,17 +77,33 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
       case 'cash':
       case 'tugrik':
         return (
-          icon: CustomSvgIcon('tugrug-01', size: 24, color: extendedColors.bgBase,),
+          icon: CustomSvgIcon(
+            'tugrug-01',
+            size: 24,
+            color: extendedColors.bgBase,
+          ),
           route: '/currency_detail',
           color: null,
         );
       case 'usd':
       case 'dollar':
-        return (icon: CustomSvgIcon('currency-dollar', size: 24, color: extendedColors.bgBase,), route: '/currency_detail', color: extendedColors.neutral100);
+        return (
+          icon: CustomSvgIcon(
+            'currency-dollar',
+            size: 24,
+            color: extendedColors.bgBase,
+          ),
+          route: '/currency_detail',
+          color: extendedColors.neutral100
+        );
       case 'bond':
       case 'bonds':
         return (
-          icon: const CustomSvgIcon('bank-note-01', size: 24, color: AppColors.bgBase,),
+          icon: const CustomSvgIcon(
+            'bank-note-01',
+            size: 24,
+            color: AppColors.bgBase,
+          ),
           route: '/bond_portfolio',
           color: extendedColors.purple,
         );
@@ -95,13 +111,21 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
       case 'stocks':
       case 'equity':
         return (
-          icon: const CustomSvgIcon('coins-swap-02', size: 24, color: AppColors.bgBase,),
+          icon: const CustomSvgIcon(
+            'coins-swap-02',
+            size: 24,
+            color: AppColors.bgBase,
+          ),
           route: '/stock_portfolio',
           color: extendedColors.orange,
         );
       default:
         return (
-          icon: const CustomSvgIcon('wallet-01', size: 24, color: AppColors.bgBase,),
+          icon: const CustomSvgIcon(
+            'wallet-01',
+            size: 24,
+            color: AppColors.bgBase,
+          ),
           route: '/stock_portfolio',
           color: extendedColors.neutral300,
         );
@@ -187,6 +211,7 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
             final currency = item['currency']?.toString() ??
                 (type?.toLowerCase() == 'usd' ? '\$' : '₮');
             final meta = _meta(type, extendedColors);
+            final isUsd = typeLower == 'usd' || typeLower == 'dollar';
             final subtitle = type?.toLowerCase() == 'mnt' ||
                     type?.toLowerCase() == 'usd' ||
                     type?.toLowerCase() == 'cash' ||
@@ -194,6 +219,9 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
                     type?.toLowerCase() == 'dollar'
                 ? l10n.orderCount(count.toString())
                 : '$count ${l10n.type}';
+            if (isUsd && amount == 0 && _loaded) {
+              return const SizedBox.shrink();
+            }
 
             return AssetCard(
               icon: meta.icon,

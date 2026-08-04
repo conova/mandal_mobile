@@ -66,6 +66,18 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
           ),
           const SizedBox(height: 24),
           // Cash section
+          _buildSectionTitle(l10n.account, theme, extendedColors),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildChip(l10n.nominal, FilterTag.nominal, theme, extendedColors),
+              _buildChip(l10n.csd, FilterTag.csd, theme, extendedColors),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Cash section
           _buildSectionTitle(l10n.cashSection, theme, extendedColors),
           const SizedBox(height: 12),
           Wrap(

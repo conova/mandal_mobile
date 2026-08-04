@@ -11,6 +11,8 @@ enum FilterTag {
   stockSold,
   stockDividend,
   stockTransfer,
+  nominal,
+  csd
 }
 
 class TransactionItem {

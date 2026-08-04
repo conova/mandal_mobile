@@ -18,7 +18,7 @@ class TransactionHistoryScreen extends StatefulWidget {
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  Set<FilterTag> _activeFilters = {};
+  Set<FilterTag> _activeFilters = {FilterTag.nominal, FilterTag.csd};
   TimePeriod _timePeriod = TimePeriod.last1Year;
   DateTime? _customStart;
   DateTime? _customEnd;

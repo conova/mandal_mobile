@@ -3135,6 +3135,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last interest payment date'**
   String get lastInterestPaymentDate;
+
+  /// No description provided for @nominal.
+  ///
+  /// In en, this message translates to:
+  /// **'Nominal'**
+  String get nominal;
+
+  /// No description provided for @csd.
+  ///
+  /// In en, this message translates to:
+  /// **'CSD'**
+  String get csd;
 }
 
 class _AppLocalizationsDelegate

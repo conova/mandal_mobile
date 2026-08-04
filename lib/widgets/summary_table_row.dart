@@ -35,19 +35,15 @@ class SummaryTableRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isLast
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: isLast
                   ? extendedColors.bgBase
                   : extendedColors.neutral100,
-              ),
             ),
           ),
           Expanded(
-            flex: 3,
             child: Text(
               val1,
               textAlign: TextAlign.right,
@@ -60,7 +56,6 @@ class SummaryTableRow extends StatelessWidget {
           ),
           if (val2.isNotEmpty)
             Expanded(
-              flex: 3,
               child: Text(
                 val2,
                 textAlign: TextAlign.right,
