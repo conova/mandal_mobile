@@ -52,6 +52,13 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
   DateTime? _endDate;
   bool _selectingStart = true;
 
+  // Tracks whether the start/end text inputs are currently in an invalid
+  // state (bad format, impossible date, or out-of-order relative to the
+  // other field). While true, the corresponding input shows a red border
+  // and the underlying date value is left untouched until fixed.
+  bool _startDateError = false;
+  bool _endDateError = false;
+
   final TextEditingController _startController = TextEditingController();
   final TextEditingController _endController = TextEditingController();
 
@@ -63,6 +70,8 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
     _startDate = widget.initialStartDate;
     _endDate = widget.initialEndDate;
     _displayMonth = _startDate ?? DateTime.now();
+    _startDateError = false;
+    _endDateError = false;
 
     // Update controllers
     _startController.text = _startDate != null ? _formatDate(_startDate!) : '';
@@ -94,25 +103,61 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
 
   void _selectDay(DateTime day) {
     setState(() {
-      if (_selectingStart) {
+      _startDateError = false;
+      _endDateError = false;
+
+      if (_selectingStart && _endDate == null) {
         _startDate = day;
         _startController.text = _formatDate(day);
         _selectingStart = false;
-        if (_endDate != null && day.isAfter(_endDate!)) {
-          _endDate = null;
-          _endController.text = '';
-        }
-      } else {
-        if (day.isBefore(_startDate!)) {
-          _endDate = _startDate;
-          _startDate = day;
-          _startController.text = _formatDate(_startDate!);
-          _endController.text = _formatDate(_endDate!);
+        return;
+      }
+
+      if (!_selectingStart && _startDate == null) {
+        _endDate = day;
+        _endController.text = _formatDate(day);
+        _selectingStart = true;
+        return;
+      }
+
+      if (!_selectingStart && _startDate != null) {
+        if (day.isAfter(_startDate!)) {
+          _endDate = day;
+          _endController.text = _formatDate(day);
+          return;
         } else {
           _endDate = day;
           _endController.text = _formatDate(day);
+          _endDateError = true;
+          return;
         }
-        _selectingStart = true;
+      }
+
+      if (_selectingStart && _endDate != null) {
+        if (day.isBefore(_endDate!)) {
+          _startDate = day;
+          _startController.text = _formatDate(day);
+          return;
+        } else {
+          _startDate = day;
+          _startController.text = _formatDate(day);
+          _startDateError = true;
+          return;
+        }
+      }
+
+      if ( _selectingStart && day.isAfter(_endDate!)) {
+        _endDateError = true;
+        _startDate = day;
+        _startController.text = _formatDate(day);
+        return;
+      }
+
+      if ( !_selectingStart && day.isBefore(_startDate!)) {
+        _startDateError = true;
+        _endDate = day;
+        _endController.text = _formatDate(day);
+        return;
       }
     });
   }
@@ -143,66 +188,150 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
   // that month) or the end date (last day of that month), depending on
   // which field is currently active.
   void _applyYearMonthSelection(int year, int month) {
-    if (_selectingStart) {
-      final newStart = DateTime(year, month, 1);
-      _startDate = newStart;
-      _startController.text = _formatDate(newStart);
+
+    DateTime day = _selectingStart
+        ? DateTime(year, month, 1) // 1st day of the month
+        : DateTime(year, month + 1, 0); //last day of the month
+
+    if (_selectingStart && _endDate == null) {
+      _startDate = day;
+      _startController.text = _formatDate(_startDate!);
       _selectingStart = false;
-      if (_endDate != null && newStart.isAfter(_endDate!)) {
-        _endDate = null;
-        _endController.text = '';
-      }
-    } else {
-      final newEnd = DateTime(year, month + 1, 0); // last day of month
-      if (_startDate != null && newEnd.isBefore(_startDate!)) {
-        _endDate = _startDate;
-        _startDate = newEnd;
-        _startController.text = _formatDate(_startDate!);
-        _endController.text = _formatDate(_endDate!);
-      } else {
-        _endDate = newEnd;
-        _endController.text = _formatDate(newEnd);
-      }
+      return;
+    }
+
+    if (!_selectingStart && _startDate == null) {
+      _endDate = day;
+      _endController.text = _formatDate(day);
       _selectingStart = true;
+      return;
+    }
+
+    if (_selectingStart && _endDate != null) {
+      if (day.isBefore(_endDate!)) {
+        _startDate = day;
+        _startController.text = _formatDate(day);
+        _startDateError = false;
+        return;
+      } else {
+        _startDate = day;
+        _startController.text = _formatDate(day);
+        _startDateError = true;
+        return;
+      }
+    }
+
+    if (!_selectingStart && _startDate != null) {
+      if (day.isAfter(_startDate!)) {
+        _endDate = day;
+        _endController.text = _formatDate(day);
+        _endDateError = false;
+        return;
+      } else {
+        _endDate = day;
+        _endController.text = _formatDate(day);
+        _endDateError = true;
+        return;
+      }
+    }
+
+    if ( _selectingStart && day.isAfter(_endDate!)) {
+      _endDateError = true;
+      _startDate = day;
+      _startController.text = _formatDate(day);
+      return;
+    }
+
+    if ( !_selectingStart && day.isBefore(_startDate!)) {
+      _startDateError = true;
+      _endDate = day;
+      _endController.text = _formatDate(day);
+      return;
     }
   }
 
+  // Validates and applies a typed date for the start or end field.
+  //
+  // Behavior:
+  // - Invalid format or an impossible calendar date (e.g. month 13,
+  //   Feb 30) marks the field as errored and leaves the underlying date
+  //   value untouched.
+  // - A syntactically valid date that is out of order relative to the
+  //   other field (end < start, or start > end) is ALSO treated as an
+  //   error on the field being edited — it is never auto-swapped. The
+  //   field stays red and keeps whatever the user typed until they
+  //   correct it.
+  // - The error on a field clears as soon as the user starts editing it
+  //   again, even before a full date is retyped.
   void _onDateTyped(String value, bool isStart) {
-    if (value.length < 10) return;
+    setState(() {
+      if (isStart) {
+        _startDateError = false;
+      } else {
+        _endDateError = false;
+      }
+    });
+
+    if (value.length < 10) return; // wait until fully typed
 
     final parts = value.split('.');
+    int? year, month, day;
     if (parts.length == 3) {
-      final year = int.tryParse(parts[0]);
-      final month = int.tryParse(parts[1]);
-      final day = int.tryParse(parts[2]);
+      year = int.tryParse(parts[0]);
+      month = int.tryParse(parts[1]);
+      day = int.tryParse(parts[2]);
+    }
 
-      if (year != null && month != null && day != null) {
-        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-          try {
-            final date = DateTime(year, month, day);
-            setState(() {
-              if (isStart) {
-                _startDate = date;
-                _displayMonth = DateTime(date.year, date.month);
-                if (_endDate != null && date.isAfter(_endDate!)) {
-                  _endDate = null;
-                  _endController.text = '';
-                }
-              } else {
-                if (_startDate != null && date.isBefore(_startDate!)) {
-                  _endDate = _startDate;
-                  _startDate = date;
-                  _startController.text = _formatDate(_startDate!);
-                  _endController.text = _formatDate(_endDate!);
-                } else {
-                  _endDate = date;
-                }
-              }
-            });
-          } catch (_) {}
-        }
+    final bool invalidFormat = year == null ||
+        month == null ||
+        day == null ||
+        month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31;
+
+    DateTime? date;
+    if (!invalidFormat) {
+      final candidate = DateTime(year, month, day);
+      // DateTime silently normalizes overflowing components (e.g.
+      // Feb 30 -> Mar 2), so round-trip the parts to catch impossible
+      // dates instead of accepting a rolled-over date.
+      if (candidate.year == year &&
+          candidate.month == month &&
+          candidate.day == day) {
+        date = candidate;
       }
     }
+
+    if (date == null) {
+      setState(() {
+        if (isStart) {
+          _startDateError = true;
+        } else {
+          _endDateError = true;
+        }
+      });
+      return;
+    }
+
+    setState(() {
+      if (isStart) {
+        if (_endDate != null && date!.isAfter(_endDate!)) {
+          _startDateError = true;
+        } else {
+          _startDate = date;
+          //_displayMonth = DateTime(date.year, date.month);
+          _startDateError = false;
+        }
+      } else {
+        if (_startDate != null && date!.isBefore(_startDate!)) {
+          _endDateError = true;
+        } else {
+          _endDate = date;
+          _endDateError = false;
+        }
+      }
+    });
   }
 
   String _formatDate(DateTime date) {
@@ -361,7 +490,10 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
     final offset = firstWeekday - 1;
 
     final weekdays = ['ДА', 'МЯ', 'ЛХ', 'ПҮ', 'БА', 'БЯ', 'НЯ'];
-    final bool canFilter = _startDate != null && _endDate != null;
+    final bool canFilter = _startDate != null &&
+        _endDate != null &&
+        !_startDateError &&
+        !_endDateError;
 
     return Column(
       children: [
@@ -477,6 +609,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                         label: l10n.startDate,
                         controller: _startController,
                         isActive: _selectingStart,
+                        hasError: _startDateError,
                         extendedColors: extendedColors,
                         theme: theme,
                         onTap: () => setState(() => _selectingStart = true),
@@ -489,6 +622,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                         label: l10n.endDate,
                         controller: _endController,
                         isActive: !_selectingStart,
+                        hasError: _endDateError,
                         extendedColors: extendedColors,
                         theme: theme,
                         onTap: () => setState(() => _selectingStart = false),
@@ -769,6 +903,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
     required String label,
     required TextEditingController controller,
     required bool isActive,
+    required bool hasError,
     required ExtendedColors extendedColors,
     required ThemeData theme,
     required VoidCallback onTap,
@@ -781,10 +916,12 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isActive
+            color: hasError
+                ? theme.colorScheme.error
+                : isActive
                 ? extendedColors.primaryMain
                 : extendedColors.neutral500,
-            width: isActive ? 2 : 1,
+            width: (isActive || hasError) ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -794,7 +931,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
             Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: extendedColors.neutral300,
+                color: hasError ? theme.colorScheme.error : extendedColors.neutral300,
               ),
             ),
             Expanded(
