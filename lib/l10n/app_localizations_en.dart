@@ -1613,4 +1613,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lastInterestPaymentDate => 'Last interest payment date';
+
+  @override
+  String get nominal => 'Nominal';
+
+  @override
+  String get csd => 'CSD';
 }

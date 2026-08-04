@@ -1609,4 +1609,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get lastInterestPaymentDate => 'Сүүлд хүү төлөгдсөн өдөр';
+
+  @override
+  String get nominal => 'Номинал';
+
+  @override
+  String get csd => 'ҮЦТХТ';
 }

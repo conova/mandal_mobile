@@ -533,5 +533,7 @@
     "account": "Данс",
     "exchangeRateGain": "Ханшийн ашиг",
     "bondsPiece": "ш",
-    "lastInterestPaymentDate": "Сүүлд хүү төлөгдсөн өдөр"
+    "lastInterestPaymentDate": "Сүүлд хүү төлөгдсөн өдөр",
+    "nominal": "Номинал",
+    "csd": "ҮЦТХТ"
 }

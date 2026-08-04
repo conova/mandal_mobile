@@ -595,5 +595,7 @@
     "account": "Account",
     "exchangeRateGain": "Exchange rate gain",
     "bondsPiece": "bonds",
-    "lastInterestPaymentDate": "Last interest payment date"
+    "lastInterestPaymentDate": "Last interest payment date",
+    "nominal": "Nominal",
+    "csd": "CSD"
 }
