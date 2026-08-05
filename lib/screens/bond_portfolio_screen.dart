@@ -52,14 +52,17 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       double? bondTotal;
       double? usdRate;
       for (final item in breakdown) {
+        usdRate = (item['usdRate'] as num?)?.toDouble();
+        // debugPrint('usdRate: $usdRate');
+        // debugPrint('item: $item');
         final type = item['type']?.toString() ?? '';
         if (type == 'bond' || type == 'bonds') {
           bondTotal = (item['amountMnt'] as num?)?.toDouble();
-        } else if (type == 'usd' || type == 'dollar') {
-          final usd = (item['amount'] as num?)?.toDouble() ?? 0;
-          final mnt = (item['amountMnt'] as num?)?.toDouble() ?? 0;
-          if (usd > 0 && mnt > 0) usdRate = mnt / usd;
-        }
+        } //else if (type == 'usd' || type == 'dollar') {
+          // final usd = (item['amount'] as num?)?.toDouble() ?? 0;
+          // final mnt = (item['amountMnt'] as num?)?.toDouble() ?? 0;
+          // if (usd > 0 && mnt > 0) usdRate = mnt / usd;
+        //}
       }
 
       setState(() {
@@ -477,7 +480,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: extendedColors.bgSecondary,
                     borderRadius: BorderRadius.circular(4),
@@ -487,7 +490,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                         ? l10n.foreign
                         : (bond.isOpen ? l10n.open : l10n.closed),
                     style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w400,
                       color: extendedColors.neutral100,
                     ),
                   ),
@@ -538,7 +541,8 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       default:
         // Эзэмшиж буй дүн = ширхэг × дундаж үнэ
         final bal = bond.currentBal ?? 0;
-        final value = bal * (bond.avgPrice ?? 0);
+        //final value = bal * (bond.avgPrice ?? 0);
+        final value = bal * (bond.stockPrice ?? 0);
         amountText = formatStockAmount(value, isForeign:  bond.curCode != 'MNT');
         amountColor = extendedColors.neutral100;
         subText =

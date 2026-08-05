@@ -1619,4 +1619,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get csd => 'CSD';
+
+  @override
+  String get buyStock => 'Buy stock';
 }

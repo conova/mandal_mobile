@@ -597,5 +597,6 @@
     "bondsPiece": "bonds",
     "lastInterestPaymentDate": "Last interest payment date",
     "nominal": "Nominal",
-    "csd": "CSD"
+    "csd": "CSD",
+    "buyStock": "Buy stock"
 }

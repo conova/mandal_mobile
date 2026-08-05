@@ -6,10 +6,11 @@ import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
+import '../../../models/order_book_entry.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_svg_icon.dart';
-import 'bond_order_board.dart';
 import 'bond_payment_details.dart';
+import 'bond_trading_order_board.dart';
 
 /// Хоёрдогч + НЭЭЛТТЭЙ бондын арилжааны дизайн: авах ханш, ширхэг
 /// сонгогч, төлбөрийн задаргаа, захиалгын самбар.
@@ -146,19 +147,28 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
         BondPaymentDetails(
           totalPayment: formatStockAmount(total, decimals: 0),
           totalReturn: formatStockAmount(expectedReturn, decimals: 0),
-          onDetailsPressed: () {},
+          onDetailsPressed: () {
+            //bond payment detail sheet
+          },
         ),
         const SizedBox(height: 32),
         Divider(height: 1, color: extendedColors.neutral500),
         const SizedBox(height: 24),
         // Захиалгын самбар — API байхгүй тул түр демо утгууд
-        BondOrderBoard(
-          orders: [
-            BondOrderEntry(price: 989000, quantity: 21),
-            BondOrderEntry(price: 990000, quantity: 12),
-            BondOrderEntry(price: 1001000, quantity: 5),
-            BondOrderEntry(price: 1002000, quantity: 32),
-            BondOrderEntry(price: 1002500, quantity: 52),
+        BondTradingOrderBoard(
+          buyOrders: const [
+            OrderBookEntry(price: 100000, quantity: 500, rank: 1),
+            OrderBookEntry(price: 99500, quantity: 1200, rank: 2),
+            OrderBookEntry(price: 99000, quantity: 800, rank: 3),
+            OrderBookEntry(price: 98500, quantity: 1500, rank: 4),
+            OrderBookEntry(price: 98000, quantity: 2000, rank: 5),
+          ],
+          sellOrders: const [
+            OrderBookEntry(price: 101000, quantity: 300, rank: 1),
+            OrderBookEntry(price: 101500, quantity: 1500, rank: 2),
+            OrderBookEntry(price: 102000, quantity: 2000, rank: 3),
+            OrderBookEntry(price: 102500, quantity: 1000, rank: 4),
+            OrderBookEntry(price: 103000, quantity: 500, rank: 5),
           ],
         ),
       ],

@@ -167,7 +167,7 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
     if (widget.onFinish != null) {
       widget.onFinish!();
     } else {
-      Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false, arguments: {'tab': 3});
     }
   }
 

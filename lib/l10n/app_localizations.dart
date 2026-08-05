@@ -3147,6 +3147,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CSD'**
   String get csd;
+
+  /// No description provided for @buyStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy stock'**
+  String get buyStock;
 }
 
 class _AppLocalizationsDelegate

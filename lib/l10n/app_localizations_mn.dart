@@ -1615,4 +1615,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get csd => 'ҮЦТХТ';
+
+  @override
+  String get buyStock => 'Хувьцаа авах';
 }

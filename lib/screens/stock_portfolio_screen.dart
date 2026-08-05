@@ -161,9 +161,9 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                       child: CustomButton(
                         variant: CustomButtonVariant.orange,
                         onPressed: () async {
-                          await Navigator.pushNamed(context, '/home');
+                          await Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false, arguments: {'tab': 2});
                         },
-                        label: l10n.add,
+                        label: l10n.buyStock,
                         size: CustomButtonSize.small,
                       ),
                     ),
@@ -368,7 +368,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                     fit: BoxFit.scaleDown,
                     child: Text(
                       formatStockAmount(
-                        stock.amt,
+                        (stock.currentBal ?? 0) * (stock.closePrice ?? 0),
                         isForeign: stock.curCode != 'MNT',
                       ),
                       maxLines: 1,

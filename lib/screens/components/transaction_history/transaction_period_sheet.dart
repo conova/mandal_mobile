@@ -124,6 +124,8 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         if (day.isAfter(_startDate!)) {
           _endDate = day;
           _endController.text = _formatDate(day);
+          _endDateError = false;
+          _startDateError = false;
           return;
         } else {
           _endDate = day;
@@ -137,6 +139,8 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         if (day.isBefore(_endDate!)) {
           _startDate = day;
           _startController.text = _formatDate(day);
+          _endDateError = false;
+          _startDateError = false;
           return;
         } else {
           _startDate = day;
@@ -212,6 +216,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         _startDate = day;
         _startController.text = _formatDate(day);
         _startDateError = false;
+        _endDateError = false;
         return;
       } else {
         _startDate = day;
@@ -226,6 +231,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         _endDate = day;
         _endController.text = _formatDate(day);
         _endDateError = false;
+        _startDateError = false;
         return;
       } else {
         _endDate = day;
