@@ -500,19 +500,39 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
               ),
             ),
           // Дата байхгүй үед татах товч харуулахгүй
-          if (!_report.isEmpty)
+          /*if (!_report.isEmpty) ...[
             Positioned(
               left: 20,
               right: 20,
               bottom: 24,
-              child: CustomButton(
-                label: l10n.downloadReport,
-                onPressed: _showDownloadSheet,
-                variant: CustomButtonVariant.primary,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: extendedColors.bgBase
+                ),
+                child: CustomButton(
+                  label: l10n.downloadReport,
+                  onPressed: _showDownloadSheet,
+                  variant: CustomButtonVariant.primary,
+                ),
               ),
             ),
+          ]*/
         ],
       ),
+      bottomNavigationBar: !_report.isEmpty
+        ? Container(
+            padding: EdgeInsets.only(bottom: 24, left: 20, right: 20, top: 10),
+            decoration: BoxDecoration(
+                color: extendedColors.bgBase,
+                border: BorderDirectional(top: BorderSide(color: extendedColors.neutral500, width: 1)),
+            ),
+            child: CustomButton(
+              label: l10n.downloadReport,
+              onPressed: _showDownloadSheet,
+              variant: CustomButtonVariant.primary,
+            ),
+          )
+        : Container(height: 0,)
     );
   }
 
@@ -560,10 +580,10 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     ExtendedColors extendedColors,
   ) {
     final filters = <(_Period, String)>[
-      (_Period.oneMonth, l10n.oneDay),
-      (_Period.threeMonths, l10n.threeDays),
-      (_Period.sixMonths, l10n.sixDays),
-      (_Period.oneYear, l10n.oneYear),
+      (_Period.oneMonth, l10n.m1),
+      (_Period.threeMonths, l10n.m3),
+      (_Period.sixMonths, l10n.m6),
+      (_Period.oneYear, l10n.y1),
       (_Period.all, l10n.all),
     ];
     return Row(
