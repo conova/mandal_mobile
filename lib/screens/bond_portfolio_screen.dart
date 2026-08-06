@@ -52,14 +52,17 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       double? bondTotal;
       double? usdRate;
       for (final item in breakdown) {
+        usdRate = (item['usdRate'] as num?)?.toDouble();
+        // debugPrint('usdRate: $usdRate');
+        // debugPrint('item: $item');
         final type = item['type']?.toString() ?? '';
         if (type == 'bond' || type == 'bonds') {
           bondTotal = (item['amountMnt'] as num?)?.toDouble();
-        } else if (type == 'usd' || type == 'dollar') {
-          final usd = (item['amount'] as num?)?.toDouble() ?? 0;
-          final mnt = (item['amountMnt'] as num?)?.toDouble() ?? 0;
-          if (usd > 0 && mnt > 0) usdRate = mnt / usd;
-        }
+        } //else if (type == 'usd' || type == 'dollar') {
+          // final usd = (item['amount'] as num?)?.toDouble() ?? 0;
+          // final mnt = (item['amountMnt'] as num?)?.toDouble() ?? 0;
+          // if (usd > 0 && mnt > 0) usdRate = mnt / usd;
+        //}
       }
 
       setState(() {
@@ -75,7 +78,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     }
   }
 
-  /// Жагсаалт дээр зүүн тийш swipe — дараагийн, баруун тийш — өмнөх filter
+/*/// Жагсаалт дээр зүүн тийш swipe — дараагийн, баруун тийш — өмнөх filter
   void _onListSwipe(DragEndDetails details) {
     final velocity = details.primaryVelocity ?? 0;
     // Санамсаргүй жижиг хөдөлгөөнийг тоохгүй
@@ -87,7 +90,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         _selectedFilter--;
       }
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +125,8 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            // Filter chips
+
+            /*// Filter chips
             SizedBox(
               height: 32,
               child: ListView.separated(
@@ -156,7 +160,8 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 16),*/
+
             // Table header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -243,7 +248,15 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 ),
               )
             else
-              // Жагсаалт дээр баруун/зүүн swipe хийж filter шилжүүлнэ
+              Column(
+                children: _holdings
+                    .map(
+                      (bond) =>
+                      _buildBondRow(bond, theme, extendedColors, l10n),
+                )
+                    .toList(),
+              ),
+              /*// Жагсаалт дээр баруун/зүүн swipe хийж filter шилжүүлнэ
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onHorizontalDragEnd: _onListSwipe,
@@ -255,7 +268,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                       )
                       .toList(),
                 ),
-              ),
+              ),*/
             const SizedBox(height: 8),
             Divider(height: 1, color: extendedColors.neutral500),
             const SizedBox(height: 24),
@@ -284,6 +297,9 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               label: l10n.totalReturnReceived,
               amount: '0.00₮',
               buttonLabel: l10n.view,
+              onTap: () {
+                Navigator.pushNamed(context, '/bond_portfolio_statistic', arguments: {'filter': 1});
+              },
             ),
             const SizedBox(height: 20),
             _buildStatRow(
@@ -299,14 +315,17 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               label: l10n.futureReturn,
               amount: '0.00₮',
               buttonLabel: l10n.view,
+              onTap: () {
+                Navigator.pushNamed(context, '/bond_portfolio_statistic', arguments: {'filter': 2});
+              },
             ),
             const SizedBox(height: 24),
-            // Time filter
+            /*// Time filter
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: _buildTimeFilter(theme, extendedColors),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 40),*/
           ],
         ),
       ),
@@ -477,7 +496,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: extendedColors.bgSecondary,
                     borderRadius: BorderRadius.circular(4),
@@ -487,7 +506,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                         ? l10n.foreign
                         : (bond.isOpen ? l10n.open : l10n.closed),
                     style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w400,
                       color: extendedColors.neutral100,
                     ),
                   ),
@@ -534,11 +553,12 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         final yield_ = bond.expYield ?? 0;
         amountText = formatStockAmount(yield_, isForeign:  bond.curCode != 'MNT');
         amountColor = extendedColors.neutral100;
-        subText = bond.term;
+        subText = bond.term.replaceAll('/', '.');
       default:
         // Эзэмшиж буй дүн = ширхэг × дундаж үнэ
         final bal = bond.currentBal ?? 0;
-        final value = bal * (bond.avgPrice ?? 0);
+        //final value = bal * (bond.avgPrice ?? 0);
+        final value = bal * (bond.stockPrice ?? 0);
         amountText = formatStockAmount(value, isForeign:  bond.curCode != 'MNT');
         amountColor = extendedColors.neutral100;
         subText =
@@ -562,7 +582,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         Text(
           subText,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: extendedColors.neutral300,
+            color: extendedColors.neutral200,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -578,6 +598,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     required String label,
     required String amount,
     required String buttonLabel,
+    required VoidCallback onTap,
     VoidCallback? onInfoTap,
   }) {
     return Padding(
@@ -636,14 +657,14 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               size: CustomButtonSize.small,
               variant: CustomButtonVariant.tertiary,
               minWidth: 72,
-              onPressed: (){},
+              onPressed: onTap,
           )
         ],
       ),
     );
   }
 
-  Widget _buildTimeFilter(ThemeData theme, ExtendedColors extendedColors) {
+  /*Widget _buildTimeFilter(ThemeData theme, ExtendedColors extendedColors) {
     final filters = ['7Х', '1С', '3С', '1Ж', 'Бүгд'];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -658,5 +679,5 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         );
       }).toList(),
     );
-  }
+  }*/
 }

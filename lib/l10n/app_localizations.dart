@@ -3147,6 +3147,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CSD'**
   String get csd;
+
+  /// No description provided for @buyStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy stock'**
+  String get buyStock;
+
+  /// No description provided for @totalYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Total yield:'**
+  String get totalYield;
+
+  /// No description provided for @totalYieldGot.
+  ///
+  /// In en, this message translates to:
+  /// **'Total yield (got):'**
+  String get totalYieldGot;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'DAYS LEFT'**
+  String get daysLeft;
 }
 
 class _AppLocalizationsDelegate

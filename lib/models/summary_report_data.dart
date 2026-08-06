@@ -11,6 +11,7 @@ class PortfolioSnapshot {
   final double amount;
   final double amountMnt;
   final int count;
+  final double usdRate;
 
   const PortfolioSnapshot({
     required this.date,
@@ -19,6 +20,7 @@ class PortfolioSnapshot {
     required this.amount,
     required this.amountMnt,
     required this.count,
+    required this.usdRate,
   });
 
   factory PortfolioSnapshot.fromJson(Map<String, dynamic> json) =>
@@ -28,6 +30,7 @@ class PortfolioSnapshot {
         codeName: json['CODENAME']?.toString() ?? '',
         amount: _toDouble(json['AMOUNT']),
         amountMnt: _toDouble(json['AMOUNTMNT']),
+        usdRate: _toDouble(json['USDRATE']),
         count: int.tryParse(json['CNT']?.toString() ?? '') ?? 0,
       );
 }
@@ -37,11 +40,13 @@ class TransactionSummary {
   final String date;
   final String type; // stock | cash | rateincome | dividend | bond
   final double amountMnt;
+  final double usdRate;
 
   const TransactionSummary({
     required this.date,
     required this.type,
     required this.amountMnt,
+    required this.usdRate,
   });
 
   factory TransactionSummary.fromJson(Map<String, dynamic> json) =>
@@ -49,6 +54,7 @@ class TransactionSummary {
         date: json['TXNDATE']?.toString() ?? '',
         type: json['TYPE']?.toString().toLowerCase() ?? '',
         amountMnt: _toDouble(json['AMOUNTMNT']),
+        usdRate: _toDouble(json['USDRATE']),
       );
 }
 

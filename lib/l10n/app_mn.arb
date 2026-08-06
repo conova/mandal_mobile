@@ -535,5 +535,9 @@
     "bondsPiece": "ш",
     "lastInterestPaymentDate": "Сүүлд хүү төлөгдсөн өдөр",
     "nominal": "Номинал",
-    "csd": "ҮЦТХТ"
+    "csd": "ҮЦТХТ",
+    "buyStock": "Хувьцаа авах",
+    "totalYield": "Нийт авах өгөөж:",
+    "totalYieldGot": "Нийт авсан өгөөж",
+    "daysLeft": "ХОНОГ ҮЛДСЭН"
 }

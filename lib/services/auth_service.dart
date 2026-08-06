@@ -1532,6 +1532,7 @@ class AuthService with ChangeNotifier {
         totalChange: toDouble(data['totalChange']),
         changePercent: toDouble(data['changePercent']),
         cashBalance: toDouble(data['cashBalance']),
+        usdRate: toDouble(data['usdRate']),
       );
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
@@ -1620,6 +1621,7 @@ class AuthService with ChangeNotifier {
     final amountMnt = toDouble(raw['AMOUNTMNT'] ?? raw['amountMnt']);
     final count = toInt(raw['COUNT'] ?? raw['count']);
     final order = toInt(raw['CODEORDER'] ?? raw['order']);
+    final usdRate = toDouble(raw['USDRATE'] ?? raw['usdRate']);
 
     // mnt/usd-ийн хувьд өөрийн валютаар, бонд/хувьцааны хувьд MNT эквивалентаар
     final isCash =
@@ -1638,6 +1640,7 @@ class AuthService with ChangeNotifier {
       'amountMnt': amountMnt,
       'count': count,
       'order': order,
+      'usdRate': usdRate,
     };
   }
 
@@ -2091,11 +2094,14 @@ class PortfolioSummary {
   /// Чөлөөт мөнгөн үлдэгдэл (₮)
   final double cashBalance;
 
+  final double usdRate;
+
   const PortfolioSummary({
     required this.totalAssets,
     required this.totalChange,
     required this.changePercent,
     required this.cashBalance,
+    required this.usdRate,
   });
 
   /// Хоосон summary — алдаа гарсан үеийн default.
@@ -2104,6 +2110,7 @@ class PortfolioSummary {
     totalChange: 0,
     changePercent: 0,
     cashBalance: 0,
+    usdRate: 0,
   );
 }
 

@@ -81,6 +81,7 @@ class MarketInstrument {
 
   /// Дундаж үнэ (AVGPRICE)
   final double? avgPrice;
+  final double? stockPrice;
 
   final String curCode;
   final double? curRate;
@@ -137,6 +138,7 @@ class MarketInstrument {
     required this.isOpen,
     required this.isForeign,
     required this.raw,
+    this.stockPrice,
   });
 
   factory MarketInstrument.fromJson(Map<String, dynamic> json) {
@@ -197,6 +199,7 @@ class MarketInstrument {
       isOpen: str('ISOPEN') == '1',
       isForeign: str('ISFOREIGN') == '1',
       raw: json,
+      stockPrice: num_('STOCKPRICE'),
     );
   }
 
