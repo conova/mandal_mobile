@@ -1072,6 +1072,12 @@ abstract class AppLocalizations {
   /// **'3M'**
   String get m3;
 
+  /// No description provided for @m6.
+  ///
+  /// In en, this message translates to:
+  /// **'6M'**
+  String get m6;
+
   /// No description provided for @y1.
   ///
   /// In en, this message translates to:

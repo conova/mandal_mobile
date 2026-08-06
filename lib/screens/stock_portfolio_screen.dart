@@ -183,7 +183,6 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
             ..._holdings.map(
               (stock) => _buildHistoryCard(stock, theme, extendedColors, l10n),
             ),
-            const SizedBox(height: 40),
           ],
         ),
       ),

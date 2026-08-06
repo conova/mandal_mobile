@@ -517,6 +517,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get m3 => '3M';
 
   @override
+  String get m6 => '6M';
+
+  @override
   String get y1 => '1Y';
 
   @override

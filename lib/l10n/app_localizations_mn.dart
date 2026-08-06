@@ -515,6 +515,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get m3 => '3С';
 
   @override
+  String get m6 => '6С';
+
+  @override
   String get y1 => '1Ж';
 
   @override
