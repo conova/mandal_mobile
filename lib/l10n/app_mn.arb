@@ -536,5 +536,8 @@
     "lastInterestPaymentDate": "Сүүлд хүү төлөгдсөн өдөр",
     "nominal": "Номинал",
     "csd": "ҮЦТХТ",
-    "buyStock": "Хувьцаа авах"
+    "buyStock": "Хувьцаа авах",
+    "totalYield": "Нийт авах өгөөж:",
+    "totalYieldGot": "Нийт авсан өгөөж",
+    "daysLeft": "ХОНОГ ҮЛДСЭН"
 }

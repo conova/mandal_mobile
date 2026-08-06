@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:mandal_capital/screens/bond_portfolio_statistic_screen.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'l10n/app_localizations.dart';
@@ -571,6 +572,7 @@ class MyApp extends StatelessWidget {
               '/watchlist_detail': (context) => const WatchlistDetailScreen(),
               '/add_watchlist': (context) => const AddWatchlistScreen(),
               '/webview': (context) => const WebViewScreen(),
+              '/bond_portfolio_statistic': (context) => const BondPortfolioStatisticScreen()
             };
 
             final routeName = settings.name;

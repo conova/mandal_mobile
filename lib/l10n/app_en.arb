@@ -598,5 +598,8 @@
     "lastInterestPaymentDate": "Last interest payment date",
     "nominal": "Nominal",
     "csd": "CSD",
-    "buyStock": "Buy stock"
+    "buyStock": "Buy stock",
+    "totalYield": "Total yield:",
+    "totalYieldGot": "Total yield (got):",
+    "daysLeft": "DAYS LEFT"
 }
