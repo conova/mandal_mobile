@@ -1634,4 +1634,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get daysLeft => 'DAYS LEFT';
+
+  @override
+  String get totalPriceBreakdown => 'Total price breakdown';
+
+  @override
+  String get unitPriceExplanation => 'Unit price explanation';
+
+  @override
+  String get unitPriceFormula => 'Piece price + Accrued price = Unit price';
+
+  @override
+  String get piecePrice => 'Piece price';
+
+  @override
+  String get accruedInterest => 'Accrued interest';
+
+  @override
+  String get returnBack => 'Return';
+
+  @override
+  String get accruedInterestDescP1 =>
+      'Interest on bonds accrues daily, but the payout schedule varies—such as monthly, quarterly, or semi-annually.';
+
+  @override
+  String get accruedInterestDescP2 =>
+      'For example, suppose the bond you are looking to buy pays interest quarterly. However, what if there is only one month remaining until the next coupon payment date?';
+
+  @override
+  String get accruedInterestDescP3 =>
+      'You cannot receive a full three months\' worth of interest when you have only held the bond for one month. Therefore, you must pay the seller the accrued interest for the two months during which you did not own the bond. Then, on the next coupon payment date—one month later—you will be entitled to receive the full three-month interest payment.';
+
+  @override
+  String get prevInterestPaidDate => 'Previous interest\n payment date';
+
+  @override
+  String get nextInterestPayDueDate => 'Next interest\n payment date';
+
+  @override
+  String get todayBondBuyDate => 'Today\n(Bond buy date)';
+
+  @override
+  String get accruedInterestToSeller => 'Accrued interest\n paid to seller';
+
+  @override
+  String get yourInterestToReceive => 'YOUR INTEREST TO RECEIVE';
 }

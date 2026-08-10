@@ -1630,4 +1630,49 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get daysLeft => 'ХОНОГ ҮЛДСЭН';
+
+  @override
+  String get totalPriceBreakdown => 'Нийт үнийн задаргаа';
+
+  @override
+  String get unitPriceExplanation => 'Нэгж үнийн тайлбар';
+
+  @override
+  String get unitPriceFormula => 'Ширхэгийн үнэ + Хуримтлагдсан хүү = Нэгж үнэ';
+
+  @override
+  String get piecePrice => 'Ширхэгийн үнэ';
+
+  @override
+  String get accruedInterest => 'Хуримтлагдсан хүү';
+
+  @override
+  String get returnBack => 'Буцах';
+
+  @override
+  String get accruedInterestDescP1 =>
+      'Бондод өдөр бүр хүү бодогддог. Гэхдээ төлөгдөх өдөр нь сар тутам, улирал тутам, хагас жил тутам гэх мэт өөр, өөр...';
+
+  @override
+  String get accruedInterestDescP2 =>
+      'Жишээлбэл: Одоо таны авах гэж буй бондын хүү 3 сар тутам төлөгддөг гэж бодъё. Гэхдээ хүү төлөгдөх өдөр хүртэл ердөө 1 сар л дутуу байвал яах вэ?';
+
+  @override
+  String get accruedInterestDescP3 =>
+      'Та энэхүү бондыг ердөө 1 сар л эзэмшсэн хэрнээ 3 сарын хүү авч болохгүй шүү дээ. Иймд та тус бондыг эзэмшээгүй 2 сарынхаа хуримтлагдсан хүүг зарагч талд төлөх хэрэгтэй. Тэгээд дагаагийн хүү төлөгдөх өдөр буюу 1 сарын дараа та 3 сарын хүүг бүтнээр нь авах эрхтэй болно.';
+
+  @override
+  String get prevInterestPaidDate => 'Өмнөх хүү\nтөлөгдсөн өдөр';
+
+  @override
+  String get nextInterestPayDueDate => 'Дараагийн\nхүү төлөгдөх өдөр';
+
+  @override
+  String get todayBondBuyDate => 'Өнөөдөр\n(Бонд авах өдөр)';
+
+  @override
+  String get accruedInterestToSeller => 'Зарагч талд төлөх\nхуримтлагдсан хүү';
+
+  @override
+  String get yourInterestToReceive => 'ТАНЫ АВАХ ХҮҮ';
 }

@@ -602,5 +602,19 @@
     "buyStock": "Buy stock",
     "totalYield": "Total yield:",
     "totalYieldGot": "Total yield (got):",
-    "daysLeft": "DAYS LEFT"
+    "daysLeft": "DAYS LEFT",
+    "totalPriceBreakdown": "Total price breakdown",
+    "unitPriceExplanation": "Unit price explanation",
+    "unitPriceFormula": "Piece price + Accrued price = Unit price",
+    "piecePrice": "Piece price",
+    "accruedInterest": "Accrued interest",
+    "returnBack": "Return",
+    "accruedInterestDescP1": "Interest on bonds accrues daily, but the payout schedule varies—such as monthly, quarterly, or semi-annually.",
+    "accruedInterestDescP2": "For example, suppose the bond you are looking to buy pays interest quarterly. However, what if there is only one month remaining until the next coupon payment date?",
+    "accruedInterestDescP3": "You cannot receive a full three months' worth of interest when you have only held the bond for one month. Therefore, you must pay the seller the accrued interest for the two months during which you did not own the bond. Then, on the next coupon payment date—one month later—you will be entitled to receive the full three-month interest payment.",
+    "prevInterestPaidDate": "Previous interest\n payment date",
+    "nextInterestPayDueDate": "Next interest\n payment date",
+    "todayBondBuyDate": "Today\n(Bond buy date)",
+    "accruedInterestToSeller": "Accrued interest\n paid to seller",
+    "yourInterestToReceive": "YOUR INTEREST TO RECEIVE"
 }
