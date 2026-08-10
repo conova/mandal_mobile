@@ -8,6 +8,7 @@ import '../services/education_progress.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_svg_icon.dart';
 
 /// Хичээлийн сэдвийн агуулга — слайдуудаар үзээд төгсгөлд нь
 /// мэдлэг шалгах тест бөглөнө. Зөв хариулбал сэдэв дуусгасанд
@@ -104,7 +105,7 @@ class _EducationLessonScreenState extends State<EducationLessonScreen> {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: _CircleIconButton(
-                  icon: Icons.close,
+                  icon: 'x-icon',
                   onTap: () => Navigator.pop(context),
                 ),
               ),
@@ -145,7 +146,7 @@ class _EducationLessonScreenState extends State<EducationLessonScreen> {
 
 /// Саарал дугуй дэвсгэртэй icon товч (back/close)
 class _CircleIconButton extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final VoidCallback onTap;
   const _CircleIconButton({required this.icon, required this.onTap});
 
@@ -158,13 +159,16 @@ class _CircleIconButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(26),
       child: Container(
-        width: 52,
-        height: 52,
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(
           color: extendedColors.bgSecondary,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: 24, color: theme.colorScheme.onSurface),
+        child: Padding(
+            padding: EdgeInsets.all(8),
+          child: CustomSvgIcon(icon, size: 24, color: extendedColors.neutral100),
+        ),
       ),
     );
   }
@@ -254,7 +258,7 @@ class _SlideView extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
           child: Row(
             children: [
-              _CircleIconButton(icon: Icons.arrow_back, onTap: onBack),
+              _CircleIconButton(icon: 'close-button', onTap: onBack),
               const SizedBox(width: 16),
               Expanded(
                 child: CustomButton(
@@ -374,7 +378,7 @@ class _QuizView extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: Row(
               children: [
-                _CircleIconButton(icon: Icons.arrow_back, onTap: onBack),
+                _CircleIconButton(icon: 'close-button', onTap: onBack),
                 const SizedBox(width: 16),
                 Expanded(
                   child: CustomButton(
@@ -412,7 +416,7 @@ class _QuizView extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: AppTextStyles.light,
-                    color: extendedColors.neutral200,
+                    color: extendedColors.neutral100,
                   ),
                 ),
                 const SizedBox(height: 16),

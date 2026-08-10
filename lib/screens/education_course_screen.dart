@@ -5,6 +5,7 @@ import '../services/education_progress.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import '../widgets/custom_svg_icon.dart';
 
 /// Хичээлийн сэдвүүдийн жагсаалт — дуусгасан сэдвүүд ногоон дэвсгэртэй,
 /// баруун дээд буланд явцын товч (2/5) харагдана.
@@ -62,8 +63,8 @@ class _EducationCourseScreenState extends State<EducationCourseScreen> {
                     // Явцын товч — 2/5 + check
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
+                        horizontal: 12,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
                         color: extendedColors.bgSecondary,
@@ -80,8 +81,8 @@ class _EducationCourseScreenState extends State<EducationCourseScreen> {
                             ),
                           ),
                           const SizedBox(width: 6),
-                          Icon(
-                            Icons.check_circle,
+                          CustomSvgIcon(
+                            'check_circle',
                             size: 18,
                             color: extendedColors.primaryMain,
                           ),
@@ -184,14 +185,14 @@ class _LessonRow extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     if (isCompleted)
-                      Icon(
-                        Icons.check_circle,
+                      CustomSvgIcon(
+                        'check_circle',
                         size: 22,
                         color: extendedColors.primaryMain,
                       )
                     else
-                      Icon(
-                        Icons.chevron_right,
+                      CustomSvgIcon(
+                        'chevron-right',
                         size: 22,
                         color: extendedColors.neutral300,
                       ),

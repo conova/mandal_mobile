@@ -3,6 +3,8 @@ import '../l10n/app_localizations.dart';
 import '../models/education_guide.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
+import '../widgets/custom_svg_icon.dart';
 import 'education_screen.dart' show GuideItemRow;
 
 /// Зааврын бүлгийн бүх сэдвийн жагсаалт — түлхүүр үгээр хайх боломжтой.
@@ -57,15 +59,20 @@ class _EducationGuideListScreenState extends State<EducationGuideListScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
-          onPressed: () => Navigator.pop(context),
+        toolbarHeight: 70,
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+          child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
-        title: Text(
-          section?.titleOf(lang) ?? '',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: extendedColors.neutral100,
+        title: Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Text(
+            section?.titleOf(lang) ?? '',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: extendedColors.neutral100,
+            ),
           ),
         ),
       ),
@@ -89,17 +96,20 @@ class _EducationGuideListScreenState extends State<EducationGuideListScreen> {
                     fontWeight: AppTextStyles.light,
                     color: extendedColors.neutral300,
                   ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: extendedColors.neutral300,
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 8),
+                    child: CustomSvgIcon(
+                      'search-icon',
+                      color: extendedColors.neutral200,
+                    ),
                   ),
                   filled: true,
                   fillColor: extendedColors.bgSecondary,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14,),
                 ),
               ),
             ),
