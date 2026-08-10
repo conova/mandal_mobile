@@ -10,6 +10,7 @@ import '../../../models/order_book_entry.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_svg_icon.dart';
 import 'bond_payment_details.dart';
+import 'bond_payment_details_bottom_sheet.dart';
 import 'bond_trading_order_board.dart';
 
 /// Хоёрдогч + НЭЭЛТТЭЙ бондын арилжааны дизайн: авах ханш, ширхэг
@@ -101,13 +102,14 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
   @override
   Widget build(BuildContext context) {
+    const double commissionRate = 0.001;
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     final price = _currentPrice;
     final quantity = _currentQuantity;
-    final total = (price * quantity).toDouble();
+    final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
     final rate = widget.bond?.intRate ?? 0;
     final expectedReturn = total * rate / 100;
 
@@ -145,10 +147,19 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
         ),
         const SizedBox(height: 24),
         BondPaymentDetails(
-          totalPayment: formatStockAmount(total, decimals: 0),
-          totalReturn: formatStockAmount(expectedReturn, decimals: 0),
+          totalPayment: formatStockAmount(total, decimals: 2),
+          totalReturn: formatStockAmount(expectedReturn, decimals: 2),
           onDetailsPressed: () {
             //bond payment detail sheet
+            // Хуримтлагдсан хүү - accruedInterest
+            // Ширхэгийн үнэ - piecePrice
+            showBondPaymentDetailsSheet(
+              context: context,
+              quantity: quantity,
+              piecePrice: _currentPrice.toDouble(),
+              accruedInterest: expectedReturn,
+              commissionRate: commissionRate,
+            );
           },
         ),
         const SizedBox(height: 32),
