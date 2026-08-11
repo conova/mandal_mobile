@@ -20,16 +20,56 @@ class EducationCourseScreen extends StatefulWidget {
 
 class _EducationCourseScreenState extends State<EducationCourseScreen> {
   Set<String> _completed = {};
+  List<EducationCourse> _courses = [];
+  int _currentIndex = -1;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadProgress();
+    _loadData();
   }
 
-  Future<void> _loadProgress() async {
+  Future<void> _loadData() async {
     final completed = await EducationProgress.load();
-    if (mounted) setState(() => _completed = completed);
+    final data = await EducationGuideData.load();
+    
+    if (mounted) {
+      setState(() {
+        _completed = completed;
+        _courses = data.courses;
+        _isLoading = false;
+        
+        // Find initial index from arguments if not set
+        if (_currentIndex == -1) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final course = args?['course'] as EducationCourse?;
+          if (course != null) {
+            _currentIndex = _courses.indexWhere((c) => c.id == course.id);
+          }
+          if (_currentIndex == -1 && _courses.isNotEmpty) {
+            _currentIndex = 0;
+          }
+        }
+      });
+    }
+  }
+
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    if (_courses.isEmpty) return;
+    
+    final velocity = details.primaryVelocity ?? 0;
+    if (velocity < -500) {
+      // Swipe Left -> Next Course
+      if (_currentIndex < _courses.length - 1) {
+        setState(() => _currentIndex++);
+      }
+    } else if (velocity > 500) {
+      // Swipe Right -> Prev Course
+      if (_currentIndex > 0) {
+        setState(() => _currentIndex--);
+      }
+    }
   }
 
   @override
@@ -39,20 +79,26 @@ class _EducationCourseScreenState extends State<EducationCourseScreen> {
     final l10n = AppLocalizations.of(context)!;
     final lang = Localizations.localeOf(context).languageCode;
 
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
-            const {};
-    final course = args['course'] as EducationCourse?;
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: extendedColors.bgBase,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final course = _currentIndex >= 0 && _currentIndex < _courses.length 
+        ? _courses[_currentIndex] 
+        : null;
     final lessons = course?.lessons ?? const <EducationLesson>[];
-    final done =
-        course == null ? 0 : EducationProgress.completedCount(_completed, course);
+    final done = course == null ? 0 : EducationProgress.completedCount(_completed, course);
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragEnd: _onHorizontalDragEnd,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -92,36 +138,48 @@ class _EducationCourseScreenState extends State<EducationCourseScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-                child: Text(
-                  course?.titleOf(lang) ?? '',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: AppTextStyles.semiBold,
-                    color: extendedColors.neutral100,
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                        child: Text(
+                          course?.titleOf(lang) ?? '',
+                          style: theme.textTheme.headlineLarge?.copyWith(
+                            fontWeight: AppTextStyles.semiBold,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                      ),
+                      for (var i = 0; i < lessons.length; i++)
+                        _LessonRow(
+                          index: i + 1,
+                          lesson: lessons[i],
+                          lang: lang,
+                          isCompleted: course != null &&
+                              EducationProgress.isCompleted(
+                                _completed,
+                                course.id,
+                                lessons[i].id,
+                              ),
+                          onTap: () async {
+                            final result = await Navigator.pushNamed(
+                              context,
+                              '/education_lesson',
+                              arguments: {'course': course, 'lesson': lessons[i]},
+                            );
+                            if (result == true) {
+                              _loadData();
+                            }
+                          },
+                        ),
+                    ],
                   ),
                 ),
               ),
-              for (var i = 0; i < lessons.length; i++)
-                _LessonRow(
-                  index: i + 1,
-                  lesson: lessons[i],
-                  lang: lang,
-                  isCompleted: course != null &&
-                      EducationProgress.isCompleted(
-                        _completed,
-                        course.id,
-                        lessons[i].id,
-                      ),
-                  onTap: () async {
-                    await Navigator.pushNamed(
-                      context,
-                      '/education_lesson',
-                      arguments: {'course': course, 'lesson': lessons[i]},
-                    );
-                    _loadProgress();
-                  },
-                ),
             ],
           ),
         ),

@@ -97,47 +97,62 @@ class _EducationLessonScreenState extends State<EducationLessonScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Хаах товч
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: _CircleIconButton(
-                  icon: 'x-icon',
-                  onTap: () => Navigator.pop(context),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragEnd: (details) {
+            final velocity = details.primaryVelocity ?? 0;
+            if (velocity < -500) {
+              // Swipe Left -> Next
+              if (!_showQuiz) {
+                _next(slides.length, quiz != null);
+              }
+            } else if (velocity > 500) {
+              // Swipe Right -> Back
+              _back();
+            }
+          },
+          child: Column(
+            children: [
+              // Хаах товч
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: _CircleIconButton(
+                    icon: 'x-icon',
+                    onTap: () => Navigator.pop(context),
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: _showQuiz && quiz != null
-                  ? _QuizView(
-                      quiz: quiz,
-                      lang: lang,
-                      totalSteps: slides.length + 1,
-                      selected: _selected,
-                      answered: _answered,
-                      onSelect: (i) => setState(() => _selected = i),
-                      onCheck: () => setState(() => _answered = true),
-                      onBack: _back,
-                      onFinish: _finish,
-                      onRetry: _retry,
-                      onLater: () => Navigator.pop(context),
-                    )
-                  : slides.isEmpty
-                      ? const SizedBox.shrink()
-                      : _SlideView(
-                          slide: slides[_index],
-                          lang: lang,
-                          index: _index,
-                          // Тест нь сүүлийн алхам болж тоологдоно
-                          total: slides.length + (quiz != null ? 1 : 0),
-                          onBack: _back,
-                          onNext: () => _next(slides.length, quiz != null),
-                        ),
-            ),
-          ],
+              Expanded(
+                child: _showQuiz && quiz != null
+                    ? _QuizView(
+                  quiz: quiz,
+                  lang: lang,
+                  totalSteps: slides.length + 1,
+                  selected: _selected,
+                  answered: _answered,
+                  onSelect: (i) => setState(() => _selected = i),
+                  onCheck: () => setState(() => _answered = true),
+                  onBack: _back,
+                  onFinish: _finish,
+                  onRetry: _retry,
+                  onLater: () => Navigator.pop(context),
+                )
+                    : slides.isEmpty
+                    ? const SizedBox.shrink()
+                    : _SlideView(
+                  slide: slides[_index],
+                  lang: lang,
+                  index: _index,
+                  // Тест нь сүүлийн алхам болж тоологдоно
+                  total: slides.length + (quiz != null ? 1 : 0),
+                  onBack: _back,
+                  onNext: () => _next(slides.length, quiz != null),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

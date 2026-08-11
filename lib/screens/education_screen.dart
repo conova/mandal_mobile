@@ -129,13 +129,13 @@ class _EducationHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: CircleBackButton(),
-              ),
               // Гарчиг зургийн зүүн талд — доод ирмэгээрээ зэрэгцэнэ
               Stack(
                 children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleBackButton(),
+                  ),
                   Align(
                     alignment: Alignment.bottomLeft,
                       child: Column(
