@@ -17,8 +17,12 @@ class AccruedInterestDescBottomSheet extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final mediaQuery = MediaQuery.of(context);
 
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: mediaQuery.size.height * 0.80,
+      ),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
           color: extendedColors.bgBase,
@@ -30,67 +34,78 @@ class AccruedInterestDescBottomSheet extends StatelessWidget {
             )
           ]
       ),
-      // Жижиг дэлгэц/keyboard үед агуулга багтахгүй бол scroll болно
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: extendedColors.neutral300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: extendedColors.neutral300,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
               l10n.accruedInterest,
               style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: extendedColors.neutral100
               ),
             ),
-            const SizedBox(height: 32),
-            const _InterestDiagram(),
-            const SizedBox(height: 32),
-            Text(
-              l10n.accruedInterestDescP1,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w200,
-                color: extendedColors.neutral100,
+          ),
+          // Scrollable content
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 32),
+                  const _InterestDiagram(),
+                  const SizedBox(height: 32),
+                  Text(
+                    l10n.accruedInterestDescP1,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w200,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+                  Text(
+                    l10n.accruedInterestDescP2,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w200,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    l10n.accruedInterestDescP3,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w200,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20,),
-            Text(
-              l10n.accruedInterestDescP2,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w200,
-                color: extendedColors.neutral100,
-              ),
+          ),
+          // Separate button at the bottom
+          const SizedBox(height: 20),
+          Center(
+            child: CustomButton(
+              label: l10n.returnBack,
+              onPressed: () => Navigator.pop(context),
+              variant: buttonVariant ?? CustomButtonVariant.tertiary,
             ),
-            const SizedBox(height: 20),
-            Text(
-              l10n.accruedInterestDescP3,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w200,
-                color: extendedColors.neutral100,
-              ),
-            ),
-            const SizedBox(height: 36),
-            Center(
-              child: CustomButton(
-                label: l10n.returnBack,
-                onPressed: () => Navigator.pop(context),
-                variant: buttonVariant ?? CustomButtonVariant.tertiary,
-              ),
-            ),
-            const SizedBox(height: 26),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+        ],
       ),
     );
   }

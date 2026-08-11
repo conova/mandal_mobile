@@ -322,21 +322,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 'checked',
                 size: 10,
                 color: (_unreadCount > 0)
-                  ?extendedColors.neutral200
-                  :extendedColors.neutral100,
+                  ?extendedColors.neutral100
+                  :extendedColors.neutral200,
               ),
               label: Text(
                 l10n.markAllAsRead,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: (_unreadCount > 0)
-                    ?extendedColors.neutral200
-                    :extendedColors.neutral100,
+                    ?extendedColors.neutral100
+                    :extendedColors.neutral200,
                 ),
               ),
               style: TextButton.styleFrom(
                 backgroundColor: (_unreadCount > 0)
-                  ?extendedColors.bgTertiary
-                  :extendedColors.bgSecondary,
+                  ?extendedColors.bgSecondary
+                  :extendedColors.bgTertiary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),

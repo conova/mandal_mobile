@@ -96,12 +96,22 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
   }
 
   void _nextMonth() {
+    final now = DateTime.now();
+    if (_displayMonth.year > now.year || (_displayMonth.year == now.year && _displayMonth.month >= now.month)) {
+      return;
+    }
     setState(() {
       _displayMonth = DateTime(_displayMonth.year, _displayMonth.month + 1);
     });
   }
 
   void _selectDay(DateTime day) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    if (day.isAfter(today)) {
+      day = today;
+    }
+
     setState(() {
       _startDateError = false;
       _endDateError = false;
@@ -192,10 +202,16 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
   // that month) or the end date (last day of that month), depending on
   // which field is currently active.
   void _applyYearMonthSelection(int year, int month) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
 
     DateTime day = _selectingStart
         ? DateTime(year, month, 1) // 1st day of the month
         : DateTime(year, month + 1, 0); //last day of the month
+
+    if (day.isAfter(today)) {
+      day = today;
+    }
 
     if (_selectingStart && _endDate == null) {
       _startDate = day;
@@ -306,6 +322,16 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
           candidate.month == month &&
           candidate.day == day) {
         date = candidate;
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        if (date.isAfter(today)) {
+          date = today;
+          if (isStart) {
+            _startController.text = _formatDate(date);
+          } else {
+            _endController.text = _formatDate(date);
+          }
+        }
       }
     }
 
@@ -490,6 +516,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
       ExtendedColors extendedColors,
       ) {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     final daysInMonth = DateTime(_displayMonth.year, _displayMonth.month + 1, 0).day;
     final firstWeekday = DateTime(_displayMonth.year, _displayMonth.month, 1).weekday;
     // Monday = 1 in Dart, so offset is firstWeekday - 1
@@ -500,6 +527,8 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
         _endDate != null &&
         !_startDateError &&
         !_endDateError;
+
+    final bool isCurrentMonth = _displayMonth.year == now.year && _displayMonth.month == now.month;
 
     return Column(
       children: [
@@ -551,18 +580,18 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
             ),
             if (!_showMonthYearPicker)
               GestureDetector(
-                onTap: _nextMonth,
+                onTap: isCurrentMonth ? null : _nextMonth,
                 child: Container(
                   width: 56,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
+                    color: isCurrentMonth ? extendedColors.bgTertiary : extendedColors.bgSecondary,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: CustomSvgIcon('chevron-right',
-                        color: extendedColors.neutral100),
+                        color: isCurrentMonth ? extendedColors.neutral300 : extendedColors.neutral100),
                   ),
                 ),
               )
@@ -698,6 +727,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                       final isToday = date.year == now.year &&
                           date.month == now.month &&
                           date.day == now.day;
+                      final isFuture = date.isAfter(today);
                       final isStartSelected = _startDate != null &&
                           date.year == _startDate!.year &&
                           date.month == _startDate!.month &&
@@ -712,7 +742,7 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                           date.isBefore(_endDate!.add(const Duration(days: 1)));
 
                       return GestureDetector(
-                        onTap: () => _selectDay(date),
+                        onTap: isFuture ? null : () => _selectDay(date),
                         child: Container(
                           margin: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
@@ -730,7 +760,9 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                                 Text(
                                   '$dayNum',
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: (isStartSelected || isEndSelected)
+                                    color: isFuture
+                                        ? extendedColors.neutral400
+                                        : (isStartSelected || isEndSelected)
                                         ? Colors.white
                                         : isToday
                                         ? extendedColors.primaryMain
@@ -836,7 +868,8 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
       ExtendedColors extendedColors,
       double height,
       ) {
-    final currentYear = DateTime.now().year;
+    final now = DateTime.now();
+    final currentYear = now.year;
     final years = List.generate((currentYear - 1990) + 1, (index) => currentYear - index);
 
     return SizedBox(
@@ -885,13 +918,18 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
               itemBuilder: (context, index) {
                 final month = index + 1;
                 final isSelected = month == _displayMonth.month;
+                final isFutureMonth = _displayMonth.year > now.year ||
+                    (_displayMonth.year == now.year && month > now.month);
+
                 return InkWell(
-                  onTap: () => _selectMonthOption(month),
+                  onTap: isFutureMonth ? null : () => _selectMonthOption(month),
                   child: Center(
                     child: Text(
                       _monthAbbreviations[index],
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: isSelected ? extendedColors.primaryMain : extendedColors.neutral100,
+                        color: isFutureMonth
+                            ? extendedColors.neutral400
+                            : isSelected ? extendedColors.primaryMain : extendedColors.neutral100,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
