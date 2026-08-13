@@ -10,7 +10,6 @@ import '../services/auth_service.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../widgets/empty_state.dart';
-import '../widgets/stock_price_row.dart';
 import '../widgets/custom_button.dart';
 
 /// Хувьцааны жагсаалтын дэлгэц:
@@ -806,24 +805,22 @@ class _StockScreenState extends State<StockScreen> {
         ),
       ),
       SliverPadding(
-        padding: const EdgeInsets.only(bottom: 100),
-        sliver: SliverList.builder(
-          itemCount: _searchResults.length,
-          itemBuilder: (context, i) {
-            final row = _searchResults[i];
-            final pct = row.priceChange;
-            return StockPriceRow(
-              symbol: row.symbol,
-              name: row.name,
-              price: row.closePrice == null
-                  ? '-'
-                  : formatStockAmount(row.closePrice, decimals: 0),
-              change:
-                  pct != null ? '${pct.abs().toStringAsFixed(2)}%' : '-',
-              isGrowing: pct == null ? null : (pct > 0 ? true : (pct < 0 ? false : null)),
-              onTap: () => _openDetail(row),
-            );
-          },
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+        sliver: SliverGrid(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.95,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (context, i) => _buildStockTile(
+              _searchResults[i],
+              theme,
+              extendedColors,
+            ),
+            childCount: _searchResults.length,
+          ),
         ),
       ),
     ];
