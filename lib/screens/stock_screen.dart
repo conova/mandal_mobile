@@ -722,7 +722,7 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ],
             ),
-            Spacer(flex: pll2),
+            Spacer(flex: 2),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
