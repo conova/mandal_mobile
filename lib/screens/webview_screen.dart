@@ -64,6 +64,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
             const {};
     final url = args['url'] as String?;
     final callbackPrefix = args['callbackPrefix'] as String?;
+    // exitPrefix — энэ prefix-тэй URL руу redirect болоход webview-г
+    // үр дүнгүй (null) хаана. Төлбөрийн хуудас return URL-даа
+    // mandalcapital.mn-ийг заасан үед сайтыг webview дотор харуулахгүй
+    // байх зориулалттай.
+    final exitPrefix = args['exitPrefix'] as String?;
     final homeRoute = args['homeRoute'] as String?;
     final homeUrlScheme =
         (args['homeUrlScheme'] as String?) ?? 'mandalapp://home';
@@ -152,6 +157,15 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 callbackPrefix.isNotEmpty &&
                 req.url.startsWith(callbackPrefix)) {
               Navigator.of(context).pop(req.url);
+              return NavigationDecision.prevent;
+            }
+            // (3) Exit URL — урсгал дууссаныг илтгэх боловч үр дүн нь
+            // тодорхойгүй redirect (жнь: сайтын нүүр хуудас) → webview-г
+            // хаана, гэхдээ амжилттай гэж тооцохгүй
+            if (exitPrefix != null &&
+                exitPrefix.isNotEmpty &&
+                req.url.startsWith(exitPrefix)) {
+              Navigator.of(context).pop();
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;

@@ -90,7 +90,13 @@
       "Bash(open ios/Runner.xcworkspace)",
       "Bash(plutil -lint ios/Runner/Info.plist)",
       "Bash(kill 99244)",
-      "Bash(pkill -f \"flutter_tools.snapshot run --release -d 00008130\")"
+      "Bash(pkill -f \"flutter_tools.snapshot run --release -d 00008130\")",
+      "Bash(node make_act.js)",
+      "Bash(python3 \"/Users/altanshagai/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/8bba7dfe-cadd-4800-bb85-1f19de92a05f/24a7b45b-bd3d-4fd4-beff-2f4d276b80c4/skills/docx/scripts/office/soffice.py\" --headless --convert-to pdf /Users/altanshagai/Downloads/MCM_Mobile_Geree_Dugnesen_Akt.docx --outdir .)",
+      "Bash(pdftoppm -jpeg -r 80 MCM_Mobile_Geree_Dugnesen_Akt.pdf page)",
+      "Bash(soffice --headless --convert-to pdf /Users/altanshagai/Downloads/MCM_Mobile_Geree_Dugnesen_Akt.docx --outdir .)",
+      "Bash(rm -rf outchk)",
+      "Bash(unzip -q /Users/altanshagai/Downloads/MCM_Mobile_Geree_Dugnesen_Akt.docx -d outchk)"
     ]
   }
 }

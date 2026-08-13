@@ -145,6 +145,21 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ipo => 'IPO';
 
   @override
+  String get ipoSubtitle => 'Олон нийтэд анх удаа зарагдаж буй хувьцаа';
+
+  @override
+  String get subscribe => 'Захиалах';
+
+  @override
+  String get unitStockPrice => '1 хувьцааны үнэ';
+
+  @override
+  String get topGainer => 'ТОП өсөлт';
+
+  @override
+  String get topLoser => 'ТОП Бууралт';
+
+  @override
   String get gainers => 'Өсөлттэй';
 
   @override

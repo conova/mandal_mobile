@@ -45,6 +45,9 @@ Future<String?> openPaymentWebview(
       'url': url,
       'title': title,
       'callbackPrefix': 'mandalapp://',
+      // Төлбөрийн хуудас mandalcapital.mn нүүр рүү redirect хийвэл
+      // сайтыг webview дотор нээхийн оронд webview-г хаана
+      'exitPrefix': 'https://mandalcapital.mn',
       'homeRoute': homeRoute,
     },
   );

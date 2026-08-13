@@ -352,6 +352,36 @@ abstract class AppLocalizations {
   /// **'IPO'**
   String get ipo;
 
+  /// No description provided for @ipoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shares offered to the public for the first time'**
+  String get ipoSubtitle;
+
+  /// No description provided for @subscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe'**
+  String get subscribe;
+
+  /// No description provided for @unitStockPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per share'**
+  String get unitStockPrice;
+
+  /// No description provided for @topGainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Top gainer'**
+  String get topGainer;
+
+  /// No description provided for @topLoser.
+  ///
+  /// In en, this message translates to:
+  /// **'Top loser'**
+  String get topLoser;
+
   /// No description provided for @gainers.
   ///
   /// In en, this message translates to:

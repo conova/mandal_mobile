@@ -72,6 +72,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- mandalapp:// deep link — төлбөрийн систем/банкны app-аас буцахад
+	     app-ийг нээнэ (жнь: mandalapp://payment?result=success) -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>mn.mandal.capital.markets</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mandalapp</string>
+			</array>
+		</dict>
+	</array>
 	<!-- HTTP (cleartext) зөвшөөрөх — NEGDI төлбөрийн линк http:// байдаг -->
 	<key>NSAppTransportSecurity</key>
 	<dict>

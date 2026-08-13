@@ -29,6 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
   double _scrollOpacity = 0.0;
   bool _checkedDanReturn = false;
 
+  /// Pull-to-refresh тоолуур — нэмэгдэх бүрд бүх хэсгийн Key өөрчлөгдөж
+  /// компонентууд дахин үүсэн initState-ийн API-гаа шинээр дуудна
+  int _refreshTick = 0;
+
   @override
   void initState() {
     super.initState();
@@ -200,11 +204,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      appBar: HomeHeader(showSummaryOpacity: _scrollOpacity),
+      // Key — refresh бүрд header дахин үүсэж нийт хөрөнгө, badge-ээ татна
+      appBar: HomeHeader(
+        key: ValueKey('home_header_$_refreshTick'),
+        showSummaryOpacity: _scrollOpacity,
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await context.read<AuthService>().refreshUserInfo();
-          setState(() { });
+          // userInfo (KYC banner) + бүх хэсгийн API-г шинээр дуудна
+          try {
+            await context.read<AuthService>().refreshUserInfo();
+          } catch (_) {
+            // userInfo амжилтгүй ч бусад хэсгүүдээ шинэчилнэ
+          }
+          if (mounted) setState(() => _refreshTick++);
         },
         child: SingleChildScrollView(
           controller: _scrollController,
@@ -212,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
             child: Column(
+              key: ValueKey('home_body_$_refreshTick'),
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (showRegistrationBanner)

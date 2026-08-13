@@ -147,6 +147,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get ipo => 'IPO';
 
   @override
+  String get ipoSubtitle => 'Shares offered to the public for the first time';
+
+  @override
+  String get subscribe => 'Subscribe';
+
+  @override
+  String get unitStockPrice => 'Price per share';
+
+  @override
+  String get topGainer => 'Top gainer';
+
+  @override
+  String get topLoser => 'Top loser';
+
+  @override
   String get gainers => 'Gainers';
 
   @override
