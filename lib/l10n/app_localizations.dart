@@ -3207,6 +3207,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DAYS LEFT'**
   String get daysLeft;
+
+  /// No description provided for @totalPriceBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Total price breakdown'**
+  String get totalPriceBreakdown;
+
+  /// No description provided for @unitPriceExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price explanation'**
+  String get unitPriceExplanation;
+
+  /// No description provided for @unitPriceFormula.
+  ///
+  /// In en, this message translates to:
+  /// **'Piece price + Accrued price = Unit price'**
+  String get unitPriceFormula;
+
+  /// No description provided for @piecePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Piece price'**
+  String get piecePrice;
+
+  /// No description provided for @accruedInterest.
+  ///
+  /// In en, this message translates to:
+  /// **'Accrued interest'**
+  String get accruedInterest;
+
+  /// No description provided for @returnBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get returnBack;
+
+  /// No description provided for @accruedInterestDescP1.
+  ///
+  /// In en, this message translates to:
+  /// **'Interest on bonds accrues daily, but the payout schedule varies—such as monthly, quarterly, or semi-annually.'**
+  String get accruedInterestDescP1;
+
+  /// No description provided for @accruedInterestDescP2.
+  ///
+  /// In en, this message translates to:
+  /// **'For example, suppose the bond you are looking to buy pays interest quarterly. However, what if there is only one month remaining until the next coupon payment date?'**
+  String get accruedInterestDescP2;
+
+  /// No description provided for @accruedInterestDescP3.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot receive a full three months\' worth of interest when you have only held the bond for one month. Therefore, you must pay the seller the accrued interest for the two months during which you did not own the bond. Then, on the next coupon payment date—one month later—you will be entitled to receive the full three-month interest payment.'**
+  String get accruedInterestDescP3;
+
+  /// No description provided for @prevInterestPaidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous interest\n payment date'**
+  String get prevInterestPaidDate;
+
+  /// No description provided for @nextInterestPayDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Next interest\n payment date'**
+  String get nextInterestPayDueDate;
+
+  /// No description provided for @todayBondBuyDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\n(Bond buy date)'**
+  String get todayBondBuyDate;
+
+  /// No description provided for @accruedInterestToSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'Accrued interest\n paid to seller'**
+  String get accruedInterestToSeller;
+
+  /// No description provided for @yourInterestToReceive.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR INTEREST TO RECEIVE'**
+  String get yourInterestToReceive;
 }
 
 class _AppLocalizationsDelegate

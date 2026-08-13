@@ -129,12 +129,40 @@ class _EducationHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: CircleBackButton(),
-              ),
               // Гарчиг зургийн зүүн талд — доод ирмэгээрээ зэрэгцэнэ
-              Row(
+              Stack(
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleBackButton(),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const SizedBox(height: 110,),
+                          Text(
+                            l10n.educationTitle,
+                            style: theme.textTheme.headlineLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: extendedColors.neutral100,
+                            ),
+                          ),
+                        ]
+                      )
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                      child: Image.asset(
+                        'assets/images/edu_intro.png',
+                        height: 149,
+                        errorBuilder: (_, _, _) => const SizedBox(height: 80),
+                      ),
+                  )
+                ],
+              ),
+              /*Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
@@ -154,13 +182,13 @@ class _EducationHeader extends StatelessWidget {
                     errorBuilder: (_, _, _) => const SizedBox(height: 80),
                   ),
                 ],
-              ),
+              ),*/
               const SizedBox(height: 8),
               Text(
                 l10n.educationSubtitle,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: AppTextStyles.light,
-                  color: extendedColors.neutral200,
+                  color: extendedColors.neutral100,
                 ),
               ),
             ],
@@ -229,8 +257,8 @@ class _CourseTile extends StatelessWidget {
                   // эхлээгүй бол саарал
                   Row(
                     children: [
-                      Icon(
-                        Icons.check_circle,
+                      CustomSvgIcon(
+                        'check_circle',
                         size: 16,
                         color: done > 0
                             ? extendedColors.primaryMain
@@ -243,7 +271,7 @@ class _CourseTile extends StatelessWidget {
                           fontWeight: AppTextStyles.regular,
                           color: done > 0
                               ? extendedColors.neutral100
-                              : extendedColors.neutral300,
+                              : extendedColors.neutral200,
                         ),
                       ),
                     ],
@@ -251,7 +279,7 @@ class _CourseTile extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: extendedColors.neutral300),
+            CustomSvgIcon('chevron-right', color: extendedColors.neutral300),
           ],
         ),
       ),
@@ -305,7 +333,7 @@ class _GuideSectionView extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                border: Border.all(color: extendedColors.neutral500),
+                color: extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
@@ -390,8 +418,8 @@ class GuideItemRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
+            CustomSvgIcon(
+              'chevron-right',
               size: 20,
               color: extendedColors.neutral300,
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/circle_back_button.dart';
 import '../../widgets/custom_svg_icon.dart';
+import '../components/bond/bond_payment_details_bottom_sheet.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_payment_details.dart';
 import '../../l10n/app_localizations.dart';
@@ -105,6 +106,17 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
               totalReturn: '190,000₮',
               onDetailsPressed: () {
                 // Show more details
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const BondPaymentDetailsBottomSheet(
+                    quantity: 100,
+                    piecePrice: 100000,
+                    accruedInterest: 2000,
+                    commissionRate: 0.001,
+                  ),
+                );
               },
             ),
             const SizedBox(height: 120),

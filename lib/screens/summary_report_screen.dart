@@ -473,16 +473,14 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          '(${l10n.selectedPeriod})',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: extendedColors.neutral100,
-                            fontWeight: FontWeight.w300,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        '(${l10n.selectedPeriod})',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral100,
+                          fontWeight: FontWeight.w300,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
