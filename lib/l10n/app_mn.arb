@@ -352,6 +352,8 @@
     "securitiesAgreement": "Үнэт цаасны гэрээ",
     "securitiesAgreementDesc": "Гэрээтэй уншиж танилцах",
     "document": "Бичиг баримт",
+    "downloadPdf": "PDF татах",
+    "chooseLanguage": "Хэл сонгоно уу",
     "currencyLabel": "Валют",
     "termsOfService": "Үйлчилгээний нөхцөл",
     "securitiesStatement": "Үнэт цаасны тодорхойлолт",

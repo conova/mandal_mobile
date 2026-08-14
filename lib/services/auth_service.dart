@@ -1348,6 +1348,40 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Үнэт цаасны тодорхойлолт — HTML хэлбэрээр (?lang=mn|en).
+  /// Хариу нь шууд HTML эсвэл {code, data} JSON байж болно.
+  Future<String> getDefinitionHtml({String lang = 'mn'}) async {
+    try {
+      final response = await _authedDio.get(
+        ApiConfig.userDocsDefinition,
+        queryParameters: {'lang': lang},
+        options: Options(responseType: ResponseType.plain),
+      );
+      final raw = response.data?.toString().trim() ?? '';
+      if (raw.isEmpty) {
+        throw Exception('Тодорхойлолт хоосон ирлээ');
+      }
+      // JSON envelope-той ирвэл data талбараас HTML-ийг авна
+      if (raw.startsWith('{')) {
+        try {
+          final body = jsonDecode(raw) as Map<String, dynamic>;
+          if (body['code']?.toString() == '0') {
+            final html = body['data']?.toString() ?? '';
+            if (html.isNotEmpty) return html;
+          }
+          throw Exception(
+            apiMessage(body) ?? 'Тодорхойлолт авахад алдаа гарлаа',
+          );
+        } on FormatException {
+          // JSON биш — raw HTML гэж үзнэ
+        }
+      }
+      return raw;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Өсөлттэй хувьцаанууд
   Future<List<Map<String, dynamic>>> getGainers() =>
       _fetchStockList(ApiConfig.stocksGainers);

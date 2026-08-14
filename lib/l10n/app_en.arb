@@ -365,6 +365,8 @@
     "securitiesAgreement": "Securities agreement",
     "securitiesAgreementDesc": "Read and agree to terms",
     "document": "Documents",
+    "downloadPdf": "Download PDF",
+    "chooseLanguage": "Choose language",
     "currencyLabel": "Currency",
     "termsOfService": "Terms of service",
     "securitiesStatement": "Securities statement",

@@ -73,6 +73,7 @@ import 'screens/pep_question_screen.dart';
 import 'screens/dan_verification_screen.dart';
 import 'screens/pep_definition_screen.dart';
 import 'screens/securities_agreement_screen.dart';
+import 'screens/securities_definition_screen.dart';
 import 'screens/document_verification_screen.dart';
 import 'screens/camera_overlay_screen.dart';
 import 'screens/child_account/child_account_document_screen.dart';
@@ -564,6 +565,8 @@ class MyApp extends StatelessWidget {
               '/income_success': (context) => const IncomeSuccessScreen(),
               '/withdraw_method': (context) => const WithdrawMethodScreen(),
               '/withdraw_account': (context) => const WithdrawAccountScreen(),
+              '/securities_definition': (context) =>
+                  const SecuritiesDefinitionScreen(),
               '/withdraw_amount': (context) => const WithdrawAmountScreen(),
               '/withdraw_success': (context) => const WithdrawSuccessScreen(),
               '/transaction_history': (context) =>

@@ -2218,6 +2218,18 @@ abstract class AppLocalizations {
   /// **'Documents'**
   String get document;
 
+  /// No description provided for @downloadPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Download PDF'**
+  String get downloadPdf;
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose language'**
+  String get chooseLanguage;
+
   /// No description provided for @currencyLabel.
   ///
   /// In en, this message translates to:

@@ -1122,6 +1122,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get document => 'Бичиг баримт';
 
   @override
+  String get downloadPdf => 'PDF татах';
+
+  @override
+  String get chooseLanguage => 'Хэл сонгоно уу';
+
+  @override
   String get currencyLabel => 'Валют';
 
   @override

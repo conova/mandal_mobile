@@ -1125,6 +1125,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get document => 'Documents';
 
   @override
+  String get downloadPdf => 'Download PDF';
+
+  @override
+  String get chooseLanguage => 'Choose language';
+
+  @override
   String get currencyLabel => 'Currency';
 
   @override

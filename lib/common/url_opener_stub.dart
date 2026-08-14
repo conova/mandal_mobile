@@ -3,3 +3,6 @@
 void openUrlInNewTab(String url) {
   // No-op on mobile; webview_screen.dart энэ функцийг зөвхөн kIsWeb үед дуудна.
 }
+
+/// Mobile/desktop stub — зөвхөн web дээр ажиллана.
+void openHtmlInNewTab(String html) {}

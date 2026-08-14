@@ -68,6 +68,9 @@ class ApiConfig {
   ///   Response data row: { TXNACNTNO, TXNACNTNAME, TXNBANKNO, BANKNAME,
   ///   BANKNAME2, REGDATE, ISPRIMARY ("1" | "0") }
   static const String userAccounts = '/bdc/api/user/acnts';
+
+  /// Үнэт цаасны тодорхойлолт (HTML) — ?lang=mn|en
+  static const String userDocsDefinition = '/bdc/api/user/docs/definition';
   static const String devices = '/bdc/api/security/devices';
   static const String customerCreate = '/bdc/api/customer/create.php';
   static const String customerUpdate = '/bdc/api/customer/update.php';

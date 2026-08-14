@@ -96,7 +96,10 @@
       "Bash(pdftoppm -jpeg -r 80 MCM_Mobile_Geree_Dugnesen_Akt.pdf page)",
       "Bash(soffice --headless --convert-to pdf /Users/altanshagai/Downloads/MCM_Mobile_Geree_Dugnesen_Akt.docx --outdir .)",
       "Bash(rm -rf outchk)",
-      "Bash(unzip -q /Users/altanshagai/Downloads/MCM_Mobile_Geree_Dugnesen_Akt.docx -d outchk)"
+      "Bash(unzip -q /Users/altanshagai/Downloads/MCM_Mobile_Geree_Dugnesen_Akt.docx -d outchk)",
+      "Bash(adb logcat *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(~/Library/Android/sdk/platform-tools/adb logcat *)"
     ]
   }
 }
