@@ -2218,6 +2218,144 @@ abstract class AppLocalizations {
   /// **'Documents'**
   String get document;
 
+  /// No description provided for @depositSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select account to deposit'**
+  String get depositSelectTitle;
+
+  /// No description provided for @depositSelectSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the account depending on whether you are buying stocks or bonds'**
+  String get depositSelectSubtitle;
+
+  /// No description provided for @mntAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'MNT accounts'**
+  String get mntAccounts;
+
+  /// No description provided for @usdAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'USD accounts'**
+  String get usdAccounts;
+
+  /// No description provided for @availableBalanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Available balance'**
+  String get availableBalanceLabel;
+
+  /// No description provided for @bondDepositTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit to bond account'**
+  String get bondDepositTitle;
+
+  /// No description provided for @depositInfoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please make the transfer using the details below.'**
+  String get depositInfoSubtitle;
+
+  /// No description provided for @receiverBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving bank'**
+  String get receiverBank;
+
+  /// No description provided for @ibanAccountNo.
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN account number'**
+  String get ibanAccountNo;
+
+  /// No description provided for @transferAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer amount'**
+  String get transferAmount;
+
+  /// No description provided for @transactionMemo.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction memo'**
+  String get transactionMemo;
+
+  /// No description provided for @copiedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copiedLabel;
+
+  /// No description provided for @definitionRequestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the language and specify what the statement is for'**
+  String get definitionRequestSubtitle;
+
+  /// No description provided for @purposeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What is it for'**
+  String get purposeLabel;
+
+  /// No description provided for @purposeExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Embassy of Japan'**
+  String get purposeExample;
+
+  /// No description provided for @getDefinition.
+  ///
+  /// In en, this message translates to:
+  /// **'Get statement'**
+  String get getDefinition;
+
+  /// No description provided for @definitionReceiveType.
+  ///
+  /// In en, this message translates to:
+  /// **'Statement delivery type'**
+  String get definitionReceiveType;
+
+  /// No description provided for @agreementReceiveType.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement delivery type'**
+  String get agreementReceiveType;
+
+  /// No description provided for @receiveTypeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A 4-digit code will be sent to your chosen phone number or email.'**
+  String get receiveTypeSubtitle;
+
+  /// No description provided for @directDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct download'**
+  String get directDownload;
+
+  /// No description provided for @downloadAsPdfLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Download as PDF'**
+  String get downloadAsPdfLabel;
+
+  /// No description provided for @langMongolian.
+  ///
+  /// In en, this message translates to:
+  /// **'Mongolian'**
+  String get langMongolian;
+
+  /// No description provided for @langEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get langEnglish;
+
   /// No description provided for @downloadPdf.
   ///
   /// In en, this message translates to:

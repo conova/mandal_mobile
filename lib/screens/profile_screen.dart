@@ -132,66 +132,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Үнэт цаасны тодорхойлолт — эхлээд хэлээ сонгуулж, дараа нь
-  /// тодорхойлолтын дэлгэц рүү (HTML → webview, PDF татах) шилжинэ
-  Future<void> _openSecuritiesDefinition(
-    BuildContext context,
-    AppLocalizations l10n,
-  ) async {
-    final theme = Theme.of(context);
-    final extendedColors = theme.extension<ExtendedColors>()!;
-
-    final lang = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: extendedColors.bgBase,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
-              child: Text(
-                l10n.chooseLanguage,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Text('🇲🇳', style: TextStyle(fontSize: 24)),
-              title: Text(
-                'Монгол',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral100,
-                ),
-              ),
-              onTap: () => Navigator.pop(ctx, 'mn'),
-            ),
-            ListTile(
-              leading: const Text('🇬🇧', style: TextStyle(fontSize: 24)),
-              title: Text(
-                'English',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: extendedColors.neutral100,
-                ),
-              ),
-              onTap: () => Navigator.pop(ctx, 'en'),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-
-    if (lang == null || !context.mounted) return;
-    Navigator.pushNamed(
-      context,
-      '/securities_definition',
-      arguments: {'lang': lang},
-    );
-  }
-
   /// passDate-г "2025.10.20" форматад хөрвүүлнэ.
   /// Сервер "2025-10-20", "2025-10-20 14:30:00" гэх мэт форматаар илгээж
   /// болзошгүй тул зөвхөн огнооны хэсгийг авч цэгээр форматлана.
@@ -392,14 +332,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: const CustomSvgIcon('file-check-03', size: 20),
                 title: l10n.securitiesStatement,
                 subtitle: l10n.securitiesStatementSubtitle,
-                onTap: () => _openSecuritiesDefinition(context, l10n),
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  '/document_request',
+                  arguments: {'doc': 'definition'},
+                ),
               ),
               ProfileListItem(
                 icon: const CustomSvgIcon('file-download-02', size: 20),
                 title: l10n.agreementLabel,
-                onTap: () {
-                  // TODO: гэрээний дэлгэц/API холбогдоно
-                },
+                onTap: () => Navigator.pushNamed(context, '/contracts'),
               ),
             ],
 

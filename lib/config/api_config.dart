@@ -71,6 +71,9 @@ class ApiConfig {
 
   /// Үнэт цаасны тодорхойлолт (HTML) — ?lang=mn|en
   static const String userDocsDefinition = '/bdc/api/user/docs/definition';
+
+  /// Бичиг баримт (definition | agreement) — HTML, ?lang=mn|en
+  static String userDocs(String doc) => '/bdc/api/user/docs/$doc';
   static const String devices = '/bdc/api/security/devices';
   static const String customerCreate = '/bdc/api/customer/create.php';
   static const String customerUpdate = '/bdc/api/customer/update.php';

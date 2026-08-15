@@ -1,11 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/widgets/circle_back_button.dart';
-import 'package:mandal_capital/widgets/custom_svg_icon.dart';
+import 'package:provider/provider.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../widgets/circle_back_button.dart';
+import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 
-class IncomeMethodScreen extends StatelessWidget {
+/// Цэнэглэх данс сонгох — Хувьцаа/Бонд (₮) болон Доллар данснууд.
+class IncomeMethodScreen extends StatefulWidget {
   const IncomeMethodScreen({super.key});
+
+  @override
+  State<IncomeMethodScreen> createState() => _IncomeMethodScreenState();
+}
+
+class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
+  /// Боломжит үлдэгдэл — /portfolio/breakdown-ийн mnt/usd мөрөөс.
+  /// TODO: хувьцаа/бондын дансны тусдаа үлдэгдлийн API холбогдмогц салгана
+  double _mntBalance = 0;
+  double _usdBalance = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_fetchBalances);
+  }
+
+  Future<void> _fetchBalances() async {
+    try {
+      final breakdown = await context.read<AuthService>().getAssetBreakdown();
+      if (!mounted) return;
+      double byType(String type) {
+        final row = breakdown.firstWhere(
+          (b) => b['type']?.toString() == type,
+          orElse: () => const {},
+        );
+        return (row['amount'] as num?)?.toDouble() ?? 0;
+      }
+
+      setState(() {
+        _mntBalance = byType('mnt');
+        _usdBalance = byType('usd');
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,101 +62,146 @@ class IncomeMethodScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: CircleBackButton(),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                l10n.incomeMethod,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: CircleBackButton(),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                l10n.incomeMethodDesc,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral200,
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  l10n.depositSelectTitle,
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-            // Tugrik option
-            _buildMethodOption(
-              context: context,
-              theme: theme,
-              extendedColors: extendedColors,
-              icon: 'tugrug-01',
-              iconColor: extendedColors.primaryMain,
-              title: l10n.tugrik,
-              subtitle: l10n.qpay,
-              showRecommend: true,
-              recommendLabel: l10n.recommend,
-              onTap: () => Navigator.pushNamed(
-                context,
-                '/income_amount',
-                arguments: 'mnt',
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  l10n.depositSelectSubtitle,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: extendedColors.neutral200,
+                  ),
+                ),
               ),
-            ),
-            Divider(
-              height: 1,
-              color: extendedColors.neutral500,
-              indent: 24,
-              endIndent: 24,
-            ),
-            // Dollar option
-            _buildMethodOption(
-              context: context,
-              theme: theme,
-              extendedColors: extendedColors,
-              icon: 'currency-dollar',
-              iconColor: extendedColors.neutral100,
-              title: l10n.dollar,
-              subtitle: l10n.qpayAndCard,
-              showRecommend: false,
-              onTap: () => Navigator.pushNamed(
-                context,
-                '/income_amount',
-                arguments: 'usd',
+              const SizedBox(height: 28),
+              // ₮ данснууд
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  l10n.mntAccounts,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                ),
               ),
-            ),
-            Divider(
-              height: 1,
-              color: extendedColors.neutral500,
-              indent: 24,
-              endIndent: 24,
-            ),
-          ],
+              const SizedBox(height: 8),
+              AccountTypeRow(
+                icon: 'tugrug-01',
+                iconBg: extendedColors.primary100,
+                iconColor: extendedColors.primaryMain,
+                title: l10n.stocks,
+                balanceLabel: l10n.availableBalanceLabel,
+                balance: formatStockAmount(_mntBalance, decimals: 0),
+                isLoading: _isLoading,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  '/income_amount',
+                  arguments: 'mnt',
+                ),
+              ),
+              Divider(height: 1, color: extendedColors.neutral500),
+              AccountTypeRow(
+                icon: 'tugrug-01',
+                iconBg: extendedColors.primaryMain,
+                iconColor: Colors.white,
+                title: l10n.bond,
+                balanceLabel: l10n.availableBalanceLabel,
+                balance: formatStockAmount(_mntBalance, decimals: 0),
+                isLoading: _isLoading,
+                onTap: () => Navigator.pushNamed(context, '/deposit_info'),
+              ),
+              Divider(height: 1, color: extendedColors.neutral500),
+              const SizedBox(height: 28),
+              // $ данснууд
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  l10n.usdAccounts,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              AccountTypeRow(
+                icon: 'currency-dollar',
+                iconBg: extendedColors.neutral100,
+                iconColor: extendedColors.bgBase,
+                title: l10n.dollar,
+                balanceLabel: l10n.availableBalanceLabel,
+                balance: formatStockAmount(
+                  _usdBalance,
+                  isForeign: true,
+                  decimals: 0,
+                ),
+                isLoading: _isLoading,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  '/income_amount',
+                  arguments: 'usd',
+                ),
+              ),
+              Divider(height: 1, color: extendedColors.neutral500),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildMethodOption({
-    required BuildContext context,
-    required ThemeData theme,
-    required ExtendedColors extendedColors,
-    required String icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    bool showRecommend = false,
-    String? recommendLabel,
-  }) {
+/// Данс сонгох мөр — icon, гарчиг, "Боломжит үлдэгдэл: X" (teal), chevron.
+/// income_method болон withdraw_method хоёуланд ашиглагдана.
+class AccountTypeRow extends StatelessWidget {
+  final String icon;
+  final Color iconBg;
+  final Color iconColor;
+  final String title;
+  final String balanceLabel;
+  final String balance;
+  final bool isLoading;
+  final VoidCallback onTap;
+
+  const AccountTypeRow({
+    super.key,
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+    required this.title,
+    required this.balanceLabel,
+    required this.balance,
+    required this.onTap,
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -122,12 +213,10 @@ class IncomeMethodScreen extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: iconColor,
+                color: iconBg,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Center(
-                child: CustomSvgIcon(icon, color: Colors.white,)
-              ),
+              child: Center(child: CustomSvgIcon(icon, color: iconColor)),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -141,30 +230,33 @@ class IncomeMethodScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        '$balanceLabel: ',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: extendedColors.neutral200,
+                        ),
+                      ),
+                      if (isLoading)
+                        const SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(strokeWidth: 1.5),
+                        )
+                      else
+                        Text(
+                          balance,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.primaryMain,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
             ),
-            if (showRecommend && recommendLabel != null)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: extendedColors.primary100,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  recommendLabel,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: extendedColors.primaryMain,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
             const SizedBox(width: 8),
             CustomSvgIcon(
               'chevron-right',

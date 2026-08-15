@@ -1350,11 +1350,18 @@ class AuthService with ChangeNotifier {
 
   /// Үнэт цаасны тодорхойлолт — HTML хэлбэрээр (?lang=mn|en).
   /// Хариу нь шууд HTML эсвэл {code, data} JSON байж болно.
-  Future<String> getDefinitionHtml({String lang = 'mn'}) async {
+  Future<String> getDefinitionHtml({
+    String lang = 'mn',
+    String doc = 'definition',
+    String? purpose,
+  }) async {
     try {
       final response = await _authedDio.get(
-        ApiConfig.userDocsDefinition,
-        queryParameters: {'lang': lang},
+        ApiConfig.userDocs(doc),
+        queryParameters: {
+          'lang': lang,
+          if (purpose != null && purpose.isNotEmpty) 'purpose': purpose,
+        },
         options: Options(responseType: ResponseType.plain),
       );
       final raw = response.data?.toString().trim() ?? '';

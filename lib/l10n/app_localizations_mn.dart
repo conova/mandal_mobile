@@ -1122,6 +1122,79 @@ class AppLocalizationsMn extends AppLocalizations {
   String get document => 'Бичиг баримт';
 
   @override
+  String get depositSelectTitle => 'Цэнэглэх данс сонгох';
+
+  @override
+  String get depositSelectSubtitle =>
+      'Та хувьцаа эсвэл бонд алийг нь авахаас хамаарч тохирох дансаа сонгоно уу';
+
+  @override
+  String get mntAccounts => 'Төгрөгийн данс';
+
+  @override
+  String get usdAccounts => 'Долларын данс';
+
+  @override
+  String get availableBalanceLabel => 'Боломжит үлдэгдэл';
+
+  @override
+  String get bondDepositTitle => 'Бондын данс цэнэглэх';
+
+  @override
+  String get depositInfoSubtitle =>
+      'Та доорх мэдээллийн дагуу шилжүүлэг хийнэ үү.';
+
+  @override
+  String get receiverBank => 'Хүлээн авагч банк';
+
+  @override
+  String get ibanAccountNo => 'IBAN дансны дугаар';
+
+  @override
+  String get transferAmount => 'Шилжүүлэх дүн';
+
+  @override
+  String get transactionMemo => 'Гүйлгээний утга';
+
+  @override
+  String get copiedLabel => 'Хуулагдлаа';
+
+  @override
+  String get definitionRequestSubtitle =>
+      'Тодорхойлолт авах хэл болон хаана зориулж байгаагаа бичнэ үү';
+
+  @override
+  String get purposeLabel => 'Хаана зориулж байгаа вэ';
+
+  @override
+  String get purposeExample => 'Жишээ нь: Embassy of Japan';
+
+  @override
+  String get getDefinition => 'Тодорхойлолт авах';
+
+  @override
+  String get definitionReceiveType => 'Тодорхойлолт авах төрөл';
+
+  @override
+  String get agreementReceiveType => 'Гэрээ авах төрөл';
+
+  @override
+  String get receiveTypeSubtitle =>
+      '4 оронтой кодыг таны сонгосон утасны дугаар эсвэл и-мэйл рүү илгээх болно.';
+
+  @override
+  String get directDownload => 'Шууд татах';
+
+  @override
+  String get downloadAsPdfLabel => 'PDF-р татах';
+
+  @override
+  String get langMongolian => 'Монгол';
+
+  @override
+  String get langEnglish => 'Англи';
+
+  @override
   String get downloadPdf => 'PDF татах';
 
   @override

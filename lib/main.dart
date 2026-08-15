@@ -25,6 +25,7 @@ import 'screens/stock_confirmation_screen.dart';
 import 'screens/currency_detail_screen.dart';
 import 'screens/bond_portfolio_screen.dart';
 import 'screens/stock_portfolio_screen.dart';
+import 'screens/deposit_info_screen.dart';
 import 'screens/income_method_screen.dart';
 import 'screens/income_amount_screen.dart';
 import 'screens/income_success_screen.dart';
@@ -73,6 +74,8 @@ import 'screens/pep_question_screen.dart';
 import 'screens/dan_verification_screen.dart';
 import 'screens/pep_definition_screen.dart';
 import 'screens/securities_agreement_screen.dart';
+import 'screens/contracts_screen.dart';
+import 'screens/document_request_screen.dart';
 import 'screens/securities_definition_screen.dart';
 import 'screens/document_verification_screen.dart';
 import 'screens/camera_overlay_screen.dart';
@@ -561,12 +564,16 @@ class MyApp extends StatelessWidget {
               '/bond_portfolio': (context) => const BondPortfolioScreen(),
               '/stock_portfolio': (context) => const StockPortfolioScreen(),
               '/income_method': (context) => const IncomeMethodScreen(),
+              '/deposit_info': (context) => const DepositInfoScreen(),
               '/income_amount': (context) => const IncomeAmountScreen(),
               '/income_success': (context) => const IncomeSuccessScreen(),
               '/withdraw_method': (context) => const WithdrawMethodScreen(),
               '/withdraw_account': (context) => const WithdrawAccountScreen(),
               '/securities_definition': (context) =>
                   const SecuritiesDefinitionScreen(),
+              '/document_request': (context) =>
+                  const DocumentRequestScreen(),
+              '/contracts': (context) => const ContractsScreen(),
               '/withdraw_amount': (context) => const WithdrawAmountScreen(),
               '/withdraw_success': (context) => const WithdrawSuccessScreen(),
               '/transaction_history': (context) =>

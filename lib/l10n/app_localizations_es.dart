@@ -1125,6 +1125,79 @@ class AppLocalizationsEs extends AppLocalizations {
   String get document => 'Documents';
 
   @override
+  String get depositSelectTitle => 'Select account to deposit';
+
+  @override
+  String get depositSelectSubtitle =>
+      'Choose the account depending on whether you are buying stocks or bonds';
+
+  @override
+  String get mntAccounts => 'MNT accounts';
+
+  @override
+  String get usdAccounts => 'USD accounts';
+
+  @override
+  String get availableBalanceLabel => 'Available balance';
+
+  @override
+  String get bondDepositTitle => 'Deposit to bond account';
+
+  @override
+  String get depositInfoSubtitle =>
+      'Please make the transfer using the details below.';
+
+  @override
+  String get receiverBank => 'Receiving bank';
+
+  @override
+  String get ibanAccountNo => 'IBAN account number';
+
+  @override
+  String get transferAmount => 'Transfer amount';
+
+  @override
+  String get transactionMemo => 'Transaction memo';
+
+  @override
+  String get copiedLabel => 'Copied';
+
+  @override
+  String get definitionRequestSubtitle =>
+      'Choose the language and specify what the statement is for';
+
+  @override
+  String get purposeLabel => 'What is it for';
+
+  @override
+  String get purposeExample => 'e.g. Embassy of Japan';
+
+  @override
+  String get getDefinition => 'Get statement';
+
+  @override
+  String get definitionReceiveType => 'Statement delivery type';
+
+  @override
+  String get agreementReceiveType => 'Agreement delivery type';
+
+  @override
+  String get receiveTypeSubtitle =>
+      'A 4-digit code will be sent to your chosen phone number or email.';
+
+  @override
+  String get directDownload => 'Direct download';
+
+  @override
+  String get downloadAsPdfLabel => 'Download as PDF';
+
+  @override
+  String get langMongolian => 'Mongolian';
+
+  @override
+  String get langEnglish => 'English';
+
+  @override
   String get downloadPdf => 'Download PDF';
 
   @override

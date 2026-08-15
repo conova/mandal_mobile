@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import 'income_method_screen.dart' show AccountTypeRow;
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 
@@ -64,7 +65,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
     }
   }
 
-  void _onOptionTap({required bool isMnt}) {
+  void _onOptionTap({required bool isMnt, String account = 'stock'}) {
     if (_isLoading) return;
     final balance = isMnt ? _mntBalance : _usdBalance;
     if (balance <= 0) {
@@ -83,6 +84,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
       '/withdraw_amount',
       arguments: {
         'currency': isMnt ? 'mnt' : 'usd',
+        'account': account,
         'balance': balance,
         'rate': isMnt ? 1.0 : _usdRate,
       },
@@ -112,7 +114,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                l10n.expense,
+                l10n.makeWithdraw,
                 style: theme.textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: extendedColors.neutral100,
@@ -129,131 +131,73 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            // Tugrik option
-            _buildMethodOption(
-              theme: theme,
-              extendedColors: extendedColors,
+            const SizedBox(height: 28),
+            // ₮ данснууд — Хувьцаа, Бонд
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                l10n.mntAccounts,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            AccountTypeRow(
               icon: 'tugrug-01',
-              title: l10n.tugrik,
-              balanceLabel: formatStockAmount(_mntBalance, decimals: 2),
-              hasBalance: _mntBalance > 0,
-              activeIconColor: extendedColors.primaryMain,
-              onTap: () => _onOptionTap(isMnt: true),
+              iconBg: extendedColors.primary100,
+              iconColor: extendedColors.primaryMain,
+              title: l10n.stocks,
+              balanceLabel: l10n.availableBalanceLabel,
+              balance: formatStockAmount(_mntBalance, decimals: 0),
+              isLoading: _isLoading,
+              onTap: () => _onOptionTap(isMnt: true, account: 'stock'),
             ),
-            Divider(
-              height: 1,
-              color: extendedColors.neutral500,
-              indent: 24,
-              endIndent: 24,
+            Divider(height: 1, color: extendedColors.neutral500),
+            AccountTypeRow(
+              icon: 'tugrug-01',
+              iconBg: extendedColors.primaryMain,
+              iconColor: Colors.white,
+              title: l10n.bond,
+              balanceLabel: l10n.availableBalanceLabel,
+              balance: formatStockAmount(_mntBalance, decimals: 0),
+              isLoading: _isLoading,
+              onTap: () => _onOptionTap(isMnt: true, account: 'bond'),
             ),
-            // Dollar option
-            _buildMethodOption(
-              theme: theme,
-              extendedColors: extendedColors,
+            Divider(height: 1, color: extendedColors.neutral500),
+            const SizedBox(height: 28),
+            // $ данс
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                l10n.usdAccounts,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            AccountTypeRow(
               icon: 'currency-dollar',
+              iconBg: extendedColors.neutral100,
+              iconColor: extendedColors.bgBase,
               title: l10n.dollar,
-              balanceLabel: formatStockAmount(
+              balanceLabel: l10n.availableBalanceLabel,
+              balance: formatStockAmount(
                 _usdBalance,
                 isForeign: true,
-                decimals: 2,
+                decimals: 0,
               ),
-              hasBalance: _usdBalance > 0,
-              activeIconColor: extendedColors.neutral100,
-              onTap: () => _onOptionTap(isMnt: false),
+              isLoading: _isLoading,
+              onTap: () => _onOptionTap(isMnt: false, account: 'usd'),
             ),
-            Divider(
-              height: 1,
-              color: extendedColors.neutral500,
-              indent: 24,
-              endIndent: 24,
-            ),
+            Divider(height: 1, color: extendedColors.neutral500),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMethodOption({
-    required ThemeData theme,
-    required ExtendedColors extendedColors,
-    required String icon,
-    required String title,
-    required String balanceLabel,
-    required bool hasBalance,
-    required Color activeIconColor,
-    required VoidCallback onTap,
-  }) {
-    final l10n = AppLocalizations.of(context)!;
-    // Үлдэгдэлгүй үед icon бүдэг (цайвар дэвсгэр, бараан тэмдэг) харагдана
-    final iconBg = hasBalance ? activeIconColor : extendedColors.bgSecondary;
-    final iconColor = hasBalance ? Colors.white : extendedColors.neutral100;
-
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: CustomSvgIcon(icon, color: iconColor),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral100,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Text(
-                        '${l10n.availableAmountLabel}: ',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: extendedColors.neutral200,
-                        ),
-                      ),
-                      if (_isLoading)
-                        const SizedBox(
-                          width: 12,
-                          height: 12,
-                          child: CircularProgressIndicator(strokeWidth: 1.5),
-                        )
-                      else
-                        Text(
-                          balanceLabel,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: extendedColors.neutral100,
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            CustomSvgIcon(
-              'chevron-right',
-              color: extendedColors.neutral200,
-              size: 24,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

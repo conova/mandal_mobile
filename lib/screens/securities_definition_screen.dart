@@ -45,12 +45,16 @@ class _SecuritiesDefinitionScreenState
     _fetch();
   }
 
-  String get _lang {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
-            const {};
-    return args['lang']?.toString() ?? 'mn';
-  }
+  Map<String, dynamic> get _args =>
+      ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+      const {};
+
+  String get _lang => _args['lang']?.toString() ?? 'mn';
+
+  /// 'definition' | 'agreement'
+  String get _doc => _args['doc']?.toString() ?? 'definition';
+
+  String get _purpose => _args['purpose']?.toString() ?? '';
 
   Future<void> _fetch() async {
     setState(() {
@@ -60,7 +64,11 @@ class _SecuritiesDefinitionScreenState
     try {
       final auth = context.read<AuthService>();
       // HTML-ийг PDF хөрвүүлэлтэд ашиглахаар татаж авна
-      final html = await auth.getDefinitionHtml(lang: _lang);
+      final html = await auth.getDefinitionHtml(
+        lang: _lang,
+        doc: _doc,
+        purpose: _purpose,
+      );
       if (!mounted) return;
 
       if (!kIsWeb) {
@@ -90,7 +98,7 @@ class _SecuritiesDefinitionScreenState
           )
           ..loadHtmlString(
             withViewport,
-            baseUrl: '${ApiConfig.baseUrl}${ApiConfig.userDocsDefinition}',
+            baseUrl: '${ApiConfig.baseUrl}${ApiConfig.userDocs(_doc)}',
           );
         _controller = controller;
         setState(() => _html = html);
@@ -133,7 +141,7 @@ class _SecuritiesDefinitionScreenState
       final bytes = Uint8List.fromList(utf8.encode(_htmlForPdf()));
       final path = await FilePicker.saveFile(
         dialogTitle: 'Тодорхойлолт хадгалах',
-        fileName: 'todorhoilolt_$_lang.html',
+        fileName: '${_doc == 'agreement' ? 'geree' : 'todorhoilolt'}_$_lang.html',
         type: FileType.custom,
         allowedExtensions: ['html'],
         bytes: bytes,
@@ -166,7 +174,9 @@ class _SecuritiesDefinitionScreenState
         centerTitle: true,
         title: Padding(
           padding: const EdgeInsets.only(top: 10),
-          child: Text(l10n.securitiesStatement),
+          child: Text(
+            _doc == 'agreement' ? l10n.agreementLabel : l10n.securitiesStatement,
+          ),
         ),
         leading: Padding(
           padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),

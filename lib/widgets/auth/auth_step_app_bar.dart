@@ -24,7 +24,7 @@ class AuthStepAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: SizedBox(
           width: 40,
           height: 40,
-          child: CircleBackButton(),
+          child: CircleBackButton(onPressed: onBack),
         ),
       ),
       actions: [
