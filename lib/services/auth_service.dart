@@ -1389,6 +1389,35 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Захиалга үүсгэх — POST /order/new. Олон захиалгыг зэрэг илгээж
+  /// болно; аль нэг нь амжилтгүй бол тухайн мөрийн msg-ээр алдаа шидне.
+  /// Returns: серверийн message ("N orders created, M failed")
+  Future<String> createOrders(List<Map<String, dynamic>> orders) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.orderNew,
+        data: {'data': orders},
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        final results = (body['data'] as List? ?? const []);
+        final failed = results
+            .whereType<Map>()
+            .where((r) => r['success'] != true)
+            .toList();
+        if (failed.isNotEmpty) {
+          throw Exception(
+            failed.first['msg']?.toString() ?? 'Захиалга амжилтгүй боллоо',
+          );
+        }
+        return apiMessage(body) ?? 'Захиалга амжилттай үүслээ';
+      }
+      throw Exception(apiMessage(body) ?? 'Захиалга үүсгэхэд алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Өсөлттэй хувьцаанууд
   Future<List<Map<String, dynamic>>> getGainers() =>
       _fetchStockList(ApiConfig.stocksGainers);

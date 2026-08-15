@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/circle_back_button.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
+import '../widgets/custom_snackbar.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_svg_icon.dart';
 
@@ -120,18 +123,43 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
     _expandController.value = (_expandController.value + delta).clamp(0.0, 1.0);
   }
 
-  void _onDragEnd(DragEndDetails details) {
+  Future<void> _onDragEnd(DragEndDetails details) async {
     if (_isConfirming) return;
 
-    if (_expandController.value > 0.4) {
-      _isConfirming = true;
-      _expandController.forward();
-    } else {
+    if (_expandController.value <= 0.4) {
       _expandController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
       );
+      return;
+    }
+
+    setState(() => _isConfirming = true);
+    try {
+      // Захиалгыг server рүү илгээнэ (/order/new) — амжилттай болмогц
+      // амжилтын анимэйшн руу орно
+      final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>? ??
+          const {};
+      final order = args['order'];
+      if (order is Map) {
+        await context
+            .read<AuthService>()
+            .createOrders([Map<String, dynamic>.from(order)]);
+      }
+      if (!mounted) return;
+      _expandController.forward();
+    } catch (e) {
+      if (!mounted) return;
+      // Алдаа — анимэйшнийг буцааж, хэрэглэгчид мэдэгдэнэ
+      setState(() => _isConfirming = false);
+      _expandController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+      CustomSnackbar.showError(context, e);
     }
   }
 

@@ -152,6 +152,12 @@ class ApiConfig {
   // ─── Order ───
   static const String orderCreate = '/bdc/api/order/create.php';
 
+  /// POST /order/new — захиалга үүсгэх (олон захиалга зэрэг дэмжинэ)
+  ///   Body: { data: [{STOCKCODE, CNT, PRICE, TXNTYPE, ORDERTYPE, CONDID,
+  ///                   DESCR, EXPDATE (yyyy/MM/dd), FEE, ACNTNO}] }
+  ///   Response: { code: "0", message, data: [{idx, success, msg, txnId}] }
+  static const String orderNew = '/bdc/api/order/new';
+
   // ─── Legacy ───
   static const String refreshToken = '/bdc/api/auth/refresh.php';
 

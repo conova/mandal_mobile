@@ -111,7 +111,39 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   }
 
   void _showConfirmation() {
-    Navigator.pushNamed(context, '/stock_confirmation');
+    final symbol = _args['symbol']?.toString() ?? '';
+    final price = double.tryParse(
+          _priceController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+        ) ??
+        0;
+    final cnt = int.tryParse(
+          _quantityController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+        ) ??
+        0;
+    // Дуусах хугацаа — 30 хоног (yyyy/MM/dd)
+    final exp = DateTime.now().add(const Duration(days: 30));
+    String two(int n) => n.toString().padLeft(2, '0');
+    final expDate = '${exp.year}/${two(exp.month)}/${two(exp.day)}';
+
+    Navigator.pushNamed(
+      context,
+      '/stock_confirmation',
+      arguments: {
+        'symbol': symbol,
+        'order': {
+          'STOCKCODE': _args['stockcode']?.toString() ?? '',
+          'CNT': cnt.toString(),
+          'PRICE': price.toString(),
+          // 0 — авах, 1 — зарах
+          'TXNTYPE': '0',
+          'ORDERTYPE': '1',
+          // Тайлбарыг автоматаар үүсгэнэ
+          'DESCR': 'App: $symbol авах $cnt ширхэг, нэгж үнэ $price',
+          'EXPDATE': expDate,
+          'FEE': '1',
+        },
+      },
+    );
   }
 
   @override
