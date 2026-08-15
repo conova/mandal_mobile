@@ -520,10 +520,12 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () {
+                      // Захиалга харах — main-ий Захиалга tab (индекс 3) руу
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         '/main',
                         (route) => false,
+                        arguments: {'tab': 3},
                       );
                     },
                     style: TextButton.styleFrom(

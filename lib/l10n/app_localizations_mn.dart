@@ -998,6 +998,20 @@ class AppLocalizationsMn extends AppLocalizations {
   String get limitPrice => 'Нөхцөлт үнэ';
 
   @override
+  String get marketPrice => 'Зах зээлийн үнэ';
+
+  @override
+  String get tradeTypeTitle => 'Арилжааны төрөл сонгох';
+
+  @override
+  String get limitPriceDesc =>
+      'Худалдах эсвэл худалдан авах үнийг өөрөө тогтооно. Захиалга шууд биелэхгүй байж болно. Зах зээл таны тогтоосон ханшид хүрсэн үед захиалга биелнэ.';
+
+  @override
+  String get marketPriceDesc =>
+      'Одоогийн хамгийн боломжит үнээр шууд арилжаа хийгдэнэ. Үнэ зах зээлийн нөхцөлөөс хамаарч өөрчлөгдөж болно.';
+
+  @override
   String get generalInfo => 'Ерөнхий мэдээлэл';
 
   @override

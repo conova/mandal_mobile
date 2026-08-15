@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/order_book_entry.dart';
+import '../widgets/release_locked_amount_sheet.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
@@ -42,6 +43,10 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   /// Дэлгэц идэвхтэй байх үед самбарыг 5 секунд тутам шинэчилнэ
   Timer? _orderBookTimer;
   bool _orderBookFetching = false;
+
+  /// Арилжааны төрөл: 1 — нөхцөлт үнэ, 2 — зах зээлийн үнэ
+  /// (захиалгын ORDERTYPE талбараар илгээгдэнэ)
+  int _orderType = 1;
 
   @override
   void initState() {
@@ -110,6 +115,132 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     super.dispose();
   }
 
+  /// Арилжааны төрөл сонгох sheet — нөхцөлт үнэ (1) / зах зээлийн үнэ (2)
+  Future<void> _showOrderTypeSheet() async {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final extendedColors = theme.extension<ExtendedColors>()!;
+
+    Widget option({
+      required int type,
+      required IconData icon,
+      required String title,
+      required String desc,
+    }) {
+      final isSelected = _orderType == type;
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          setState(() => _orderType = type);
+          Navigator.pop(context);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: extendedColors.bgSecondary,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, size: 24, color: extendedColors.neutral100),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      desc,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected) ...[
+                const SizedBox(width: 8),
+                Icon(Icons.check, color: extendedColors.primaryMain, size: 24),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, _) => Container(
+          decoration: BoxDecoration(
+            color: extendedColors.bgBase,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 10, bottom: 16),
+                    width: 48,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: extendedColors.neutral400,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    l10n.tradeTypeTitle,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                option(
+                  type: 1,
+                  icon: Icons.north_east,
+                  title: l10n.limitPrice,
+                  desc: l10n.limitPriceDesc,
+                ),
+                Divider(height: 1, color: extendedColors.neutral500),
+                option(
+                  type: 2,
+                  icon: Icons.bolt_outlined,
+                  title: l10n.marketPrice,
+                  desc: l10n.marketPriceDesc,
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showConfirmation() {
     final symbol = _args['symbol']?.toString() ?? '';
     final price = double.tryParse(
@@ -136,7 +267,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
           'PRICE': price.toString(),
           // 0 — авах, 1 — зарах
           'TXNTYPE': '0',
-          'ORDERTYPE': '1',
+          'ORDERTYPE': _orderType.toString(),
+          'CONDID': '18',
           // Тайлбарыг автоматаар үүсгэнэ
           'DESCR': 'App: $symbol авах $cnt ширхэг, нэгж үнэ $price',
           'EXPDATE': expDate,
@@ -165,33 +297,37 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16, top: 10),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: extendedColors.bgSecondary,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              // mainAxisSize.min + Flexible-гүй — AppBar actions хязгааргүй
-              // өргөн өгдөг тул Flexible ашиглавал layout crash болж
-              // бүх AppBar (back товч) ажиллахгүй болдог
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CustomSvgIcon(
-                    'chevron-down',
-                    size: 20,
-                    color: extendedColors.neutral100,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    l10n.limitPrice,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
+            child: GestureDetector(
+              onTap: _showOrderTypeSheet,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: extendedColors.bgSecondary,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                // mainAxisSize.min + Flexible-гүй — AppBar actions хязгааргүй
+                // өргөн өгдөг тул Flexible ашиглавал layout crash болж
+                // бүх AppBar (back товч) ажиллахгүй болдог
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomSvgIcon(
+                      'chevron-down',
+                      size: 20,
                       color: extendedColors.neutral100,
                     ),
-                    maxLines: 1,
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Text(
+                      _orderType == 1 ? l10n.limitPrice : l10n.marketPrice,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: extendedColors.neutral100,
+                      ),
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -318,7 +454,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       ),
       bottomNavigationBar: StockTradingBottomBar(
         onPlaceOrder: _showConfirmation,
-        onReleaseLocked: () => Navigator.pushNamed(context, '/release_locked'),
+        onReleaseLocked: () => ReleaseLockedAmountSheet.show(context),
         lockedAmount: '129,341.30₮',
       ),
     );

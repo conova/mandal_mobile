@@ -1984,6 +1984,30 @@ abstract class AppLocalizations {
   /// **'Limit Price'**
   String get limitPrice;
 
+  /// No description provided for @marketPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Market price'**
+  String get marketPrice;
+
+  /// No description provided for @tradeTypeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select order type'**
+  String get tradeTypeTitle;
+
+  /// No description provided for @limitPriceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You set the buy or sell price yourself. The order may not execute immediately — it fills when the market reaches your price.'**
+  String get limitPriceDesc;
+
+  /// No description provided for @marketPriceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Trades immediately at the best available price. The price may vary depending on market conditions.'**
+  String get marketPriceDesc;
+
   /// No description provided for @generalInfo.
   ///
   /// In en, this message translates to:

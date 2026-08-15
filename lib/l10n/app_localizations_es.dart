@@ -1001,6 +1001,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get limitPrice => 'Limit Price';
 
   @override
+  String get marketPrice => 'Market price';
+
+  @override
+  String get tradeTypeTitle => 'Select order type';
+
+  @override
+  String get limitPriceDesc =>
+      'You set the buy or sell price yourself. The order may not execute immediately — it fills when the market reaches your price.';
+
+  @override
+  String get marketPriceDesc =>
+      'Trades immediately at the best available price. The price may vary depending on market conditions.';
+
+  @override
   String get generalInfo => 'General Information';
 
   @override
