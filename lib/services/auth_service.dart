@@ -1563,10 +1563,20 @@ class AuthService with ChangeNotifier {
         queryParameters: {'start': s, 'end': e},
       );
       final body = response.data as Map<String, dynamic>;
-      if (body['code']?.toString() == '0' && body['data'] is List) {
+      /*if (body['code']?.toString() == '0' && body['data'] is List) {
         return (body['data'] as List)
             .map((d) => Map<String, dynamic>.from(d as Map))
             .toList();
+      }*/
+      if (body['code']?.toString() == '0' && body['data'] is Map<String, dynamic>) {
+        final data = body['data'] as Map<String, dynamic>;
+
+        // 2. Extract and parse the nested 'points' array
+        if (data['points'] is List) {
+          return (data['points'] as List)
+              .map((d) => Map<String, dynamic>.from(d as Map))
+              .toList();
+        }
       }
       return [];
     } on DioException catch (err) {

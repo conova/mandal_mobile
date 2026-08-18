@@ -44,9 +44,7 @@ class _FinanceChartState extends State<FinanceChart> {
   }
 
   static const List<FlSpot> _sampleSpots = [
-    FlSpot(0, 3), FlSpot(1, 1), FlSpot(2, 4), FlSpot(3, 2), FlSpot(4, 5),
-    FlSpot(5, 3), FlSpot(6, 4), FlSpot(7, 3), FlSpot(8, 4), FlSpot(9, 3),
-    FlSpot(10, 5), FlSpot(11, 5),
+    FlSpot(0, 0),
   ];
 
   static String _fmtDate(DateTime d) =>
