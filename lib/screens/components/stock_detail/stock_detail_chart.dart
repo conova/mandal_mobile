@@ -66,26 +66,35 @@ class _StockDetailChartState extends State<StockDetailChart> {
       final auth = context.read<AuthService>();
       final data = await auth.getStockChart(sym, start: _fmt(start), end: _fmt(end));
 
-      // Хариунаас огноо + close үнийг задална. X тэнхлэг: 1 өдөр = 1 нэгж
+      // Хариунаас огноо + үнийг задална. X тэнхлэг: 1 өдөр = 1 нэгж
       // (эхний огнооноос хойших хоног) — завсарласан өдрүүд бодит
       // зайгаараа харагдана.
       final parsed = <({DateTime? date, double value})>[];
       for (final row in data) {
-        final v =
-            row['CLOSEPRICE'] ?? row['close'] ?? row['price'] ?? row['CLOSE'];
+        final v = row['CLOSEPRICE'] ??
+            row['close'] ??
+            row['price'] ??
+            row['CLOSE'] ??
+            row['value'] ??
+            row['val'];
+            
         final value = v is num
             ? v.toDouble()
             : double.tryParse(v?.toString() ?? '') ?? 0.0;
         if (value <= 0) continue;
-        parsed.add((
-          date: parseStockDate(
-            row['DATE'] ?? row['date'] ?? row['TRADEDATE'] ?? row['TRADEDAY'],
-          ),
-          value: value,
-        ));
+
+        final rawDate =
+            row['DATE'] ?? row['date'] ?? row['TRADEDATE'] ?? row['TRADEDAY'];
+        var date = parseStockDate(rawDate);
+        // ISO8601 форматтай байвал fallback оролдоно
+        if (date == null && rawDate != null) {
+          date = DateTime.tryParse(rawDate.toString());
+        }
+
+        parsed.add((date: date, value: value));
       }
-      final firstDate =
-          parsed.isEmpty ? null : parsed.first.date;
+
+      final firstDate = parsed.isEmpty ? null : parsed.first.date;
       final spots = <FlSpot>[
         for (var i = 0; i < parsed.length; i++)
           FlSpot(

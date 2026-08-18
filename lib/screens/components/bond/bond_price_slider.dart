@@ -3,6 +3,53 @@ import 'package:mandal_capital/theme/app_text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
+class CustomRoundSliderThumbShape extends SliderComponentShape {
+  final double enabledThumbRadius;
+  final Color borderColor;
+  final double borderWidth;
+
+  const CustomRoundSliderThumbShape({
+    this.enabledThumbRadius = 10.0,
+    this.borderColor = Colors.white,
+    this.borderWidth = 2.0,
+  });
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return Size.fromRadius(enabledThumbRadius);
+  }
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {
+    final Canvas canvas = context.canvas;
+
+    final fillPaint = Paint()
+      ..color = sliderTheme.thumbColor!
+      ..style = PaintingStyle.fill;
+
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..strokeWidth = borderWidth
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawCircle(center, enabledThumbRadius, fillPaint);
+    canvas.drawCircle(center, enabledThumbRadius, borderPaint);
+  }
+}
+
 class BondPriceSlider extends StatefulWidget {
   final double min;
   final double max;
@@ -107,9 +154,10 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
           SliderTheme(
             data: theme.sliderTheme.copyWith(
               trackHeight: 12,
-              thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 14,
-                elevation: 2,
+              thumbShape: CustomRoundSliderThumbShape(
+                enabledThumbRadius: 12,
+                borderColor: extendedColors.primaryMain,
+                borderWidth: 4,
               ),
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
               activeTrackColor: extendedColors.primaryMain,
