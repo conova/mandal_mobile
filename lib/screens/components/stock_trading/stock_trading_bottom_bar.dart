@@ -4,7 +4,7 @@ import '../../../widgets/custom_button.dart';
 import '../../../widgets/locked_amount_bottom_sheet.dart';
 
 class StockTradingBottomBar extends StatelessWidget {
-  final VoidCallback onPlaceOrder;
+  final VoidCallback? onPlaceOrder;
   final VoidCallback onReleaseLocked;
   final String lockedAmount;
 
@@ -34,7 +34,7 @@ class StockTradingBottomBar extends StatelessWidget {
                 width: double.infinity,
                 child: CustomButton(
                   label: l10n.placeOrder,
-                  onPressed: onPlaceOrder
+                  onPressed: onPlaceOrder,
                 ),
               ),
             )

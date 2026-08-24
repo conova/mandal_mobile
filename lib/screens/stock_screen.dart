@@ -185,8 +185,10 @@ class _StockScreenState extends State<StockScreen> {
 
   void _openDetail(MarketInstrument row) {
     final priceStr = row.closePrice == null
-        ? '-'
-        : formatStockAmount(row.closePrice, decimals: 0);
+        ? row.stockPrice == null
+          ? '-'
+          : formatStockAmount(row.stockPrice, decimals: 2)
+        : formatStockAmount(row.closePrice, decimals: 2);
     final pct = row.priceChange;
     Navigator.pushNamed(
       context,
@@ -399,7 +401,7 @@ class _StockScreenState extends State<StockScreen> {
       return '${two(d.month)}.${two(d.day)}';
     }
 
-    final start = fmt(pick(['BEGDATE', 'STARTDATE', 'BEGINDATE', 'OPENDATE']));
+    final start = fmt(pick(['BEGINDATE', 'BEGDATE', 'STARTDATE', 'OPENDATE']));
     final end = fmt(pick(['ENDDATE', 'CLOSEDATE', 'EXPDATE']));
     if (start.isEmpty && end.isEmpty) return '-';
     return '$start–$end';
@@ -411,9 +413,11 @@ class _StockScreenState extends State<StockScreen> {
     ThemeData theme,
     ExtendedColors extendedColors,
   ) {
-    final price = row.closePrice == null
-        ? '-'
-        : formatStockAmount(row.closePrice, decimals: 0);
+    final price = row.stockPrice == null
+        ? row.closePrice == null
+          ? '-'
+          : formatStockAmount(row.closePrice, decimals: 2)
+        : formatStockAmount(row.stockPrice, decimals: 2);
 
     return Container(
       margin: const EdgeInsets.fromLTRB(0, 0, 6, 0),
@@ -666,17 +670,6 @@ class _StockScreenState extends State<StockScreen> {
     final isUp = pct > 0;
     final isDown = pct < 0;
 
-    final bg = isUp
-        ? extendedColors.primary100
-        : isDown
-            ? extendedColors.red100
-            : extendedColors.bgSecondary;
-    final pctColor = isUp
-        ? extendedColors.primaryMain
-        : isDown
-            ? extendedColors.red
-            : extendedColors.neutral300;
-
     final price = row.closePrice == null
         ? '-'
         : formatStockAmount(row.closePrice, decimals: 2);
@@ -685,6 +678,19 @@ class _StockScreenState extends State<StockScreen> {
     final open = row.openPrice;
     final close = row.closePrice;
     final delta = (open != null && close != null) ? close - open : null;
+
+    final bg = isUp
+        ? extendedColors.primary100
+        : isDown
+          ? extendedColors.red100
+          : extendedColors.bgSecondary;
+
+    final pctColor = isUp
+        ? extendedColors.primaryMain
+        : isDown
+          ? extendedColors.red
+          : extendedColors.neutral300;
+
     final deltaStr = delta == null
         ? ''
         : '${delta >= 0 ? '+' : '-'}${formatNumbers(delta.abs(), decimals: delta.abs() < 10 ? 2 : 0)}';

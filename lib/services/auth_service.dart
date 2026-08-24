@@ -1613,6 +1613,7 @@ class AuthService with ChangeNotifier {
         changePercent: toDouble(data['changePercent']),
         cashBalance: toDouble(data['cashBalance']),
         usdRate: toDouble(data['usdRate']),
+        holdAmount: toDouble(data['holdAmount']),
       );
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
@@ -2174,6 +2175,8 @@ class PortfolioSummary {
   /// Чөлөөт мөнгөн үлдэгдэл (₮)
   final double cashBalance;
 
+  final double holdAmount;
+
   final double usdRate;
 
   const PortfolioSummary({
@@ -2181,6 +2184,7 @@ class PortfolioSummary {
     required this.totalChange,
     required this.changePercent,
     required this.cashBalance,
+    required this.holdAmount,
     required this.usdRate,
   });
 
@@ -2190,6 +2194,7 @@ class PortfolioSummary {
     totalChange: 0,
     changePercent: 0,
     cashBalance: 0,
+    holdAmount: 0,
     usdRate: 0,
   );
 }

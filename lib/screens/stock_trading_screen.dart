@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/order_book_entry.dart';
+import '../widgets/currency_suffix_formatter.dart';
 import '../widgets/release_locked_amount_sheet.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
@@ -31,6 +32,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   late FocusNode _quantityFocusNode;
 
   int _quantity = 1;
+  double _availableCash = 0;
+  double _lockedAmount = 0;
 
   Map<String, dynamic> _args = const {};
   bool _argsParsed = false;
@@ -51,10 +54,65 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   @override
   void initState() {
     super.initState();
-    _priceController = TextEditingController(text: '0.00₮');
-    _quantityController = TextEditingController(text: '1');
+    _priceController = TextEditingController(
+      text: CurrencySuffixFormatter.format('0', suffix: '₮'),
+    );
+    _quantityController = TextEditingController(
+      text: CurrencySuffixFormatter.format('1', suffix: ''),
+    );
     _priceFocusNode = FocusNode();
     _quantityFocusNode = FocusNode();
+
+    // Listen to changes to update the total payment box and validate the order
+    _priceController.addListener(_onInputChanged);
+    _quantityController.addListener(_onInputChanged);
+  }
+
+  void _onInputChanged() {
+    if (!mounted) return;
+    final newQty = int.tryParse(
+          _quantityController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+        ) ??
+        0;
+    if (newQty != _quantity) {
+      _quantity = newQty;
+    }
+    setState(() {});
+  }
+
+  double get _totalPayment {
+    final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
+    final price = double.tryParse(priceStr) ?? 0;
+    final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final qty = int.tryParse(qtyStr) ?? 0;
+    return price * qty;
+  }
+
+  bool get _isOrderValid {
+    final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
+    final price = double.tryParse(priceStr) ?? 0;
+    final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final qty = int.tryParse(qtyStr) ?? 0;
+
+    return price > 0 && qty > 0 && (price * qty) <= _availableCash;
+  }
+
+  void _handlePercentageSelected(String percentage) {
+    final percent = double.tryParse(percentage.replaceAll('%', '')) ?? 0;
+    final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
+    final price = double.tryParse(priceStr) ?? 0;
+
+    if (price <= 0) return;
+
+    final targetAmount = _availableCash * (percent / 100);
+    final calculatedQty = (targetAmount / price).floor();
+
+    if (calculatedQty > 0) {
+      _quantityController.text = CurrencySuffixFormatter.format(
+        calculatedQty.toString(),
+        suffix: '',
+      );
+    }
   }
 
   @override
@@ -65,7 +123,17 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     _args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
         const {};
+
+    // Initial price pre-fill from arguments
+    if (_args['price'] != null) {
+      _priceController.text = CurrencySuffixFormatter.format(
+        _args['price'].toString(),
+        suffix: '₮',
+      );
+    }
+
     _fetchOrderBook();
+    _fetchPortfolioSummary();
 
     // 5 секунд тутамд чимээгүй шинэчилнэ (dispose дээр зогсоно)
     if ((_args['stockcode']?.toString() ?? '').isNotEmpty) {
@@ -76,13 +144,25 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     }
   }
 
+  Future<void> _fetchPortfolioSummary() async {
+    try {
+      final summary = await context.read<AuthService>().getPortfolioSummary();
+      if (!mounted) return;
+      setState(() {
+        _availableCash = summary.cashBalance;
+        _lockedAmount = summary.holdAmount;
+      });
+    } catch (e) {
+      debugPrint('Error fetching portfolio summary: $e');
+    }
+  }
+
   Future<void> _fetchOrderBook() async {
     final stockcode = _args['stockcode']?.toString() ?? '';
     if (stockcode.isEmpty) {
       setState(() => _orderBookLoading = false);
       return;
     }
-    // Өмнөх хүсэлт дуусаагүй бол давхарлахгүй (удаан сүлжээнд хуримтлагдахгүй)
     if (_orderBookFetching) return;
     _orderBookFetching = true;
     try {
@@ -95,8 +175,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      // Зөвхөн анхны ачаалалтын алдааг мэдэгдэнэ —
-      // 5 секундын давтан шинэчлэлтийнхийг чимээгүй өнгөрөөнө
       final wasInitialLoad = _orderBookLoading;
       setState(() => _orderBookLoading = false);
       if (wasInitialLoad) CustomSnackbar.showError(context, e);
@@ -108,6 +186,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   @override
   void dispose() {
     _orderBookTimer?.cancel();
+    _priceController.removeListener(_onInputChanged);
+    _quantityController.removeListener(_onInputChanged);
     _priceController.dispose();
     _quantityController.dispose();
     _priceFocusNode.dispose();
@@ -115,7 +195,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     super.dispose();
   }
 
-  /// Арилжааны төрөл сонгох sheet — нөхцөлт үнэ (1) / зах зээлийн үнэ (2)
   Future<void> _showOrderTypeSheet() async {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
@@ -243,15 +322,12 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
 
   void _showConfirmation() {
     final symbol = _args['symbol']?.toString() ?? '';
-    final price = double.tryParse(
-          _priceController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
-        ) ??
-        0;
-    final cnt = int.tryParse(
-          _quantityController.text.replaceAll(RegExp(r'[^0-9]'), ''),
-        ) ??
-        0;
-    // Дуусах хугацаа — 30 хоног (yyyy/MM/dd)
+    final name = _args['name']?.toString() ?? '';
+    final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
+    final price = double.tryParse(priceStr) ?? 0;
+    final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final cnt = int.tryParse(qtyStr) ?? 0;
+
     final exp = DateTime.now().add(const Duration(days: 30));
     String two(int n) => n.toString().padLeft(2, '0');
     final expDate = '${exp.year}/${two(exp.month)}/${two(exp.day)}';
@@ -261,18 +337,17 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       '/stock_confirmation',
       arguments: {
         'symbol': symbol,
+        'name': name,
         'order': {
           'STOCKCODE': _args['stockcode']?.toString() ?? '',
           'CNT': cnt.toString(),
           'PRICE': price.toString(),
-          // 0 — авах, 1 — зарах
           'TXNTYPE': '0',
           'ORDERTYPE': _orderType.toString(),
           'CONDID': '18',
-          // Тайлбарыг автоматаар үүсгэнэ
           'DESCR': 'App: $symbol авах $cnt ширхэг, нэгж үнэ $price',
           'EXPDATE': expDate,
-          'FEE': '1',
+          'FEE': '0', // Placeholder for actual fee calculation if needed
         },
       },
     );
@@ -283,6 +358,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final isSell = _args['side'] == 'sell';
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -306,9 +382,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                   color: extendedColors.bgSecondary,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                // mainAxisSize.min + Flexible-гүй — AppBar actions хязгааргүй
-                // өргөн өгдөг тул Flexible ашиглавал layout crash болж
-                // бүх AppBar (back товч) ажиллахгүй болдог
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -346,7 +419,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${_args['symbol']} - ${l10n.buyTab}',
+                        '${_args['symbol'] ?? ''} - ${isSell ? l10n.sellTab : l10n.buyTab}',
                         style: theme.textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.neutral100,
@@ -361,7 +434,9 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                           ),
                           children: [
                             TextSpan(
-                              text: '142,000.53₮',
+                              text: CurrencySuffixFormatter.format(
+                                  _availableCash.toString(),
+                                  suffix: '₮'),
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: extendedColors.primaryMain,
                               ),
@@ -371,7 +446,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '1 MNDL = 65.62₮',
+                        '1 ${_args['symbol'] ?? ''} = ${_args['price'] ?? '-'}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: extendedColors.neutral100,
                         ),
@@ -387,31 +462,37 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         controller: _quantityController,
                         focusNode: _quantityFocusNode,
                         onIncrease: () {
-                          setState(() {
-                            _quantity++;
-                            _quantityController.text = _quantity.toString();
-                          });
+                          _quantityController.text =
+                              CurrencySuffixFormatter.format(
+                                  (_quantity + 1).toString(),
+                                  suffix: '');
                         },
                         onDecrease: () {
-                          setState(() {
-                            if (_quantity > 1) {
-                              _quantity--;
-                              _quantityController.text = _quantity.toString();
-                            }
-                          });
+                          if (_quantity > 1) {
+                            _quantityController.text =
+                                CurrencySuffixFormatter.format(
+                                    (_quantity - 1).toString(),
+                                    suffix: '');
+                          }
                         },
                         onChanged: (value) {
-                          setState(() {
-                            _quantity = int.tryParse(value) ?? 1;
-                          });
+                          // Handled by controller listener
                         },
                       ),
                       const SizedBox(height: 16),
-                      const StockTradingPercentageSelector(),
+                      StockTradingPercentageSelector(
+                        onPercentageSelected: _handlePercentageSelected,
+                      ),
                       const SizedBox(height: 16),
                       StockTradingInfoBox(
-                        label: l10n.totalPaymentLabel,
-                        value: '72.62₮',
+                        label: isSell ? l10n.totalReceivableLabel : l10n.totalPaymentLabel,
+                        value: CurrencySuffixFormatter.format(
+                          _totalPayment.toString(),
+                          suffix: '₮',
+                        ),
+                        valueColor: !isSell && _totalPayment > _availableCash
+                            ? extendedColors.red
+                            : null,
                       ),
                     ],
                   ),
@@ -453,9 +534,10 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         ],
       ),
       bottomNavigationBar: StockTradingBottomBar(
-        onPlaceOrder: _showConfirmation,
+        onPlaceOrder: _isOrderValid ? _showConfirmation : null,
         onReleaseLocked: () => ReleaseLockedAmountSheet.show(context),
-        lockedAmount: '129,341.30₮',
+        lockedAmount: CurrencySuffixFormatter.format(_lockedAmount.toString(),
+            suffix: '₮'),
       ),
     );
   }
