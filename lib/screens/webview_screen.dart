@@ -49,6 +49,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _isLoading = true;
   String? _error;
   bool _initialized = false;
+  bool _showOnboardingOnHome = true;
 
   @override
   void didChangeDependencies() {
@@ -70,6 +71,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
     // байх зориулалттай.
     final exitPrefix = args['exitPrefix'] as String?;
     final homeRoute = args['homeRoute'] as String?;
+    // Home руу шилжихэд onboarding (баталгаажуулалтын) sheet нээх эсэх.
+    // DAN урсгалд true, төлбөрийн webview-д false дамжуулна.
+    _showOnboardingOnHome = args['showOnboardingOnHome'] != false;
     final homeUrlScheme =
         (args['homeUrlScheme'] as String?) ?? 'mandalapp://home';
     final jsChannelName = (args['jsChannelName'] as String?) ?? 'MandalApp';
@@ -255,7 +259,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
     Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
       homeRoute,
       (_) => false,
-      arguments: {'showOnboarding': cmd.result == 'success'},
+      arguments: {
+        'showOnboarding': _showOnboardingOnHome && cmd.result == 'success',
+      },
     );
 
     // Алдаатай үед — home tab нээгдсэний дараа toast гаргана. Шинэ frame-н

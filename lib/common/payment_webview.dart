@@ -49,6 +49,9 @@ Future<String?> openPaymentWebview(
       // сайтыг webview дотор нээхийн оронд webview-г хаана
       'exitPrefix': 'https://mandalcapital.mn',
       'homeRoute': homeRoute,
+      // Төлбөрийн урсгалаас home руу буцахад баталгаажуулалтын
+      // (onboarding) sheet нээхгүй
+      'showOnboardingOnHome': false,
     },
   );
 
