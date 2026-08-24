@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class StockTradingInfoBox extends StatelessWidget {
   final String label;
   final String value;
+  final Color? valueColor;
 
   const StockTradingInfoBox({
     super.key,
     required this.label,
     required this.value,
+    this.valueColor,
   });
 
   @override
@@ -23,7 +25,8 @@ class StockTradingInfoBox extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(
+          Expanded(
+            flex: 1,
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -33,12 +36,14 @@ class StockTradingInfoBox extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(width: 8),
-          Flexible(
+          Expanded(
+            flex: 1,
             child: Text(
               value,
-              style: theme.textTheme.bodyLarge?.copyWith(),
-              textAlign: TextAlign.right,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: valueColor,
+              ),
+              textAlign: TextAlign.left,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

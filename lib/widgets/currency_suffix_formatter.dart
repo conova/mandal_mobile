@@ -10,10 +10,14 @@ class CurrencySuffixFormatter extends TextInputFormatter {
     String cleanText = value.replaceAll(suffix, '').replaceAll(',', '');
     if (cleanText.isEmpty) return '';
 
-    final number = int.tryParse(cleanText);
+    final number = double.tryParse(cleanText);
     if (number == null) return '';
 
-    final formatter = NumberFormat('#,###');
+    // If it's a whole number, format without decimals, otherwise keep up to 2 decimals
+    final formatter = number == number.toInt()
+        ? NumberFormat('#,###')
+        : NumberFormat('#,###.##');
+        
     return '${formatter.format(number)}$suffix';
   }
 
@@ -30,6 +34,8 @@ class CurrencySuffixFormatter extends TextInputFormatter {
     }
 
     // 2. Format with thousand separators
+    // We use int.tryParse here because standard input boxes using this formatter 
+    // typically use FilteringTextInputFormatter.digitsOnly
     final number = int.tryParse(cleanText);
     if (number == null) return oldValue;
 

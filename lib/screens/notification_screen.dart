@@ -363,12 +363,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 9,
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.redMain,
-                      borderRadius: BorderRadius.circular(13),
+                      borderRadius: BorderRadius.circular(50),
                     ),
                     child: Text(
                       _unreadCount.toString(),

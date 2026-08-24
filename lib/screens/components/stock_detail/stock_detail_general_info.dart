@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../widgets/custom_info_popup_bottom_sheet.dart';
 import '../../../widgets/custom_svg_icon.dart';
 
 class StockDetailGeneralInfo extends StatelessWidget {
@@ -89,6 +90,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
             dividendYield,
             theme,
             extendedColors,
+            l10n
           ),
         ],
       ),
@@ -128,6 +130,7 @@ class StockDetailGeneralInfo extends StatelessWidget {
     String value2,
     ThemeData theme,
     ExtendedColors extendedColors,
+    AppLocalizations l10n,
   ) {
     return Row(
       children: [
@@ -154,11 +157,12 @@ class StockDetailGeneralInfo extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  CustomSvgIcon(
-                    'info-circle',
-                    size: 16,
-                    color: extendedColors.neutral200,
-                  ),
+                  CustomInfoPopupBottomSheet(
+                    title: dividendYield,
+                    description: 'None',
+                    extendedColors: extendedColors,
+                    l10n: l10n,
+                  )
                 ],
               ),
             ],

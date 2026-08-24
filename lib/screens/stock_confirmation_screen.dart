@@ -3,6 +3,7 @@ import 'package:mandal_capital/widgets/circle_back_button.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../widgets/currency_suffix_formatter.dart';
 import '../widgets/custom_snackbar.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_svg_icon.dart';
@@ -172,6 +173,11 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
     const bottomSheetHeight = 120.0;
     final maxDragDistance = screenHeight - bottomSheetHeight;
 
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? const {};
+    final symbol = args['symbol']?.toString() ?? '';
+    final name = args['name']?.toString() ?? '';
+    final order = args['order'] as Map<String, dynamic>? ?? const {};
+
     return PopScope(
       // Захиалга баталгаажиж эхэлсний дараа буцах боломжгүй — эс бөгөөс
       // өмнөх дэлгэц рүү орж захиалгаа давхардуулж илгээх эрсдэлтэй
@@ -230,7 +236,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                                       children: [
                                         Flexible(
                                           child: Text(
-                                            'MNDL',
+                                            symbol,
                                             style: theme.textTheme.headlineLarge
                                                 ?.copyWith(
                                                   fontWeight: FontWeight.bold,
@@ -244,9 +250,9 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                                         const SizedBox(width: 12),
                                         Flexible(
                                           child: Padding(
-                                            padding: EdgeInsets.only(bottom: 2),
+                                            padding: const EdgeInsets.only(bottom: 2),
                                             child: Text(
-                                              'Мандал даатгал ХК',
+                                              name,
                                               style: theme.textTheme.bodyLarge
                                                   ?.copyWith(
                                                 color:
@@ -271,6 +277,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                                   theme: theme,
                                   l10n: l10n,
                                   extendedColors: extendedColors,
+                                  order: order,
                                 ),
                               ),
                             ],
@@ -341,7 +348,18 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
     required ThemeData theme,
     required AppLocalizations l10n,
     required ExtendedColors extendedColors,
+    required Map<String, dynamic> order,
   }) {
+    final orderType = order['ORDERTYPE'] == '2' ? l10n.marketPrice : l10n.limitPrice;
+    final quantity = order['CNT']?.toString() ?? '0';
+    final price = order['PRICE']?.toString() ?? '0';
+    final fee = order['FEE']?.toString() ?? '0';
+
+    final q = double.tryParse(quantity) ?? 0;
+    final p = double.tryParse(price) ?? 0;
+    final f = double.tryParse(fee) ?? 0;
+    final total = (q * p) + f;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -349,18 +367,20 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
           theme,
           extendedColors,
           l10n.orderTypeLabel,
-          l10n.limitPrice,
+          orderType,
         ),
         const SizedBox(height: 16),
-        _buildDetailRow(theme, extendedColors, l10n.quantityLabel, '1,000'),
+        _buildDetailRow(theme, extendedColors, l10n.quantityLabel, 
+            CurrencySuffixFormatter.format(quantity, suffix: '')),
         const SizedBox(height: 16),
-        _buildDetailRow(theme, extendedColors, l10n.unitPrice, '62.00₮'),
+        _buildDetailRow(theme, extendedColors, l10n.unitPrice, 
+            CurrencySuffixFormatter.format(price, suffix: '₮')),
         const SizedBox(height: 16),
         _buildDetailRow(
           theme,
           extendedColors,
-          '${l10n.commissionLabel} (0.1%)',
-          '12,132₮',
+          l10n.commissionLabel,
+          CurrencySuffixFormatter.format(fee, suffix: '₮'),
         ),
         const SizedBox(height: 24),
         // Dotted divider
@@ -401,7 +421,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
             const SizedBox(width: 8),
             Flexible(
               child: Text(
-                '65,520.23₮',
+                CurrencySuffixFormatter.format(total.toString(), suffix: '₮'),
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: extendedColors.neutral100,

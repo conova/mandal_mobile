@@ -21,15 +21,15 @@ class BondPaymentDetails extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: extendedColors.bgSecondary,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: GestureDetector(
-        onTap: onDetailsPressed,
-        behavior: HitTestBehavior.opaque,
+    return GestureDetector(
+      onTap: onDetailsPressed,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: extendedColors.bgSecondary,
+          borderRadius: BorderRadius.circular(24),
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -55,32 +55,32 @@ class BondPaymentDetails extends StatelessWidget {
               ]
             ),
             Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      totalPayment,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: extendedColors.neutral100,
-                      ),
-                      textAlign: TextAlign.right,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    totalPayment,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
                     ),
-                    const SizedBox(height: 20,),
-                    Text(
-                      totalReturn,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: extendedColors.neutral100,
-                      ),
-                      textAlign: TextAlign.right,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 20,),
+                  Text(
+                    totalReturn,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
                     ),
-                  ]
-                )
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ]
+              )
             ),
             Column(
               children: [
@@ -94,7 +94,7 @@ class BondPaymentDetails extends StatelessWidget {
             )
           ]
         ),
-      )
+      ),
     );
   }
 }

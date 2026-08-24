@@ -44,6 +44,8 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
   /// Арилжааны Авах/Зарах цэс нээлттэй эсэх
   bool _tradeMenuOpen = false;
 
+  double? _availableCash;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -54,9 +56,22 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
             const {};
     _fetchInfo();
     _checkWatchlist();
+    _fetchPortfolioSummary();
   }
 
   String get _symbol => (_args['symbol'] as String?) ?? _info?.symbol ?? '';
+
+  Future<void> _fetchPortfolioSummary() async {
+    try {
+      final summary = await context.read<AuthService>().getPortfolioSummary();
+      if (!mounted) return;
+      setState(() {
+        _availableCash = summary.cashBalance;
+      });
+    } catch (e) {
+      debugPrint('Error fetching portfolio summary: $e');
+    }
+  }
 
   /// Энэ хувьцаа watchlist-д байгаа эсэхийг шалгана
   Future<void> _checkWatchlist() async {
@@ -148,7 +163,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
     // Ханш/өөрчлөлт — info-гоос тоо ирвэл форматлана, үгүй бол args
     final infoPrice = _info?.closePrice;
     final price = infoPrice != null
-        ? formatStockAmount(infoPrice, decimals: 0)
+        ? formatStockAmount(infoPrice, decimals: 2)
         : (_args['price'] as String?) ?? '-';
 
     final infoChange = _info?.priceChange;
@@ -270,6 +285,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
       bottomNavigationBar: StockDetailBottomBar(
         isMenuOpen: _tradeMenuOpen,
         onTrade: () => setState(() => _tradeMenuOpen = !_tradeMenuOpen),
+        availableCash: _availableCash,
       ),
     );
   }
