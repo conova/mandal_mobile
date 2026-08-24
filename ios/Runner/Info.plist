@@ -32,6 +32,10 @@
 	<string>Зураг авахын тулд камерын эрх шаардлагатай.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Биометрик ашиглан нэвтрүүлж баталгаажуулахад ашиглана.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Бичиг баримтын зураг сонгож хавсаргахад зургийн сангийн эрх шаардлагатай.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Татаж авсан баримтыг зургийн санд хадгалахад ашиглана.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
