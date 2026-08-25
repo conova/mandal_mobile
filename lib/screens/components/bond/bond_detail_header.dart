@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
+import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../theme/extended_colors.dart';
@@ -11,11 +12,13 @@ class BondDetailHeader extends StatelessWidget {
 
   /// Арилжааны дизайнд нэрийн доор бэлэн мөнгө харуулна
   final bool showAvailableCash;
+  final double? availableCash;
 
   const BondDetailHeader({
     super.key,
     required this.bond,
     this.showAvailableCash = false,
+    this.availableCash,
   });
 
   @override
@@ -77,7 +80,7 @@ class BondDetailHeader extends StatelessWidget {
                 ),
               ),
               Text(
-                '10,000,000₮',
+                formatStockAmount(availableCash ?? 0, isForeign: bond?.isForeign ?? false),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: extendedColors.primaryMain,
                   fontWeight: AppTextStyles.bold,

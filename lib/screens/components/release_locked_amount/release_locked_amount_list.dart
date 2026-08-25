@@ -95,19 +95,21 @@ class ReleaseLockedAmountList extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  item['title'],
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: AppTextStyles.bold,
-                                    color: extendedColors.neutral100,
-                                  ),
+                                Expanded(
+                                    child: Text(
+                                      item['title'],
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: extendedColors.neutral100,
+                                      ),
+                                    ),
                                 ),
                                 if (item['amount'] != null)
                                   Text(
                                     '${item['amount'].toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮',
-                                    style: theme.textTheme.titleMedium?.copyWith(
+                                    style: theme.textTheme.bodyMedium?.copyWith(
                                       fontWeight: AppTextStyles.bold,
-                                      color: extendedColors.neutral100,
+                                      color: extendedColors.neutral200,
                                     ),
                                   ),
                               ],
@@ -183,7 +185,7 @@ class ReleaseLockedAmountList extends StatelessWidget {
                             item['subtitle'],
                             style: theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: AppTextStyles.light,
-                              color: extendedColors.neutral200,
+                              color: extendedColors.neutral100,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -198,11 +200,9 @@ class ReleaseLockedAmountList extends StatelessWidget {
                 // Amount
                 Text(
                   '${item['amount'].toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: AppTextStyles.regular,
-                    color: isSelected
-                        ? extendedColors.neutral100
-                        : extendedColors.neutral200,
+                    color: extendedColors.neutral100
                   ),
                 ),
               ],
