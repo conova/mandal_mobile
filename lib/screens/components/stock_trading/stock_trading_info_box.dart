@@ -26,7 +26,6 @@ class StockTradingInfoBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            flex: 1,
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(

@@ -8,6 +8,9 @@ import 'components/release_locked_amount/release_locked_amount_header.dart';
 import 'components/release_locked_amount/release_locked_amount_list.dart';
 import 'components/release_locked_amount/release_locked_amount_bottom_bar.dart';
 
+//Obsolete_screen
+
+
 class ReleaseLockedAmountScreen extends StatefulWidget {
   const ReleaseLockedAmountScreen({super.key});
 

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../common/stock_row_format.dart';
 import '../../models/market_instrument.dart';
+import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/circle_back_button.dart';
 import '../components/bond/bond_action_bottom_bar.dart';
@@ -23,9 +26,33 @@ class BondDetailScreen extends StatefulWidget {
 
 class _BondDetailScreenState extends State<BondDetailScreen> {
   int _quantity = 0;
+  double _price = 0;
 
   MarketInstrument? _bond;
   bool _argsParsed = false;
+  
+  bool _isLoading = true;
+  PortfolioSummary? _portfolioSummary;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetch());
+  }
+
+  Future<void> _fetch() async {
+    try {
+      final summary = await context.read<AuthService>().getPortfolioSummary();
+      if (!mounted) return;
+      setState(() {
+        _portfolioSummary = summary;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -79,32 +106,50 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BondDetailHeader(bond: _bond, showAvailableCash: _isTrading),
-            const SizedBox(height: 24),
-            if (_isTrading)
-              BondDetailTradingView(
+      body: RefreshIndicator(
+        onRefresh: _fetch,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BondDetailHeader(
                 bond: _bond,
-                quantity: _quantity,
-                onQuantityChanged: (q) => setState(() => _quantity = q),
-              )
-            else if (_isForeign)
-              BondDetailForeignView(bond: _bond)
-            else
-              BondDetailClosedView(bond: _bond),
-            const SizedBox(height: 140), // Bottom bar space
-          ],
+                showAvailableCash: _isTrading,
+                availableCash: _portfolioSummary?.cashBalance,
+              ),
+              const SizedBox(height: 24),
+              if (_isTrading)
+                BondDetailTradingView(
+                  bond: _bond,
+                  price: _price,
+                  quantity: _quantity,
+                  onQuantityChanged: (q) => setState(() => _quantity = q),
+                  onPriceChanged: (p) => setState(() => _price = p),
+                )
+              else if (_isForeign)
+                BondDetailForeignView(bond: _bond)
+              else
+                BondDetailClosedView(bond: _bond),
+              const SizedBox(height: 140), // Bottom bar space
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: _isTrading
-          ? BondDetailTradingBottomBar(bond: _bond, quantity: _quantity)
+          ? BondDetailTradingBottomBar(
+              bond: _bond,
+              price: _price,
+              quantity: _quantity,
+              lockedAmount: _portfolioSummary?.holdAmount,
+            )
           : BondActionBottomBar(
               label: l10n.availableCash,
-              amount: _isForeign ? '3,523.21\$' : '10,000,000₮',
+              amount: formatStockAmount(
+                _portfolioSummary?.cashBalance ?? 0,
+                isForeign: _isForeign,
+              ),
               buttonText: l10n.buyBond,
               onPressed: () =>
                   Navigator.pushNamed(context, '/bond_buy', arguments: _bond?.raw),

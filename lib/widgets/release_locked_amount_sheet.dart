@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/order.dart';
 import '../screens/components/release_locked_amount/release_locked_amount_header.dart';
 import '../screens/components/release_locked_amount/release_locked_amount_list.dart';
 import '../screens/components/release_locked_amount/release_locked_amount_bottom_bar.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import '../l10n/app_localizations.dart';
 
 /// Түгжигдсэн дүн суллах — bottom sheet хувилбар (тусдаа дэлгэц рүү
 /// шилжихгүй, арилжааны дэлгэцийн дээр нээгдэнэ).
@@ -25,38 +29,134 @@ class ReleaseLockedAmountSheet extends StatefulWidget {
 
 class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
   final Set<int> _selectedIndices = {};
+  bool _isLoading = true;
+  double _availableCash = 0;
+  List<Map<String, dynamic>> _items = [];
 
-  // TODO: идэвхтэй захиалгуудын түгжигдсэн дүнгийн API холбогдмогц
-  // энэ жагсаалтыг серверээс авна
-  final List<Map<String, dynamic>> _items = [
-    {'title': 'Хувьцаа', 'subtitle': '', 'amount': 29341.30, 'isSection': true},
-    {
-      'title': 'APU',
-      'subtitle': 'АПУ ХХК',
-      'amount': 29341.30,
-      'isSection': false,
-    },
-    {'title': 'Бонд', 'subtitle': '', 'amount': 100000.00, 'isSection': true},
-    {
-      'title': 'Simple',
-      'subtitle': 'Симпл',
-      'amount': 100000.00,
-      'isSection': false,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
+  }
+
+  Future<void> _fetchData() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+    try {
+      final authService = context.read<AuthService>();
+      final lang = Localizations.localeOf(context).languageCode;
+      final l10n = AppLocalizations.of(context)!;
+
+      // 1. Get Available Cash
+      final summary = await authService.getPortfolioSummary();
+      
+      // 2. Get Active Orders
+      final rows = await authService.getActiveOrders(scope: 'all');
+      final orders = Order.listFromJson(rows);
+
+      // 3. Transform orders into items
+      final List<Map<String, dynamic>> newItems = [];
+      
+      final stocks = orders.where((o) => !o.isBond).toList();
+      final bonds = orders.where((o) => o.isBond).toList();
+
+      if (stocks.isNotEmpty) {
+        final stockTotal = stocks.fold<double>(0, (sum, o) => sum + o.totalAmount);
+        newItems.add({
+          'title': l10n.stocks,
+          'amount': stockTotal,
+          'isSection': true,
+        });
+        for (var order in stocks) {
+          newItems.add({
+            'title': order.symbol.isNotEmpty ? order.symbol : order.nameOf(lang),
+            'subtitle': order.nameOf(lang),
+            'date': order.orderDateLabel,
+            'amount': order.totalAmount,
+            'isSection': false,
+            'order': order,
+          });
+        }
+      }
+
+      if (bonds.isNotEmpty) {
+        final bondTotal = bonds.fold<double>(0, (sum, o) => sum + o.totalAmount);
+        newItems.add({
+          'title': l10n.bond,
+          'amount': bondTotal,
+          'isSection': true,
+        });
+        for (var order in bonds) {
+          newItems.add({
+            'title': order.symbol.isNotEmpty ? order.symbol : order.nameOf(lang),
+            'subtitle': order.nameOf(lang),
+            'date': order.orderDateLabel,
+            'amount': order.totalAmount,
+            'isSection': false,
+            'order': order,
+          });
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _availableCash = summary.cashBalance;
+          _items = newItems;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        // Error handling could be added here (e.g. snackbar)
+      }
+    }
+  }
 
   double get _totalSelectedAmount {
     double total = 0;
     for (int index in _selectedIndices) {
-      if (!_items[index]['isSection']) {
-        total += _items[index]['amount'];
+      if (index < _items.length && !(_items[index]['isSection'] ?? false)) {
+        total += (_items[index]['amount'] as num).toDouble();
       }
     }
     return total;
   }
 
-  double get _currentCash => 142000.53;
-  double get _projectedCash => _currentCash + _totalSelectedAmount;
+  double get _projectedCash => _availableCash + _totalSelectedAmount;
+
+  void _handleToggle(int index) {
+    setState(() {
+      final item = _items[index];
+      if (item['isSection'] == true) {
+        // Find all child items of this section
+        final List<int> children = [];
+        for (int i = index + 1; i < _items.length; i++) {
+          if (_items[i]['isSection'] == true) break;
+          children.add(i);
+        }
+
+        // If all children are already selected, deselect all.
+        // Otherwise, select all.
+        final bool allSelected = children.every((i) => _selectedIndices.contains(i));
+        if (allSelected) {
+          for (final i in children) {
+            _selectedIndices.remove(i);
+          }
+        } else {
+          for (final i in children) {
+            _selectedIndices.add(i);
+          }
+        }
+      } else {
+        if (_selectedIndices.contains(index)) {
+          _selectedIndices.remove(index);
+        } else {
+          _selectedIndices.add(index);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +169,6 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         top: false,
@@ -91,19 +190,13 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
             const ReleaseLockedAmountHeader(),
             const SizedBox(height: 10),
             Expanded(
-              child: ReleaseLockedAmountList(
-                items: _items,
-                selectedIndices: _selectedIndices,
-                onToggle: (index) {
-                  setState(() {
-                    if (_selectedIndices.contains(index)) {
-                      _selectedIndices.remove(index);
-                    } else {
-                      _selectedIndices.add(index);
-                    }
-                  });
-                },
-              ),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ReleaseLockedAmountList(
+                      items: _items,
+                      selectedIndices: _selectedIndices,
+                      onToggle: _handleToggle,
+                    ),
             ),
             ReleaseLockedAmountBottomBar(
               projectedCashText: projectedCashText,

@@ -9,6 +9,7 @@ import '../../../models/market_instrument.dart';
 import '../../../models/order_book_entry.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_svg_icon.dart';
+import '../../../widgets/release_locked_amount_sheet.dart';
 import 'bond_payment_details.dart';
 import 'bond_payment_details_bottom_sheet.dart';
 import 'bond_trading_order_board.dart';
@@ -17,14 +18,18 @@ import 'bond_trading_order_board.dart';
 /// сонгогч, төлбөрийн задаргаа, захиалгын самбар.
 class BondDetailTradingView extends StatefulWidget {
   final MarketInstrument? bond;
+  final double price;
   final int quantity;
   final ValueChanged<int> onQuantityChanged;
+  final ValueChanged<double> onPriceChanged;
 
   const BondDetailTradingView({
     super.key,
     required this.bond,
+    required this.price,
     required this.quantity,
     required this.onQuantityChanged,
+    required this.onPriceChanged,
   });
 
   @override
@@ -88,6 +93,8 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
   void _onInputsChanged() {
     setState(() {});
+    widget.onPriceChanged(_currentPrice.toDouble());
+    widget.onQuantityChanged(_currentQuantity);
   }
 
   int get _currentPrice {
@@ -130,19 +137,18 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
             final current = _currentQuantity;
             final newVal = current + 1;
             _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
-            widget.onQuantityChanged(newVal);
+            // widget.onQuantityChanged(newVal); // redundant due to listener
           },
           onDecrease: () {
             final current = _currentQuantity;
             if (current > 0) {
               final newVal = current - 1;
               _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
-              widget.onQuantityChanged(newVal);
+              // widget.onQuantityChanged(newVal); // redundant due to listener
             }
           },
           onChanged: (val) {
-            final q = int.tryParse(val.replaceAll(',', '')) ?? 0;
-            widget.onQuantityChanged(q);
+            // redundant due to listener
           },
         ),
         const SizedBox(height: 24),
@@ -191,12 +197,16 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 /// өгөх товч (ширхэг 0 үед идэвхгүй).
 class BondDetailTradingBottomBar extends StatelessWidget {
   final MarketInstrument? bond;
+  final double price;
   final int quantity;
+  final double? lockedAmount;
 
   const BondDetailTradingBottomBar({
     super.key,
     required this.bond,
+    required this.price,
     required this.quantity,
+    this.lockedAmount,
   });
 
   @override
@@ -219,46 +229,47 @@ class BondDetailTradingBottomBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (lockedAmount != null && lockedAmount! > 0)
             Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(color: extendedColors.primary200),
-            child: Row(
-              children: [
-                CustomSvgIcon('info-circle', color: extendedColors.primaryMain, size: 22),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '${l10n.lockedAmountLabel}: 500,000₮',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w300,
-                      color: extendedColors.neutral100,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(color: extendedColors.primary200),
+              child: Row(
+                children: [
+                  CustomSvgIcon('info-circle', color: extendedColors.primaryMain, size: 22),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${l10n.lockedAmountLabel}: ${formatStockAmount(lockedAmount ?? 0, isForeign: bond?.isForeign ?? false)}',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w300,
+                        color: extendedColors.neutral100,
+                      ),
                     ),
                   ),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pushNamed(context, '/release_locked'),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l10n.release,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w300,
-                          color: extendedColors.primaryMain,
+                  TextButton(
+                    onPressed: () => ReleaseLockedAmountSheet.show(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.release,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            color: extendedColors.primaryMain,
+                          ),
                         ),
-                      ),
-                      CustomSvgIcon('chevron-up', color: extendedColors.primaryMain, size: 16,),
-                    ],
+                        CustomSvgIcon('chevron-up', color: extendedColors.primaryMain, size: 16,),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: SafeArea(
@@ -267,7 +278,7 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                 width: double.infinity,
                 child: CustomButton(
                   label: l10n.placeOrder,
-                  onPressed: quantity > 0
+                  onPressed: (quantity > 0 && price > 0)
                       ? () => Navigator.pushNamed(
                     context,
                     '/bond_confirmation',
