@@ -71,6 +71,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
           newItems.add({
             'title': order.symbol.isNotEmpty ? order.symbol : order.nameOf(lang),
             'subtitle': order.nameOf(lang),
+            'date': order.orderDateLabel,
             'amount': order.totalAmount,
             'isSection': false,
             'order': order,
@@ -89,6 +90,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
           newItems.add({
             'title': order.symbol.isNotEmpty ? order.symbol : order.nameOf(lang),
             'subtitle': order.nameOf(lang),
+            'date': order.orderDateLabel,
             'amount': order.totalAmount,
             'isSection': false,
             'order': order,
