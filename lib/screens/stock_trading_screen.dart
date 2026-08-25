@@ -267,8 +267,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         builder: (ctx, _) => Container(
           decoration: BoxDecoration(
             color: extendedColors.bgBase,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: SafeArea(
             top: false,

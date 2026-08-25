@@ -21,7 +21,9 @@ class LockedAmountBottomSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(color: extendedColors.primary200),
+      decoration: BoxDecoration(
+        color: extendedColors.primary200,
+      ),
       child: Row(
         children: [
           CustomSvgIcon('info-circle', color: extendedColors.primaryMain, size: 22),

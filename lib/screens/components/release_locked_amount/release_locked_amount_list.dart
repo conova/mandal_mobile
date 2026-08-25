@@ -16,6 +16,27 @@ class ReleaseLockedAmountList extends StatelessWidget {
     required this.onToggle,
   });
 
+  bool _isSectionSelected(int sectionIndex) {
+    if (sectionIndex < 0 ||
+        sectionIndex >= items.length ||
+        items[sectionIndex]['isSection'] != true) {
+      return false;
+    }
+
+    int childCount = 0;
+    int selectedChildCount = 0;
+
+    for (int i = sectionIndex + 1; i < items.length; i++) {
+      if (items[i]['isSection'] == true) break;
+      childCount++;
+      if (selectedIndices.contains(i)) {
+        selectedChildCount++;
+      }
+    }
+
+    return childCount > 0 && childCount == selectedChildCount;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -25,6 +46,83 @@ class ReleaseLockedAmountList extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
+        final isSection = item['isSection'] ?? false;
+
+        if (isSection) {
+          final isSelected = _isSectionSelected(index);
+          return Column(
+            children: [
+              if (index > 0) ...[
+                Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
+                const SizedBox(height: 10,),
+              ],
+              GestureDetector(
+                onTap: () => onToggle(index),
+                child: Container(
+                  color: isSelected ? extendedColors.primary100 : Colors.transparent,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          // Section Checkbox
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: isSelected
+                                    ? extendedColors.primaryMain
+                                    : extendedColors.neutral400,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                              color: isSelected
+                                  ? extendedColors.primaryMain
+                                  : Colors.transparent,
+                            ),
+                            child: isSelected
+                                ? const Padding(
+                              padding: EdgeInsets.all(3),
+                              child: CustomSvgIcon('checked',
+                                  size: 18, color: Colors.white),
+                            )
+                                : null,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  item['title'],
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: AppTextStyles.bold,
+                                    color: extendedColors.neutral100,
+                                  ),
+                                ),
+                                if (item['amount'] != null)
+                                  Text(
+                                    '${item['amount'].toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮',
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: AppTextStyles.bold,
+                                      color: extendedColors.neutral100,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ]
+          );
+        }
+
         final isSelected = selectedIndices.contains(index);
 
         return GestureDetector(
@@ -52,9 +150,10 @@ class ReleaseLockedAmountList extends StatelessWidget {
                   ),
                   child: isSelected
                       ? const Padding(
-                        padding: EdgeInsets.all(3),
-                        child: CustomSvgIcon('checked', size: 18, color: Colors.white),
-                      )
+                          padding: EdgeInsets.all(3),
+                          child: CustomSvgIcon('checked',
+                              size: 18, color: Colors.white),
+                        )
                       : null,
                 ),
                 const SizedBox(width: 16),
@@ -102,8 +201,8 @@ class ReleaseLockedAmountList extends StatelessWidget {
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: AppTextStyles.regular,
                     color: isSelected
-                      ? extendedColors.neutral100
-                      : extendedColors.neutral200,
+                        ? extendedColors.neutral100
+                        : extendedColors.neutral200,
                   ),
                 ),
               ],
