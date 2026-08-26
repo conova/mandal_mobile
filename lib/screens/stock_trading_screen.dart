@@ -718,7 +718,12 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       ),
       bottomNavigationBar: StockTradingBottomBar(
         onPlaceOrder: _isOrderValid ? _showConfirmation : null,
-        onReleaseLocked: () => ReleaseLockedAmountSheet.show(context),
+        onReleaseLocked: () async {
+          await ReleaseLockedAmountSheet.show(context);
+          // Sheet дотор захиалга цуцалсан байж болзошгүй — түгжигдсэн дүн,
+          // бэлэн мөнгөө дахин татна
+          _fetchPortfolioSummary();
+        },
         lockedAmount: CurrencySuffixFormatter.format(_lockedAmount.toString(),
             suffix: '₮'),
       ),

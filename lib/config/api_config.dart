@@ -158,6 +158,10 @@ class ApiConfig {
   ///   Response: { code: "0", message, data: [{idx, success, msg, txnId}] }
   static const String orderNew = '/bdc/api/order/new';
 
+  /// POST /order/cancel — захиалга цуцлах (олон захиалга зэрэг)
+  ///   Body: { data: [{TXNID, ORDERNO}] } (утгууд orders жагсаалтаас ирнэ)
+  static const String orderCancel = '/bdc/api/order/cancel';
+
   // ─── Legacy ───
   static const String refreshToken = '/bdc/api/auth/refresh.php';
 
