@@ -1783,4 +1783,26 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get yourInterestToReceive => 'ТАНЫ АВАХ ХҮҮ';
+
+  @override
+  String get stockTradingNoPowerTitle => 'Арижааны дансандаа орлого хийгээрэй';
+
+  @override
+  String get stockTradingNoPowerDesc =>
+      'Олон улсын болон дотоодын хувьцаа авахын тулд эхлээд арилжааны дансандаа орлого хийх хэрэгтэй шүү.';
+
+  @override
+  String get marketClosedNotifTitle => 'Зах зээл амарч байна';
+
+  @override
+  String marketClosedNotifDesc(String startDate, String endDate) {
+    return 'Монголын хөрөнгийн биржийн арилжаа $startDate цагаас нээгдэж, $endDate цагт хаагддаг болно. Та зөвхөн энэ хугацаанд зах зээлийн үнээр арилжаа хийх боломжтой.';
+  }
+
+  @override
+  String get understood => 'Ойлголоо';
+
+  @override
+  String get stockTradingMarketPriceNotify =>
+      'Зах зээлийн үнээр хийсэн арилжаа биелэх үед нийт дүн зах зээлийн ханшаас хамаарч өөрчлөгдөж болохыг анхаарна уу.';
 }

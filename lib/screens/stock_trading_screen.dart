@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/order_book_entry.dart';
+import '../models/market_instrument.dart';
 import '../widgets/currency_suffix_formatter.dart';
 import '../widgets/release_locked_amount_sheet.dart';
 import '../services/auth_service.dart';
@@ -37,6 +39,9 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
 
   Map<String, dynamic> _args = const {};
   bool _argsParsed = false;
+
+  /// Хувьцааны дэлгэрэнгүй мэдээлэл (арилжааны цаг, settle day г.м.)
+  MarketInstrument? _stockInfo;
 
   /// /stocks/order_book — авах/зарах талууд
   List<OrderBookEntry> _buyOrders = const [];
@@ -124,6 +129,11 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
         const {};
 
+    // Stock detail-с дамжуулсан info-г уншина
+    if (_args['info'] != null) {
+      _stockInfo = MarketInstrument.fromJson(_args['info']);
+    }
+
     // Initial price pre-fill from arguments
     if (_args['price'] != null) {
       _priceController.text = CurrencySuffixFormatter.format(
@@ -200,120 +210,214 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    Widget option({
-      required int type,
-      required IconData icon,
-      required String title,
-      required String desc,
-    }) {
-      final isSelected = _orderType == type;
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          setState(() => _orderType = type);
-          Navigator.pop(context);
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: extendedColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon, size: 24, color: extendedColors.neutral100),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: extendedColors.neutral100,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      desc,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: extendedColors.neutral200,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isSelected) ...[
-                const SizedBox(width: 8),
-                Icon(Icons.check, color: extendedColors.primaryMain, size: 24),
-              ],
-            ],
-          ),
-        ),
-      );
-    }
+    // stock_detail-с дамжиж ирсэн арилжааны цаг болон статус
+    final startTime = _stockInfo?.sTrade ?? '10:00';
+    final endTime = _stockInfo?.eTrade ?? '13:00';
+    final bool isMarketOpen = _stockInfo?.marketOpen ?? false;
+    
+    // Зах зээл хаалттай үед Market Order-ийг (type 2) хязгаарлана
+    final bool isMarketRestricted = !isMarketOpen;
+
+    bool warnUser = false;
 
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, _) => Container(
-          decoration: BoxDecoration(
-            color: extendedColors.bgBase,
-          ),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10, bottom: 16),
-                    width: 48,
-                    height: 5,
-                    decoration: BoxDecoration(
+        builder: (ctx, setSheetState) {
+
+          if (warnUser) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  color: extendedColors.bgBase,
+                  boxShadow: [
+                    BoxShadow(
                       color: extendedColors.neutral400,
-                      borderRadius: BorderRadius.circular(3),
+                      offset: const Offset(0, -4),
+                      blurRadius: 40,
+                    )
+                  ]
+              ),
+              // Жижиг дэлгэц/keyboard үед агуулга багтахгүй бол scroll болно
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: extendedColors.neutral300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    l10n.tradeTypeTitle,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: extendedColors.bgSecondary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: CustomSvgIcon('info-circle', size: 20, color: extendedColors.primaryMain,),
                     ),
-                  ),
+                    const SizedBox(height: 24,),
+                    Text(
+                      l10n.marketClosedNotifTitle,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: extendedColors.neutral100
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        l10n.marketClosedNotifDesc(startTime, endTime),
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w300,
+                          color: extendedColors.neutral100,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    CustomButton(
+                      label: l10n.understood,
+                      onPressed: () {
+                        setSheetState(() => warnUser = false);
+                        Navigator.pop(context);
+                      },
+                      variant: CustomButtonVariant.tertiary,
+                    ),
+                    const SizedBox(height: 26),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                option(
-                  type: 1,
-                  icon: Icons.north_east,
-                  title: l10n.limitPrice,
-                  desc: l10n.limitPriceDesc,
+              ),
+            );
+          }
+
+          Widget option({
+            required int type,
+            required String icon,
+            required String title,
+            required String desc,
+          }) {
+            final isSelected = _orderType == type;
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                if (type == 2 && isMarketRestricted) {
+                  setSheetState(() => warnUser = true);
+                  return;
+                }
+                setState(() => _orderType = type);
+                Navigator.pop(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: extendedColors.bgSecondary,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: CustomSvgIcon(icon, size: 24, color: extendedColors.neutral100),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: extendedColors.neutral100,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            desc,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: extendedColors.neutral200,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isSelected) ...[
+                      const SizedBox(width: 8),
+                      Icon(Icons.check, color: extendedColors.primaryMain, size: 24),
+                    ],
+                  ],
                 ),
-                Divider(height: 1, color: extendedColors.neutral500),
-                option(
-                  type: 2,
-                  icon: Icons.bolt_outlined,
-                  title: l10n.marketPrice,
-                  desc: l10n.marketPriceDesc,
-                ),
-                const SizedBox(height: 24),
-              ],
+              ),
+            );
+          }
+
+          return Container(
+            decoration: BoxDecoration(
+              color: extendedColors.bgBase,
             ),
-          ),
-        ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 10, bottom: 16),
+                      width: 48,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: extendedColors.neutral400,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      l10n.tradeTypeTitle,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  option(
+                    type: 1,
+                    icon: 'Union',
+                    title: l10n.limitPrice,
+                    desc: l10n.limitPriceDesc,
+                  ),
+                  Divider(height: 1, color: extendedColors.neutral500),
+                  option(
+                    type: 2,
+                    icon: 'lightning-02',
+                    title: l10n.marketPrice,
+                    desc: l10n.marketPriceDesc,
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -323,6 +427,13 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final name = _args['name']?.toString() ?? '';
     final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
     final price = double.tryParse(priceStr) ?? 0;
+    
+    // Extracting the 4 variables from passed data via _stockInfo
+    final startTime = _stockInfo?.sTrade ?? '10:00';
+    final endTime = _stockInfo?.eTrade ?? '13:00';
+    final settleDay = _stockInfo?.settleDay ?? '2';
+    final isMarketOpen = _stockInfo?.marketOpen ?? false;
+
     final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
     final cnt = int.tryParse(qtyStr) ?? 0;
 
@@ -347,6 +458,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
           'EXPDATE': expDate,
           'FEE': '0', // Placeholder for actual fee calculation if needed
         },
+        // Optionally pass these along if the confirmation screen needs them
+        'settleDay': settleDay,
       },
     );
   }
@@ -357,6 +470,69 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final isSell = _args['side'] == 'sell';
+    final showWarningScreen = (!isSell && _availableCash == 0 && _lockedAmount == 0);
+
+    if (showWarningScreen) {
+      return Scaffold(
+        backgroundColor: extendedColors.bgBase,
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: extendedColors.bgSecondary,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Image.asset(
+                          'assets/images/bookmark.png'
+                      ),
+                    ),
+                    const SizedBox(height: 20,),
+                    Text(
+                      l10n.stockTradingNoPowerTitle,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    Text(
+                      l10n.stockTradingNoPowerDesc,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral100,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20,),
+              CustomButton(
+                label: l10n.makeIncome,
+                variant: CustomButtonVariant.primary,
+                onPressed: () => Navigator.pushNamed(context, '/income_method'),
+              ),
+              const SizedBox(height: 10,),
+              CustomButton(
+                label: l10n.back,
+                variant: CustomButtonVariant.secondary,
+                onPressed: Navigator.of(context).pop,
+              ),
+            ],
+          ),
+        )
+      );
+    }
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -450,12 +626,21 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      StockTradingInputBox(
-                        label: l10n.limitPrice,
-                        controller: _priceController,
-                        focusNode: _priceFocusNode,
-                        suffixText: l10n.paste,
-                      ),
+                      if (_orderType == 2)
+                        StockTradingInputBox(
+                          label: l10n.marketPrice,
+                          controller: _priceController,
+                          focusNode: _priceFocusNode,
+                          readOnly: true,
+                          suffixText: '',
+                        ),
+                      if (_orderType == 1)
+                        StockTradingInputBox(
+                          label: l10n.limitPrice,
+                          controller: _priceController,
+                          focusNode: _priceFocusNode,
+                          suffixText: l10n.paste,
+                        ),
                       StockTradingQuantitySelector(
                         controller: _quantityController,
                         focusNode: _quantityFocusNode,

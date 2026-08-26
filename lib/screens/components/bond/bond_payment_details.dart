@@ -47,7 +47,7 @@ class BondPaymentDetails extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  l10n.totalReturn,
+                  l10n.yield,
                   style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral200),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

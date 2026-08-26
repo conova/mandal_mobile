@@ -151,7 +151,7 @@ class BondMarketCard extends StatelessWidget {
                   thickness: 1,
                   color: extendedColors.neutral400,
                 ),
-                Expanded(child: _buildMetric(theme, l10n.interestRate, yield)),
+                Expanded(child: _buildMetric(theme, l10n.yield, yield)),
                 VerticalDivider(
                   width: 1,
                   thickness: 1,
