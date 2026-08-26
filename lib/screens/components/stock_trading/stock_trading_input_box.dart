@@ -11,6 +11,7 @@ class StockTradingInputBox extends StatefulWidget {
   final String? suffixText;
   final VoidCallback? onSuffixTap;
   final String currencySymbol;
+  final bool readOnly;
 
   const StockTradingInputBox({
     super.key,
@@ -20,6 +21,7 @@ class StockTradingInputBox extends StatefulWidget {
     this.suffixText,
     this.onSuffixTap,
     this.currencySymbol = '₮',
+    this.readOnly = false,
   });
 
   @override
@@ -80,7 +82,11 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return GestureDetector(
-      onTap: () => widget.focusNode.requestFocus(),
+      onTap: () {
+        if (!widget.readOnly) {
+          widget.focusNode.requestFocus();
+        }
+      },
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -109,6 +115,7 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
                   child: TextField(
                     controller: widget.controller,
                     focusNode: widget.focusNode,
+                    readOnly: widget.readOnly,
                     keyboardType: TextInputType.number,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
@@ -129,7 +136,7 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
                 ),
 
                 // RIGHT SIDE: Action button (e.g. Paste)
-                if (widget.suffixText != null) ...[
+                if (widget.suffixText != null && !widget.readOnly) ...[
                   const SizedBox(width: 16),
                   GestureDetector(
                     onTap: () async {

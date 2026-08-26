@@ -143,12 +143,45 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
       final args = ModalRoute.of(context)?.settings.arguments
               as Map<String, dynamic>? ??
           const {};
-      final order = args['order'];
-      if (order is Map) {
-        await context
-            .read<AuthService>()
-            .createOrders([Map<String, dynamic>.from(order)]);
+      final order = args['order'] as Map<String, dynamic>? ?? const {};
+      final stockcode = order['STOCKCODE']?.toString() ?? '';
+      final orderType = order['ORDERTYPE']?.toString();
+
+      // If market order, verify market is still open
+      if (orderType == '2') {
+        final infoRows = await context.read<AuthService>().getStockInfo(stockcode);
+        if (infoRows.isNotEmpty) {
+          final info = infoRows.first;
+          final isMarketOpen = info['MARKETOPEN']?.toString() == '1';
+          if (!isMarketOpen) {
+            if (!mounted) return;
+            setState(() => _isConfirming = false);
+            _expandController.animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+            );
+
+            final startTime = info['STRADE']?.toString() ?? '10:00';
+            final endTime = info['ETRADE']?.toString() ?? '13:00';
+
+            // Алдаа — анимэйшнийг буцааж, хэрэглэгчид мэдэгдэнэ
+            setState(() => _isConfirming = false);
+            _expandController.animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+            );
+            CustomSnackbar.showError(context, 'Market closed');
+            return;
+          }
+        }
       }
+
+      await context
+          .read<AuthService>()
+          .createOrders([Map<String, dynamic>.from(order)]);
+
       if (!mounted) return;
       _expandController.forward();
     } catch (e) {
@@ -177,6 +210,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
     final symbol = args['symbol']?.toString() ?? '';
     final name = args['name']?.toString() ?? '';
     final order = args['order'] as Map<String, dynamic>? ?? const {};
+    final orderType = order['ORDERTYPE']?.toString();
 
     return PopScope(
       // Захиалга баталгаажиж эхэлсний дараа буцах боломжгүй — эс бөгөөс
@@ -280,6 +314,58 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                                   order: order,
                                 ),
                               ),
+                              if (orderType == '2') ...[
+                                const SizedBox(height: 48,),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(1),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [extendedColors.primary500, extendedColors.primary300]
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(15),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [extendedColors.primary200, extendedColors.primary100]
+                                        ),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 10),
+                                            child: CustomSvgIcon(
+                                              'annotation-info',
+                                              size: 20,
+                                              color: extendedColors.primaryMain,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10,),
+                                          Expanded(
+                                            child: Text(
+                                              l10n.stockTradingMarketPriceNotify,
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.w300,
+                                                color: extendedColors.neutral100,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
                             ],
                           ),
                         ),
@@ -370,10 +456,10 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
           orderType,
         ),
         const SizedBox(height: 16),
-        _buildDetailRow(theme, extendedColors, l10n.quantityLabel, 
+        _buildDetailRow(theme, extendedColors, l10n.quantityLabel,
             CurrencySuffixFormatter.format(quantity, suffix: '')),
         const SizedBox(height: 16),
-        _buildDetailRow(theme, extendedColors, l10n.unitPrice, 
+        _buildDetailRow(theme, extendedColors, l10n.unitPrice,
             CurrencySuffixFormatter.format(price, suffix: '₮')),
         const SizedBox(height: 16),
         _buildDetailRow(

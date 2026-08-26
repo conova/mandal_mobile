@@ -3465,6 +3465,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'YOUR INTEREST TO RECEIVE'**
   String get yourInterestToReceive;
+
+  /// No description provided for @stockTradingNoPowerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please make a deposit into your business account'**
+  String get stockTradingNoPowerTitle;
+
+  /// No description provided for @stockTradingNoPowerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'To buy domestic and international stocks, you first need to deposit funds into your trading account.'**
+  String get stockTradingNoPowerDesc;
+
+  /// No description provided for @marketClosedNotifTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The market is closed'**
+  String get marketClosedNotifTitle;
+
+  /// No description provided for @marketClosedNotifDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Mongolian Stock Exchange trading hours are from {startDate} to {endDate}. You can only trade at market price during this period.'**
+  String marketClosedNotifDesc(String startDate, String endDate);
+
+  /// No description provided for @understood.
+  ///
+  /// In en, this message translates to:
+  /// **'Understood'**
+  String get understood;
+
+  /// No description provided for @stockTradingMarketPriceNotify.
+  ///
+  /// In en, this message translates to:
+  /// **'Please note that the total amount of market orders may vary depending on the market price at execution.'**
+  String get stockTradingMarketPriceNotify;
 }
 
 class _AppLocalizationsDelegate

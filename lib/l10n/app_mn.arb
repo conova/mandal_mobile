@@ -588,5 +588,21 @@
     "nextInterestPayDueDate": "Дараагийн\nхүү төлөгдөх өдөр",
     "todayBondBuyDate": "Өнөөдөр\n(Бонд авах өдөр)",
     "accruedInterestToSeller": "Зарагч талд төлөх\nхуримтлагдсан хүү",
-    "yourInterestToReceive": "ТАНЫ АВАХ ХҮҮ"
+    "yourInterestToReceive": "ТАНЫ АВАХ ХҮҮ",
+    "stockTradingNoPowerTitle": "Арижааны дансандаа орлого хийгээрэй",
+    "stockTradingNoPowerDesc": "Олон улсын болон дотоодын хувьцаа авахын тулд эхлээд арилжааны дансандаа орлого хийх хэрэгтэй шүү.",
+    "marketClosedNotifTitle": "Зах зээл амарч байна",
+    "marketClosedNotifDesc": "Монголын хөрөнгийн биржийн арилжаа {startDate} цагаас нээгдэж, {endDate} цагт хаагддаг болно. Та зөвхөн энэ хугацаанд зах зээлийн үнээр арилжаа хийх боломжтой.",
+   "@marketClosedNotifDesc": {
+        "placeholders": {
+            "startDate": {
+                "type": "String"
+            },
+            "endDate": {
+                "type": "String"
+            }
+        }
+    },
+    "understood": "Ойлголоо",
+    "stockTradingMarketPriceNotify": "Зах зээлийн үнээр хийсэн арилжаа биелэх үед нийт дүн зах зээлийн ханшаас хамаарч өөрчлөгдөж болохыг анхаарна уу."
 }

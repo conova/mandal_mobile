@@ -46,6 +46,12 @@ class MarketInstrument {
   final double? dayTrade;
   final String divDate;
 
+  // Арилжааны цагийн мэдээлэл
+  final String sTrade;
+  final String eTrade;
+  final String settleDay;
+  final bool marketOpen;
+
   // /stocks/mystocks-ийн ашгийн талбарууд (бусад API-д null)
   /// Ашиг +/- (PROFIT)
   final double? profit;
@@ -121,6 +127,10 @@ class MarketInstrument {
     this.avgTrade,
     this.dayTrade,
     this.divDate = '',
+    this.sTrade = '',
+    this.eTrade = '',
+    this.settleDay = '',
+    this.marketOpen = false,
     this.profit,
     this.unrealizedRate,
     this.totalProfit,
@@ -182,6 +192,10 @@ class MarketInstrument {
       avgTrade: num_('AVGTRADE'),
       dayTrade: num_('DAYTRADE'),
       divDate: str('DIVDATE'),
+      sTrade: str('STRADE'),
+      eTrade: str('ETRADE'),
+      settleDay: str('SETTLEDAY'),
+      marketOpen: str('MARKETOPEN') == '1',
       profit: num_('PROFIT'),
       unrealizedRate: num_('UNREALIZEDRATE'),
       totalProfit: num_('TOTALPROFIT'),

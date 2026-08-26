@@ -1787,4 +1787,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yourInterestToReceive => 'YOUR INTEREST TO RECEIVE';
+
+  @override
+  String get stockTradingNoPowerTitle =>
+      'Please make a deposit into your business account';
+
+  @override
+  String get stockTradingNoPowerDesc =>
+      'To buy domestic and international stocks, you first need to deposit funds into your trading account.';
+
+  @override
+  String get marketClosedNotifTitle => 'The market is closed';
+
+  @override
+  String marketClosedNotifDesc(String startDate, String endDate) {
+    return 'Mongolian Stock Exchange trading hours are from $startDate to $endDate. You can only trade at market price during this period.';
+  }
+
+  @override
+  String get understood => 'Understood';
+
+  @override
+  String get stockTradingMarketPriceNotify =>
+      'Please note that the total amount of market orders may vary depending on the market price at execution.';
 }

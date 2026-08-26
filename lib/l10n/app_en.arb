@@ -650,5 +650,21 @@
     "nextInterestPayDueDate": "Next interest\n payment date",
     "todayBondBuyDate": "Today\n(Bond buy date)",
     "accruedInterestToSeller": "Accrued interest\n paid to seller",
-    "yourInterestToReceive": "YOUR INTEREST TO RECEIVE"
+    "yourInterestToReceive": "YOUR INTEREST TO RECEIVE",
+    "stockTradingNoPowerTitle": "Please make a deposit into your business account",
+    "stockTradingNoPowerDesc": "To buy domestic and international stocks, you first need to deposit funds into your trading account.",
+    "marketClosedNotifTitle": "The market is closed",
+    "marketClosedNotifDesc": "Mongolian Stock Exchange trading hours are from {startDate} to {endDate}. You can only trade at market price during this period.",
+    "@marketClosedNotifDesc": {
+        "placeholders": {
+            "startDate": {
+                "type": "String"
+            },
+            "endDate": {
+                "type": "String"
+            }
+        }
+    },
+    "understood": "Understood",
+    "stockTradingMarketPriceNotify": "Please note that the total amount of market orders may vary depending on the market price at execution."
 }
