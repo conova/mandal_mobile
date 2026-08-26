@@ -1082,6 +1082,19 @@ class AppLocalizationsMn extends AppLocalizations {
   String get agree => 'Зөвшөөрөх';
 
   @override
+  String get signTitle => 'Гарын үсэг зурна уу';
+
+  @override
+  String get signSubtitle =>
+      'Та зөвхөн нэг удаа л зурахад хангалттай. Дараагийн удаа дахин асуухгүй.';
+
+  @override
+  String get signHere => 'Энд зурна уу';
+
+  @override
+  String get redraw => 'Дахин зурах';
+
+  @override
   String get agreed => 'Зөвшөөрсөн';
 
   @override

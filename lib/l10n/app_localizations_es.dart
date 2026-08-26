@@ -1085,6 +1085,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get agree => 'Agree';
 
   @override
+  String get signTitle => 'Please sign here';
+
+  @override
+  String get signSubtitle =>
+      'You only need to sign once. You will not be asked again.';
+
+  @override
+  String get signHere => 'Sign here';
+
+  @override
+  String get redraw => 'Redraw';
+
+  @override
   String get agreed => 'Agreed';
 
   @override

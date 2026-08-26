@@ -6,6 +6,7 @@ import '../screens/components/release_locked_amount/release_locked_amount_list.d
 import '../screens/components/release_locked_amount/release_locked_amount_bottom_bar.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
+import 'custom_snackbar.dart';
 import '../l10n/app_localizations.dart';
 
 /// Түгжигдсэн дүн суллах — bottom sheet хувилбар (тусдаа дэлгэц рүү
@@ -30,6 +31,7 @@ class ReleaseLockedAmountSheet extends StatefulWidget {
 class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
   final Set<int> _selectedIndices = {};
   bool _isLoading = true;
+  bool _isCancelling = false;
   double _availableCash = 0;
   List<Map<String, dynamic>> _items = [];
 
@@ -108,8 +110,40 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        // Error handling could be added here (e.g. snackbar)
+        CustomSnackbar.showError(context, e);
       }
+    }
+  }
+
+  /// Сонгосон захиалгуудыг цуцална (/order/cancel) — амжилттай болмогц
+  /// жагсаалт, бэлэн мөнгөө дахин татна
+  Future<void> _cancelSelected() async {
+    if (_isCancelling) return;
+    final orders = _selectedIndices
+        .where((i) =>
+            i < _items.length && (_items[i]['isSection'] ?? false) == false)
+        .map((i) => _items[i]['order'])
+        .whereType<Order>()
+        .map((o) => <String, dynamic>{
+              'TXNID': o.txnId,
+              'ORDERNO': o.orderNo,
+            })
+        .toList();
+    if (orders.isEmpty) return;
+
+    setState(() => _isCancelling = true);
+    try {
+      final message =
+          await context.read<AuthService>().cancelOrders(orders);
+      if (!mounted) return;
+      CustomSnackbar.show(context, message: message);
+      // Түгжээ суларсан тул жагсаалт, үлдэгдлээ шинэчилнэ
+      _selectedIndices.clear();
+      await _fetchData();
+    } catch (e) {
+      if (mounted) CustomSnackbar.showError(context, e);
+    } finally {
+      if (mounted) setState(() => _isCancelling = false);
     }
   }
 
@@ -201,11 +235,8 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
             ReleaseLockedAmountBottomBar(
               projectedCashText: projectedCashText,
               onBack: () => Navigator.pop(context),
-              isCancelEnabled: _selectedIndices.isNotEmpty,
-              onCancel: () {
-                // TODO: захиалга цуцлах API холбогдмогц энд дуудна
-                Navigator.pop(context);
-              },
+              isCancelEnabled: _selectedIndices.isNotEmpty && !_isCancelling,
+              onCancel: _cancelSelected,
             ),
           ],
         ),

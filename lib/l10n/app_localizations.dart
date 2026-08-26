@@ -2146,6 +2146,30 @@ abstract class AppLocalizations {
   /// **'Agree'**
   String get agree;
 
+  /// No description provided for @signTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign here'**
+  String get signTitle;
+
+  /// No description provided for @signSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You only need to sign once. You will not be asked again.'**
+  String get signSubtitle;
+
+  /// No description provided for @signHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign here'**
+  String get signHere;
+
+  /// No description provided for @redraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Redraw'**
+  String get redraw;
+
   /// No description provided for @agreed.
   ///
   /// In en, this message translates to:

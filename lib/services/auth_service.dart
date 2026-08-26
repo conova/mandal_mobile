@@ -1406,13 +1406,50 @@ class AuthService with ChangeNotifier {
             .where((r) => r['success'] != true)
             .toList();
         if (failed.isNotEmpty) {
+          final errMsg = failed.first['errMsg']?.toString() ?? '';
+          final msg = failed.first['msg']?.toString() ?? '';
           throw Exception(
-            failed.first['msg']?.toString() ?? 'Захиалга амжилтгүй боллоо',
+            errMsg.isNotEmpty
+                ? errMsg
+                : (msg.isNotEmpty ? msg : 'Захиалга амжилтгүй боллоо'),
           );
         }
         return apiMessage(body) ?? 'Захиалга амжилттай үүслээ';
       }
       throw Exception(apiMessage(body) ?? 'Захиалга үүсгэхэд алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Захиалга цуцлах — POST /order/cancel.
+  /// [orders] мөр бүр {TXNID, ORDERNO} агуулна.
+  Future<String> cancelOrders(List<Map<String, dynamic>> orders) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.orderCancel,
+        data: {'data': orders},
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        final results = (body['data'] as List? ?? const []);
+        final failed = results
+            .whereType<Map>()
+            .where((r) => r['success'] != true)
+            .toList();
+        if (failed.isNotEmpty) {
+          // Алдааны дэлгэрэнгүй нь errMsg-д, msg нь ерөнхий байдаг
+          final errMsg = failed.first['errMsg']?.toString() ?? '';
+          final msg = failed.first['msg']?.toString() ?? '';
+          throw Exception(
+            errMsg.isNotEmpty
+                ? errMsg
+                : (msg.isNotEmpty ? msg : 'Захиалга цуцлагдсангүй'),
+          );
+        }
+        return apiMessage(body) ?? 'Захиалга цуцлагдлаа';
+      }
+      throw Exception(apiMessage(body) ?? 'Захиалга цуцлахад алдаа гарлаа');
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
