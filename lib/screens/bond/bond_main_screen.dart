@@ -353,7 +353,7 @@ class _BondMainScreenState extends State<BondMainScreen>
       onSellPressed: () => Navigator.pushNamed(
         context,
         '/bond_sell',
-        arguments: {'symbol': bond.symbol, 'name': bond.name},
+        arguments: bond.raw,
       ),
     );
   }

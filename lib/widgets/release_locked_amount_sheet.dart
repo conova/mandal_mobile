@@ -62,11 +62,12 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
       // 3. Transform orders into items
       final List<Map<String, dynamic>> newItems = [];
       
+      // Түгжигдсэн дүн = биелээгүй тоо × үнэ + шимтгэл (lockedAmount)
       final stocks = orders.where((o) => !o.isBond).toList();
       final bonds = orders.where((o) => o.isBond).toList();
 
       if (stocks.isNotEmpty) {
-        final stockTotal = stocks.fold<double>(0, (sum, o) => sum + o.totalAmount);
+        final stockTotal = stocks.fold<double>(0, (sum, o) => sum + o.lockedAmount);
         newItems.add({
           'title': l10n.stocks,
           'amount': stockTotal,
@@ -77,7 +78,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
             'title': order.symbol.isNotEmpty ? order.symbol : order.nameOf(lang),
             'subtitle': order.nameOf(lang),
             'date': order.orderDateLabel,
-            'amount': order.totalAmount,
+            'amount': order.lockedAmount,
             'isSection': false,
             'order': order,
           });
@@ -85,7 +86,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
       }
 
       if (bonds.isNotEmpty) {
-        final bondTotal = bonds.fold<double>(0, (sum, o) => sum + o.totalAmount);
+        final bondTotal = bonds.fold<double>(0, (sum, o) => sum + o.lockedAmount);
         newItems.add({
           'title': l10n.bond,
           'amount': bondTotal,
@@ -96,7 +97,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
             'title': order.symbol.isNotEmpty ? order.symbol : order.nameOf(lang),
             'subtitle': order.nameOf(lang),
             'date': order.orderDateLabel,
-            'amount': order.totalAmount,
+            'amount': order.lockedAmount,
             'isSection': false,
             'order': order,
           });

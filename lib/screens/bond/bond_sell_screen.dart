@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../common/stock_row_format.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
 import '../components/bond/bond_price_slider.dart';
 import '../components/bond/bond_quantity_selector.dart';
@@ -17,6 +20,105 @@ class BondSellScreen extends StatefulWidget {
 
 class _BondSellScreenState extends State<BondSellScreen> {
   int _quantity = 1;
+  Map<String, dynamic> _bond = const {};
+  bool _argsParsed = false;
+  double _selectedPrice = 0;
+
+  /// Шимтгэлийн хувь (1 = 1%) — /user/fees-аас STOCKTYPE-аар нь татна
+  double _feePct = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_argsParsed) return;
+    _argsParsed = true;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map) _bond = Map<String, dynamic>.from(args);
+    _selectedPrice = _unitPrice;
+    _fetchFee();
+  }
+
+  Future<void> _fetchFee() async {
+    final pct = await context.read<AuthService>().getFeePercent(
+          stockType: _bond['STOCKTYPE']?.toString() ?? '',
+        );
+    if (mounted) setState(() => _feePct = pct);
+  }
+
+  double _num(List<String> keys) {
+    for (final k in keys) {
+      final v = num.tryParse(_bond[k]?.toString() ?? '');
+      if (v != null && v > 0) return v.toDouble();
+    }
+    return 0;
+  }
+
+  String _str(List<String> keys) {
+    for (final k in keys) {
+      final v = _bond[k]?.toString() ?? '';
+      if (v.isNotEmpty) return v;
+    }
+    return '';
+  }
+
+  double get _unitPrice =>
+      _num(['UNITPRICE', 'CLOSEPRICE', 'STOCKPRICE', 'PRICE']);
+
+  double get _ownedAmount => _num(['AMT']);
+
+  bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
+
+  bool get _isOpen => _bond['ISOPEN']?.toString() == '1';
+
+  /// Эзэмшиж буй ширхэг — CNT талбар ирвэл түүнийг, үгүй бол дүн/нэгж үнэ
+  int get _maxQuantity {
+    final cnt = _num(['CNT', 'CURRENTBAL']);
+    if (cnt > 0) return cnt.floor();
+    if (_unitPrice > 0) return (_ownedAmount / _unitPrice).floor();
+    return 0;
+  }
+
+  double get _price => _selectedPrice > 0 ? _selectedPrice : _unitPrice;
+  double get _total => _quantity * _price;
+  double get _fee => _total * _feePct / 100;
+
+  /// Хүлээн авах дүн — нийт дүнгээс шимтгэл хассан
+  double get _proceeds => _total - _fee;
+
+  void _placeOrder() {
+    final l10n = AppLocalizations.of(context)!;
+    final exp = DateTime.now().add(const Duration(days: 30));
+    String two(int n) => n.toString().padLeft(2, '0');
+    final symbol = _str(['SYMBOL']);
+
+    Navigator.pushNamed(
+      context,
+      '/bond_sell_confirmation',
+      arguments: {
+        'bond': _bond,
+        'qty': _quantity,
+        'price': _price,
+        'fee': _fee,
+        'feePct': _feePct,
+        'total': _proceeds,
+        'isForeign': _isForeign,
+        'totalLabel': l10n.receivableAmountLabel,
+        'order': {
+          'STOCKCODE': _str(['STOCKCODE']),
+          'CNT': _quantity.toString(),
+          'PRICE': _price.toString(),
+          // 1 — зарах
+          'TXNTYPE': '1',
+          'ORDERTYPE': '1',
+          'CONDID': '18',
+          'DESCR': 'App: $symbol бонд зарах $_quantity ширхэг, '
+              'нэгж үнэ $_price',
+          'EXPDATE': '${exp.year}/${two(exp.month)}/${two(exp.day)}',
+          'FEE': '1',
+        },
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +151,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
               children: [
                 Flexible(
                   child: Text(
-                    'Net Capital',
+                    _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
@@ -61,7 +163,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 const SizedBox(width: 12),
                 Flexible(
                   child: Text(
-                    'Нэт Капитал',
+                    _str(['COMPNAME2', 'TYPENAME']),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.neutral200,
                     ),
@@ -73,7 +175,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '${l10n.ownedAmountLabel}: 10,000,000₮',
+              '${l10n.ownedAmountLabel}: ${formatStockAmount(_ownedAmount, isForeign: _isForeign, decimals: 0)}',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.primaryMain,
                 fontWeight: AppTextStyles.bold,
@@ -81,22 +183,25 @@ class _BondSellScreenState extends State<BondSellScreen> {
             ),
             const SizedBox(height: 16),
             _buildBadge(
-              l10n.closed,
+              _isOpen ? l10n.open : l10n.closed,
               extendedColors.primary100,
               extendedColors.primaryMain,
               theme,
             ),
             const SizedBox(height: 32),
-            BondPriceSlider(
-              min: 990000,
-              max: 1010000,
-              initialValue: 1000000,
-              // Сонгосон үнэ одоогоор хаана ч ашиглагддаггүй (демо дэлгэц)
-              onChanged: (_) {},
-            ),
+            if (_unitPrice > 0)
+              BondPriceSlider(
+                // Нэгж үнийн ±2%-ийн мужид зарах үнээ сонгоно
+                min: _unitPrice * 0.98,
+                max: _unitPrice * 1.02,
+                initialValue: _unitPrice,
+                onChanged: (price) {
+                  setState(() => _selectedPrice = price);
+                },
+              ),
             const SizedBox(height: 24),
             BondQuantitySelector(
-              maxQuantity: 10,
+              maxQuantity: _maxQuantity,
               initialQuantity: 1,
               onChanged: (value) {
                 setState(() {
@@ -137,10 +242,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
           width: double.infinity,
           child: CustomButton(
             label: l10n.placeOrder,
-            onPressed: _quantity > 0
-                ? () =>
-                    Navigator.pushNamed(context, '/bond_sell_confirmation')
-                : null,
+            onPressed: _quantity > 0 && _price > 0 ? _placeOrder : null,
           ),
         ),
       ),
@@ -178,7 +280,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
               children: [
                 Flexible(
                   child: Text(
-                    '998,000₮',
+                    formatStockAmount(_proceeds, isForeign: _isForeign, decimals: 0),
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,

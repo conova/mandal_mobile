@@ -183,6 +183,17 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
             ..._holdings.map(
               (stock) => _buildHistoryCard(stock, theme, extendedColors, l10n),
             ),
+            // Хэрэгжээгүй ашгийн тайлбар — шимтгэл, татвар ороогүй
+            if (_holdings.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: Text(
+                  l10n.unrealizedProfitNote,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: extendedColors.neutral300,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

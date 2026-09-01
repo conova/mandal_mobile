@@ -426,11 +426,28 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     );
   }
 
-  void _showConfirmation() {
+  Future<void> _showConfirmation() async {
     final symbol = _args['symbol']?.toString() ?? '';
     final name = _args['name']?.toString() ?? '';
     final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
-    final price = double.tryParse(priceStr) ?? 0;
+    var price = double.tryParse(priceStr) ?? 0;
+    final isSell = _args['side'] == 'sell';
+
+    // Зах зээлийн үнэ (market order):
+    //   авах — хамгийн хямд зарах ханш + 15%, зарах — хамгийн өндөр авах ханш
+    if (_orderType == 2) {
+      if (!isSell && _sellOrders.isNotEmpty) {
+        final bestAsk = _sellOrders
+            .map((o) => o.price)
+            .reduce((a, b) => a < b ? a : b);
+        if (bestAsk > 0) price = bestAsk * 1.15;
+      } else if (isSell && _buyOrders.isNotEmpty) {
+        final bestBid = _buyOrders
+            .map((o) => o.price)
+            .reduce((a, b) => a > b ? a : b);
+        if (bestBid > 0) price = bestBid;
+      }
+    }
     
     // Extracting the 4 variables from passed data via _stockInfo
     final startTime = _stockInfo?.sTrade ?? '10:00';
@@ -440,6 +457,13 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
 
     final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
     final cnt = int.tryParse(qtyStr) ?? 0;
+
+    // Шимтгэлийн хувь — /user/fees (хувьцаа = STOCKTYPE 1)
+    final feePct = await context
+        .read<AuthService>()
+        .getFeePercent(stockType: '1');
+    if (!mounted) return;
+    final fee = price * cnt * feePct / 100;
 
     final exp = DateTime.now().add(const Duration(days: 30));
     String two(int n) => n.toString().padLeft(2, '0');
@@ -452,16 +476,22 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       arguments: {
         'symbol': symbol,
         'name': name,
+        // Шимтгэл, нийт дүн — /user/fees-ийн хувиар тооцсон
+        'fee': fee,
+        'feePct': feePct,
+        'total': price * cnt + fee,
         'order': {
           'STOCKCODE': _args['stockcode']?.toString() ?? '',
           'CNT': cnt.toString(),
           'PRICE': price.toString(),
+          // 0 — авах, 1 — зарах
           'TXNTYPE': isSell ? '1' : '0',
           'ORDERTYPE': _orderType.toString(),
           'CONDID': '18',
-          'DESCR': 'App: $symbol ${isSell ? 'зарах' : 'авах'} $cnt ширхэг, нэгж үнэ $price',
+          'DESCR':
+              'App: $symbol ${isSell ? 'зарах' : 'авах'} $cnt ширхэг, нэгж үнэ $price',
           'EXPDATE': expDate,
-          'FEE': '0', // Placeholder for actual fee calculation if needed
+          'FEE': '1',
         },
         // Optionally pass these along if the confirmation screen needs them
         'settleDay': settleDay,

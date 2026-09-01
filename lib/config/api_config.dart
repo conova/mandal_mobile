@@ -69,6 +69,10 @@ class ApiConfig {
   ///   BANKNAME2, REGDATE, ISPRIMARY ("1" | "0") }
   static const String userAccounts = '/bdc/api/user/acnts';
 
+  /// GET /user/fees → харилцагчийн шимтгэлийн хувиуд
+  ///   Row: { STOCKTYPE, FEE ("1" = 1%), FEEIPO, SIDE, TYPENAME, ... }
+  static const String userFees = '/bdc/api/user/fees';
+
   /// Үнэт цаасны тодорхойлолт (HTML) — ?lang=mn|en
   static const String userDocsDefinition = '/bdc/api/user/docs/definition';
 

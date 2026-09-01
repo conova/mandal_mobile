@@ -285,6 +285,8 @@
     "paymentFrequency": "Хүү төлөх давтамж",
     "availableCash": "Бэлэн мөнгө",
     "buyQuantity": "Авах ширхэг",
+    "unrealizedProfitNote": "Хэрэгжээгүй ашиг нь шимтгэл, татвар ороогүй тооцоолсон дүн бөгөөд үнэт цаасыг зарсны дараа бодит ашиг тооцогдоно.",
+    "sellQuantity": "Зарах ширхэг",
     "availableQuantity": "Боломжит",
     "totalPayment": "Нийт төлөх дүн",
     "totalReturn": "Нийт өгөөж",

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../common/stock_row_format.dart';
 import '../../models/market_instrument.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
@@ -14,6 +15,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/custom_button.dart';
 
+/// Бонд авах — route args: бондын мөр (raw map, bond_detail-аас `_bond.raw`)
 class BondBuyScreen extends StatefulWidget {
   const BondBuyScreen({super.key});
 
@@ -23,55 +25,128 @@ class BondBuyScreen extends StatefulWidget {
 
 class _BondBuyScreenState extends State<BondBuyScreen> {
   int _quantity = 0;
+  Map<String, dynamic> _bond = const {};
+  bool _argsParsed = false;
+
+  /// Бэлэн мөнгө, түгжигдсэн дүн — portfolio summary
   double _availableCash = 0;
   double _lockedAmount = 0;
-  bool _isLoading = true;
 
-  MarketInstrument? _bond;
-  bool _argsParsed = false;
+  /// Шимтгэлийн хувь (1 = 1%) — /user/fees-аас STOCKTYPE-аар нь татна
+  double _feePct = 0;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_argsParsed) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is MarketInstrument) {
-        _bond = args;
-      } else if (args is Map) {
-        _bond = MarketInstrument.fromJson(Map<String, dynamic>.from(args));
-      }
-      _argsParsed = true;
-    }
-    _fetchPortfolioSummary();
+    if (_argsParsed) return;
+    _argsParsed = true;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map) _bond = Map<String, dynamic>.from(args);
+    _fetchSummary();
+    _fetchFee();
   }
 
-  Future<void> _fetchPortfolioSummary() async {
+  Future<void> _fetchFee() async {
+    // Анхдагч арилжаа (Primary) бол FEEIPO, бусад нь FEE
+    final isPrimary =
+        _bond['MARKET']?.toString().toLowerCase() == 'primary';
+    final pct = await context.read<AuthService>().getFeePercent(
+          stockType: _bond['STOCKTYPE']?.toString() ?? '',
+          ipo: isPrimary,
+        );
+    if (mounted) setState(() => _feePct = pct);
+  }
+
+  Future<void> _fetchSummary() async {
     try {
       final summary = await context.read<AuthService>().getPortfolioSummary();
       if (!mounted) return;
       setState(() {
         _availableCash = summary.cashBalance;
         _lockedAmount = summary.holdAmount;
-        _isLoading = false;
       });
-    } catch (e) {
-      debugPrint('Error fetching portfolio summary: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    } catch (_) {
+      // Дүнгүй үлдээнэ — захиалгад саад болохгүй
     }
   }
 
-  double get _unitPrice => _bond?.stockPrice ?? _bond?.closePrice ?? 0;
-  double get _totalPayment => _quantity * _unitPrice;
+  double _num(List<String> keys) {
+    for (final k in keys) {
+      final v = num.tryParse(_bond[k]?.toString() ?? '');
+      if (v != null && v > 0) return v.toDouble();
+    }
+    return 0;
+  }
+
+  String _str(List<String> keys) {
+    for (final k in keys) {
+      final v = _bond[k]?.toString() ?? '';
+      if (v.isNotEmpty) return v;
+    }
+    return '';
+  }
+
+  /// Нэгж үнэ — бондын мөрийн боломжит талбаруудаас
+  double get _unitPrice =>
+      _num(['UNITPRICE', 'CLOSEPRICE', 'STOCKPRICE', 'PRICE']);
+
+  double get _intRate => _num(['INTRATE']);
+
+  bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
+
+  int get _maxQuantity =>
+      _unitPrice > 0 ? (_availableCash / _unitPrice).floor() : 0;
+
+  double get _total => _quantity * _unitPrice;
+  double get _fee => _total * _feePct / 100;
+  double get _totalPayment => _total + _fee;
+
+  /// Жилийн хүүгээр тооцсон хүлээгдэж буй өгөөж
+  double get _expectedReturn => _total * _intRate / 100;
+
+  void _placeOrder() {
+    final l10n = AppLocalizations.of(context)!;
+    final exp = DateTime.now().add(const Duration(days: 30));
+    String two(int n) => n.toString().padLeft(2, '0');
+    final symbol = _str(['SYMBOL']);
+
+    Navigator.pushNamed(
+      context,
+      '/bond_confirmation',
+      arguments: {
+        'bond': _bond,
+        'qty': _quantity,
+        'price': _unitPrice,
+        'fee': _fee,
+        'feePct': _feePct,
+        'total': _totalPayment,
+        'isForeign': _isForeign,
+        'totalLabel': l10n.totalPayment,
+        'order': {
+          'STOCKCODE': _str(['STOCKCODE']),
+          'CNT': _quantity.toString(),
+          'PRICE': _unitPrice.toString(),
+          // 0 — авах
+          'TXNTYPE': '0',
+          'ORDERTYPE': '1',
+          'CONDID': '18',
+          'DESCR': 'App: $symbol бонд авах $_quantity ширхэг, '
+              'нэгж үнэ $_unitPrice',
+          'EXPDATE': '${exp.year}/${two(exp.month)}/${two(exp.day)}',
+          'FEE': '1',
+        },
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+
+    final name = _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']);
+    final subtitle = _str(['COMPNAME2', 'TYPENAME']);
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -95,7 +170,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
               children: [
                 Flexible(
                   child: Text(
-                    _bond?.name ?? '',
+                    name.isNotEmpty ? name : '-',
                     style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
@@ -109,7 +184,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 2),
                     child: Text(
-                      _bond?.subtitle ?? '',
+                      subtitle,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: extendedColors.neutral200,
                       ),
@@ -131,8 +206,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   ),
                 ),
                 Text(
-                  CurrencySuffixFormatter.format(_availableCash.toString(),
-                      suffix: '₮'),
+                  formatStockAmount(_availableCash, decimals: 0),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.primaryMain,
                     fontWeight: AppTextStyles.bold,
@@ -142,7 +216,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
             ),
             const SizedBox(height: 32),
             BondQuantitySelector(
-              maxQuantity: 8000,
+              maxQuantity: _maxQuantity,
               onChanged: (quantity) {
                 setState(() {
                   _quantity = quantity;
@@ -151,10 +225,17 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
             ),
             const SizedBox(height: 24),
             BondPaymentDetails(
-              totalPayment: CurrencySuffixFormatter.format(_totalPayment.toString(), suffix: '₮'),
-              totalReturn: '0₮', // This would need calculation based on interest rate and terms
+              totalPayment: formatStockAmount(
+                _totalPayment,
+                isForeign: _isForeign,
+                decimals: 0,
+              ),
+              totalReturn: formatStockAmount(
+                _expectedReturn,
+                isForeign: _isForeign,
+                decimals: 0,
+              ),
               onDetailsPressed: () {
-                // Show more details
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
@@ -162,8 +243,8 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   builder: (context) => BondPaymentDetailsBottomSheet(
                     quantity: _quantity,
                     piecePrice: _unitPrice,
-                    accruedInterest: 0, // Placeholder
-                    commissionRate: 0.001, // Placeholder or fetch from bond info
+                    accruedInterest: 0,
+                    commissionRate: _feePct / 100,
                   ),
                 );
               },
@@ -177,7 +258,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
           color: extendedColors.bgBase,
           boxShadow: [
             BoxShadow(
-              color: extendedColors.neutral500.withOpacity(0.1),
+              color: extendedColors.neutral500.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -196,7 +277,8 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${l10n.lockedAmountLabel}: ${CurrencySuffixFormatter.format(_lockedAmount.toString(), suffix: '₮')}',
+                      '${l10n.lockedAmountLabel}: '
+                      '${formatStockAmount(_lockedAmount, decimals: 0)}',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w300,
                         color: extendedColors.neutral100,
@@ -204,7 +286,11 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => ReleaseLockedAmountSheet.show(context),
+                    onPressed: () async {
+                      await ReleaseLockedAmountSheet.show(context);
+                      // Цуцлалт хийсэн байж болзошгүй — дүнгээ шинэчилнэ
+                      _fetchSummary();
+                    },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       minimumSize: Size.zero,
@@ -239,17 +325,8 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   width: double.infinity,
                   child: CustomButton(
                     label: l10n.placeOrder,
-                    onPressed: _quantity > 0
-                        ? () => Navigator.pushNamed(
-                              context,
-                              '/bond_confirmation',
-                              arguments: {
-                                'bond': _bond,
-                                'quantity': _quantity,
-                                'price': _unitPrice,
-                              },
-                            )
-                        : null,
+                    onPressed:
+                        _quantity > 0 && _unitPrice > 0 ? _placeOrder : null,
                   ),
                 ),
               ),

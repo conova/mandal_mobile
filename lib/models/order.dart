@@ -180,6 +180,18 @@ class Order {
   /// Нийт дүн = захиалсан тоо × нэгж үнэ
   double get totalAmount => (cnt ?? 0) * (price ?? 0);
 
+  /// Нийт дүн + шимтгэл (Үнэ × Тоо + шимтгэл)
+  double get totalWithFee => totalAmount + (feeAmount ?? 0);
+
+  /// Биелээгүй үлдсэн тоо ширхэг
+  double get remainingCnt {
+    final r = (cnt ?? 0) - (doneCnt ?? 0);
+    return r > 0 ? r : 0;
+  }
+
+  /// Түгжигдсэн дүн — биелээгүй тоо × үнэ + шимтгэл
+  double get lockedAmount => remainingCnt * (price ?? 0) + (feeAmount ?? 0);
+
   /// Биелэлт: "534/534 (100%)"
   String get executionLabel {
     final total = cnt ?? 0;
