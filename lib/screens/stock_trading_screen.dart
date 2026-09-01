@@ -468,7 +468,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final exp = DateTime.now().add(const Duration(days: 30));
     String two(int n) => n.toString().padLeft(2, '0');
     final expDate = '${exp.year}/${two(exp.month)}/${two(exp.day)}';
-    final isSell = _args['side'] == 'sell';
 
     Navigator.pushNamed(
       context,
