@@ -144,6 +144,8 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
       // Түгжээ суларсан тул жагсаалт, үлдэгдлээ шинэчилнэ
       _selectedIndices.clear();
       await _fetchData();
+      context.read<AuthService>().refreshActiveOrders();
+      //if (mounted) context.read<AuthService>().refreshActiveOrders();
     } catch (e) {
       if (mounted) CustomSnackbar.showError(context, e);
     } finally {

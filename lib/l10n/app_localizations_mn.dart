@@ -1825,4 +1825,8 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get stockTradingMarketPriceNotify =>
       'Зах зээлийн үнээр хийсэн арилжаа биелэх үед нийт дүн зах зээлийн ханшаас хамаарч өөрчлөгдөж болохыг анхаарна уу.';
+
+  @override
+  String get cancelAllOrdersDesc =>
+      'Та өөрийн бүх захиалгыг цуцлахдаа итгэлтэй байна уу?';
 }

@@ -9,6 +9,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:dio/dio.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../common/api_message.dart';
+import '../models/order.dart';
 import '../models/sub_account.dart';
 import '../config/api_config.dart';
 
@@ -1241,6 +1242,20 @@ class AuthService with ChangeNotifier {
       return [];
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  // Inside AuthService class
+  int _activeOrderCount =0;
+  int get activeOrderCount => _activeOrderCount;
+
+  Future<void> refreshActiveOrders() async {
+    try {
+      final orders = await getActiveOrders(scope: 'all');
+      _activeOrderCount = orders.length;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error refreshing order count: $e');
     }
   }
 

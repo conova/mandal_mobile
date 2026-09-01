@@ -183,6 +183,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
           .createOrders([Map<String, dynamic>.from(order)]);
 
       if (!mounted) return;
+      await context.read<AuthService>().refreshActiveOrders();
       _expandController.forward();
     } catch (e) {
       if (!mounted) return;

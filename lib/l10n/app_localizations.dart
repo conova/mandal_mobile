@@ -3537,6 +3537,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please note that the total amount of market orders may vary depending on the market price at execution.'**
   String get stockTradingMarketPriceNotify;
+
+  /// No description provided for @cancelAllOrdersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure that you want to cancel all your orders?'**
+  String get cancelAllOrdersDesc;
 }
 
 class _AppLocalizationsDelegate
