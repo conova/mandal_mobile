@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_info_popup_bottom_sheet.dart';
+import '../widgets/release_locked_amount_sheet.dart';
 
 enum CurrencyType { mnt, usd }
 
@@ -120,7 +121,7 @@ class CurrencyDetailScreen extends StatelessWidget {
                 minWidth: 78,
                 variant: CustomButtonVariant.tertiary,
                 onPressed: () =>
-                    Navigator.pushNamed(context, '/release_locked'),
+                    ReleaseLockedAmountSheet.show(context),
               ),
               l10n: l10n,
               descTitle: l10n.holdAmount,

@@ -99,7 +99,8 @@ class _StockScreenState extends State<StockScreen> {
         _stocks = MarketInstrument.listFromJson(results[0]);
         // IPO API хоосон бол dev preview-д mock fallback харуулна.
         // Backend IPO дататай болмогц энэ branch ажиллахгүй.
-        _ipoStocks = ipo.isNotEmpty ? ipo : _mockIpoStocks();
+        //_ipoStocks = ipo.isNotEmpty ? ipo : _mockIpoStocks();
+        _ipoStocks = ipo;
         _topGainer = gainers.isNotEmpty ? gainers.first : null;
         _topLoser = losers.isNotEmpty ? losers.first : null;
         _isLoading = false;
@@ -115,34 +116,34 @@ class _StockScreenState extends State<StockScreen> {
 
   /// Dev preview-ийн mock IPO мөрүүд — API хоосон үед каруселийг
   /// харуулахад ашиглана
-  List<MarketInstrument> _mockIpoStocks() {
-    return MarketInstrument.listFromJson(const [
-      {
-        'SYMBOL': 'AAA',
-        'STOCKNAME': 'FullName',
-        'STOCKCODE': '',
-        'CLOSEPRICE': 1000,
-        'BEGDATE': '2026-08-15',
-        'ENDDATE': '2026-08-20',
-      },
-      {
-        'SYMBOL': 'BBB',
-        'STOCKNAME': 'Demo Company',
-        'STOCKCODE': '',
-        'CLOSEPRICE': 2500,
-        'BEGDATE': '2026-09-01',
-        'ENDDATE': '2026-09-10',
-      },
-      {
-        'SYMBOL': 'CCC',
-        'STOCKNAME': 'Sample JSC',
-        'STOCKCODE': '',
-        'CLOSEPRICE': 500,
-        'BEGDATE': '2026-09-05',
-        'ENDDATE': '2026-09-12',
-      },
-    ]);
-  }
+  // List<MarketInstrument> _mockIpoStocks() {
+  //   return MarketInstrument.listFromJson(const [
+  //     {
+  //       'SYMBOL': 'AAA',
+  //       'STOCKNAME': 'FullName',
+  //       'STOCKCODE': '',
+  //       'CLOSEPRICE': 1000,
+  //       'BEGDATE': '2026-08-15',
+  //       'ENDDATE': '2026-08-20',
+  //     },
+  //     {
+  //       'SYMBOL': 'BBB',
+  //       'STOCKNAME': 'Demo Company',
+  //       'STOCKCODE': '',
+  //       'CLOSEPRICE': 2500,
+  //       'BEGDATE': '2026-09-01',
+  //       'ENDDATE': '2026-09-10',
+  //     },
+  //     {
+  //       'SYMBOL': 'CCC',
+  //       'STOCKNAME': 'Sample JSC',
+  //       'STOCKCODE': '',
+  //       'CLOSEPRICE': 500,
+  //       'BEGDATE': '2026-09-05',
+  //       'ENDDATE': '2026-09-12',
+  //     },
+  //   ]);
+  // }
 
   Future<void> _search() async {
     if (_searchQuery.isEmpty) return;
@@ -366,7 +367,7 @@ class _StockScreenState extends State<StockScreen> {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: active ? 18 : 6,
+                  width: active ? 24 : 6,
                   height: 6,
                   decoration: BoxDecoration(
                     color: active

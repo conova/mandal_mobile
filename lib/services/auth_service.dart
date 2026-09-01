@@ -1244,6 +1244,21 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getUserFees() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.userFees);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data']) {
+        return (body['data']['fees'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+        throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Захиалгын түүх.
   /// POST /orders/history — body: {"data": {type?, status?, start, end}}
   /// type: bond|stock, status: done|canceled (заагаагүй бол бүгд).

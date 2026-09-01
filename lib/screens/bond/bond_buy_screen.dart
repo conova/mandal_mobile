@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../models/market_instrument.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
+import '../../widgets/currency_suffix_formatter.dart';
 import '../../widgets/custom_svg_icon.dart';
+import '../../widgets/release_locked_amount_sheet.dart';
 import '../components/bond/bond_payment_details_bottom_sheet.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_payment_details.dart';
@@ -18,6 +23,49 @@ class BondBuyScreen extends StatefulWidget {
 
 class _BondBuyScreenState extends State<BondBuyScreen> {
   int _quantity = 0;
+  double _availableCash = 0;
+  double _lockedAmount = 0;
+  bool _isLoading = true;
+
+  MarketInstrument? _bond;
+  bool _argsParsed = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_argsParsed) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is MarketInstrument) {
+        _bond = args;
+      } else if (args is Map) {
+        _bond = MarketInstrument.fromJson(Map<String, dynamic>.from(args));
+      }
+      _argsParsed = true;
+    }
+    _fetchPortfolioSummary();
+  }
+
+  Future<void> _fetchPortfolioSummary() async {
+    try {
+      final summary = await context.read<AuthService>().getPortfolioSummary();
+      if (!mounted) return;
+      setState(() {
+        _availableCash = summary.cashBalance;
+        _lockedAmount = summary.holdAmount;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error fetching portfolio summary: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  double get _unitPrice => _bond?.stockPrice ?? _bond?.closePrice ?? 0;
+  double get _totalPayment => _quantity * _unitPrice;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +95,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
               children: [
                 Flexible(
                   child: Text(
-                    'Net Capital',
+                    _bond?.name ?? '',
                     style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
@@ -59,9 +107,9 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 const SizedBox(width: 12),
                 Flexible(
                   child: Padding(
-                    padding: EdgeInsets.only(bottom: 2),
+                    padding: const EdgeInsets.only(bottom: 2),
                     child: Text(
-                      'Нэт Капитал',
+                      _bond?.subtitle ?? '',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: extendedColors.neutral200,
                       ),
@@ -83,7 +131,8 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   ),
                 ),
                 Text(
-                  '10,000,000₮',
+                  CurrencySuffixFormatter.format(_availableCash.toString(),
+                      suffix: '₮'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.primaryMain,
                     fontWeight: AppTextStyles.bold,
@@ -102,19 +151,19 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
             ),
             const SizedBox(height: 24),
             BondPaymentDetails(
-              totalPayment: '1,001,000₮',
-              totalReturn: '190,000₮',
+              totalPayment: CurrencySuffixFormatter.format(_totalPayment.toString(), suffix: '₮'),
+              totalReturn: '0₮', // This would need calculation based on interest rate and terms
               onDetailsPressed: () {
                 // Show more details
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
-                  builder: (context) => const BondPaymentDetailsBottomSheet(
-                    quantity: 100,
-                    piecePrice: 100000,
-                    accruedInterest: 2000,
-                    commissionRate: 0.001,
+                  builder: (context) => BondPaymentDetailsBottomSheet(
+                    quantity: _quantity,
+                    piecePrice: _unitPrice,
+                    accruedInterest: 0, // Placeholder
+                    commissionRate: 0.001, // Placeholder or fetch from bond info
                   ),
                 );
               },
@@ -147,7 +196,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${l10n.lockedAmountLabel}: 500,000₮',
+                      '${l10n.lockedAmountLabel}: ${CurrencySuffixFormatter.format(_lockedAmount.toString(), suffix: '₮')}',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w300,
                         color: extendedColors.neutral100,
@@ -155,8 +204,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/release_locked'),
+                    onPressed: () => ReleaseLockedAmountSheet.show(context),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       minimumSize: Size.zero,
@@ -195,6 +243,11 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                         ? () => Navigator.pushNamed(
                               context,
                               '/bond_confirmation',
+                              arguments: {
+                                'bond': _bond,
+                                'quantity': _quantity,
+                                'price': _unitPrice,
+                              },
                             )
                         : null,
                   ),
