@@ -384,28 +384,22 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  /// IPO хугацаа — raw мөрөөс эхлэх/дуусах огноог олж "08.15–08.20"
-  /// хэлбэрээр буцаана
+  /// IPO хугацаа — raw мөрөөс эхлэх/дуусах огноог олж "2026/08/15 – 2026/08/20"
+  /// хэлбэрээр буцаана.
   String _ipoPeriod(MarketInstrument row) {
-    String? pick(List<String> keys) {
-      for (final k in keys) {
-        final v = row.raw[k]?.toString();
-        if (v != null && v.isNotEmpty) return v;
-      }
-      return null;
-    }
-
-    String fmt(String? s) {
-      final d = parseStockDate(s);
+    String fmt(dynamic raw) {
+      final d = parseStockDate(raw);
       if (d == null) return '';
       String two(int n) => n.toString().padLeft(2, '0');
-      return '${two(d.month)}.${two(d.day)}';
+      return '${two(d.month)}/${two(d.day)}';
     }
 
-    final start = fmt(pick(['BEGINDATE', 'BEGDATE', 'STARTDATE', 'OPENDATE']));
-    final end = fmt(pick(['ENDDATE', 'CLOSEDATE', 'EXPDATE']));
-    if (start.isEmpty && end.isEmpty) return '-';
-    return '$start–$end';
+    final sFmt = fmt(row.orderBeginDate);
+    final eFmt = fmt(row.orderEndDate);
+
+    if (sFmt.isEmpty && eFmt.isEmpty) return '-';
+    if (sFmt.isNotEmpty && eFmt.isNotEmpty) return '$sFmt – $eFmt';
+    return sFmt.isNotEmpty ? sFmt : eFmt;
   }
 
   Widget _buildIpoCard(
@@ -510,6 +504,7 @@ class _StockScreenState extends State<StockScreen> {
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: extendedColors.neutral100,
                       ),
+                      maxLines: 2,
                     ),
                   ],
                 ),

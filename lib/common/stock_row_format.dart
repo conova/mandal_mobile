@@ -25,21 +25,46 @@ String formatNumbers(dynamic raw, {int decimals = 0}) {
 }
 
 /// "2026/07/18", "2026.07.18", "2026-07-18" → DateTime (болохгүй бол null)
+/// Мөн "01-AUG-26" гэх мэт форматыг дэмжинэ.
 DateTime? parseStockDate(dynamic raw) {
   final s = raw?.toString() ?? '';
   if (s.isEmpty) return null;
+
   final parts = s.split(RegExp(r'[/.\-]'));
   if (parts.length < 3) return null;
-  final y = int.tryParse(parts[0]);
-  final m = int.tryParse(parts[1]);
-  final d = int.tryParse(parts[2]);
-  if (y == null || m == null || d == null) return null;
-  return DateTime(y, m, d);
+
+  // Standard YYYY-MM-DD or similar where first part is year
+  var y = int.tryParse(parts[0]);
+  var m = int.tryParse(parts[1]);
+  var d = int.tryParse(parts[2]);
+
+  if (y != null && m != null && d != null && y > 1000) {
+    return DateTime(y, m, d);
+  }
+
+  // Handle "DD-MON-YY" (e.g. 01-AUG-26)
+  final day = int.tryParse(parts[0]);
+  final yearShort = int.tryParse(parts[2]);
+  if (day != null && yearShort != null && parts[1].length == 3) {
+    const months = [
+      'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+    ];
+    final month = months.indexOf(parts[1].toUpperCase()) + 1;
+    if (month > 0) {
+      final year = 2000 + yearShort;
+      return DateTime(year, month, day);
+    }
+  }
+
+  return null;
 }
 
-/// DateTime → "2026.2.10"
-String formatStockDate(DateTime date) =>
-    '${date.year}.${date.month}.${date.day}';
+/// DateTime → "2026/02/10"
+String formatStockDate(DateTime date) {
+  String two(int n) => n.toString().padLeft(2, '0');
+  return '${date.year}/${two(date.month)}/${two(date.day)}';
+}
 
 /// Захиалгын явц: ordered/total → 0.0..1.0 (аль нэг нь тоо биш эсвэл
 /// total ≤ 0 бол null — progress харуулахгүй)
