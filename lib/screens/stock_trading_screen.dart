@@ -47,6 +47,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   List<OrderBookEntry> _buyOrders = const [];
   List<OrderBookEntry> _sellOrders = const [];
   bool _orderBookLoading = true;
+  bool _isPortfolioLoading = true;
 
   /// Дэлгэц идэвхтэй байх үед самбарыг 5 секунд тутам шинэчилнэ
   Timer? _orderBookTimer;
@@ -71,6 +72,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     // Listen to changes to update the total payment box and validate the order
     _priceController.addListener(_onInputChanged);
     _quantityController.addListener(_onInputChanged);
+
+    _fetchPortfolioSummary();
   }
 
   void _onInputChanged() {
@@ -143,7 +146,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     }
 
     _fetchOrderBook();
-    _fetchPortfolioSummary();
 
     // 5 секунд тутамд чимээгүй шинэчилнэ (dispose дээр зогсоно)
     if ((_args['stockcode']?.toString() ?? '').isNotEmpty) {
@@ -161,9 +163,11 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       setState(() {
         _availableCash = summary.cashBalance;
         _lockedAmount = summary.holdAmount;
+        _isPortfolioLoading = false;
       });
     } catch (e) {
       debugPrint('Error fetching portfolio summary: $e');
+      if (mounted) setState(() => _isPortfolioLoading = false);
     }
   }
 
@@ -464,6 +468,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final exp = DateTime.now().add(const Duration(days: 30));
     String two(int n) => n.toString().padLeft(2, '0');
     final expDate = '${exp.year}/${two(exp.month)}/${two(exp.day)}';
+    final isSell = _args['side'] == 'sell';
 
     Navigator.pushNamed(
       context,
@@ -500,7 +505,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final isSell = _args['side'] == 'sell';
-    final showWarningScreen = (!isSell && _availableCash == 0 && _lockedAmount == 0);
+    final showWarningScreen = (!isSell && !_isPortfolioLoading && _availableCash == 0 && _lockedAmount == 0);
+
 
     if (showWarningScreen) {
       return Scaffold(

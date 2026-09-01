@@ -196,6 +196,7 @@ class _SecuritiesAgreementScreenState extends State<SecuritiesAgreementScreen> {
                   builder: (_) => ContractSectionScreen(
                     number: i + 1,
                     section: contract.sections[i],
+                    sections: contract.sections,
                   ),
                 ),
               ),

@@ -1721,7 +1721,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get cancelAllOrders => 'Бүх захиалгыг цуцлах';
 
   @override
-  String get dailyStockRate => 'Өдрийн ханш';
+  String get dailyStockRate => 'Өдрийн өөрчлөлт';
 
   @override
   String get last1Year => 'Сүүлийн 1 жил';

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
+import '../../models/market_instrument.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
+import '../../widgets/currency_suffix_formatter.dart';
 import '../../widgets/custom_svg_icon.dart';
 import '../../widgets/release_locked_amount_sheet.dart';
 import '../components/bond/bond_payment_details_bottom_sheet.dart';

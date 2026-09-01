@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
@@ -227,7 +228,11 @@ class _DocumentRequestScreenState extends State<DocumentRequestScreen> {
           ),
           child: Row(
             children: [
-              CustomSvgIcon(icon, size: 28),
+              SvgPicture.asset(
+                'assets/images/icons/$icon.svg',
+                width: 50,
+                height: 25,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -319,6 +324,7 @@ class _DocumentRequestScreenState extends State<DocumentRequestScreen> {
             Container(
               width: 56,
               height: 56,
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: extendedColors.bgSecondary,
                 borderRadius: BorderRadius.circular(14),
@@ -326,7 +332,7 @@ class _DocumentRequestScreenState extends State<DocumentRequestScreen> {
               child: Center(
                 child: CustomSvgIcon(
                   icon,
-                  size: 26,
+                  size: 24,
                   color: extendedColors.neutral100,
                 ),
               ),
@@ -339,13 +345,13 @@ class _DocumentRequestScreenState extends State<DocumentRequestScreen> {
                   Text(
                     label,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral300,
+                      color: extendedColors.neutral200,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     value,
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: extendedColors.neutral100,
                     ),

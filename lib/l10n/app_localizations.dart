@@ -3343,7 +3343,7 @@ abstract class AppLocalizations {
   /// No description provided for @dailyStockRate.
   ///
   /// In en, this message translates to:
-  /// **'Daily stock rate'**
+  /// **'Daily change'**
   String get dailyStockRate;
 
   /// No description provided for @last1Year.

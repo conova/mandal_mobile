@@ -630,7 +630,7 @@
     "done": "Done",
     "canceled": "Canceled",
     "cancelAllOrders": "Cancel all orders",
-    "dailyStockRate": "Daily stock rate",
+    "dailyStockRate": "Daily change",
     "last1Year": "Last 1 year",
     "orderedDate": "Ordered date",
     "account": "Account",

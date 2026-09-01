@@ -38,6 +38,8 @@ class _BondMainScreenState extends State<BondMainScreen>
   }
 
   Future<void> _fetchMyBonds() async {
+    if (!mounted) return;
+    setState(() => _myBondsLoading = true);
     try {
       final auth = context.read<AuthService>();
       final rows = await auth.getMyBonds();
@@ -54,6 +56,8 @@ class _BondMainScreenState extends State<BondMainScreen>
   }
 
   Future<void> _fetchBondList() async {
+    if (!mounted) return;
+    setState(() => _bondListLoading = true);
     try {
       final auth = context.read<AuthService>();
       final rows = await auth.getBondList();
@@ -67,6 +71,13 @@ class _BondMainScreenState extends State<BondMainScreen>
       setState(() => _bondListLoading = false);
       CustomSnackbar.showError(context, e);
     }
+  }
+
+  Future<void> _handleRefresh() async {
+    await Future.wait([
+      _fetchMyBonds(),
+      _fetchBondList(),
+    ]);
   }
 
   @override
@@ -130,39 +141,43 @@ class _BondMainScreenState extends State<BondMainScreen>
     final primary = _bondList.where((b) => b.isPrimaryMarket).toList();
     final secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
 
-    return ListView(
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50),
-      children: [
-        const SizedBox(height: 24),
-        if (_bondListLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 48),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else if (_bondList.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 48),
-            child: Center(
-              child: Text(
-                l10n.noData,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral300,
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50),
+        children: [
+          const SizedBox(height: 24),
+          if (_bondListLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 48),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_bondList.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 48),
+              child: Center(
+                child: Text(
+                  l10n.noData,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral300,
+                  ),
                 ),
               ),
-            ),
-          )
-        else ...[
-          if (primary.isNotEmpty) ...[
-            SectionTitle(l10n.primaryMarket),
-            ..._buildBondCards(primary, l10n, extendedColors),
-            const SizedBox(height: 40),
-          ],
-          if (secondary.isNotEmpty) ...[
-            SectionTitle(l10n.secondaryMarket),
-            ..._buildBondCards(secondary, l10n, extendedColors),
+            )
+          else ...[
+            if (primary.isNotEmpty) ...[
+              SectionTitle(l10n.primaryMarket),
+              ..._buildBondCards(primary, l10n, extendedColors),
+              const SizedBox(height: 40),
+            ],
+            if (secondary.isNotEmpty) ...[
+              SectionTitle(l10n.secondaryMarket),
+              ..._buildBondCards(secondary, l10n, extendedColors),
+            ],
           ],
         ],
-      ],
+      ),
     );
   }
 
@@ -189,6 +204,16 @@ class _BondMainScreenState extends State<BondMainScreen>
     // Захиалгын явц: ORDEREDAMT / AMT
     final progress = orderProgress(bond.orderedAmt, bond.amt);
 
+    final endDt = parseStockDate(bond.endDate);
+    final orderEndDate = parseStockDate(bond.orderEndDate);
+    final tenureStr = endDt != null && bond.market == 'Secondary'
+        ? formatStockDate(endDt)
+        : orderEndDate != null && bond.market == 'Primary'
+          ? formatStockDate(orderEndDate)
+          : (bond.term.isEmpty
+            ? '-'
+            : (num.tryParse(bond.term) != null ? '${bond.term} сар' : bond.term));
+
     return BondMarketCard(
       bond.raw,
       title: bond.name,
@@ -196,9 +221,7 @@ class _BondMainScreenState extends State<BondMainScreen>
       status: bond.isForeign
           ? l10n.foreign
           : (bond.isOpen ? l10n.open : l10n.closed),
-      tenure: bond.term.isEmpty
-          ? '-'
-          : (num.tryParse(bond.term) != null ? '${bond.term} сар' : bond.term),
+      tenure: tenureStr,
       yield: formatIntRate(bond.intRate),
       totalAmount: formatCompactAmount(
         bond.amt,
@@ -231,46 +254,50 @@ class _BondMainScreenState extends State<BondMainScreen>
     ExtendedColors extendedColors,
     ThemeData theme,
   ) {
-    return ListView(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
-      children: [
-        PledgeBondBanner(
-          onPledgePressed: () {
-            // Барьцаалах бонд байхгүй бол sheet-ээр мэдэгдэнэ
-            if (!_myBondsLoading && _myBonds.isEmpty) {
-              BondStatusInfoSheet.show(
-                context,
-                title: l10n.sorryTitle,
-                description: l10n.noPledgeBondDesc,
-              );
-              return;
-            }
-            Navigator.pushNamed(context, '/pledge_bond_select');
-          },
-        ),
-        const SizedBox(height: 48),
-        SectionTitle(l10n.myBond),
-        const SizedBox(height: 24),
-        if (_myBondsLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else if (_myBonds.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: Text(
-                l10n.noData,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral300,
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
+        children: [
+          PledgeBondBanner(
+            onPledgePressed: () {
+              // Барьцаалах бонд байхгүй бол sheet-ээр мэдэгдэнэ
+              if (!_myBondsLoading && _myBonds.isEmpty) {
+                BondStatusInfoSheet.show(
+                  context,
+                  title: l10n.sorryTitle,
+                  description: l10n.noPledgeBondDesc,
+                );
+                return;
+              }
+              Navigator.pushNamed(context, '/pledge_bond_select');
+            },
+          ),
+          const SizedBox(height: 48),
+          SectionTitle(l10n.myBond),
+          const SizedBox(height: 24),
+          if (_myBondsLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_myBonds.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Text(
+                  l10n.noData,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral300,
+                  ),
                 ),
               ),
-            ),
-          )
-        else
-          ..._buildMyBondCards(_myBonds, l10n, extendedColors),
-      ],
+            )
+          else
+            ..._buildMyBondCards(_myBonds, l10n, extendedColors),
+        ],
+      ),
     );
   }
 
@@ -284,13 +311,13 @@ class _BondMainScreenState extends State<BondMainScreen>
     for (var i = 0; i < bonds.length; i++) {
       if (i > 0) {
         widgets.add(
-          SizedBox(height: 10,)
+          const SizedBox(height: 10,)
         );
         widgets.add(
           Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
         );
         widgets.add(
-          SizedBox(height: 25,)
+          const SizedBox(height: 25,)
         );
       }
       widgets.add(_buildMyBondCard(bonds[i], l10n, extendedColors));

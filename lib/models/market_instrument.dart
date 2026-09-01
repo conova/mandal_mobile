@@ -95,6 +95,15 @@ class MarketInstrument {
   final bool isOpen;
   final bool isForeign;
 
+  /// Order date
+  final String? orderBeginDate;
+  final String? orderEndDate;
+
+  /// start end date
+  final String? startDate;
+  final String? endDate;
+
+
   /// API-ийн анхны мөр — route arguments-аар цааш дамжуулахад ашиглана
   final Map<String, dynamic> raw;
 
@@ -147,6 +156,10 @@ class MarketInstrument {
     this.curRate,
     required this.isOpen,
     required this.isForeign,
+    this.orderBeginDate,
+    this.orderEndDate,
+    this.startDate,
+    this.endDate,
     required this.raw,
     this.stockPrice,
   });
@@ -214,6 +227,10 @@ class MarketInstrument {
       isForeign: str('ISFOREIGN') == '1',
       raw: json,
       stockPrice: num_('STOCKPRICE'),
+      orderBeginDate: str('ORDER_BEGINDATE'),
+      orderEndDate: str('ORDER_ENDDATE'),
+      startDate: str('STARTDATE'),
+      endDate: str('ENDDATE'),
     );
   }
 
