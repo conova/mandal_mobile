@@ -1389,6 +1389,48 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Харилцагчийн шимтгэлийн хувиуд (кэштэй) — GET /user/fees
+  /// Row: { STOCKTYPE, FEE ("1" = 1%), FEEIPO, SIDE, ... }
+  List<Map<String, dynamic>>? _feesCache;
+  Future<List<Map<String, dynamic>>> getUserFees() async {
+    if (_feesCache != null) return _feesCache!;
+    try {
+      final response = await _authedDio.get(ApiConfig.userFees);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        final fees = (_asMap(body['data'])?['fees'] as List? ?? const [])
+            .whereType<Map>()
+            .map((f) => Map<String, dynamic>.from(f))
+            .toList();
+        _feesCache = fees;
+        return fees;
+      }
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// Тухайн үнэт цаасны төрлийн шимтгэлийн ХУВЬ (1 = 1%).
+  /// [ipo] — анхдагч арилжаа бол FEEIPO, бусад нь FEE.
+  /// Олдохгүй/алдаа гарвал 0 буцаана (шимтгэлгүй гэж үзнэ).
+  Future<double> getFeePercent({
+    required String stockType,
+    bool ipo = false,
+  }) async {
+    try {
+      final fees = await getUserFees();
+      final row = fees.firstWhere(
+        (f) => f['STOCKTYPE']?.toString() == stockType,
+        orElse: () => const {},
+      );
+      final raw = (ipo ? row['FEEIPO'] : row['FEE'])?.toString() ?? '';
+      return double.tryParse(raw) ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   /// Захиалга үүсгэх — POST /order/new. Олон захиалгыг зэрэг илгээж
   /// болно; аль нэг нь амжилтгүй бол тухайн мөрийн msg-ээр алдаа шидне.
   /// Returns: серверийн message ("N orders created, M failed")

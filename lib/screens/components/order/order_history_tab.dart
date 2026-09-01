@@ -235,7 +235,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
                     Localizations.localeOf(context).languageCode,
                   ),
                   amount: formatStockAmount(
-                    order.totalAmount,
+                    order.totalWithFee,
                     isForeign: order.isForeignCurrency,
                   ),
                   price: formatStockAmount(

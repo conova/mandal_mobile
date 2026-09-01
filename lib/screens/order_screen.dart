@@ -191,7 +191,7 @@ class _OrderScreenState extends State<OrderScreen>
                       : order.nameOf(lang),
                   subtitle: order.nameOf(lang),
                   amount: formatStockAmount(
-                    order.totalAmount,
+                    order.totalWithFee,
                     isForeign: order.isForeignCurrency,
                   ),
                   price: formatStockAmount(

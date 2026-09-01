@@ -917,6 +917,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get buyQuantity => 'Buy Quantity';
 
   @override
+  String get unrealizedProfitNote =>
+      'Unrealized profit is calculated without fees and taxes; actual profit is determined after the securities are sold.';
+
+  @override
+  String get sellQuantity => 'Sell quantity';
+
+  @override
   String get availableQuantity => 'Available';
 
   @override

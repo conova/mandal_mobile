@@ -288,6 +288,8 @@
     "paymentFrequency": "Payment Frequency",
     "availableCash": "Available Cash",
     "buyQuantity": "Buy Quantity",
+    "unrealizedProfitNote": "Unrealized profit is calculated without fees and taxes; actual profit is determined after the securities are sold.",
+    "sellQuantity": "Sell quantity",
     "availableQuantity": "Available",
     "totalPayment": "Total Payment",
     "totalReturn": "Total Return",

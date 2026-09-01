@@ -312,6 +312,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                                   l10n: l10n,
                                   extendedColors: extendedColors,
                                   order: order,
+                                  args: args,
                                 ),
                               ),
                               if (orderType == '2') ...[
@@ -435,16 +436,22 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
     required AppLocalizations l10n,
     required ExtendedColors extendedColors,
     required Map<String, dynamic> order,
+    required Map<String, dynamic> args,
   }) {
     final orderType = order['ORDERTYPE'] == '2' ? l10n.marketPrice : l10n.limitPrice;
     final quantity = order['CNT']?.toString() ?? '0';
     final price = order['PRICE']?.toString() ?? '0';
-    final fee = order['FEE']?.toString() ?? '0';
 
     final q = double.tryParse(quantity) ?? 0;
     final p = double.tryParse(price) ?? 0;
-    final f = double.tryParse(fee) ?? 0;
-    final total = (q * p) + f;
+    // Шимтгэл — /user/fees-ийн хувиар урьдчилан тооцсон дүн args-аар ирнэ
+    final f = (args['fee'] as num?)?.toDouble() ?? 0;
+    final feePct = (args['feePct'] as num?)?.toDouble() ?? 0;
+    final total = (args['total'] as num?)?.toDouble() ?? ((q * p) + f);
+    final fee = f.toStringAsFixed(2);
+    final feeLabel = feePct > 0
+        ? '${l10n.commissionLabel} ($feePct%)'
+        : l10n.commissionLabel;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -465,7 +472,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
         _buildDetailRow(
           theme,
           extendedColors,
-          l10n.commissionLabel,
+          feeLabel,
           CurrencySuffixFormatter.format(fee, suffix: '₮'),
         ),
         const SizedBox(height: 24),

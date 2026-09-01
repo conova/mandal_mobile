@@ -39,6 +39,11 @@ class SwipeOrderConfirmation extends StatefulWidget {
   /// Заагаагүй бол `/main` руу стек цэвэрлэж шилжинэ.
   final VoidCallback? onFinish;
 
+  /// Чирж баталгаажуулах мөчид дуудагдана — API-гаа энд дуудаж true/false
+  /// буцаана. false бол амжилтын анимэйшн руу орохгүй, буцаж хэвийн
+  /// төлөвт орно (алдааны toast-ыг дуудагч тал өөрөө харуулна).
+  final Future<bool> Function()? onConfirm;
+
   /// Баталгаажуулалт хийгдмэгц дуудагдана (API илгээх г.м.)
   final VoidCallback? onConfirmed;
 
@@ -53,6 +58,7 @@ class SwipeOrderConfirmation extends StatefulWidget {
     required this.successDescription,
     required this.successButtonLabel,
     this.onFinish,
+    this.onConfirm,
     this.onConfirmed,
   });
 
@@ -177,19 +183,36 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
     _expandController.value = (_expandController.value + delta).clamp(0.0, 1.0);
   }
 
-  void _onDragEnd(DragEndDetails details) {
+  Future<void> _onDragEnd(DragEndDetails details) async {
     if (_isConfirming) return;
 
-    if (_expandController.value > 0.4) {
-      _isConfirming = true;
-      _expandController.forward();
-    } else {
+    if (_expandController.value <= 0.4) {
       _expandController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
       );
+      return;
     }
+
+    setState(() => _isConfirming = true);
+
+    // API баталгаажуулалт — амжилтгүй бол анимэйшнийг буцаана
+    if (widget.onConfirm != null) {
+      final ok = await widget.onConfirm!();
+      if (!mounted) return;
+      if (!ok) {
+        setState(() => _isConfirming = false);
+        _expandController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+        return;
+      }
+    }
+
+    _expandController.forward();
   }
 
   @override

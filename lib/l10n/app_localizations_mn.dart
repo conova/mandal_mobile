@@ -914,6 +914,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get buyQuantity => 'Авах ширхэг';
 
   @override
+  String get unrealizedProfitNote =>
+      'Хэрэгжээгүй ашиг нь шимтгэл, татвар ороогүй тооцоолсон дүн бөгөөд үнэт цаасыг зарсны дараа бодит ашиг тооцогдоно.';
+
+  @override
+  String get sellQuantity => 'Зарах ширхэг';
+
+  @override
   String get availableQuantity => 'Боломжит';
 
   @override

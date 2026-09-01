@@ -1816,6 +1816,18 @@ abstract class AppLocalizations {
   /// **'Buy Quantity'**
   String get buyQuantity;
 
+  /// No description provided for @unrealizedProfitNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Unrealized profit is calculated without fees and taxes; actual profit is determined after the securities are sold.'**
+  String get unrealizedProfitNote;
+
+  /// No description provided for @sellQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell quantity'**
+  String get sellQuantity;
+
   /// No description provided for @availableQuantity.
   ///
   /// In en, this message translates to:

@@ -3,7 +3,9 @@ import 'package:mandal_capital/screens/components/bond/bond_trading_input_box.da
 import 'package:mandal_capital/screens/components/bond/bond_trading_quantity_selector.dart';
 import 'package:mandal_capital/widgets/currency_suffix_formatter.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:provider/provider.dart';
 import '../../../common/stock_row_format.dart';
+import '../../../services/auth_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../models/order_book_entry.dart';
@@ -37,6 +39,8 @@ class BondDetailTradingView extends StatefulWidget {
 }
 
 class _BondDetailTradingViewState extends State<BondDetailTradingView> {
+  /// Шимтгэлийн хувь (1 = 1%) — /user/fees-аас STOCKTYPE-аар нь татна
+  double _feePct = 0;
   late TextEditingController _priceController;
   late TextEditingController _quantityController;
   late FocusNode _priceFocusNode;
@@ -57,6 +61,19 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
     _priceController.addListener(_onInputsChanged);
     _quantityController.addListener(_onInputsChanged);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchFee());
+  }
+
+  Future<void> _fetchFee() async {
+    if (!mounted) return;
+    final raw = widget.bond?.raw ?? const {};
+    final isPrimary = raw['MARKET']?.toString().toLowerCase() == 'primary';
+    final pct = await context.read<AuthService>().getFeePercent(
+          stockType: raw['STOCKTYPE']?.toString() ?? '',
+          ipo: isPrimary,
+        );
+    if (mounted) setState(() => _feePct = pct);
   }
 
   @override
@@ -64,6 +81,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     super.didUpdateWidget(oldWidget);
     // If the bond data arrives late (initially null), update the price controller
     if (oldWidget.bond == null && widget.bond != null) {
+      _fetchFee();
       final newPrice = widget.bond?.closePrice ?? widget.bond?.openPrice ?? 0;
       final formatted = CurrencySuffixFormatter.format(newPrice.toString(), suffix: '₮');
       if (_priceController.text != formatted) {
@@ -109,7 +127,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
   @override
   Widget build(BuildContext context) {
-    const double commissionRate = 0.001;
+    final commissionRate = _feePct / 100;
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
@@ -279,11 +297,54 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                 child: CustomButton(
                   label: l10n.placeOrder,
                   onPressed: (quantity > 0 && price > 0)
-                      ? () => Navigator.pushNamed(
-                    context,
-                    '/bond_confirmation',
-                    arguments: bond?.raw,
-                  )
+                      ? () async {
+                          final raw = bond?.raw ?? const {};
+                          // Шимтгэлийн хувь — /user/fees (кэштэй тул хурдан)
+                          final isPrimary = raw['MARKET']
+                                  ?.toString()
+                                  .toLowerCase() ==
+                              'primary';
+                          final feePct =
+                              await context.read<AuthService>().getFeePercent(
+                                    stockType:
+                                        raw['STOCKTYPE']?.toString() ?? '',
+                                    ipo: isPrimary,
+                                  );
+                          if (!context.mounted) return;
+                          final fee =
+                              price * quantity * feePct / 100;
+                          final exp = DateTime.now()
+                              .add(const Duration(days: 30));
+                          String two(int n) => n.toString().padLeft(2, '0');
+                          final symbol = bond?.symbol ?? '';
+                          Navigator.pushNamed(
+                            context,
+                            '/bond_confirmation',
+                            arguments: {
+                              'bond': raw,
+                              'qty': quantity,
+                              'price': price,
+                              'fee': fee,
+                              'feePct': feePct,
+                              'total': price * quantity + fee,
+                              'isForeign': bond?.isForeign ?? false,
+                              'order': {
+                                'STOCKCODE': bond?.stockcode ?? '',
+                                'CNT': quantity.toString(),
+                                'PRICE': price.toString(),
+                                // 0 — авах
+                                'TXNTYPE': '0',
+                                'ORDERTYPE': '1',
+                                'CONDID': '18',
+                                'DESCR':
+                                    'App: $symbol бонд авах $quantity ширхэг, нэгж үнэ $price',
+                                'EXPDATE':
+                                    '${exp.year}/${two(exp.month)}/${two(exp.day)}',
+                                'FEE': '1',
+                              },
+                            },
+                          );
+                        }
                       : null,
                 ),
               ),
