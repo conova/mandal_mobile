@@ -1830,4 +1830,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get stockTradingMarketPriceNotify =>
       'Please note that the total amount of market orders may vary depending on the market price at execution.';
+
+  @override
+  String get cancelAllOrdersDesc =>
+      'Are you sure that you want to cancel all your orders?';
 }

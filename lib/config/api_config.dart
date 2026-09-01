@@ -186,7 +186,4 @@ class ApiConfig {
   static const String ordersHistory = '/bdc/api/orders/history';
   static const String profile = '/bdc/api/auth/profile.php';
   static const String accounts = '/bdc/api/auth/accounts.php';
-
-  /// Хэрэглэгчийн үйлчилгээний хураамж
-  static const String userFees = '/bdc/api/user/fees';
 }

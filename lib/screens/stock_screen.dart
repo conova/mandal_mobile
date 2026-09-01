@@ -220,9 +220,17 @@ class _StockScreenState extends State<StockScreen> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              SliverAppBar(
+                pinned: true,
+                floating: false,
+                backgroundColor: extendedColors.bgBase,
+                surfaceTintColor: Colors.transparent,
+                scrolledUnderElevation: 0,
+                automaticallyImplyLeading: false,
+                titleSpacing: 0,
+                toolbarHeight: 64,
+                title: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _buildSearchBar(l10n, theme, extendedColors),
                 ),
               ),
