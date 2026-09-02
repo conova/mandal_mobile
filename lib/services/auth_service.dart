@@ -1794,7 +1794,7 @@ class AuthService with ChangeNotifier {
     final name = raw['CODENAME'] ?? raw['name'];
     final amountRaw = toDouble(raw['AMOUNT'] ?? raw['amount']);
     final amountMnt = toDouble(raw['AMOUNTMNT'] ?? raw['amountMnt']);
-    final count = toInt(raw['COUNT'] ?? raw['count']);
+    final count = toInt(raw['CNT'] ?? raw['cnt']);
     final order = toInt(raw['CODEORDER'] ?? raw['order']);
     final usdRate = toDouble(raw['USDRATE'] ?? raw['usdRate']);
 

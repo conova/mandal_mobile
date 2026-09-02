@@ -248,72 +248,76 @@ class _StoryCarouselState extends State<StoryCarousel> {
     final bool isHandshake =
         slide['image'] == 'assets/images/story_handshaking.png';
 
-    return Stack(
-      children: [
-        // Image at top: 154, height: 240
-        Positioned(
-          top: 184,
-          left: 0,
-          right: 0,
-          child: ShaderMask(
-            shaderCallback: (rect) {
-              return LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.black, Colors.black, Colors.transparent],
-                stops: const [0.0, 0.85, 1.0],
-              ).createShader(rect);
-            },
-            blendMode: BlendMode.dstIn,
-            child: Image.asset(
-              slide['image']!,
-              height: 240,
-              width: double.infinity,
-              fit: isHandshake ? BoxFit.fitWidth : BoxFit.contain,
-            ),
-          ),
-        ),
-
-        // Title content
-        Positioned(
-          top: 472,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: SizedBox(
-              width: 311,
-              child: Text(
-                slide['title']!,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: AppTextStyles.semiBold,
-                ),
-                textAlign: TextAlign.center,
+    return GestureDetector(
+      onTap: _nextSlide,
+      behavior: HitTestBehavior.opaque,
+      child: Stack(
+        children: [
+          // Image at top: 154, height: 240
+          Positioned(
+            top: 184,
+            left: 0,
+            right: 0,
+            child: ShaderMask(
+              shaderCallback: (rect) {
+                return LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.black, Colors.black, Colors.transparent],
+                  stops: const [0.0, 0.85, 1.0],
+                ).createShader(rect);
+              },
+              blendMode: BlendMode.dstIn,
+              child: Image.asset(
+                slide['image']!,
+                height: 240,
+                width: double.infinity,
+                fit: isHandshake ? BoxFit.fitWidth : BoxFit.contain,
               ),
             ),
           ),
-        ),
 
-        // Subtitle content
-        Positioned(
-          top: 551,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: SizedBox(
-              width: 340,
-              child: Text(
-                slide['subtitle']!,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withOpacity(0.8),
-                  fontWeight: AppTextStyles.extraLight,
+          // Title content
+          Positioned(
+            top: 472,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SizedBox(
+                width: 311,
+                child: Text(
+                  slide['title']!,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: AppTextStyles.semiBold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           ),
-        ),
-      ],
+
+          // Subtitle content
+          Positioned(
+            top: 551,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SizedBox(
+                width: 340,
+                child: Text(
+                  slide['subtitle']!,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: AppTextStyles.extraLight,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

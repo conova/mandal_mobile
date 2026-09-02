@@ -636,7 +636,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       child: Column(
         children: [
           SummaryTableRow(
-            label: l10n.type,
+            label: '',
             val1: first,
             val2: hasTwo ? last : '',
             isOdd: true,
@@ -699,7 +699,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         //   isOdd: true,
         // ),
         SummaryTableRow(
-          label: l10n.account,
+          label: '',
           val1: '$start - $end',
           isOdd: true,
         ),

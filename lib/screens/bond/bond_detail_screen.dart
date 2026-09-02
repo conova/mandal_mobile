@@ -33,11 +33,29 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   
   bool _isLoading = true;
   PortfolioSummary? _portfolioSummary;
+  AuthService? _authService;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _fetch());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _authService = context.read<AuthService>();
+      _authService?.addListener(_onAuthNotify);
+      _fetch();
+    });
+  }
+
+  @override
+  void dispose() {
+    _authService?.removeListener(_onAuthNotify);
+    super.dispose();
+  }
+
+  void _onAuthNotify() {
+    if (mounted) {
+      _fetch();
+    }
   }
 
   Future<void> _fetch() async {

@@ -70,12 +70,15 @@ class DepositInfoScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Center(
-                      child: Text(
-                        l10n.depositInfoSubtitle,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: extendedColors.neutral200,
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.symmetric(horizontal: 24),
+                        child: Text(
+                          l10n.depositInfoSubtitle,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: extendedColors.neutral200,
+                          ),
                         ),
-                      ),
+                      )
                     ),
                     const SizedBox(height: 24),
                     Container(
@@ -142,7 +145,7 @@ class DepositInfoScreen extends StatelessWidget {
             ),
             Divider(height: 1, color: extendedColors.neutral500),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              padding: const EdgeInsets.fromLTRB(24, 10, 24, 16),
               child: SizedBox(
                 width: double.infinity,
                 child: CustomButton(
