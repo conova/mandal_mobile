@@ -38,6 +38,13 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     });
   }
 
+  String? _formatName(String? name) {
+    if (name == null || name.isEmpty) return name;
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return trimmed;
+    return trimmed[0].toUpperCase() + trimmed.substring(1).toLowerCase();
+  }
+
   /// И-мэйл нэмэх/засах dialog. Хадгалахад /user/add_email API дуудна.
   /// Амжилттай бол AuthService кэшээ шинэчилж notifyListeners хийдэг тул
   /// энэ дэлгэцийн утга автоматаар шинэчлэгдэнэ.
@@ -131,10 +138,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     final isLoading = child == null && userInfo == null;
 
     // Харуулах утгууд — хүүхэд бол subAcnts-ийн, үгүй бол өөрийн мэдээлэл
-    final lastName = child?.lastName ?? userInfo?['lastName']?.toString();
-    final firstName = child?.firstName ?? userInfo?['firstName']?.toString();
+    final lastName = _formatName(child?.lastName ?? userInfo?['lastName']?.toString());
+    final firstName = _formatName(child?.firstName ?? userInfo?['firstName']?.toString());
     final regNo = child?.register ?? userInfo?['registerNumber']?.toString();
-    final email = child?.email ?? userInfo?['email']?.toString();
+    final email = child?.email.toLowerCase() ?? userInfo?['email']?.toString().toLowerCase();
     final phone = child?.phone ?? userInfo?['phone']?.toString();
     final address = child?.address ?? userInfo?['address']?.toString();
 

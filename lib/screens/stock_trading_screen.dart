@@ -158,7 +158,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
 
   Future<void> _fetchPortfolioSummary() async {
     try {
-      final summary = await context.read<AuthService>().getPortfolioSummary();
+      final auth = context.read<AuthService>();
+      final summary = await auth.getPortfolioSummary();
       if (!mounted) return;
       setState(() {
         _availableCash = summary.cashBalance;

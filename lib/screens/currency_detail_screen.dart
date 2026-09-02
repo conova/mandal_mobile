@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mandal_capital/widgets/circle_back_button.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_info_popup_bottom_sheet.dart';
@@ -10,8 +12,60 @@ import '../widgets/release_locked_amount_sheet.dart';
 
 enum CurrencyType { mnt, usd }
 
-class CurrencyDetailScreen extends StatelessWidget {
+class CurrencyDetailScreen extends StatefulWidget {
   const CurrencyDetailScreen({super.key});
+
+  @override
+  State<CurrencyDetailScreen> createState() => _CurrencyDetailScreenState();
+}
+
+class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
+  double _availableCash = 0;
+  double _lockedAmount = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_fetchData);
+  }
+
+  Future<void> _fetchData() async {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final typeArg = args is Map ? args['type']?.toString() : args as String?;
+    final isMnt = typeArg != 'usd' && typeArg != 'dollar';
+
+    try {
+      final auth = context.read<AuthService>();
+      if (isMnt) {
+        final summary = await auth.getPortfolioSummary();
+        if (mounted) {
+          setState(() {
+            _availableCash = summary.cashBalance;
+            _lockedAmount = summary.holdAmount;
+            _isLoading = false;
+          });
+        }
+      } else {
+        final breakdown = await auth.getAssetBreakdown();
+        final usdItem = breakdown.firstWhere(
+          (item) => item['type'] == 'usd' || item['type'] == 'dollar',
+          orElse: () => <String, dynamic>{},
+        );
+        if (mounted) {
+          setState(() {
+            _availableCash = (usdItem['amount'] as num?)?.toDouble() ?? 0;
+            // USD-ийн хувьд түгжигдсэн дүн одоогоор breakdown-д байхгүй бол 0
+            _lockedAmount = 0;
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching currency data: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +75,7 @@ class CurrencyDetailScreen extends StatelessWidget {
     final args = ModalRoute.of(context)?.settings.arguments;
     // Хуучин String args болон шинэ {'type', 'amount'} Map хоёуланг дэмжинэ
     final typeArg = args is Map ? args['type']?.toString() : args as String?;
-    final headerAmount =
-        args is Map ? (args['amount'] as num?)?.toDouble() : null;
+    final headerAmount = args is Map ? (args['amount'] as num?)?.toDouble() : null;
     final currencyType =
         typeArg == 'usd' || typeArg == 'dollar'
             ? CurrencyType.usd
@@ -32,6 +85,11 @@ class CurrencyDetailScreen extends StatelessWidget {
     final accentColor = isMnt ? extendedColors.primaryMain : extendedColors.neutral100;
     final currencySymbol = isMnt ? '₮' : '\$';
     final title = isMnt ? l10n.tugrik : l10n.dollar;
+
+    // Нийт дүн
+    final displayTotal = _isLoading && headerAmount != null && _availableCash == 0
+        ? headerAmount
+        : (isMnt ? (_availableCash + _lockedAmount) : _availableCash);
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -46,8 +104,7 @@ class CurrencyDetailScreen extends StatelessWidget {
               extendedColors: extendedColors,
               accentColor: accentColor,
               title: title,
-              amount:
-                  '${formatStockAmount(headerAmount ?? 0, isForeign: !isMnt)}',
+              amount: formatStockAmount(displayTotal, isForeign: !isMnt),
               currencySymbol: currencySymbol,
               isMnt: isMnt,
             ),
@@ -101,8 +158,8 @@ class CurrencyDetailScreen extends StatelessWidget {
               theme: theme,
               extendedColors: extendedColors,
               icon: 'coins-hand',
-              label: l10n.cash,
-              amount: isMnt ? '0.00₮' : '0.00\$',
+              label: l10n.availableCash,
+              amount: '${formatStockAmount(_availableCash, isForeign: !isMnt)}$currencySymbol',
               l10n: l10n,
               descTitle: l10n.cash,
               descText: l10n.cashDesc
@@ -114,15 +171,19 @@ class CurrencyDetailScreen extends StatelessWidget {
               extendedColors: extendedColors,
               icon: 'file-check-02',
               label: l10n.lockedAmountLabel,
-              amount: isMnt ? '0.00₮' : '0.00\$',
-              trailing: CustomButton(
-                label: l10n.release,
-                size: CustomButtonSize.small,
-                minWidth: 78,
-                variant: CustomButtonVariant.tertiary,
-                onPressed: () =>
-                    ReleaseLockedAmountSheet.show(context),
-              ),
+              amount: '${formatStockAmount(_lockedAmount, isForeign: !isMnt)}$currencySymbol',
+              trailing: isMnt
+                  ? CustomButton(
+                      label: l10n.release,
+                      size: CustomButtonSize.small,
+                      minWidth: 78,
+                      variant: CustomButtonVariant.tertiary,
+                      onPressed: () async {
+                        await ReleaseLockedAmountSheet.show(context);
+                        _fetchData();
+                      },
+                    )
+                  : null,
               l10n: l10n,
               descTitle: l10n.holdAmount,
               descText: l10n.holdAmountDesc
@@ -200,10 +261,10 @@ class CurrencyDetailScreen extends StatelessWidget {
                     ),
                     child: Center(
                       child: CustomSvgIcon(
-                              isMnt ? 'tugrug-01': 'currency-dollar',
-                              size: 22,
-                              color: extendedColors.bgBase,
-                            ),
+                        isMnt ? 'tugrug-01' : 'currency-dollar',
+                        size: 22,
+                        color: extendedColors.bgBase,
+                      ),
                     ),
                   ),
                 ],
@@ -214,7 +275,7 @@ class CurrencyDetailScreen extends StatelessWidget {
               title,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: extendedColors.neutral100,
-                fontWeight: FontWeight.w200
+                fontWeight: FontWeight.w200,
               ),
             ),
             const SizedBox(height: 8),
@@ -272,8 +333,8 @@ class CurrencyDetailScreen extends StatelessWidget {
     required String label,
     required String amount,
     required AppLocalizations l10n,
-    required descTitle,
-    required descText,
+    required dynamic descTitle,
+    required dynamic descText,
     Widget? trailing,
   }) {
     return Padding(
@@ -288,8 +349,8 @@ class CurrencyDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
             ),
             child: Center(
-              child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24)
-            )
+              child: CustomSvgIcon(icon, color: extendedColors.neutral100, size: 24),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -396,8 +457,9 @@ class CurrencyDetailScreen extends StatelessWidget {
               ),
               child: Center(
                 child: CustomSvgIcon(
-                  isMnt ? 'tugrug-01': 'currency-dollar',
-                  color: tx.isIncome ? extendedColors.primaryMain: extendedColors.neutral200,)
+                  isMnt ? 'tugrug-01' : 'currency-dollar',
+                  color: tx.isIncome ? extendedColors.primaryMain : extendedColors.neutral200,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -446,7 +508,7 @@ class _TransactionData {
   final String amount;
   final bool isIncome;
 
-  const _TransactionData({
+  _TransactionData({
     required this.type,
     required this.currency,
     required this.date,

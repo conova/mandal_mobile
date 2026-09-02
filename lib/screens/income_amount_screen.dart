@@ -215,7 +215,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
             Divider(height: 1, color: extendedColors.neutral500),
             // Submit button
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              padding: const EdgeInsets.fromLTRB(24, 10, 24, 16),
               child: SizedBox(
                 width: double.infinity,
                 child: CustomButton(

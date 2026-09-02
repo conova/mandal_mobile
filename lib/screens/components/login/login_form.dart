@@ -26,7 +26,7 @@ class _LoginFormState extends State<LoginForm>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0, animationDuration: Duration.zero,);
   }
 
   @override

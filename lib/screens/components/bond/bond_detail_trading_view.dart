@@ -265,7 +265,10 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => ReleaseLockedAmountSheet.show(context),
+                    onPressed:  () async {
+                      await ReleaseLockedAmountSheet.show(context);
+
+                    },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       minimumSize: Size.zero,

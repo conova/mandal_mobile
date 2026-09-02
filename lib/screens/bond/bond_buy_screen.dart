@@ -267,56 +267,58 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(color: extendedColors.primary200),
-              child: Row(
-                children: [
-                  CustomSvgIcon('info-circle',
-                      color: extendedColors.primaryMain, size: 22),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '${l10n.lockedAmountLabel}: '
-                      '${formatStockAmount(_lockedAmount, decimals: 0)}',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w300,
-                        color: extendedColors.neutral100,
+            if (_lockedAmount > 0) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(color: extendedColors.primary200),
+                child: Row(
+                  children: [
+                    CustomSvgIcon('info-circle',
+                        color: extendedColors.primaryMain, size: 22),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${l10n.lockedAmountLabel}: '
+                        '${formatStockAmount(_lockedAmount, decimals: 0)}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w300,
+                          color: extendedColors.neutral100,
+                        ),
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await ReleaseLockedAmountSheet.show(context);
-                      // Цуцлалт хийсэн байж болзошгүй — дүнгээ шинэчилнэ
-                      _fetchSummary();
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          l10n.release,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w300,
-                            color: extendedColors.primaryMain,
+                    TextButton(
+                      onPressed: () async {
+                        await ReleaseLockedAmountSheet.show(context);
+                        // Цуцлалт хийсэн байж болзошгүй — дүнгээ шинэчилнэ
+                        _fetchSummary();
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.release,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w300,
+                              color: extendedColors.primaryMain,
+                            ),
                           ),
-                        ),
-                        CustomSvgIcon(
-                          'chevron-up',
-                          color: extendedColors.primaryMain,
-                          size: 16,
-                        ),
-                      ],
+                          CustomSvgIcon(
+                            'chevron-up',
+                            color: extendedColors.primaryMain,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: SafeArea(
