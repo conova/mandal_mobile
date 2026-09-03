@@ -1827,6 +1827,10 @@ class AppLocalizationsMn extends AppLocalizations {
       'Зах зээлийн үнээр хийсэн арилжаа биелэх үед нийт дүн зах зээлийн ханшаас хамаарч өөрчлөгдөж болохыг анхаарна уу.';
 
   @override
-  String get cancelAllOrdersDesc =>
-      'Та өөрийн бүх захиалгыг цуцлахдаа итгэлтэй байна уу?';
+  String cancelAllOrdersDesc(int Number) {
+    return 'Идэвхтэй $Number захиалга цуцлах гэж байна. \n Та үргэлжлүүлэх үү?';
+  }
+
+  @override
+  String get yesContinue => 'Тийм, үргэлжлүүлэх';
 }

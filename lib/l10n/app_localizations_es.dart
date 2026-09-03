@@ -1834,6 +1834,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Please note that the total amount of market orders may vary depending on the market price at execution.';
 
   @override
-  String get cancelAllOrdersDesc =>
-      'Are you sure that you want to cancel all your orders?';
+  String cancelAllOrdersDesc(int Number) {
+    return 'You are about to cancel $Number active order(s). \n Do you wish to continue?';
+  }
+
+  @override
+  String get yesContinue => 'Yes, continue';
 }
