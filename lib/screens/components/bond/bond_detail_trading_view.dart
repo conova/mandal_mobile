@@ -3,6 +3,7 @@ import 'package:mandal_capital/screens/components/bond/bond_trading_input_box.da
 import 'package:mandal_capital/screens/components/bond/bond_trading_quantity_selector.dart';
 import 'package:mandal_capital/widgets/currency_suffix_formatter.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/percent_suffix_formatter.dart';
 import 'package:provider/provider.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../services/auth_service.dart';
@@ -173,7 +174,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
         const SizedBox(height: 24),
         BondPaymentDetails(
           totalPayment: formatStockAmount(total, decimals: 2),
-          totalReturn: formatStockAmount(expectedReturn, decimals: 2),
+          yieldPercent: PercentSuffixFormatter.format(rate), // formatStockAmount(expectedReturn, decimals: 2),
           onDetailsPressed: () {
             //bond payment detail sheet
             // Хуримтлагдсан хүү - accruedInterest

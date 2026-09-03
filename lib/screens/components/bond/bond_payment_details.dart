@@ -5,13 +5,13 @@ import '../../../widgets/custom_svg_icon.dart';
 
 class BondPaymentDetails extends StatelessWidget {
   final String totalPayment;
-  final String totalReturn;
+  final String yieldPercent;
   final VoidCallback onDetailsPressed;
 
   const BondPaymentDetails({
     super.key,
     required this.totalPayment,
-    required this.totalReturn,
+    required this.yieldPercent,
     required this.onDetailsPressed,
   });
 
@@ -70,7 +70,7 @@ class BondPaymentDetails extends StatelessWidget {
                   ),
                   const SizedBox(height: 20,),
                   Text(
-                    totalReturn,
+                    yieldPercent,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/percent_suffix_formatter.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
 import '../../models/market_instrument.dart';
@@ -230,11 +231,12 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 isForeign: _isForeign,
                 decimals: 0,
               ),
-              totalReturn: formatStockAmount(
-                _expectedReturn,
-                isForeign: _isForeign,
-                decimals: 0,
-              ),
+              yieldPercent: PercentSuffixFormatter.format(_intRate),
+              // formatStockAmount(
+              //   _expectedReturn,
+              //   isForeign: _isForeign,
+              //   decimals: 0,
+              // ),
               onDetailsPressed: () {
                 showModalBottomSheet(
                   context: context,
