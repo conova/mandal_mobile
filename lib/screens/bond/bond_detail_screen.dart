@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
 import '../../models/market_instrument.dart';
+import '../../models/order_book_entry.dart';
 import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/circle_back_button.dart';
+import '../../widgets/custom_snackbar.dart';
 import '../components/bond/bond_action_bottom_bar.dart';
 import '../components/bond/bond_detail_closed_view.dart';
 import '../components/bond/bond_detail_foreign_view.dart';
@@ -35,6 +39,15 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   PortfolioSummary? _portfolioSummary;
   AuthService? _authService;
 
+  /// /stocks/order_book — авах/зарах талууд
+  List<OrderBookEntry> _buyOrders = const [];
+  List<OrderBookEntry> _sellOrders = const [];
+  bool _orderBookLoading = true;
+
+  /// Дэлгэц идэвхтэй байх үед самбарыг 5 секунд тутам шинэчилнэ
+  Timer? _orderBookTimer;
+  bool _orderBookFetching = false;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +62,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   @override
   void dispose() {
     _authService?.removeListener(_onAuthNotify);
+    _orderBookTimer?.cancel();
     super.dispose();
   }
 
@@ -92,6 +106,46 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
       } else if (!args.containsKey('bond')) {
         _bond = MarketInstrument.fromJson(Map<String, dynamic>.from(args));
       }
+    }
+
+    if (_bond != null) {
+      _fetchOrderBook();
+
+      // 5 секунд тутамд чимээгүй шинэчилнэ (dispose дээр зогсоно)
+      if ((_bond?.stockcode ?? '').isNotEmpty) {
+        _orderBookTimer?.cancel();
+        _orderBookTimer = Timer.periodic(
+          const Duration(seconds: 5),
+          (_) => _fetchOrderBook(),
+        );
+      }
+    }
+  }
+
+
+  Future<void> _fetchOrderBook() async {
+    final stockcode = _bond?.stockcode ?? '';
+    if (stockcode.isEmpty) {
+      setState(() => _orderBookLoading = false);
+      return;
+    }
+    if (_orderBookFetching) return;
+    _orderBookFetching = true;
+    try {
+      final rows = await context.read<AuthService>().getOrderBook(stockcode);
+      if (!mounted) return;
+      setState(() {
+        _buyOrders = OrderBookEntry.sideFromJson(rows, 'BUY');
+        _sellOrders = OrderBookEntry.sideFromJson(rows, 'SELL');
+        _orderBookLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      final wasInitialLoad = _orderBookLoading;
+      setState(() => _orderBookLoading = false);
+      if (wasInitialLoad) CustomSnackbar.showError(context, e);
+    } finally {
+      _orderBookFetching = false;
     }
   }
 
@@ -145,6 +199,8 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
                   quantity: _quantity,
                   onQuantityChanged: (q) => setState(() => _quantity = q),
                   onPriceChanged: (p) => setState(() => _price = p),
+                  buyOrders: _buyOrders,
+                  sellOrders: _sellOrders,
                 )
               else if (_isForeign)
                 BondDetailForeignView(bond: _bond)
