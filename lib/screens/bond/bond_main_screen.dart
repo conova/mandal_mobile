@@ -29,6 +29,8 @@ class _BondMainScreenState extends State<BondMainScreen>
   bool _bondListLoading = true;
   List<MarketInstrument> _bondList = const [];
 
+  bool _isScrolled = false;
+
   @override
   void initState() {
     super.initState();
@@ -94,40 +96,105 @@ class _BondMainScreenState extends State<BondMainScreen>
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      appBar: AppBar(
-        backgroundColor: extendedColors.bgBase,
-        elevation: 0,
-        titleSpacing: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(0),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: extendedColors.neutral500, width: 1),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(120),
+        child: Container(
+          decoration: BoxDecoration(
+            color: extendedColors.bgBase,
+            boxShadow: _isScrolled
+                ? [
+                    BoxShadow(
+                      color: extendedColors.neutral500.withOpacity(0.1),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            toolbarHeight: 120,
+            titleSpacing: 0,
+            leadingWidth: 200,
+            leading: Padding(
+              padding: const EdgeInsets.only(top: 16, left: 20),
+              child: Text(
+                l10n.bond,
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: extendedColors.neutral100,
-              indicatorColor: extendedColors.primaryMain,
-              indicatorWeight: 4,
-              labelStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w400,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Container(
+                  height: 48,
+                  padding: const EdgeInsets.all(4), // Outer margin between border & pill
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: TabBar(
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    controller: _tabController,
+                    dividerColor: Colors.transparent,
+                    overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+                      if (states.contains(WidgetState.hovered)) {
+                        return extendedColors.bgSecondary; // Color on hover
+                      }
+                      if (states.contains(WidgetState.pressed)) {
+                        return extendedColors.bgSecondary; // Color when tapped/pressed
+                      }
+                      return null; // Default behavior
+                    }),
+                    indicator: BoxDecoration(
+                      color: extendedColors.bgBase,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: extendedColors.neutral500,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    labelColor: extendedColors.neutral100,
+                    unselectedLabelColor: extendedColors.neutral200,
+                    labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    tabs: [
+                      Tab(text: l10n.buy),
+                      Tab(text: l10n.sell),
+                    ],
+                  ),
+                ),
               ),
-              tabs: [
-                Tab(text: l10n.buyBond),
-                Tab(text: l10n.sellBond),
-              ],
             ),
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildBuyTab(l10n, extendedColors, theme),
-          _buildSellTab(l10n, extendedColors, theme),
-        ],
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification.depth == 1) {
+            final bool scrolled = notification.metrics.pixels > 0;
+            if (scrolled != _isScrolled) {
+              setState(() => _isScrolled = scrolled);
+            }
+          }
+          return false;
+        },
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildBuyTab(l10n, extendedColors, theme),
+            _buildSellTab(l10n, extendedColors, theme),
+          ],
+        ),
       ),
     );
   }

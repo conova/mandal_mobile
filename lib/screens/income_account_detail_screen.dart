@@ -100,6 +100,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
             ),
           ),
         ),
+        centerTitle: true,
         title: Padding(
           padding: EdgeInsets.only(top: 10),
           child: Text(
