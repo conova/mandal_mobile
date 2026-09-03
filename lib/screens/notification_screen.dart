@@ -321,9 +321,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               icon: CustomSvgIcon(
                 'checked',
                 size: 10,
-                color: (_unreadCount > 0)
-                  ?extendedColors.neutral100
-                  :extendedColors.neutral200,
+                color: extendedColors.primaryMain
               ),
               label: Text(
                 l10n.markAllAsRead,

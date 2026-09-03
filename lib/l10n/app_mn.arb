@@ -599,7 +599,7 @@
     "stockTradingNoPowerDesc": "Олон улсын болон дотоодын хувьцаа авахын тулд эхлээд арилжааны дансандаа орлого хийх хэрэгтэй шүү.",
     "marketClosedNotifTitle": "Зах зээл амарч байна",
     "marketClosedNotifDesc": "Монголын хөрөнгийн биржийн арилжаа {startDate} цагаас нээгдэж, {endDate} цагт хаагддаг болно. Та зөвхөн энэ хугацаанд зах зээлийн үнээр арилжаа хийх боломжтой.",
-   "@marketClosedNotifDesc": {
+    "@marketClosedNotifDesc": {
         "placeholders": {
             "startDate": {
                 "type": "String"
@@ -611,5 +611,13 @@
     },
     "understood": "Ойлголоо",
     "stockTradingMarketPriceNotify": "Зах зээлийн үнээр хийсэн арилжаа биелэх үед нийт дүн зах зээлийн ханшаас хамаарч өөрчлөгдөж болохыг анхаарна уу.",
-    "cancelAllOrdersDesc": "Та өөрийн бүх захиалгыг цуцлахдаа итгэлтэй байна уу?"
+    "cancelAllOrdersDesc": "Идэвхтэй {Number} захиалга цуцлах гэж байна. \n Та үргэлжлүүлэх үү?",
+    "@cancelAllOrdersDesc": {
+        "placeholders": {
+            "Number": {
+                "type": "int"
+            }
+        }
+    },
+    "yesContinue": "Тийм, үргэлжлүүлэх"
 }

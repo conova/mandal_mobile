@@ -447,23 +447,17 @@ class _TransactionPeriodSheetState extends State<TransactionPeriodSheet> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: (_selectedPeriod == p.$1)
-                      ? extendedColors.bgSecondary
-                      : extendedColors.bgBase,
-                  border: Border.all(
-                    color: isSelected
-                        ? extendedColors.bgSecondary
-                        : extendedColors.neutral500,
-                    width: 1,
-                  ),
+                      ? extendedColors.neutral100
+                      : extendedColors.bgSecondary,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Text(
                   p.$2,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: (_selectedPeriod == p.$1)
-                        ?extendedColors.neutral100
+                        ?extendedColors.bgBase
                         :extendedColors.neutral200,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ),

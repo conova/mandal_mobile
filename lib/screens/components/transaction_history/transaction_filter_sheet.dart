@@ -38,6 +38,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
     setState(() {
       _selectedTags.clear();
     });
+    Navigator.pop(context, _selectedTags);
   }
 
   @override
@@ -208,17 +209,14 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? extendedColors.bgSecondary : extendedColors.bgBase,
-          border: Border.all(
-            color: isSelected ? extendedColors.bgSecondary : extendedColors.neutral500,
-          ),
+          color: isSelected ? extendedColors.neutral100 : extendedColors.bgSecondary,
           borderRadius: BorderRadius.circular(30),
         ),
         child: Text(
           label,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: isSelected ? extendedColors.neutral100 : extendedColors.neutral200,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            color: isSelected ? extendedColors.bgBase : extendedColors.neutral200,
+            fontWeight: FontWeight.normal,
           ),
         ),
       ),

@@ -7,7 +7,6 @@ import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import 'income_method_screen.dart' show AccountTypeRow;
 import '../widgets/custom_snackbar.dart';
-import '../widgets/custom_svg_icon.dart';
 
 class WithdrawMethodScreen extends StatefulWidget {
   const WithdrawMethodScreen({super.key});

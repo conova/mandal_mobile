@@ -3541,8 +3541,14 @@ abstract class AppLocalizations {
   /// No description provided for @cancelAllOrdersDesc.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure that you want to cancel all your orders?'**
-  String get cancelAllOrdersDesc;
+  /// **'You are about to cancel {Number} active order(s). \n Do you wish to continue?'**
+  String cancelAllOrdersDesc(int Number);
+
+  /// No description provided for @yesContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, continue'**
+  String get yesContinue;
 }
 
 class _AppLocalizationsDelegate

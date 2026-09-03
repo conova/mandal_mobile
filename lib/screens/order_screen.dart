@@ -95,8 +95,8 @@ class _OrderScreenState extends State<OrderScreen>
         backgroundColor: Colors.transparent,
         builder: (ctx) => CustomBottomSheet(
           title: l10n.cancelAllOrders,
-          description: l10n.cancelAllOrdersDesc,
-          confirmText: l10n.remove,
+          description: l10n.cancelAllOrdersDesc(_orders.length),
+          confirmText: l10n.yesContinue,
           cancelText: l10n.back,
           onConfirm: () => Navigator.pop(ctx, true),
           onCancel: () => Navigator.pop(ctx, false),
@@ -282,7 +282,7 @@ class _OrderScreenState extends State<OrderScreen>
                   label: '${l10n.cancelAllOrders} (${orders.length})',
                   isLoading: _isCanceling,
                   onPressed: _isCanceling ? null : _handleCancelAll,
-                  variant: CustomButtonVariant.red,
+                  variant: CustomButtonVariant.error,
                 ),
               ),
               // Padding(

@@ -3,6 +3,7 @@ import 'package:mandal_capital/screens/components/bond/bond_trading_input_box.da
 import 'package:mandal_capital/screens/components/bond/bond_trading_quantity_selector.dart';
 import 'package:mandal_capital/widgets/currency_suffix_formatter.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
+import 'package:mandal_capital/widgets/percent_suffix_formatter.dart';
 import 'package:provider/provider.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../services/auth_service.dart';
@@ -24,6 +25,8 @@ class BondDetailTradingView extends StatefulWidget {
   final int quantity;
   final ValueChanged<int> onQuantityChanged;
   final ValueChanged<double> onPriceChanged;
+  final List<OrderBookEntry> buyOrders;
+  final List<OrderBookEntry> sellOrders;
 
   const BondDetailTradingView({
     super.key,
@@ -32,6 +35,8 @@ class BondDetailTradingView extends StatefulWidget {
     required this.quantity,
     required this.onQuantityChanged,
     required this.onPriceChanged,
+    this.buyOrders = const [],
+    this.sellOrders = const [],
   });
 
   @override
@@ -162,17 +167,14 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
             if (current > 0) {
               final newVal = current - 1;
               _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
-              // widget.onQuantityChanged(newVal); // redundant due to listener
             }
           },
-          onChanged: (val) {
-            // redundant due to listener
-          },
+          onChanged: (val) {},
         ),
         const SizedBox(height: 24),
         BondPaymentDetails(
           totalPayment: formatStockAmount(total, decimals: 2),
-          totalReturn: formatStockAmount(expectedReturn, decimals: 2),
+          yieldPercent: PercentSuffixFormatter.format(rate), // formatStockAmount(expectedReturn, decimals: 2),
           onDetailsPressed: () {
             //bond payment detail sheet
             // Хуримтлагдсан хүү - accruedInterest
@@ -189,22 +191,9 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
         const SizedBox(height: 32),
         Divider(height: 1, color: extendedColors.neutral500),
         const SizedBox(height: 24),
-        // Захиалгын самбар — API байхгүй тул түр демо утгууд
         BondTradingOrderBoard(
-          buyOrders: const [
-            OrderBookEntry(price: 100000, quantity: 500, rank: 1),
-            OrderBookEntry(price: 99500, quantity: 1200, rank: 2),
-            OrderBookEntry(price: 99000, quantity: 800, rank: 3),
-            OrderBookEntry(price: 98500, quantity: 1500, rank: 4),
-            OrderBookEntry(price: 98000, quantity: 2000, rank: 5),
-          ],
-          sellOrders: const [
-            OrderBookEntry(price: 101000, quantity: 300, rank: 1),
-            OrderBookEntry(price: 101500, quantity: 1500, rank: 2),
-            OrderBookEntry(price: 102000, quantity: 2000, rank: 3),
-            OrderBookEntry(price: 102500, quantity: 1000, rank: 4),
-            OrderBookEntry(price: 103000, quantity: 500, rank: 5),
-          ],
+          buyOrders: widget.buyOrders,
+          sellOrders: widget.sellOrders,
         ),
       ],
     );
@@ -265,9 +254,8 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed:  () async {
+                    onPressed: () async {
                       await ReleaseLockedAmountSheet.show(context);
-
                     },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
