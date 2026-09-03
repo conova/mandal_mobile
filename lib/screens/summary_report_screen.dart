@@ -366,8 +366,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
           padding: EdgeInsets.only(top: 10),
           child: Text(
             l10n.summaryReport,
-            style: theme.textTheme.bodyLarge?.copyWith(
+            style: theme.textTheme.headlineSmall?.copyWith(
               color: extendedColors.neutral100,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),

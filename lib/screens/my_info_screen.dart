@@ -160,6 +160,16 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             child: CircleBackButton(),
           ),
         ),
+        title: Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Text(
+            // Хүүхдийн мэдээлэл үзэж байгаа бол "Миний" гэхгүй
+            child != null ? l10n.information : l10n.myInfo,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -168,15 +178,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 10,),
-                  Text(
-                    // Хүүхдийн мэдээлэл үзэж байгаа бол "Миний" гэхгүй
-                    child != null ? l10n.information : l10n.myInfo,
-                    style: theme.textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 24),
                   InfoCard(
                     label: l10n.surname,
                     value: lastName ?? '-',

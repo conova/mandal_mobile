@@ -1840,4 +1840,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get yesContinue => 'Yes, continue';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get primaryAccount => 'Primary Account';
+
+  @override
+  String get stockMoney => 'Stock money';
+
+  @override
+  String get bondMoney => 'Bond money';
 }

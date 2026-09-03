@@ -33,6 +33,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
   Future<void> _fetchBalances() async {
     try {
       final breakdown = await context.read<AuthService>().getAssetBreakdown();
+      final summary = await context.read<AuthService>().getPortfolioSummary();
       if (!mounted) return;
       double byType(String type) {
         final row = breakdown.firstWhere(
@@ -51,7 +52,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
       }
 
       setState(() {
-        _mntBalance = byType('mnt');
+        _mntBalance = byType('mnt') - summary.holdAmount;
         _usdBalance = byType('usd');
         final usdMnt = byKey('usd', 'amountMnt');
         _usdRate = _usdBalance > 0 ? usdMnt / _usdBalance : 0;
@@ -147,7 +148,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
               icon: 'tugrug-01',
               iconBg: extendedColors.primary100,
               iconColor: extendedColors.primaryMain,
-              title: l10n.stocks,
+              title: l10n.stockMoney,
               balanceLabel: l10n.availableBalanceLabel,
               balance: formatStockAmount(_mntBalance, decimals: 0),
               isLoading: _isLoading,
@@ -158,7 +159,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
               icon: 'tugrug-01',
               iconBg: extendedColors.primaryMain,
               iconColor: Colors.white,
-              title: l10n.bond,
+              title: l10n.bondMoney,
               balanceLabel: l10n.availableBalanceLabel,
               balance: formatStockAmount(_mntBalance, decimals: 0),
               isLoading: _isLoading,

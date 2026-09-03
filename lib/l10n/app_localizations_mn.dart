@@ -1833,4 +1833,19 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get yesContinue => 'Тийм, үргэлжлүүлэх';
+
+  @override
+  String get deleteAccount => 'Данс устгах';
+
+  @override
+  String get details => 'Дэлгэрэнгүй';
+
+  @override
+  String get primaryAccount => 'Үндсэн данс';
+
+  @override
+  String get stockMoney => 'Хувьцааны мөнгө';
+
+  @override
+  String get bondMoney => 'Бондын мөнгө';
 }

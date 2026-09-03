@@ -41,7 +41,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
         final summary = await auth.getPortfolioSummary();
         if (mounted) {
           setState(() {
-            _availableCash = summary.cashBalance;
+            _availableCash = summary.cashBalance - summary.holdAmount;
             _lockedAmount = summary.holdAmount;
             _isLoading = false;
           });

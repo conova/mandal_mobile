@@ -61,7 +61,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
       final summary = await context.read<AuthService>().getPortfolioSummary();
       if (!mounted) return;
       setState(() {
-        _availableCash = summary.cashBalance;
+        _availableCash = summary.cashBalance - summary.holdAmount;
         _lockedAmount = summary.holdAmount;
       });
     } catch (_) {

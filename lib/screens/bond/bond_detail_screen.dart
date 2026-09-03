@@ -189,7 +189,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
               BondDetailHeader(
                 bond: _bond,
                 showAvailableCash: _isTrading,
-                availableCash: _portfolioSummary?.cashBalance,
+                availableCash: (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
               ),
               const SizedBox(height: 24),
               if (_isTrading)
@@ -221,7 +221,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
           : BondActionBottomBar(
               label: l10n.availableCash,
               amount: formatStockAmount(
-                _portfolioSummary?.cashBalance ?? 0,
+                (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
                 isForeign: _isForeign,
               ),
               buttonText: l10n.buyBond,

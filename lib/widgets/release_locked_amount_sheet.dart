@@ -106,7 +106,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
 
       if (mounted) {
         setState(() {
-          _availableCash = summary.cashBalance;
+          _availableCash = summary.cashBalance - summary.holdAmount;
           _items = newItems;
           _isLoading = false;
         });

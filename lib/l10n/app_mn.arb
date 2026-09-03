@@ -619,5 +619,10 @@
             }
         }
     },
-    "yesContinue": "Тийм, үргэлжлүүлэх"
+    "yesContinue": "Тийм, үргэлжлүүлэх",
+    "deleteAccount": "Данс устгах",
+    "details": "Дэлгэрэнгүй",
+    "primaryAccount": "Үндсэн данс",
+    "stockMoney": "Хувьцааны мөнгө",
+    "bondMoney": "Бондын мөнгө"
 }
