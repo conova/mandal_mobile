@@ -3549,6 +3549,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yes, continue'**
   String get yesContinue;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @primaryAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Account'**
+  String get primaryAccount;
+
+  /// No description provided for @stockMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock money'**
+  String get stockMoney;
+
+  /// No description provided for @bondMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond money'**
+  String get bondMoney;
 }
 
 class _AppLocalizationsDelegate

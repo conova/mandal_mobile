@@ -133,15 +133,13 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
   }
 
   String _formatAmount(num n, String currency) {
-    final str = n.toStringAsFixed(2);
-    final dotIdx = str.indexOf('.');
-    final whole = str
-        .substring(0, dotIdx)
+    final str = n.toStringAsFixed(0);
+    final formatted = str
         .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (m) => '${m[1]},',
         );
-    return '$whole${str.substring(dotIdx)}$currency';
+    return '$formatted$currency';
   }
 
   /// API хариугаас хамаарч дэлгэцэн дээр render хийх жагсаалт буцаана:

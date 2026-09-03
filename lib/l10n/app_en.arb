@@ -681,5 +681,10 @@
             }
         }
     },
-    "yesContinue": "Yes, continue"
+    "yesContinue": "Yes, continue",
+    "deleteAccount": "Delete account",
+    "details": "Details",
+    "primaryAccount": "Primary Account",
+    "stockMoney": "Stock money",
+    "bondMoney": "Bond money"
 }

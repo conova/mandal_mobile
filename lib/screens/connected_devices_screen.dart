@@ -80,27 +80,22 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
             child: CircleBackButton(),
           ),
         ),
+        title: Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Text(
+            l10n.connectedDevices,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.connectedDevices,
-                    style: theme.textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.connectedDevicesDesc,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
-                  ),
                   const SizedBox(height: 32),
                   if (_devices.isEmpty)
                     Center(
@@ -147,6 +142,18 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                         ],
                       );
                     }),
+                  Divider(thickness: 1, color: extendedColors.neutral500,),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      l10n.connectedDevicesDesc,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   const SizedBox(height: 32),
                 ],
               ),
