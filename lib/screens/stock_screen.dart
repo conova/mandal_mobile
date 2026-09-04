@@ -215,35 +215,25 @@ class _StockScreenState extends State<StockScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(64),
-        child: Container(
-          decoration: BoxDecoration(
-            color: extendedColors.bgBase,
-            boxShadow: _isScrolled
-                ? [
-                    BoxShadow(
-                      color: extendedColors.neutral500.withOpacity(0.1),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        toolbarHeight: 64,
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled
+                ? extendedColors.neutral500.withValues(alpha: 0.1)
+                : Colors.transparent,
           ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
-            toolbarHeight: 64,
-            title: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildSearchBar(l10n, theme, extendedColors),
-            ),
-          ),
+        ),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildSearchBar(l10n, theme, extendedColors),
         ),
       ),
       body: NotificationListener<ScrollNotification>(

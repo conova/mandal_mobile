@@ -96,83 +96,74 @@ class _BondMainScreenState extends State<BondMainScreen>
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120),
-        child: Container(
-          decoration: BoxDecoration(
-            color: extendedColors.bgBase,
-            boxShadow: _isScrolled
-                ? [
-                    BoxShadow(
-                      color: extendedColors.neutral500.withOpacity(0.1),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 120,
+        titleSpacing: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        leadingWidth: 200,
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled
+                ? extendedColors.neutral500.withValues(alpha: 0.1)
+                : Colors.transparent,
           ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            toolbarHeight: 120,
-            titleSpacing: 0,
-            leadingWidth: 200,
-            leading: Padding(
-              padding: const EdgeInsets.only(top: 16, left: 20),
-              child: Text(
-                l10n.bond,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 16, left: 20),
+          child: Text(
+            l10n.bond,
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(0),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: Container(
-                  height: 48,
-                  padding: const EdgeInsets.all(4), // Outer margin between border & pill
-                  decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: TabBar(
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    controller: _tabController,
-                    dividerColor: Colors.transparent,
-                    overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-                      if (states.contains(WidgetState.hovered)) {
-                        return extendedColors.bgSecondary; // Color on hover
-                      }
-                      if (states.contains(WidgetState.pressed)) {
-                        return extendedColors.bgSecondary; // Color when tapped/pressed
-                      }
-                      return null; // Default behavior
-                    }),
-                    indicator: BoxDecoration(
-                      color: extendedColors.bgBase,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: extendedColors.neutral500,
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.all(4), // Outer margin between border & pill
+              decoration: BoxDecoration(
+                color: extendedColors.bgSecondary,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: TabBar(
+                indicatorSize: TabBarIndicatorSize.tab,
+                controller: _tabController,
+                dividerColor: Colors.transparent,
+                overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.hovered)) {
+                    return extendedColors.bgSecondary; // Color on hover
+                  }
+                  if (states.contains(WidgetState.pressed)) {
+                    return extendedColors.bgSecondary; // Color when tapped/pressed
+                  }
+                  return null; // Default behavior
+                }),
+                indicator: BoxDecoration(
+                  color: extendedColors.bgBase,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: extendedColors.neutral500,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
                     ),
-                    labelColor: extendedColors.neutral100,
-                    unselectedLabelColor: extendedColors.neutral200,
-                    labelStyle: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    tabs: [
-                      Tab(text: l10n.buy),
-                      Tab(text: l10n.sell),
-                    ],
-                  ),
+                  ],
                 ),
+                labelColor: extendedColors.neutral100,
+                unselectedLabelColor: extendedColors.neutral200,
+                labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: [
+                  Tab(text: l10n.buy),
+                  Tab(text: l10n.sell),
+                ],
               ),
             ),
           ),
