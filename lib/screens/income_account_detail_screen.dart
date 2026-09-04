@@ -6,7 +6,7 @@ import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
-import '../widgets/custom_svg_icon.dart';
+import '../widgets/custom_bottom_sheet.dart';
 
 class IncomeAccountDetailScreen extends StatefulWidget {
   const IncomeAccountDetailScreen({super.key});
@@ -18,21 +18,68 @@ class IncomeAccountDetailScreen extends StatefulWidget {
 
 class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
   bool _isSettingPrimary = false;
+  bool _isDeleting = false;
   bool? _isPrimaryOverride;
 
-  /// Данс солих буюу шинэ данс нэмэх дэлгэц рүү шилжинэ.
-  Future<void> _handleChangeAccount() async {
-    final added = await Navigator.pushNamed(context, '/add_income_account');
-    // Данс нэмэгдсэн бол жагсаалт руу буцааж шинэчлүүлнэ
-    if (added == true && mounted) {
+  // /// Данс солих буюу шинэ данс нэмэх дэлгэц рүү шилжинэ.
+  // Future<void> _handleChangeAccount() async {
+  //   final added = await Navigator.pushNamed(context, '/add_income_account');
+  //   // Данс нэмэгдсэн бол жагсаалт руу буцааж шинэчлүүлнэ
+  //   if (added == true && mounted) {
+  //     Navigator.pop(context, true);
+  //   }
+  // }
+
+  Future<void> _handleDeleteAccount() async {
+    if (_isDeleting || _isSettingPrimary) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            {};
+    final accountNumber = args['accountNumber']?.toString() ?? '';
+
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CustomBottomSheet(
+        title: l10n.deleteAccount,
+        description: l10n.deleteAccountQuestion,
+        confirmText: l10n.remove,
+        cancelText: l10n.back,
+        onConfirm: () => Navigator.pop(context, true),
+        onCancel: () => Navigator.pop(context, false),
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isDeleting = true);
+    try {
+      final auth = context.read<AuthService>();
+      final message = await auth.deleteAccount(iban: accountNumber);
+
+      // Шинэчилсэн мэдээллийг татаж кэшийг шинэчилнэ
+      await auth.refreshUserInfo();
+
+      if (!mounted) return;
+      CustomSnackbar.show(context, message: message);
       Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isDeleting = false);
+      CustomSnackbar.show(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: CustomSnackbarType.error,
+      );
     }
   }
 
   /// Сонгосон дансыг үндсэн (орлого авах) данс болгоно —
   /// add_account API руу isPrimary: "1" илгээнэ.
   Future<void> _handleSetPrimary(Map<String, dynamic> args) async {
-    if (_isSettingPrimary) return;
+    if (_isSettingPrimary || _isDeleting) return;
 
     setState(() => _isSettingPrimary = true);
     try {
@@ -141,18 +188,19 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
               CustomButton(
                 label: l10n.setAsDefaultAccount,
                 onPressed:
-                _isSettingPrimary ? null : () => _handleSetPrimary(args),
+                (_isSettingPrimary || _isDeleting) ? null : () => _handleSetPrimary(args),
                 isLoading: _isSettingPrimary,
                 variant: CustomButtonVariant.secondary,
               ),
               const SizedBox(height: 12),
+              CustomButton(
+                label: l10n.deleteAccount,
+                onPressed: (_isSettingPrimary || _isDeleting) ? null : _handleDeleteAccount,
+                isLoading: _isDeleting,
+                variant: CustomButtonVariant.error,
+              ),
+              const SizedBox(height: 48),
             ],
-            CustomButton(
-              label: l10n.deleteAccount,
-              onPressed: _isSettingPrimary ? null : _handleChangeAccount,
-              variant: CustomButtonVariant.error,
-            ),
-            const SizedBox(height: 48),
           ],
         ),
       ),

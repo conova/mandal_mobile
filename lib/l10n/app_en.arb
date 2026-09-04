@@ -686,5 +686,6 @@
     "details": "Details",
     "primaryAccount": "Primary Account",
     "stockMoney": "Stock money",
-    "bondMoney": "Bond money"
+    "bondMoney": "Bond money",
+    "deleteAccountQuestion": "Are you sure you want to delete this account?"
 }

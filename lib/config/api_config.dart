@@ -34,6 +34,7 @@ class ApiConfig {
   static const String registerInitiate = '/bdc/api/register/initiate';
   static const String registerSetPassword = '/bdc/api/register/set_password';
   static const String registerAddAccount = '/bdc/api/register/add_account';
+  static const String registerDeleteAccount = '/bdc/api/register/delete_account';
   static const String registerReset = '/bdc/api/register/reset';
   static const String forgotPassword = '/bdc/api/auth/forgot_password';
   static const String changePassword = '/bdc/api/auth/change_password';

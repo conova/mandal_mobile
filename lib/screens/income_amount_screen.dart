@@ -156,12 +156,17 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Text(
-                  '$_formattedAmount$currencySymbol',
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      '$_formattedAmount$currencySymbol',
+                      style: theme.textTheme.displayMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                    //if (cu)
+                  ],
                 ),
               ),
             ),

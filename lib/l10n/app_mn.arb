@@ -624,5 +624,6 @@
     "details": "Дэлгэрэнгүй",
     "primaryAccount": "Үндсэн данс",
     "stockMoney": "Хувьцааны мөнгө",
-    "bondMoney": "Бондын мөнгө"
+    "bondMoney": "Бондын мөнгө",
+    "deleteAccountQuestion": "Та энэ дансыг устгахдаа итгэлтэй байна уу?"
 }

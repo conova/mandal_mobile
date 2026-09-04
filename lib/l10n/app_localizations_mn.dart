@@ -1848,4 +1848,8 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get bondMoney => 'Бондын мөнгө';
+
+  @override
+  String get deleteAccountQuestion =>
+      'Та энэ дансыг устгахдаа итгэлтэй байна уу?';
 }

@@ -13,51 +13,58 @@ class HomePromotionBanner extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: const [0.1409, 0.8583],
-          colors: [extendedColors.primary200, extendedColors.primary100],
+    return GestureDetector(
+      onTap: () {Navigator.pushNamed(context, '/main', arguments: {'tab': 1});},
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: const [0.1409, 0.8583],
+            colors: [extendedColors.primary200, extendedColors.primary100],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: extendedColors.primary200, width: 1),
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: extendedColors.primary200, width: 1),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 36,
-            height: 36,
-            child: Image.asset('assets/images/vault.png', fit: BoxFit.contain),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.newBond,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: AppTextStyles.light,
-                    color: extendedColors.neutral100,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.newBondDesc,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: AppTextStyles.light,
-                    color: extendedColors.neutral200,
-                  ),
-                ),
-              ],
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 36,
+              height: 36,
+              child: Image.asset('assets/images/vault.png', fit: BoxFit.contain),
             ),
-          ),
-          const CustomSvgIcon('chevron-right', size: 20,),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.newBond,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: AppTextStyles.light,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.newBondDesc,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: AppTextStyles.light,
+                      color: extendedColors.neutral200,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            CustomSvgIcon(
+              'chevron-right',
+              size: 20,
+              color: extendedColors.neutral200,
+            ),
+          ],
+        ),
       ),
     );
   }
