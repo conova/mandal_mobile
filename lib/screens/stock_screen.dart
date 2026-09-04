@@ -45,6 +45,8 @@ class _StockScreenState extends State<StockScreen> {
       PageController(viewportFraction: 0.92);
   int _ipoPage = 0;
 
+  bool _isScrolled = false;
+
   @override
   void initState() {
     super.initState();
@@ -213,27 +215,40 @@ class _StockScreenState extends State<StockScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      body: SafeArea(
-        bottom: false,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        toolbarHeight: 64,
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled
+                ? extendedColors.neutral500.withValues(alpha: 0.1)
+                : Colors.transparent,
+          ),
+        ),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildSearchBar(l10n, theme, extendedColors),
+        ),
+      ),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          final bool scrolled = notification.metrics.pixels > 0;
+          if (scrolled != _isScrolled) {
+            setState(() => _isScrolled = scrolled);
+          }
+          return false;
+        },
         child: RefreshIndicator(
           onRefresh: _fetchAll,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverAppBar(
-                pinned: true,
-                floating: false,
-                backgroundColor: extendedColors.bgBase,
-                surfaceTintColor: Colors.transparent,
-                scrolledUnderElevation: 0,
-                automaticallyImplyLeading: false,
-                titleSpacing: 0,
-                toolbarHeight: 64,
-                title: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _buildSearchBar(l10n, theme, extendedColors),
-                ),
-              ),
               if (_searchQuery.isNotEmpty)
                 ..._buildSearchSlivers(l10n, theme, extendedColors)
               else if (_isLoading)
@@ -731,7 +746,7 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ],
             ),
-            Spacer(flex: 2),
+            const Spacer(flex: 2),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
@@ -741,7 +756,7 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ),
             ),
-             Spacer(),
+             const Spacer(),
             Row(
               children: [
                 Expanded(

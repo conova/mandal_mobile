@@ -74,6 +74,7 @@ class DepositInfoScreen extends StatelessWidget {
                         padding: EdgeInsetsGeometry.symmetric(horizontal: 24),
                         child: Text(
                           l10n.depositInfoSubtitle,
+                          textAlign: TextAlign.center,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: extendedColors.neutral200,
                           ),

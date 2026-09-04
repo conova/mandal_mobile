@@ -1855,4 +1855,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get bondMoney => 'Bond money';
+
+  @override
+  String get deleteAccountQuestion =>
+      'Are you sure you want to delete this account?';
 }

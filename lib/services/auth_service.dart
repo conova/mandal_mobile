@@ -1053,6 +1053,40 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  Future<String> deleteAccount({
+    String? sessionId,
+    required String iban,
+  }) async {
+    final dio = isAuthenticated ? _authedDio : _dio;
+    try {
+      final Map<String, dynamic> bodyData = {
+        'acntNo': iban,
+      };
+      if (!isAuthenticated) {
+        if (sessionId == null || sessionId.isEmpty) {
+          throw Exception(
+            'sessionId шаардлагатай (нэвтэрсэн хэрэглэгч биш үед)',
+          );
+        }
+        bodyData['sessionId'] = sessionId;
+      }
+
+      final response = await dio.post(
+        ApiConfig.registerDeleteAccount,
+        data: {'api': 'delete_account', 'data': bodyData},
+      );
+
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return apiMessage(body) ??
+            'Дансны мэдээлэл амжилттай устгагдлаа';
+      }
+      throw Exception(apiMessage(body) ?? 'Данс устгахад алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// KYC: бичиг баримтын зураг илгээх
   /// type: id_front | id_back | selfie г.м.
   /// image: base64 encoded string
@@ -1248,6 +1282,9 @@ class AuthService with ChangeNotifier {
   // Inside AuthService class
   int _activeOrderCount =0;
   int get activeOrderCount => _activeOrderCount;
+
+  bool _hasPrimaryBond = false;
+  bool get hasPrimaryBond => _hasPrimaryBond;
 
   Future<void> refreshActiveOrders() async {
     try {
@@ -1537,8 +1574,12 @@ class AuthService with ChangeNotifier {
       _fetchStockList(ApiConfig.stocksMyBonds);
 
   /// Зах зээл дээрх бондууд (бонд авах tab)
-  Future<List<Map<String, dynamic>>> getBondList() =>
-      _fetchStockList(ApiConfig.stocksBondList);
+  Future<List<Map<String, dynamic>>> getBondList() async {
+    final list = await _fetchStockList(ApiConfig.stocksBondList);
+    _hasPrimaryBond = list.any((bond) => bond['MARKET'] == 'Primary');
+    notifyListeners();
+    return list;
+  }
 
   /// Хураангуй тайлан — POST /portfolio/summary_report?start=..&end=..
   /// Returns: { portfolio: [...], transactions: [...] }
@@ -1685,6 +1726,16 @@ class AuthService with ChangeNotifier {
 
   // ─── Portfolio ───────────────────────────────────────────────────────
 
+  // final PortfolioSummary _defaultSummary = PortfolioSummary(
+  //   cashBalance: 0,
+  //   holdAmount: 0,
+  //   totalAssets: 0,
+  //   totalChange: 0,
+  //   changePercent: 0,
+  //   usdRate: 0,
+  // );
+  // PortfolioSummary get summary => _summary ?? _defaultSummary;
+  // PortfolioSummary? _summary;
   /// Нийт хөрөнгийн товч мэдээлэл.
   /// GET /portfolio/summary
   /// Response: { totalAssets, totalChange, changePercent, cashBalance }
@@ -1701,6 +1752,15 @@ class AuthService with ChangeNotifier {
       double toDouble(dynamic v) => v == null
           ? 0.0
           : (v is num ? v.toDouble() : double.tryParse(v.toString()) ?? 0.0);
+      // _summary = PortfolioSummary(
+      //   cashBalance: toDouble(data['cashBalance']),
+      //   holdAmount: toDouble(data['holdAmount']),
+      //   totalAssets: toDouble(data['totalAssets']),
+      //   totalChange: toDouble(data['totalChange']),
+      //   changePercent: toDouble(data['changePercent']),
+      //   usdRate: toDouble(data['usdRate']),
+      // );
+      // notifyListeners();
       return PortfolioSummary(
         totalAssets: toDouble(data['totalAssets']),
         totalChange: toDouble(data['totalChange']),
@@ -2133,6 +2193,7 @@ class AuthService with ChangeNotifier {
     _custName = null;
     _roles = {};
     _userInfo = null;
+    _hasPrimaryBond = false;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_accessTokenKey);
