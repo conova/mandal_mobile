@@ -170,6 +170,10 @@ class _FinanceChartState extends State<FinanceChart> {
                   LineChartBarData(
                     spots: useSpots,
                     isCurved: true,
+                    // Огцом өөрчлөлттэй цэгүүд дээр муруй хэт давж
+                    // "мурилзахаас" сэргийлнэ
+                    preventCurveOverShooting: true,
+                    curveSmoothness: 0.2,
                     color: theme.primaryColor,
                     barWidth: 2,
                     isStrokeCapRound: true,

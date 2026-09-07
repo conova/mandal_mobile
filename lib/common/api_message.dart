@@ -20,3 +20,8 @@ String? apiMessage(dynamic body) {
       : preferred;
   return (value == null || value.isEmpty) ? null : value;
 }
+
+/// Идэвхтэй хэлний дагуу бэлэн мессеж сонгоно. Сервер `message`-даа
+/// англи текст өгдөг endpoint-ууд дээр (жнь /order/cancel) хэрэглэнэ.
+String localMessage(String mn, String en) =>
+    AppStateManager.instance.locale.languageCode == 'mn' ? mn : en;

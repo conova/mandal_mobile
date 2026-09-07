@@ -105,7 +105,8 @@
       "Read(//Users/altanshagai/.appstoreconnect/**)",
       "Read(//Users/altanshagai/**)",
       "Bash(unzip -p build/ios/ipa/mandal_capital.ipa \"Payload/Runner.app/Info.plist\")",
-      "Bash(plutil -p -)"
+      "Bash(plutil -p -)",
+      "Bash(~/Library/Android/sdk/platform-tools/adb devices *)"
     ]
   }
 }

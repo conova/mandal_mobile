@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'common/allow_insecure_ssl.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:mandal_capital/screens/bond_portfolio_statistic_screen.dart';
@@ -127,6 +129,9 @@ const Set<String> _publicRoutes = {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // DEV: SSL сертификатын шалгалтыг унтраана (release build-д нөлөөлөхгүй)
+  if (kDebugMode) allowInsecureSsl();
 
   // Load app state (theme and language)
   await AppStateManager.instance.init();

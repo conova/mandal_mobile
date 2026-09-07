@@ -6,9 +6,13 @@ import '../../../l10n/app_localizations.dart';
 import '../../../services/auth_service.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/extended_colors.dart';
+import 'home_equity_chart.dart' show EquityPeriodInfo;
 
 class HomeAssetSummary extends StatefulWidget {
-  const HomeAssetSummary({super.key});
+  /// Чартын period сонголтын өөрчлөлт — өгвөл дүн/хувь/шошго үүнийг дагана
+  final ValueNotifier<EquityPeriodInfo?>? periodInfo;
+
+  const HomeAssetSummary({super.key, this.periodInfo});
 
   @override
   State<HomeAssetSummary> createState() => _HomeAssetSummaryState();
@@ -70,8 +74,29 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     return '$sign$whole${absStr.substring(dotIdx)}₮';
   }
 
+  /// Чартын period код → "(Сүүлийн 1 сар)" маягийн шошго
+  String _periodLabel(AppLocalizations l10n, String code) => switch (code) {
+        '1D' => l10n.today,
+        '1W' => l10n.last7Days,
+        '3M' => l10n.last3Months,
+        '1Y' => l10n.last1Year,
+        'ALL' => l10n.all,
+        _ => l10n.last1Month,
+      };
+
   @override
   Widget build(BuildContext context) {
+    // Чартын period солигдоход дүн/хувь/шошго дагаж шинэчлэгдэнэ
+    if (widget.periodInfo != null) {
+      return ValueListenableBuilder<EquityPeriodInfo?>(
+        valueListenable: widget.periodInfo!,
+        builder: (context, info, _) => _buildContent(context, info),
+      );
+    }
+    return _buildContent(context, null);
+  }
+
+  Widget _buildContent(BuildContext context, EquityPeriodInfo? info) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
@@ -79,8 +104,15 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     // Хүүхдийн данс идэвхтэй бол түүний нийт дүнг (өөрчлөлт 0) харуулна
     final activeChild = context.watch<AuthService>().activeSubAccount;
     final totalAssets = activeChild?.amount ?? _summary.totalAssets;
-    final totalChange = activeChild == null ? _summary.totalChange : 0.0;
-    final changePercent = activeChild == null ? _summary.changePercent : 0.0;
+    // Чартаас интервалын өөрчлөлт ирсэн бол түүгээр, үгүй бол summary-гаар
+    final totalChange = activeChild != null
+        ? 0.0
+        : (info?.change ?? _summary.totalChange);
+    final changePercent = activeChild != null
+        ? 0.0
+        : (info?.percent ?? _summary.changePercent);
+    final periodLabel =
+        _periodLabel(l10n, info?.periodCode ?? '1M');
 
     final (whole, decimal) = _splitAmount(totalAssets);
     final changeStr = _formatChange(totalChange);
@@ -158,7 +190,7 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
               ),
             ),
             Text(
-              '(${l10n.last1Month})',
+              '($periodLabel)',
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: AppTextStyles.light,
                 color: extendedColors.neutral100,

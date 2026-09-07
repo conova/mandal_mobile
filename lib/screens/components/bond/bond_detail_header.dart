@@ -30,15 +30,6 @@ class BondDetailHeader extends StatelessWidget {
     final title = bond?.name ?? 'Net Capital';
     final subtitle = bond?.subtitle ?? 'Нэт Капитал';
 
-    final statusLabel = bond == null
-        ? l10n.closed
-        : (bond!.isForeign
-            ? l10n.foreign
-            : (bond!.isOpen ? l10n.open : l10n.closed));
-    final marketLabel = bond == null
-        ? l10n.primaryMarket
-        : (bond!.isPrimaryMarket ? l10n.primaryMarket : l10n.secondaryMarket);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -89,41 +80,7 @@ class BondDetailHeader extends StatelessWidget {
             ],
           ),
         ],
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _buildBadge(
-              statusLabel.toUpperCase(),
-              extendedColors.primary100,
-              extendedColors.primaryMain,
-            ),
-            _buildBadge(
-              marketLabel.toUpperCase(),
-              extendedColors.bgSecondary,
-              theme.colorScheme.onSurface,
-            ),
-          ],
-        ),
       ],
-    );
-  }
-
-  Widget _buildBadge(String label, Color bgColor, Color textColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: AppTextStyles.paragraph1.copyWith(
-          color: textColor,
-          fontWeight: AppTextStyles.regular,
-        ),
-      ),
     );
   }
 }

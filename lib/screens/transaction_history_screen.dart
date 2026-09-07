@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
+import '../common/stock_row_format.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/transaction_history/transaction_list_item.dart';
 import 'components/transaction_history/transaction_filter_sheet.dart';
 import 'components/transaction_history/transaction_period_sheet.dart';
@@ -18,15 +22,23 @@ class TransactionHistoryScreen extends StatefulWidget {
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  Set<FilterTag> _activeFilters = {FilterTag.nominal, FilterTag.csd};
+  Set<FilterTag> _activeFilters = {};
   TimePeriod _timePeriod = TimePeriod.last1Year;
   DateTime? _customStart;
   DateTime? _customEnd;
+
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _rows = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // Таб солиход curCode шүүлтээр дахин татна
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) _fetch();
+    });
+    Future.microtask(_fetch);
   }
 
   @override
@@ -35,110 +47,165 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     super.dispose();
   }
 
-  List<TransactionItem> _getMockTransactions() {
-    return const [
-      TransactionItem(
-        title: 'Орлого - USD',
-        date: '2025.08.20 18:23',
-        amount: '250.00\$',
-        isPositive: true,
-        tag: FilterTag.cashIncome,
-        currencyCode: 'USD',
-      ),
-      TransactionItem(
-        title: 'Зарлага - USD',
-        date: '2025.08.20 18:23',
-        amount: '-100.00\$',
-        isPositive: false,
-        tag: FilterTag.cashExpense,
-        currencyCode: 'USD',
-      ),
-      TransactionItem(
-        title: 'Орлого - MNT',
-        date: '2025.08.20 18:23',
-        amount: '50,000.00₮',
-        isPositive: true,
-        tag: FilterTag.cashIncome,
-        currencyCode: 'MNT',
-      ),
-      TransactionItem(
-        title: 'Зарлага - MNT',
-        date: '2025.08.20 18:23',
-        amount: '-245,000.00₮',
-        isPositive: false,
-        tag: FilterTag.cashExpense,
-        currencyCode: 'MNT',
-      ),
-      TransactionItem(
-        title: 'Netcapital зарсан',
-        date: '2025.08.20 18:23',
-        amount: '-25,000,000₮',
-        isPositive: false,
-        tag: FilterTag.stockSold,
-        currencyCode: 'MNT',
-      ),
-      TransactionItem(
-        title: 'Lend.mn авсан',
-        date: '2025.08.20 18:23',
-        amount: '50,000,000.00₮',
-        isPositive: true,
-        tag: FilterTag.stockBought,
-        currencyCode: 'MNT',
-      ),
-      TransactionItem(
-        title: 'APU авсан',
-        date: '2025.08.20 18:23',
-        amount: '60,000,000.00₮',
-        isPositive: true,
-        tag: FilterTag.stockBought,
-        currencyCode: 'MNT',
-      ),
-      TransactionItem(
-        title: 'Simple өгөөж',
-        date: '2025.08.20 18:23',
-        amount: '3,000,000₮',
-        isPositive: true,
-        tag: FilterTag.bondReturn,
-        currencyCode: 'MNT',
-      ),
-      TransactionItem(
-        title: 'AARD зарсан',
-        date: '2025.08.20 18:23',
-        amount: '7,500,000.00₮',
-        isPositive: true,
-        tag: FilterTag.stockSold,
-        currencyCode: 'MNT',
-      ),
-      TransactionItem(
-        title: 'GLMT ногдол ашиг',
-        date: '2025.08.20 18:23',
-        amount: '1,000,000.00₮',
-        isPositive: true,
-        tag: FilterTag.stockDividend,
-        currencyCode: 'MNT',
-      ),
-    ];
+  // ─── Шүүлтүүд → /account/statement параметрүүд ───
+  // Бүлэг доторх сонголт ганц бол тухайн утга, олон/хоосон бол '' (бүгд)
+
+  String _pickOne(Map<FilterTag, String> mapping) {
+    final selected = mapping.keys.where(_activeFilters.contains).toList();
+    return selected.length == 1 ? mapping[selected.first]! : '';
   }
 
-  List<TransactionItem> _getFilteredTransactions(String? currencyFilter) {
-    var transactions = _getMockTransactions();
+  String get _acntTypeParam => _pickOne({
+        FilterTag.nominal: 'nominal',
+        FilterTag.csd: 'mcsd',
+      });
 
-    // Filter by tab (currency)
-    if (currencyFilter == 'MNT') {
-      transactions =
-          transactions.where((t) => t.currencyCode == 'MNT').toList();
-    } else if (currencyFilter == 'USD') {
-      transactions =
-          transactions.where((t) => t.currencyCode == 'USD').toList();
+  String get _cashTypeParam => _pickOne({
+        FilterTag.cashIncome: '0',
+        FilterTag.cashExpense: '1',
+      });
+
+  String get _bondParam => _pickOne({
+        FilterTag.bondBought: '0',
+        FilterTag.bondSold: '1',
+        FilterTag.bondReturn: 'B',
+      });
+
+  String get _stocksParam => _pickOne({
+        FilterTag.stockBought: '0',
+        FilterTag.stockSold: '1',
+        FilterTag.stockDividend: 'D',
+        FilterTag.stockTransfer: 'S',
+      });
+
+  String get _curCodeParam => switch (_tabController.index) {
+        1 => 'MNT',
+        2 => 'USD',
+        _ => '',
+      };
+
+  String _fmt(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}/'
+      '${d.month.toString().padLeft(2, '0')}/'
+      '${d.day.toString().padLeft(2, '0')}';
+
+  /// Сонгосон интервалын эхлэх/дуусах огноо (дуусах нь өнөөдөр,
+  /// custom-оос бусад)
+  (DateTime, DateTime) _dateRange() {
+    final now = DateTime.now();
+    return switch (_timePeriod) {
+      TimePeriod.last7Days => (now.subtract(const Duration(days: 7)), now),
+      TimePeriod.last1Month =>
+          (DateTime(now.year, now.month - 1, now.day), now),
+      TimePeriod.last3Months =>
+          (DateTime(now.year, now.month - 3, now.day), now),
+      TimePeriod.last6Months =>
+          (DateTime(now.year, now.month - 6, now.day), now),
+      TimePeriod.last1Year => (DateTime(now.year - 1, now.month, now.day), now),
+      TimePeriod.custom => (
+          _customStart ?? DateTime(now.year - 1, now.month, now.day),
+          _customEnd ?? now,
+        ),
+    };
+  }
+
+  Future<void> _fetch() async {
+    setState(() {
+      _isLoading = true;
+      _rows = const [];
+    });
+    try {
+      final (start, end) = _dateRange();
+      final rows = await context.read<AuthService>().getAccountStatement(
+            acntType: _acntTypeParam,
+            cashType: _cashTypeParam,
+            bond: _bondParam,
+            stocks: _stocksParam,
+            curCode: _curCodeParam,
+            start: _fmt(start),
+            end: _fmt(end),
+          );
+      if (!mounted) return;
+      setState(() {
+        _rows = rows;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
     }
+  }
 
-    // Filter by active filter tags
-    if (_activeFilters.isNotEmpty) {
-      transactions =
-          transactions.where((t) => _activeFilters.contains(t.tag)).toList();
+  // ─── Мөр → жагсаалтын item ───
+
+  /// Хоёр хэлт талбараас locale-д тохирохыг сонгоно (хоосон бол нөгөөг)
+  String _pickLang(Map<String, dynamic> row, String mn, String en, bool isEn) {
+    final first = (isEn ? row[en] : row[mn])?.toString() ?? '';
+    if (first.isNotEmpty) return first;
+    return (isEn ? row[mn] : row[en])?.toString() ?? '';
+  }
+
+  /// "2025/04/24 08:44:37" → "2025.04.24 08:44"
+  String _formatRegDate(dynamic raw) {
+    final s = raw?.toString() ?? '';
+    if (s.isEmpty) return '';
+    final normalized = s.replaceAll('/', '.').replaceAll('-', '.');
+    return normalized.length >= 16 ? normalized.substring(0, 16) : normalized;
+  }
+
+  /// Гүйлгээний төрлөөс icon-д хэрэглэх tag тааруулна
+  FilterTag _tagOf(Map<String, dynamic> row) {
+    final t = '${row['TXNTYPE'] ?? ''} ${row['TXNTYPE2'] ?? ''}'.toLowerCase();
+    if (t.contains('ногдол') || t.contains('dividend')) {
+      return FilterTag.stockDividend;
     }
+    if (t.contains('өгөөж') || t.contains('coupon')) return FilterTag.bondReturn;
+    if (t.contains('орлого') || t.contains('income') || t.contains('deposit')) {
+      return FilterTag.cashIncome;
+    }
+    if (t.contains('зарлага') ||
+        t.contains('expense') ||
+        t.contains('withdraw')) {
+      return FilterTag.cashExpense;
+    }
+    if (t.contains('зар') || t.contains('sell') || t.contains('sold')) {
+      return FilterTag.stockSold;
+    }
+    return FilterTag.stockBought;
+  }
 
-    return transactions;
+  TransactionItem _itemFromRow(Map<String, dynamic> row, bool isEn) {
+    final curCode = row['CURCODE']?.toString() ?? 'MNT';
+    final isUsd = curCode == 'USD';
+    final amount = num.tryParse(
+          row['AMOUNT']?.toString().replaceAll(',', '') ?? '',
+        ) ??
+        0;
+    final txnType = _pickLang(row, 'TXNTYPE', 'TXNTYPE2', isEn);
+    final title = txnType.isNotEmpty
+        ? '$txnType - $curCode'
+        : _pickLang(row, 'TXNNAME', 'TXNNAME2', isEn);
+
+    return TransactionItem(
+      title: title,
+      date: _formatRegDate(row['REGDATE']),
+      amount: formatStockAmount(amount, isForeign: isUsd),
+      isPositive: amount > 0,
+      tag: _tagOf(row),
+      currencyCode: curCode,
+    );
+  }
+
+  List<TransactionItem> _itemsFor(String? currencyFilter) {
+    final isEn = Localizations.localeOf(context).languageCode == 'en';
+    var rows = _rows;
+    if (currencyFilter != null) {
+      rows = rows
+          .where((r) => (r['CURCODE']?.toString() ?? 'MNT') == currencyFilter)
+          .toList();
+    }
+    return rows.map((r) => _itemFromRow(r, isEn)).toList();
   }
 
   String _getTimePeriodLabel(AppLocalizations l10n) {
@@ -174,6 +241,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
       setState(() {
         _activeFilters = result;
       });
+      _fetch();
     }
   }
 
@@ -194,6 +262,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
         _customStart = result.startDate;
         _customEnd = result.endDate;
       });
+      _fetch();
     }
   }
 
@@ -319,42 +388,44 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
   }
 
   Widget _buildTransactionList(String? currencyFilter) {
-    final transactions = _getFilteredTransactions(currencyFilter);
+    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+
+    if (_isLoading) {
+      return Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: extendedColors.primaryMain,
+          ),
+        ),
+      );
+    }
+
+    final transactions = _itemsFor(currencyFilter);
 
     if (transactions.isEmpty) {
       return Center(
         child: Text(
           '-',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).extension<ExtendedColors>()!.neutral300,
+                color: extendedColors.neutral300,
               ),
         ),
       );
     }
 
-    return ListView.builder(
-      itemCount: transactions.length + 1, // +1 for loading indicator
-      itemBuilder: (context, index) {
-        if (index == transactions.length) {
-          // Loading indicator at bottom
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Theme.of(context)
-                      .extension<ExtendedColors>()!
-                      .primaryMain,
-                ),
-              ),
-            ),
-          );
-        }
-        return TransactionListItem(transaction: transactions[index]);
-      },
+    return RefreshIndicator(
+      onRefresh: _fetch,
+      color: extendedColors.primaryMain,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: transactions.length,
+        itemBuilder: (context, index) {
+          return TransactionListItem(transaction: transactions[index]);
+        },
+      ),
     );
   }
 }

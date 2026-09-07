@@ -1330,6 +1330,46 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Дансны хуулга.
+  /// POST /account/statement — body: {"data": {acntType, cashType, bond,
+  /// stocks, curCode, start, end}}. Хоосон утга = тухайн шүүлт хэрэглэхгүй.
+  Future<List<Map<String, dynamic>>> getAccountStatement({
+    String acntType = '',
+    String cashType = '',
+    String bond = '',
+    String stocks = '',
+    String curCode = '',
+    required String start,
+    required String end,
+  }) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.accountStatement,
+        data: {
+          'data': {
+            'acntType': acntType,
+            'cashType': cashType,
+            'bond': bond,
+            'stocks': stocks,
+            'curCode': curCode,
+            'start': start,
+            'end': end,
+          },
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .map((d) => Map<String, dynamic>.from(d as Map))
+            .toList();
+      }
+      // Хуулга байхгүй үед алдаа биш — хоосон жагсаалт
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Watchlist — хэрэглэгчийн хадгалсан хувьцаа авна.
   /// `Authorization: Bearer <token>` шаардана.
   /// Локалд хадгалагдсан дарааллыг автоматаар хэрэглэнэ.
@@ -1508,7 +1548,12 @@ class AuthService with ChangeNotifier {
                 : (msg.isNotEmpty ? msg : 'Захиалга амжилтгүй боллоо'),
           );
         }
-        return apiMessage(body) ?? 'Захиалга амжилттай үүслээ';
+        // Сервер message-даа англи текст өгдөг тул амжилтын мессежийг
+        // локал хэлээр өөрсдөө бүтээнэ
+        return localMessage(
+          'Захиалга амжилттай үүслээ',
+          'Order placed successfully',
+        );
       }
       throw Exception(apiMessage(body) ?? 'Захиалга үүсгэхэд алдаа гарлаа');
     } on DioException catch (e) {
@@ -1541,7 +1586,12 @@ class AuthService with ChangeNotifier {
                 : (msg.isNotEmpty ? msg : 'Захиалга цуцлагдсангүй'),
           );
         }
-        return apiMessage(body) ?? 'Захиалга цуцлагдлаа';
+        // Сервер message-даа англи текст өгдөг тул амжилтын мессежийг
+        // локал хэлээр өөрсдөө бүтээнэ
+        return localMessage(
+          'Захиалга амжилттай цуцлагдлаа',
+          'Order canceled successfully',
+        );
       }
       throw Exception(apiMessage(body) ?? 'Захиалга цуцлахад алдаа гарлаа');
     } on DioException catch (e) {

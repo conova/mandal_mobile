@@ -38,13 +38,10 @@ class BondSellConfirmationScreen extends StatelessWidget {
         (bond['STOCKNAME'] ?? bond['COMPNAME'] ?? bond['SYMBOL'])?.toString() ??
             '';
     final subtitle = (bond['COMPNAME2'] ?? bond['TYPENAME'])?.toString() ?? '';
-    final isOpen = bond['ISOPEN']?.toString() == '1';
-
     return SwipeOrderConfirmation(
       title: name,
       subtitle: subtitle,
       details: [
-        OrderDetailItem(l10n.type, isOpen ? l10n.open : l10n.closed),
         OrderDetailItem(l10n.sellQuantity, formatNumbers(qty)),
         OrderDetailItem(
           l10n.unitPrice,

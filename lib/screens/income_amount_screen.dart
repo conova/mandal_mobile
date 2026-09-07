@@ -171,18 +171,20 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
               ),
             ),
             const Spacer(),
-            // Quick amount chips
+            // Quick amount chips — ₮ бол сая-гаар, $ бол шууд дүнгээр
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [1, 5, 10, 50].map((amount) {
-                  final isSelected =
-                      _selectedQuickAmount == amount * 1000000;
+                children:
+                    (isMnt ? [1, 5, 10, 50] : [100, 500, 1000, 5000])
+                        .map((amount) {
+                  final value = isMnt ? amount * 1000000 : amount;
+                  final isSelected = _selectedQuickAmount == value;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: GestureDetector(
-                      onTap: () => _onQuickAmount(amount * 1000000),
+                      onTap: () => _onQuickAmount(value),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -200,7 +202,9 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          '$amount ${l10n.million}',
+                          isMnt
+                              ? '$amount ${l10n.million}'
+                              : '${_formatNumber('$amount')}\$',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: isSelected
                                 ? extendedColors.bgBase

@@ -68,7 +68,6 @@ class _BondSellScreenState extends State<BondSellScreen> {
 
   bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
 
-  bool get _isOpen => _bond['ISOPEN']?.toString() == '1';
 
   /// Эзэмшиж буй ширхэг — CNT талбар ирвэл түүнийг, үгүй бол дүн/нэгж үнэ
   int get _maxQuantity {
@@ -180,13 +179,6 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 color: extendedColors.primaryMain,
                 fontWeight: AppTextStyles.bold,
               ),
-            ),
-            const SizedBox(height: 16),
-            _buildBadge(
-              _isOpen ? l10n.open : l10n.closed,
-              extendedColors.primary100,
-              extendedColors.primaryMain,
-              theme,
             ),
             const SizedBox(height: 32),
             if (_unitPrice > 0)
@@ -337,25 +329,4 @@ class _BondSellScreenState extends State<BondSellScreen> {
     );
   }
 
-  Widget _buildBadge(
-    String label,
-    Color bgColor,
-    Color textColor,
-    ThemeData theme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelMedium?.copyWith(
-          color: textColor,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
 }

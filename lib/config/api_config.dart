@@ -190,6 +190,15 @@ class ApiConfig {
 
   /// Захиалгын түүх (type/status/start/end шүүлттэй POST)
   static const String ordersHistory = '/bdc/api/orders/history';
+
+  /// POST /account/statement — дансны хуулга (шүүлттэй)
+  ///   Body: { data: { acntType: "nominal|mcsd", cashType: "0|1",
+  ///   bond: "0|1|B", stocks: "0|1|D|S", curCode: "MNT|USD",
+  ///   start, end } } — хоосон утга = тухайн шүүлт хэрэглэхгүй
+  ///   Row: { REQID, REGDATE, TXNTYPE/TXNTYPE2, ACNTNO, AMOUNT, CURCODE,
+  ///   DESCR, BANKFEE, TXNDATE, RCVCURCODE, TXNNAME/TXNNAME2,
+  ///   STATUS/STATUS2, SOURCENAME/SOURCENAME2, RCVBANKNO/RCVACNTNO/... }
+  static const String accountStatement = '/bdc/api/account/statement';
   static const String profile = '/bdc/api/auth/profile.php';
   static const String accounts = '/bdc/api/auth/accounts.php';
 }

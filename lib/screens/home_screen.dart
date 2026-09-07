@@ -26,6 +26,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
+
+  /// Чартын period сонголт → нийт хөрөнгийн өөрчлөлт/шошго дагаж шинэчлэгдэнэ
+  final ValueNotifier<EquityPeriodInfo?> _equityPeriodInfo =
+      ValueNotifier(null);
   double _scrollOpacity = 0.0;
   bool _checkedDanReturn = false;
 
@@ -97,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _equityPeriodInfo.dispose();
     super.dispose();
   }
 
@@ -249,9 +254,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     onStartPressed: _showOnboardingSheet,
                   ),
                 const SizedBox(height: 8),
-                const HomeAssetSummary(),
+                HomeAssetSummary(periodInfo: _equityPeriodInfo),
                 SizedBox(height: 20),
-                HomeEquityChart(),
+                HomeEquityChart(infoNotifier: _equityPeriodInfo),
                 SizedBox(height: 16),
                 HomeQuickActions(),
                 SizedBox(height: 40),

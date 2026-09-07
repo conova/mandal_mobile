@@ -6,8 +6,25 @@ import '../../../services/auth_service.dart';
 import '../../../widgets/finance_chart.dart';
 import '../../../l10n/app_localizations.dart';
 
+/// Сонгосон интервалын өөрчлөлт — HomeAssetSummary-гийн дүн/хувь/шошго
+/// чартын period-ийг дагаж шинэчлэгдэхэд ашиглана.
+class EquityPeriodInfo {
+  final String periodCode; // '1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL'
+  final double change;
+  final double percent;
+
+  const EquityPeriodInfo({
+    required this.periodCode,
+    required this.change,
+    required this.percent,
+  });
+}
+
 class HomeEquityChart extends StatefulWidget {
-  const HomeEquityChart({super.key});
+  /// Period солигдож дата ирэх бүрд интервалын өөрчлөлтийг нийтэлнэ
+  final ValueNotifier<EquityPeriodInfo?>? infoNotifier;
+
+  const HomeEquityChart({super.key, this.infoNotifier});
 
   @override
   State<HomeEquityChart> createState() => _HomeEquityChartState();
@@ -55,9 +72,34 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
       );
       if (!mounted) return;
       setState(() => _chart = chart);
+      _publishPeriodInfo();
     } catch (e) {
       debugPrint('[HomeEquityChart] алдаа: $e');
     }
+  }
+
+  /// Интервалын эхний/сүүлийн цэгээс өөрчлөлтийг тооцож дээрх
+  /// нийт хөрөнгийн хэсэгт мэдэгдэнэ
+  void _publishPeriodInfo() {
+    final notifier = widget.infoNotifier;
+    if (notifier == null) return;
+    final points = _chart.points;
+    if (points.length < 2) {
+      notifier.value = EquityPeriodInfo(
+        periodCode: _selectedPeriod,
+        change: 0,
+        percent: 0,
+      );
+      return;
+    }
+    final first = points.first.value;
+    final last = points.last.value;
+    final change = last - first;
+    notifier.value = EquityPeriodInfo(
+      periodCode: _selectedPeriod,
+      change: change,
+      percent: first != 0 ? change / first * 100 : 0,
+    );
   }
 
   void _onFilterTap(String periodCode) {
