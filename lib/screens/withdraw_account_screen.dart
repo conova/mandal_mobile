@@ -6,6 +6,7 @@ import '../config/api_config.dart';
 import '../l10n/app_localizations.dart';
 import '../models/income_account.dart';
 import '../services/api_service.dart';
+import '../services/payment_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
@@ -25,6 +26,7 @@ class WithdrawAccountScreen extends StatefulWidget {
 
 class _WithdrawAccountScreenState extends State<WithdrawAccountScreen> {
   bool _isLoading = true;
+  bool _isSubmitting = false;
   List<IncomeAccount> _accounts = [];
   String? _selectedAccountNo;
 
@@ -86,10 +88,37 @@ class _WithdrawAccountScreenState extends State<WithdrawAccountScreen> {
     }
   }
 
-  void _handleWithdraw() {
-    if (_selectedAccountNo == null) return;
-    // TODO: зарлага гаргах API бэлэн болмогц энд холбоно
-    Navigator.pushReplacementNamed(context, '/withdraw_success');
+  /// Зарлага гаргах хүсэлт — /api/payment/WITHDRAWAL
+  Future<void> _handleWithdraw() async {
+    if (_selectedAccountNo == null || _isSubmitting) return;
+
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            const {};
+    final amount = (args['amount'] as num?)?.toDouble() ?? 0;
+    final isMnt = args['currency']?.toString() != 'usd';
+    // Аль данснаас татах — stock | bond | usd → серверийн accountType
+    final account = args['account']?.toString() ?? 'stock';
+    final accountType = switch (account) {
+      'bond' => 'bondiin dans',
+      'usd' => 'usd dans',
+      _ => 'tugrugiin dans',
+    };
+
+    setState(() => _isSubmitting = true);
+    try {
+      await context.read<PaymentService>().withdraw(
+            amount: amount,
+            curCode: isMnt ? 'MNT' : 'USD',
+            accountType: accountType,
+          );
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/withdraw_success');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      CustomSnackbar.showError(context, e);
+    }
   }
 
   @override
@@ -236,8 +265,10 @@ class _WithdrawAccountScreenState extends State<WithdrawAccountScreen> {
                 width: double.infinity,
                 child: CustomButton(
                   label: l10n.makeWithdraw,
-                  onPressed:
-                      _selectedAccountNo != null ? _handleWithdraw : null,
+                  isLoading: _isSubmitting,
+                  onPressed: _selectedAccountNo != null && !_isSubmitting
+                      ? _handleWithdraw
+                      : null,
                   variant: CustomButtonVariant.primary,
                 ),
               ),

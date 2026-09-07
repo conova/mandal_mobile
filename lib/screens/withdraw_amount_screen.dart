@@ -109,6 +109,10 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
     final double rate = rawArgs is Map
         ? ((rawArgs['rate'] as num?)?.toDouble() ?? 0)
         : 0;
+    // Аль данснаас татах — stock | bond | usd
+    final String account = rawArgs is Map
+        ? (rawArgs['account']?.toString() ?? 'stock')
+        : 'stock';
     final isMnt = currency != 'usd';
     final currencySymbol = isMnt ? '₮' : '\$';
 
@@ -227,6 +231,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                             '/withdraw_account',
                             arguments: {
                               'currency': isMnt ? 'mnt' : 'usd',
+                              'account': account,
                               'amount': double.tryParse(
                                     _amount.replaceAll(',', ''),
                                   ) ??
