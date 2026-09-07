@@ -33,41 +33,56 @@ class SummaryTableRow extends StatelessWidget {
             : extendedColors.bgBase,
         borderRadius: isOdd ? BorderRadius.circular(12) : null,
       ),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: isLast
-                  ? extendedColors.bgBase
-                  : extendedColors.neutral100,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              val1,
-              textAlign: TextAlign.right,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isLast
-                    ? extendedColors.bgBase
-                    : extendedColors.neutral100,
-              ),
-            ),
-          ),
-          if (val2.isNotEmpty)
-            Expanded(
-              child: Text(
-                val2,
-                textAlign: TextAlign.right,
+      child: (label != '')
+          ? Row(
+            children: [
+              Text(
+                label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isLast
                       ? extendedColors.bgBase
                       : extendedColors.neutral100,
                 ),
               ),
-            ),
-        ],
-      ),
+              Expanded(
+                child: Text(
+                  val1,
+                  textAlign: TextAlign.right,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isLast
+                        ? extendedColors.bgBase
+                        : extendedColors.neutral100,
+                  ),
+                ),
+              ),
+              if (val2.isNotEmpty)
+                Expanded(
+                  child: Text(
+                    val2,
+                    textAlign: TextAlign.right,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: isLast
+                          ? extendedColors.bgBase
+                          : extendedColors.neutral100,
+                    ),
+                  ),
+                ),
+            ],
+          )
+          : Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                val1,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: isLast
+                      ? extendedColors.bgBase
+                      : extendedColors.neutral100,
+                ),
+              ),
+            ]
+          )
     );
   }
 }

@@ -150,78 +150,106 @@ class ContractDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: CircleBackButton(),
-                ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: CircleBackButton(),
               ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  contract.title,
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                ),
-              ),
-              if (contract.intro.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    contract.intro,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral200,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 24),
-              for (var i = 0; i < contract.sections.length; i++) ...[
-                if (i > 0)
-                  Divider(height: 1, color: extendedColors.neutral500),
-                _ChevronRow(
-                  title: '${i + 1}. ${contract.sections[i].title}',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ContractSectionScreen(
-                        number: i + 1,
-                        section: contract.sections[i],
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        contract.title,
+                        style: theme.textTheme.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: extendedColors.neutral100,
+                        ),
                       ),
                     ),
-                  ),
+                    if (contract.intro.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          contract.intro,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: extendedColors.neutral200,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    for (var i = 0; i < contract.sections.length; i++) ...[
+                      if (i > 0)
+                        Divider(height: 1, color: extendedColors.neutral500),
+                      _ChevronRow(
+                        title: '${i + 1}. ${contract.sections[i].title}',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ContractSectionScreen(
+                              number: i + 1,
+                              section: contract.sections[i],
+                              sections: contract.sections,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    Divider(height: 1, color: extendedColors.neutral500),
+                    const SizedBox(height: 40),
+                  ],
                 ),
-              ],
-              Divider(height: 1, color: extendedColors.neutral500),
-              const SizedBox(height: 40),
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// Гэрээний нэг бүлгийн агуулга
-class ContractSectionScreen extends StatelessWidget {
+/// Гэрээний нэг бүлгийн агуулга — Swipe хийж дараагийн/өмнөх бүлэг рүү шилжих боломжтой
+class ContractSectionScreen extends StatefulWidget {
   final int number;
   final ContractSection section;
+  final List<ContractSection> sections;
 
   const ContractSectionScreen({
     super.key,
     required this.number,
     required this.section,
+    required this.sections,
   });
+
+  @override
+  State<ContractSectionScreen> createState() => _ContractSectionScreenState();
+}
+
+class _ContractSectionScreenState extends State<ContractSectionScreen> {
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: widget.number - 1);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -231,42 +259,58 @@ class ContractSectionScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: CircleBackButton(),
-                ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: CircleBackButton(),
               ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  '$number. ${section.title}',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                ),
+            ),
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.sections.length,
+                itemBuilder: (context, index) {
+                  final section = widget.sections[index];
+                  final number = index + 1;
+
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            '$number. ${section.title}',
+                            style: theme.textTheme.headlineLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: extendedColors.neutral100,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            section.content.isNotEmpty ? section.content : '—',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: extendedColors.neutral200,
+                              height: 1.6,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  );
+                },
               ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  section.content.isNotEmpty ? section.content : '—',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: extendedColors.neutral200,
-                    height: 1.6,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../theme/extended_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../services/auth_service.dart';

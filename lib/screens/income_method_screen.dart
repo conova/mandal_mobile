@@ -32,6 +32,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
   Future<void> _fetchBalances() async {
     try {
       final breakdown = await context.read<AuthService>().getAssetBreakdown();
+      final summary = await context.read<AuthService>().getPortfolioSummary();
       if (!mounted) return;
       double byType(String type) {
         final row = breakdown.firstWhere(
@@ -42,7 +43,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
       }
 
       setState(() {
-        _mntBalance = byType('mnt');
+        _mntBalance = byType('mnt') - summary.holdAmount;
         _usdBalance = byType('usd');
         _isLoading = false;
       });
@@ -111,7 +112,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
                 icon: 'tugrug-01',
                 iconBg: extendedColors.primary100,
                 iconColor: extendedColors.primaryMain,
-                title: l10n.stocks,
+                title: l10n.buyStock,
                 balanceLabel: l10n.availableBalanceLabel,
                 balance: formatStockAmount(_mntBalance, decimals: 0),
                 isLoading: _isLoading,
@@ -126,7 +127,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
                 icon: 'tugrug-01',
                 iconBg: extendedColors.primaryMain,
                 iconColor: Colors.white,
-                title: l10n.bond,
+                title: l10n.buyBond,
                 balanceLabel: l10n.availableBalanceLabel,
                 balance: formatStockAmount(_mntBalance, decimals: 0),
                 isLoading: _isLoading,
@@ -248,7 +249,7 @@ class AccountTypeRow extends StatelessWidget {
                         Text(
                           balance,
                           style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.normal,
                             color: extendedColors.primaryMain,
                           ),
                         ),

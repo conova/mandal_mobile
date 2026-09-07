@@ -426,6 +426,10 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
                     onPressed: () => setState(() {
                       _type = null;
                       _status = null;
+                      Navigator.pop(
+                        context,
+                        {'type': _type, 'status': _status},
+                      );
                     }),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _hasFilter
@@ -499,20 +503,15 @@ class _OrderHistoryFilterSheetState extends State<_OrderHistoryFilterSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? extendedColors.bgSecondary : Colors.transparent,
+          color: isSelected ? extendedColors.neutral100 : extendedColors.bgSecondary,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: isSelected
-                ? extendedColors.bgSecondary
-                : extendedColors.neutral500,
-          ),
         ),
         child: Text(
           label,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w300,
             color: isSelected
-              ? extendedColors.neutral100
+              ? extendedColors.bgBase
               : extendedColors.neutral200,
           ),
         ),

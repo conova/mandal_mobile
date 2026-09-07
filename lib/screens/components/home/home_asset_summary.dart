@@ -40,15 +40,20 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
 
   /// 50,628,000.21 → ('50,628,000', '.21')
   (String, String) _splitAmount(double value) {
-    final str = value.toStringAsFixed(2);
-    final dotIdx = str.indexOf('.');
-    final wholePart = str.substring(0, dotIdx);
-    final decPart = str.substring(dotIdx); // includes '.'
-    final wholeWithCommas = wholePart.replaceAllMapped(
+    // final str = value.toStringAsFixed(2);
+    // final dotIdx = str.indexOf('.');
+    // final wholePart = str.substring(0, dotIdx);
+    // final decPart = str.substring(dotIdx); // includes '.'
+    // final wholeWithCommas = wholePart.replaceAllMapped(
+    //   RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    //   (m) => '${m[1]},',
+    // );
+    final str = value.toStringAsFixed(0);
+    final wholeWithCommas = str.replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (m) => '${m[1]},',
+          (m) => '${m[1]},',
     );
-    return (wholeWithCommas, '$decPart₮');
+    return (wholeWithCommas, '₮');
   }
 
   /// 210351.52 → '+210,351.52₮' / '-210,351.52₮'
@@ -104,7 +109,7 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
                 whole,
                 style: theme.textTheme.displayLarge?.copyWith(
                   fontWeight: AppTextStyles.semiBold,
-                  color: theme.colorScheme.onSurface,
+                  color: extendedColors.neutral100,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

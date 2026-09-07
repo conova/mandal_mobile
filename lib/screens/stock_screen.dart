@@ -45,6 +45,8 @@ class _StockScreenState extends State<StockScreen> {
       PageController(viewportFraction: 0.92);
   int _ipoPage = 0;
 
+  bool _isScrolled = false;
+
   @override
   void initState() {
     super.initState();
@@ -99,7 +101,8 @@ class _StockScreenState extends State<StockScreen> {
         _stocks = MarketInstrument.listFromJson(results[0]);
         // IPO API хоосон бол dev preview-д mock fallback харуулна.
         // Backend IPO дататай болмогц энэ branch ажиллахгүй.
-        _ipoStocks = ipo.isNotEmpty ? ipo : _mockIpoStocks();
+        //_ipoStocks = ipo.isNotEmpty ? ipo : _mockIpoStocks();
+        _ipoStocks = ipo;
         _topGainer = gainers.isNotEmpty ? gainers.first : null;
         _topLoser = losers.isNotEmpty ? losers.first : null;
         _isLoading = false;
@@ -115,34 +118,34 @@ class _StockScreenState extends State<StockScreen> {
 
   /// Dev preview-ийн mock IPO мөрүүд — API хоосон үед каруселийг
   /// харуулахад ашиглана
-  List<MarketInstrument> _mockIpoStocks() {
-    return MarketInstrument.listFromJson(const [
-      {
-        'SYMBOL': 'AAA',
-        'STOCKNAME': 'FullName',
-        'STOCKCODE': '',
-        'CLOSEPRICE': 1000,
-        'BEGDATE': '2026-08-15',
-        'ENDDATE': '2026-08-20',
-      },
-      {
-        'SYMBOL': 'BBB',
-        'STOCKNAME': 'Demo Company',
-        'STOCKCODE': '',
-        'CLOSEPRICE': 2500,
-        'BEGDATE': '2026-09-01',
-        'ENDDATE': '2026-09-10',
-      },
-      {
-        'SYMBOL': 'CCC',
-        'STOCKNAME': 'Sample JSC',
-        'STOCKCODE': '',
-        'CLOSEPRICE': 500,
-        'BEGDATE': '2026-09-05',
-        'ENDDATE': '2026-09-12',
-      },
-    ]);
-  }
+  // List<MarketInstrument> _mockIpoStocks() {
+  //   return MarketInstrument.listFromJson(const [
+  //     {
+  //       'SYMBOL': 'AAA',
+  //       'STOCKNAME': 'FullName',
+  //       'STOCKCODE': '',
+  //       'CLOSEPRICE': 1000,
+  //       'BEGDATE': '2026-08-15',
+  //       'ENDDATE': '2026-08-20',
+  //     },
+  //     {
+  //       'SYMBOL': 'BBB',
+  //       'STOCKNAME': 'Demo Company',
+  //       'STOCKCODE': '',
+  //       'CLOSEPRICE': 2500,
+  //       'BEGDATE': '2026-09-01',
+  //       'ENDDATE': '2026-09-10',
+  //     },
+  //     {
+  //       'SYMBOL': 'CCC',
+  //       'STOCKNAME': 'Sample JSC',
+  //       'STOCKCODE': '',
+  //       'CLOSEPRICE': 500,
+  //       'BEGDATE': '2026-09-05',
+  //       'ENDDATE': '2026-09-12',
+  //     },
+  //   ]);
+  // }
 
   Future<void> _search() async {
     if (_searchQuery.isEmpty) return;
@@ -212,19 +215,40 @@ class _StockScreenState extends State<StockScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      body: SafeArea(
-        bottom: false,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        toolbarHeight: 64,
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled
+                ? extendedColors.neutral500.withValues(alpha: 0.1)
+                : Colors.transparent,
+          ),
+        ),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildSearchBar(l10n, theme, extendedColors),
+        ),
+      ),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          final bool scrolled = notification.metrics.pixels > 0;
+          if (scrolled != _isScrolled) {
+            setState(() => _isScrolled = scrolled);
+          }
+          return false;
+        },
         child: RefreshIndicator(
           onRefresh: _fetchAll,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: _buildSearchBar(l10n, theme, extendedColors),
-                ),
-              ),
               if (_searchQuery.isNotEmpty)
                 ..._buildSearchSlivers(l10n, theme, extendedColors)
               else if (_isLoading)
@@ -366,7 +390,7 @@ class _StockScreenState extends State<StockScreen> {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: active ? 18 : 6,
+                  width: active ? 24 : 6,
                   height: 6,
                   decoration: BoxDecoration(
                     color: active
@@ -383,28 +407,22 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  /// IPO хугацаа — raw мөрөөс эхлэх/дуусах огноог олж "08.15–08.20"
-  /// хэлбэрээр буцаана
+  /// IPO хугацаа — raw мөрөөс эхлэх/дуусах огноог олж "2026/08/15 – 2026/08/20"
+  /// хэлбэрээр буцаана.
   String _ipoPeriod(MarketInstrument row) {
-    String? pick(List<String> keys) {
-      for (final k in keys) {
-        final v = row.raw[k]?.toString();
-        if (v != null && v.isNotEmpty) return v;
-      }
-      return null;
-    }
-
-    String fmt(String? s) {
-      final d = parseStockDate(s);
+    String fmt(dynamic raw) {
+      final d = parseStockDate(raw);
       if (d == null) return '';
       String two(int n) => n.toString().padLeft(2, '0');
-      return '${two(d.month)}.${two(d.day)}';
+      return '${two(d.month)}/${two(d.day)}';
     }
 
-    final start = fmt(pick(['BEGINDATE', 'BEGDATE', 'STARTDATE', 'OPENDATE']));
-    final end = fmt(pick(['ENDDATE', 'CLOSEDATE', 'EXPDATE']));
-    if (start.isEmpty && end.isEmpty) return '-';
-    return '$start–$end';
+    final sFmt = fmt(row.orderBeginDate);
+    final eFmt = fmt(row.orderEndDate);
+
+    if (sFmt.isEmpty && eFmt.isEmpty) return '-';
+    if (sFmt.isNotEmpty && eFmt.isNotEmpty) return '$sFmt – $eFmt';
+    return sFmt.isNotEmpty ? sFmt : eFmt;
   }
 
   Widget _buildIpoCard(
@@ -509,6 +527,7 @@ class _StockScreenState extends State<StockScreen> {
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: extendedColors.neutral100,
                       ),
+                      maxLines: 2,
                     ),
                   ],
                 ),
@@ -727,7 +746,7 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ],
             ),
-            Spacer(flex: 2),
+            const Spacer(flex: 2),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
@@ -737,7 +756,7 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ),
             ),
-             Spacer(),
+             const Spacer(),
             Row(
               children: [
                 Expanded(

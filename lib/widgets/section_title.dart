@@ -16,23 +16,23 @@ class SectionTitle extends StatelessWidget {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: theme.textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: extendedColors.neutral100,
-          ),
-        ),
-        const SizedBox(height: 4),
         Container(
-          width: 32,
-          height: 4,
+          width: 8,
+          height: 8,
           decoration: BoxDecoration(
             color: underlineColor ?? extendedColors.primaryMain,
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: extendedColors.neutral100,
           ),
         ),
       ],

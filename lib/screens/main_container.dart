@@ -36,6 +36,7 @@ class _MainContainerState extends State<MainContainer> {
     // бүрэн ачаалж дуусмагц notification_detail руу шилжинэ
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      context.read<AuthService>().refreshActiveOrders();
       NotificationService? service;
       try {
         service = context.read<NotificationService>();
@@ -77,6 +78,8 @@ class _MainContainerState extends State<MainContainer> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final footerColor = theme.extension<ExtendedColors>()?.footerColor ?? Colors.black;
+    final authService = context.watch<AuthService>();
+    final orderCount = authService.activeOrderCount;
 
     // Профайл (өөрийн/хүүхдийн) солигдоход бүх tab-ийн state дахин үүсэж,
     // дэлгэц бүр шинэ token-той датагаа дахин татна
@@ -92,12 +95,12 @@ class _MainContainerState extends State<MainContainer> {
       ),
       bottomNavigationBar: ClipRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
           child: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             type: BottomNavigationBarType.fixed,
-            backgroundColor: footerColor.withOpacity(0.8),
+            backgroundColor: footerColor.withOpacity(0.7),
             elevation: 0,
             selectedItemColor: theme.primaryColor,
             unselectedItemColor: theme.disabledColor,
@@ -122,12 +125,15 @@ class _MainContainerState extends State<MainContainer> {
               ),
               BottomNavigationBarItem(
                 icon: Badge(
-                  label: const Text('2'),
+                  // Only show the badge if loading or if there are active orders
+                  isLabelVisible: orderCount > 0,
+                  label: Text(orderCount.toString()),
                   backgroundColor: theme.colorScheme.error,
                   child: const CustomSvgIcon('file-02'),
                 ),
                 activeIcon: Badge(
-                  label: const Text('2'),
+                  isLabelVisible: orderCount > 0,
+                  label: Text(orderCount.toString()),
                   backgroundColor: theme.colorScheme.error,
                   child: const CustomSvgIcon('file-02'),
                 ),

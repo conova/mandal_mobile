@@ -154,7 +154,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
 
     if (errors.isEmpty) {
       CustomSnackbar.show(context, message: '${l10n.listUpdated}');
-      Navigator.pop(context, true);
+      Navigator.pushReplacementNamed(context, '/watchlist_detail');
     } else if (errors.length == totalAttempted) {
       CustomSnackbar.show(
         context,

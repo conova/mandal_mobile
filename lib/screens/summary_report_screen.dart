@@ -366,8 +366,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
           padding: EdgeInsets.only(top: 10),
           child: Text(
             l10n.summaryReport,
-            style: theme.textTheme.bodyLarge?.copyWith(
+            style: theme.textTheme.headlineSmall?.copyWith(
               color: extendedColors.neutral100,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),
@@ -636,7 +637,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       child: Column(
         children: [
           SummaryTableRow(
-            label: l10n.type,
+            label: '',
             val1: first,
             val2: hasTwo ? last : '',
             isOdd: true,
@@ -699,7 +700,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         //   isOdd: true,
         // ),
         SummaryTableRow(
-          label: l10n.account,
+          label: '',
           val1: '$start - $end',
           isOdd: true,
         ),

@@ -107,7 +107,12 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
       appBar: AppBar(
         title: Padding(
           padding: EdgeInsets.only(top: 10),
-          child: Text(l10n.incomeAccount),
+          child: Text(
+            l10n.incomeAccount,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w400,
+            ),
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -142,7 +147,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
               },
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 20),
         ],
       ),
       body: RefreshIndicator(
@@ -176,10 +181,13 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
                   _buildAccountCard(account, isPrimary: true),
                   const SizedBox(height: 12),
                 ],
-                Text(
-                  l10n.incomeAccBenefitPrompt,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral200,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    l10n.incomeAccBenefitPrompt,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral200,
+                    ),
                   ),
                 ),
                 if (otherAccounts.isNotEmpty) ...[

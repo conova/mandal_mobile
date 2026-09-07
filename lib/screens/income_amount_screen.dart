@@ -156,12 +156,17 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Text(
-                  '$_formattedAmount$currencySymbol',
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      '$_formattedAmount$currencySymbol',
+                      style: theme.textTheme.displayMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                    //if (cu)
+                  ],
                 ),
               ),
             ),
@@ -215,7 +220,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
             Divider(height: 1, color: extendedColors.neutral500),
             // Submit button
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              padding: const EdgeInsets.fromLTRB(24, 10, 24, 16),
               child: SizedBox(
                 width: double.infinity,
                 child: CustomButton(

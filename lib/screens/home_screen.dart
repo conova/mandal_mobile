@@ -37,6 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    // // Бондын жагсаалтыг татаж "Primary" бонд байгаа эсэхийг шалгах (баннер харуулах)
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (mounted) {
+    //     context.read<AuthService>().getBondList().catchError((_) => <Map<String, dynamic>>[]);
+    //   }
+    // });
   }
 
   /// DAN баталгаажуулалтаас буцаж ирсэн эсэхийг шалгаад onboarding sheet
@@ -217,6 +223,14 @@ class _HomeScreenState extends State<HomeScreen> {
           } catch (_) {
             // userInfo амжилтгүй ч бусад хэсгүүдээ шинэчилнэ
           }
+          // try {
+          //   await Future.wait([
+          //     context.read<AuthService>().refreshUserInfo(),
+          //     context.read<AuthService>().getBondList(),
+          //   ]);
+          // } catch (_) {
+          //   // userInfo амжилтгүй ч бусад хэсгүүдээ шинэчилнэ
+          // }
           if (mounted) setState(() => _refreshTick++);
         },
         child: SingleChildScrollView(
@@ -243,8 +257,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: 40),
                 HomeAssetBreakdown(),
                 SizedBox(height: 32),
-                HomePromotionBanner(),
-                SizedBox(height: 32),
+                if (auth.hasPrimaryBond) ...[
+                  HomePromotionBanner(),
+                  SizedBox(height: 32),
+                ],
                 HomeWatchlistSection(),
                 SizedBox(height: 32),
                 HomeRecommendationSection(),

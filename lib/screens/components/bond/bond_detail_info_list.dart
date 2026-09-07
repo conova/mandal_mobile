@@ -55,7 +55,7 @@ class BondDetailInfoList extends StatelessWidget {
             extendedColors,
             'percent-icon',
             l10n.annualYield,
-            bond == null ? '12.5%' : (intRate == null ? '-' : '$intRate%'),
+            bond == null ? '0.0%' : (intRate == null ? '-' : '$intRate%'),
           ),
           const SizedBox(height: 20,),
           _buildInfoRow(
@@ -63,7 +63,7 @@ class BondDetailInfoList extends StatelessWidget {
             extendedColors,
             'bank-note-01',
             l10n.lastInterestPaymentDate,
-            bond == null ? '2026.2.10 (${l10n.daysCount('122')})' : _dateWithDays(bond!.payday, l10n),
+            bond == null ? '2000.01.01 (${l10n.daysCount('0')})' : _dateWithDays(bond!.payday, l10n),
           ),
           const SizedBox(height: 20),
           _buildInfoRow(
@@ -72,7 +72,7 @@ class BondDetailInfoList extends StatelessWidget {
             'calendar-check',
             l10n.nextInterestPayDate,
             bond == null
-                ? '2026.2.10 (${l10n.daysCount('122')})'
+                ? '2000.01.01 (${l10n.daysCount('0')})'
                 : _dateWithDays(bond!.payday, l10n),
           ),
           const SizedBox(height: 20),
@@ -82,7 +82,7 @@ class BondDetailInfoList extends StatelessWidget {
             'calendar-done',
             l10n.bondMaturityDate,
             bond == null
-                ? '2026.8.10 (${l10n.daysCount('280')})'
+                ? '2000.01.01 (${l10n.daysCount('0')})'
                 : _dateWithDays(bond!.term, l10n),
           ),
           const SizedBox(height: 20),

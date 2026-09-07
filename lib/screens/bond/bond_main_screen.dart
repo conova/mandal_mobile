@@ -29,6 +29,8 @@ class _BondMainScreenState extends State<BondMainScreen>
   bool _bondListLoading = true;
   List<MarketInstrument> _bondList = const [];
 
+  bool _isScrolled = false;
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +40,8 @@ class _BondMainScreenState extends State<BondMainScreen>
   }
 
   Future<void> _fetchMyBonds() async {
+    if (!mounted) return;
+    setState(() => _myBondsLoading = true);
     try {
       final auth = context.read<AuthService>();
       final rows = await auth.getMyBonds();
@@ -54,6 +58,8 @@ class _BondMainScreenState extends State<BondMainScreen>
   }
 
   Future<void> _fetchBondList() async {
+    if (!mounted) return;
+    setState(() => _bondListLoading = true);
     try {
       final auth = context.read<AuthService>();
       final rows = await auth.getBondList();
@@ -67,6 +73,13 @@ class _BondMainScreenState extends State<BondMainScreen>
       setState(() => _bondListLoading = false);
       CustomSnackbar.showError(context, e);
     }
+  }
+
+  Future<void> _handleRefresh() async {
+    await Future.wait([
+      _fetchMyBonds(),
+      _fetchBondList(),
+    ]);
   }
 
   @override
@@ -84,39 +97,95 @@ class _BondMainScreenState extends State<BondMainScreen>
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: extendedColors.bgBase,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        toolbarHeight: 120,
         titleSpacing: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        leadingWidth: 200,
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled
+                ? extendedColors.neutral500.withValues(alpha: 0.1)
+                : Colors.transparent,
+          ),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 16, left: 20),
+          child: Text(
+            l10n.bond,
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: extendedColors.neutral500, width: 1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.all(4), // Outer margin between border & pill
+              decoration: BoxDecoration(
+                color: extendedColors.bgSecondary,
+                borderRadius: BorderRadius.circular(24),
               ),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: extendedColors.neutral100,
-              indicatorColor: extendedColors.primaryMain,
-              indicatorWeight: 4,
-              labelStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w400,
+              child: TabBar(
+                indicatorSize: TabBarIndicatorSize.tab,
+                controller: _tabController,
+                dividerColor: Colors.transparent,
+                overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.hovered)) {
+                    return extendedColors.bgSecondary; // Color on hover
+                  }
+                  if (states.contains(WidgetState.pressed)) {
+                    return extendedColors.bgSecondary; // Color when tapped/pressed
+                  }
+                  return null; // Default behavior
+                }),
+                indicator: BoxDecoration(
+                  color: extendedColors.bgBase,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: extendedColors.neutral500,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                labelColor: extendedColors.neutral100,
+                unselectedLabelColor: extendedColors.neutral200,
+                labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: [
+                  Tab(text: l10n.buy),
+                  Tab(text: l10n.sell),
+                ],
               ),
-              tabs: [
-                Tab(text: l10n.buyBond),
-                Tab(text: l10n.sellBond),
-              ],
             ),
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildBuyTab(l10n, extendedColors, theme),
-          _buildSellTab(l10n, extendedColors, theme),
-        ],
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification.depth == 1) {
+            final bool scrolled = notification.metrics.pixels > 0;
+            if (scrolled != _isScrolled) {
+              setState(() => _isScrolled = scrolled);
+            }
+          }
+          return false;
+        },
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildBuyTab(l10n, extendedColors, theme),
+            _buildSellTab(l10n, extendedColors, theme),
+          ],
+        ),
       ),
     );
   }
@@ -130,39 +199,43 @@ class _BondMainScreenState extends State<BondMainScreen>
     final primary = _bondList.where((b) => b.isPrimaryMarket).toList();
     final secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
 
-    return ListView(
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50),
-      children: [
-        const SizedBox(height: 24),
-        if (_bondListLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 48),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else if (_bondList.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 48),
-            child: Center(
-              child: Text(
-                l10n.noData,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral300,
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50),
+        children: [
+          const SizedBox(height: 24),
+          if (_bondListLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 48),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_bondList.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 48),
+              child: Center(
+                child: Text(
+                  l10n.noData,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral300,
+                  ),
                 ),
               ),
-            ),
-          )
-        else ...[
-          if (primary.isNotEmpty) ...[
-            SectionTitle(l10n.primaryMarket),
-            ..._buildBondCards(primary, l10n, extendedColors),
-            const SizedBox(height: 40),
-          ],
-          if (secondary.isNotEmpty) ...[
-            SectionTitle(l10n.secondaryMarket),
-            ..._buildBondCards(secondary, l10n, extendedColors),
+            )
+          else ...[
+            if (primary.isNotEmpty) ...[
+              SectionTitle(l10n.primaryMarket),
+              ..._buildBondCards(primary, l10n, extendedColors),
+              const SizedBox(height: 40),
+            ],
+            if (secondary.isNotEmpty) ...[
+              SectionTitle(l10n.secondaryMarket),
+              ..._buildBondCards(secondary, l10n, extendedColors),
+            ],
           ],
         ],
-      ],
+      ),
     );
   }
 
@@ -189,6 +262,16 @@ class _BondMainScreenState extends State<BondMainScreen>
     // Захиалгын явц: ORDEREDAMT / AMT
     final progress = orderProgress(bond.orderedAmt, bond.amt);
 
+    final endDt = parseStockDate(bond.endDate);
+    final orderEndDate = parseStockDate(bond.orderEndDate);
+    final tenureStr = endDt != null && bond.market == 'Secondary'
+        ? formatStockDate(endDt)
+        : orderEndDate != null && bond.market == 'Primary'
+          ? formatStockDate(orderEndDate)
+          : (bond.term.isEmpty
+            ? '-'
+            : (num.tryParse(bond.term) != null ? '${bond.term} сар' : bond.term));
+
     return BondMarketCard(
       bond.raw,
       title: bond.name,
@@ -196,9 +279,7 @@ class _BondMainScreenState extends State<BondMainScreen>
       status: bond.isForeign
           ? l10n.foreign
           : (bond.isOpen ? l10n.open : l10n.closed),
-      tenure: bond.term.isEmpty
-          ? '-'
-          : (num.tryParse(bond.term) != null ? '${bond.term} сар' : bond.term),
+      tenure: tenureStr,
       yield: formatIntRate(bond.intRate),
       totalAmount: formatCompactAmount(
         bond.amt,
@@ -231,46 +312,50 @@ class _BondMainScreenState extends State<BondMainScreen>
     ExtendedColors extendedColors,
     ThemeData theme,
   ) {
-    return ListView(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
-      children: [
-        PledgeBondBanner(
-          onPledgePressed: () {
-            // Барьцаалах бонд байхгүй бол sheet-ээр мэдэгдэнэ
-            if (!_myBondsLoading && _myBonds.isEmpty) {
-              BondStatusInfoSheet.show(
-                context,
-                title: l10n.sorryTitle,
-                description: l10n.noPledgeBondDesc,
-              );
-              return;
-            }
-            Navigator.pushNamed(context, '/pledge_bond_select');
-          },
-        ),
-        const SizedBox(height: 48),
-        SectionTitle(l10n.myBond),
-        const SizedBox(height: 24),
-        if (_myBondsLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else if (_myBonds.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: Text(
-                l10n.noData,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: extendedColors.neutral300,
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
+        children: [
+          PledgeBondBanner(
+            onPledgePressed: () {
+              // Барьцаалах бонд байхгүй бол sheet-ээр мэдэгдэнэ
+              if (!_myBondsLoading && _myBonds.isEmpty) {
+                BondStatusInfoSheet.show(
+                  context,
+                  title: l10n.sorryTitle,
+                  description: l10n.noPledgeBondDesc,
+                );
+                return;
+              }
+              Navigator.pushNamed(context, '/pledge_bond_select');
+            },
+          ),
+          const SizedBox(height: 48),
+          SectionTitle(l10n.myBond),
+          const SizedBox(height: 24),
+          if (_myBondsLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_myBonds.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Text(
+                  l10n.noData,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral300,
+                  ),
                 ),
               ),
-            ),
-          )
-        else
-          ..._buildMyBondCards(_myBonds, l10n, extendedColors),
-      ],
+            )
+          else
+            ..._buildMyBondCards(_myBonds, l10n, extendedColors),
+        ],
+      ),
     );
   }
 
@@ -284,13 +369,13 @@ class _BondMainScreenState extends State<BondMainScreen>
     for (var i = 0; i < bonds.length; i++) {
       if (i > 0) {
         widgets.add(
-          SizedBox(height: 10,)
+          const SizedBox(height: 10,)
         );
         widgets.add(
           Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
         );
         widgets.add(
-          SizedBox(height: 25,)
+          const SizedBox(height: 25,)
         );
       }
       widgets.add(_buildMyBondCard(bonds[i], l10n, extendedColors));

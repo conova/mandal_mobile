@@ -40,20 +40,24 @@ class NotificationFilterChipBar extends StatelessWidget {
                   onFilterSelected(filter);
                 }
               },
-              selectedColor: extendedColors.bgSecondary,
+              selectedColor: extendedColors.neutral100,
               avatarBorder: Border.all(
                 color: extendedColors.neutral500,
                 width: 1,
               ),
-              backgroundColor: extendedColors.bgBase,
+              backgroundColor: extendedColors.bgSecondary,
               labelStyle: theme.textTheme.labelLarge?.copyWith(
                 color: isSelected
-                    ? extendedColors.neutral100
+                    ? extendedColors.bgBase
                     : extendedColors.neutral200,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
                 side: BorderSide.none,
+              ),
+              side: BorderSide(
+                color: Colors.transparent,
+                width: 1,
               ),
               showCheckmark: false,
             ),

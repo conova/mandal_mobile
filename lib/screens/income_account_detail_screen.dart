@@ -6,7 +6,7 @@ import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
-import '../widgets/custom_svg_icon.dart';
+import '../widgets/custom_bottom_sheet.dart';
 
 class IncomeAccountDetailScreen extends StatefulWidget {
   const IncomeAccountDetailScreen({super.key});
@@ -18,20 +18,68 @@ class IncomeAccountDetailScreen extends StatefulWidget {
 
 class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
   bool _isSettingPrimary = false;
+  bool _isDeleting = false;
+  bool? _isPrimaryOverride;
 
-  /// Данс солих буюу шинэ данс нэмэх дэлгэц рүү шилжинэ.
-  Future<void> _handleChangeAccount() async {
-    final added = await Navigator.pushNamed(context, '/add_income_account');
-    // Данс нэмэгдсэн бол жагсаалт руу буцааж шинэчлүүлнэ
-    if (added == true && mounted) {
+  // /// Данс солих буюу шинэ данс нэмэх дэлгэц рүү шилжинэ.
+  // Future<void> _handleChangeAccount() async {
+  //   final added = await Navigator.pushNamed(context, '/add_income_account');
+  //   // Данс нэмэгдсэн бол жагсаалт руу буцааж шинэчлүүлнэ
+  //   if (added == true && mounted) {
+  //     Navigator.pop(context, true);
+  //   }
+  // }
+
+  Future<void> _handleDeleteAccount() async {
+    if (_isDeleting || _isSettingPrimary) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            {};
+    final accountNumber = args['accountNumber']?.toString() ?? '';
+
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CustomBottomSheet(
+        title: l10n.deleteAccount,
+        description: l10n.deleteAccountQuestion,
+        confirmText: l10n.remove,
+        cancelText: l10n.back,
+        onConfirm: () => Navigator.pop(context, true),
+        onCancel: () => Navigator.pop(context, false),
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isDeleting = true);
+    try {
+      final auth = context.read<AuthService>();
+      final message = await auth.deleteAccount(iban: accountNumber);
+
+      // Шинэчилсэн мэдээллийг татаж кэшийг шинэчилнэ
+      await auth.refreshUserInfo();
+
+      if (!mounted) return;
+      CustomSnackbar.show(context, message: message);
       Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isDeleting = false);
+      CustomSnackbar.show(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: CustomSnackbarType.error,
+      );
     }
   }
 
   /// Сонгосон дансыг үндсэн (орлого авах) данс болгоно —
   /// add_account API руу isPrimary: "1" илгээнэ.
   Future<void> _handleSetPrimary(Map<String, dynamic> args) async {
-    if (_isSettingPrimary) return;
+    if (_isSettingPrimary || _isDeleting) return;
 
     setState(() => _isSettingPrimary = true);
     try {
@@ -42,11 +90,16 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
         accountName: args['receiver']?.toString() ?? '',
         isPrimary: true,
       );
+      
+      // Шинэчилсэн мэдээллийг татаж кэшийг шинэчилнэ (notifyListeners дуудна)
+      await auth.refreshUserInfo();
+      
       if (!mounted) return;
-      setState(() => _isSettingPrimary = false);
+      setState(() {
+        _isSettingPrimary = false;
+        _isPrimaryOverride = true;
+      });
       CustomSnackbar.show(context, message: message);
-      // true буцааж дансны жагсаалтыг шинэчлүүлнэ
-      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSettingPrimary = false);
@@ -70,7 +123,9 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
     final accountNumber = args['accountNumber']?.toString() ?? '';
     final bankName = args['bankName']?.toString() ?? '';
     final receiver = args['receiver']?.toString() ?? '';
-    final isPrimary = args['isPrimary'] == true;
+    
+    // Default to args, but allow override after setting primary
+    final isPrimary = _isPrimaryOverride ?? (args['isPrimary'] == true);
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -84,7 +139,22 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
           child: SizedBox(
             width: 40,
             height: 40,
-            child: CircleBackButton(),
+            child: CircleBackButton(
+              onPressed: () {
+                // If we changed to primary, tell the previous screen to refresh
+                Navigator.pop(context, _isPrimaryOverride == true);
+              },
+            ),
+          ),
+        ),
+        centerTitle: true,
+        title: Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Text(
+            isPrimary ? l10n.primaryAccount : l10n.details,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
       ),
@@ -93,44 +163,44 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
-            Text(
-              l10n.incomeAccountDetail,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: extendedColors.neutral100,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.incomeAccountDetailDesc,
-              style: TextStyle(color: extendedColors.neutral200, fontSize: 14),
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             _buildInfoCard(l10n.ibanNumber, accountNumber, theme, extendedColors),
             const SizedBox(height: 12),
             _buildInfoCard(l10n.bank, bankName, theme, extendedColors),
             const SizedBox(height: 12),
             _buildInfoCard(l10n.receiver, receiver, theme, extendedColors),
+            if (isPrimary) ...[
+              const SizedBox(height: 24,),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  l10n.incomeAccBenefitPrompt,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                  ),
+                ),
+              ),
+            ],
             const Spacer(),
             const SizedBox(height: 24),
-            CustomButton(
-              label: l10n.changeAccount,
-              onPressed: _isSettingPrimary ? null : _handleChangeAccount,
-              variant: CustomButtonVariant.primary,
-            ),
             // Аль хэдийн үндсэн данс бол primary болгох товч харуулахгүй
             if (!isPrimary) ...[
-              const SizedBox(height: 12),
               CustomButton(
                 label: l10n.setAsDefaultAccount,
                 onPressed:
-                _isSettingPrimary ? null : () => _handleSetPrimary(args),
+                (_isSettingPrimary || _isDeleting) ? null : () => _handleSetPrimary(args),
                 isLoading: _isSettingPrimary,
                 variant: CustomButtonVariant.secondary,
               ),
+              const SizedBox(height: 12),
+              CustomButton(
+                label: l10n.deleteAccount,
+                onPressed: (_isSettingPrimary || _isDeleting) ? null : _handleDeleteAccount,
+                isLoading: _isDeleting,
+                variant: CustomButtonVariant.error,
+              ),
+              const SizedBox(height: 48),
             ],
-            const SizedBox(height: 48),
           ],
         ),
       ),
@@ -154,7 +224,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
           ),
           Text(
             value,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               color: extendedColors.neutral100,
               fontSize: 16,
             ),

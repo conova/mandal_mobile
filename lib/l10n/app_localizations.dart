@@ -3343,7 +3343,7 @@ abstract class AppLocalizations {
   /// No description provided for @dailyStockRate.
   ///
   /// In en, this message translates to:
-  /// **'Daily stock rate'**
+  /// **'Daily change'**
   String get dailyStockRate;
 
   /// No description provided for @last1Year.
@@ -3537,6 +3537,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please note that the total amount of market orders may vary depending on the market price at execution.'**
   String get stockTradingMarketPriceNotify;
+
+  /// No description provided for @cancelAllOrdersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You are about to cancel {Number} active order(s). \n Do you wish to continue?'**
+  String cancelAllOrdersDesc(int Number);
+
+  /// No description provided for @yesContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, continue'**
+  String get yesContinue;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @primaryAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Account'**
+  String get primaryAccount;
+
+  /// No description provided for @stockMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock money'**
+  String get stockMoney;
+
+  /// No description provided for @bondMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond money'**
+  String get bondMoney;
+
+  /// No description provided for @deleteAccountQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this account?'**
+  String get deleteAccountQuestion;
 }
 
 class _AppLocalizationsDelegate

@@ -1721,7 +1721,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get cancelAllOrders => 'Бүх захиалгыг цуцлах';
 
   @override
-  String get dailyStockRate => 'Өдрийн ханш';
+  String get dailyStockRate => 'Өдрийн өөрчлөлт';
 
   @override
   String get last1Year => 'Сүүлийн 1 жил';
@@ -1825,4 +1825,31 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get stockTradingMarketPriceNotify =>
       'Зах зээлийн үнээр хийсэн арилжаа биелэх үед нийт дүн зах зээлийн ханшаас хамаарч өөрчлөгдөж болохыг анхаарна уу.';
+
+  @override
+  String cancelAllOrdersDesc(int Number) {
+    return 'Идэвхтэй $Number захиалга цуцлах гэж байна. \n Та үргэлжлүүлэх үү?';
+  }
+
+  @override
+  String get yesContinue => 'Тийм, үргэлжлүүлэх';
+
+  @override
+  String get deleteAccount => 'Данс устгах';
+
+  @override
+  String get details => 'Дэлгэрэнгүй';
+
+  @override
+  String get primaryAccount => 'Үндсэн данс';
+
+  @override
+  String get stockMoney => 'Хувьцааны мөнгө';
+
+  @override
+  String get bondMoney => 'Бондын мөнгө';
+
+  @override
+  String get deleteAccountQuestion =>
+      'Та энэ дансыг устгахдаа итгэлтэй байна уу?';
 }

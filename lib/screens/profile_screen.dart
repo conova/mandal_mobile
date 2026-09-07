@@ -146,11 +146,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final biometricEnabled = context.watch<AuthService>().isBiometricEnabled;
+    final authService = context.watch<AuthService>();
+    final biometricEnabled = authService.isBiometricEnabled;
+
+    final userInfo = authService.userInfo;
+    final hasAllInfo = userInfo != null &&
+        userInfo['firstName']?.toString().isNotEmpty == true &&
+        userInfo['lastName']?.toString().isNotEmpty == true &&
+        userInfo['registerNumber']?.toString().isNotEmpty == true &&
+        userInfo['email']?.toString().isNotEmpty == true &&
+        userInfo['phone']?.toString().isNotEmpty == true &&
+        userInfo['address']?.toString().isNotEmpty == true;
 
     // Home дээр хүүхдийн данс руу сольсон бол profile хязгаарлагдмал
     // цэстэй (Миний мэдээлэл, Орлого авах данс, Хураангуй тайлан)
-    final activeChild = context.watch<AuthService>().activeSubAccount;
+    final activeChild = authService.activeSubAccount;
     final isChildProfile = activeChild != null;
     final lang = Localizations.localeOf(context).languageCode;
 
@@ -225,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 '/my_info',
                 arguments: isChildProfile ? {'child': activeChild} : null,
               ),
-              trailing: isChildProfile
+              trailing: isChildProfile || hasAllInfo
                   ? null
                   : const CustomSvgIcon(
                       'info-circle',
@@ -258,7 +268,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 24),
               ProfileSectionHeader(title: l10n.childAccount),
               // Бүртгэлтэй хүүхдүүд — /user/info-ийн subAcnts
-              ...context.watch<AuthService>().subAccounts.map(
+              ...authService.subAccounts.map(
                 (child) => ProfileListItem(
                   icon: SizedBox(
                     width: 20,

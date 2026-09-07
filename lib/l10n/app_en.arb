@@ -630,7 +630,7 @@
     "done": "Done",
     "canceled": "Canceled",
     "cancelAllOrders": "Cancel all orders",
-    "dailyStockRate": "Daily stock rate",
+    "dailyStockRate": "Daily change",
     "last1Year": "Last 1 year",
     "orderedDate": "Ordered date",
     "account": "Account",
@@ -672,5 +672,20 @@
         }
     },
     "understood": "Understood",
-    "stockTradingMarketPriceNotify": "Please note that the total amount of market orders may vary depending on the market price at execution."
+    "stockTradingMarketPriceNotify": "Please note that the total amount of market orders may vary depending on the market price at execution.",
+    "cancelAllOrdersDesc": "You are about to cancel {Number} active order(s). \n Do you wish to continue?",
+    "@cancelAllOrdersDesc": {
+        "placeholders": {
+            "Number": {
+                "type": "int"
+            }
+        }
+    },
+    "yesContinue": "Yes, continue",
+    "deleteAccount": "Delete account",
+    "details": "Details",
+    "primaryAccount": "Primary Account",
+    "stockMoney": "Stock money",
+    "bondMoney": "Bond money",
+    "deleteAccountQuestion": "Are you sure you want to delete this account?"
 }

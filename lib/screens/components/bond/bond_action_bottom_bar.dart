@@ -23,7 +23,7 @@ class BondActionBottomBar extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      padding: const EdgeInsets.fromLTRB(24, 10, 24, 32),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
         boxShadow: [

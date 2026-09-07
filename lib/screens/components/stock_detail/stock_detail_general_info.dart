@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../widgets/custom_info_popup_bottom_sheet.dart';
-import '../../../widgets/custom_svg_icon.dart';
 
 class StockDetailGeneralInfo extends StatelessWidget {
   final String marketCap;

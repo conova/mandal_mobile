@@ -66,7 +66,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
       final summary = await context.read<AuthService>().getPortfolioSummary();
       if (!mounted) return;
       setState(() {
-        _availableCash = summary.cashBalance;
+        _availableCash = summary.cashBalance - summary.holdAmount;
       });
     } catch (e) {
       debugPrint('Error fetching portfolio summary: $e');

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/order.dart';
@@ -8,6 +10,7 @@ import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import 'custom_snackbar.dart';
 import '../l10n/app_localizations.dart';
+import 'custom_svg_icon.dart';
 
 /// Түгжигдсэн дүн суллах — bottom sheet хувилбар (тусдаа дэлгэц рүү
 /// шилжихгүй, арилжааны дэлгэцийн дээр нээгдэнэ).
@@ -103,7 +106,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
 
       if (mounted) {
         setState(() {
-          _availableCash = summary.cashBalance;
+          _availableCash = summary.cashBalance - summary.holdAmount;
           _items = newItems;
           _isLoading = false;
         });
@@ -141,6 +144,8 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
       // Түгжээ суларсан тул жагсаалт, үлдэгдлээ шинэчилнэ
       _selectedIndices.clear();
       await _fetchData();
+      context.read<AuthService>().refreshActiveOrders();
+      //if (mounted) context.read<AuthService>().refreshActiveOrders();
     } catch (e) {
       if (mounted) CustomSnackbar.showError(context, e);
     } finally {
@@ -196,6 +201,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
   @override
   Widget build(BuildContext context) {
     final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+    final l10n = AppLocalizations.of(context)!;
 
     final projectedCashText =
         '${_projectedCash.toStringAsFixed(2).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}₮';
@@ -227,11 +233,41 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ReleaseLockedAmountList(
+                  : _items.isNotEmpty
+                    ? ReleaseLockedAmountList(
                       items: _items,
                       selectedIndices: _selectedIndices,
                       onToggle: _handleToggle,
-                    ),
+                    )
+                    : Container(
+                        padding: EdgeInsets.all(24),
+                        alignment: Alignment.center,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: extendedColors.primary100,
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                              child: CustomSvgIcon(
+                                'file-cross',
+                                color: extendedColors.primaryMain,
+                                size: 24,
+                              ),
+                            ),
+                            Text(
+                              l10n.noActiveOrders,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: extendedColors.neutral100,
+                              ),
+                            )
+                          ],
+                        ),
+                    )
             ),
             ReleaseLockedAmountBottomBar(
               projectedCashText: projectedCashText,

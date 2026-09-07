@@ -99,14 +99,7 @@ class _HomeHeaderState extends State<HomeHeader> {
       backgroundColor: extendedColors.bgBase,
       elevation: 0,
       // Зүүн талд профайл солигч (өөрийн/хүүхдийн данс)
-      leadingWidth: 84,
-      leading: const Padding(
-        padding: EdgeInsets.only(left: 16),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: ProfileSwitcher(),
-        ),
-      ),
+      leadingWidth: 0,
       // Scroll хийхэд өнгө өөрчлөгдөхөөс сэргийлнэ (M3 surface tint)
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
@@ -120,89 +113,117 @@ class _HomeHeaderState extends State<HomeHeader> {
       ),
       centerTitle: true,
       automaticallyImplyLeading: false,
-      title: Opacity(
-        opacity: widget.showSummaryOpacity,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              l10n.totalAssets,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: extendedColors.neutral200,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            if (displayTotal != null)
-              Row(
+      titleSpacing: 0,
+      title: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          Positioned(
+            left: 16,
+            child: ProfileSwitcher(),
+          ),
+          Center(
+            child: Opacity(
+              opacity: widget.showSummaryOpacity,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
                 children: [
                   Text(
-                    whole,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
+                    l10n.totalAssets,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: extendedColors.neutral200,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
-                  if (fraction.isNotEmpty)
-                    Text(
-                      fraction,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: extendedColors.neutral200,
-                      ),
+                  if (displayTotal != null)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          whole,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                        if (fraction.isNotEmpty)
+                          Text(
+                            fraction,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: extendedColors.neutral200,
+                            ),
+                          ),
+                      ],
                     ),
                 ],
               ),
-          ],
-        ),
-      ),
-      actions: [
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/education'),
-          icon: const CustomSvgIcon('book-open-01', size: 24),
-        ),
-        Stack(
-          children: [
-            IconButton(
-              onPressed: () => Navigator.pushNamed(context, '/notifications'),
-              icon: const CustomSvgIcon('bell-02', size: 24),
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
             ),
-            if (unreadBadge > 0)
-              Positioned(
-                right: 0,
-                top: 0,
-                child: IgnorePointer(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
+          ),
+          Positioned(
+            right: 8,
+            child: Opacity(
+              opacity: 1.0 - widget.showSummaryOpacity,
+              child: IgnorePointer(
+                ignoring: widget.showSummaryOpacity > 0.5,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pushNamed(context, '/education'),
+                      icon: const CustomSvgIcon('book-open-01', size: 24),
                     ),
-                    constraints: const BoxConstraints(minWidth: 22),
-                    decoration: BoxDecoration(
-                      color: colorScheme.error,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: extendedColors.bgBase, width: 2)
+                    Stack(
+                      children: [
+                        IconButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/notifications'),
+                          icon: const CustomSvgIcon('bell-02', size: 24),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 10),
+                        ),
+                        if (unreadBadge > 0)
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IgnorePointer(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                constraints: const BoxConstraints(minWidth: 22),
+                                decoration: BoxDecoration(
+                                    color: colorScheme.error,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                        color: extendedColors.bgBase, width: 2)),
+                                child: Text(
+                                  unreadBadge > 99 ? '99+' : unreadBadge.toString(),
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                    child: Text(
-                      unreadBadge > 99 ? '99+' : unreadBadge.toString(),
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
+                    IconButton(
+                      onPressed: () => Navigator.pushNamed(context, '/profile'),
+                      icon: const CustomSvgIcon('user-03', size: 24),
                     ),
-                  ),
+                  ],
                 ),
               ),
-          ],
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/profile'),
-          icon: const CustomSvgIcon('user-03', size: 24),
-        ),
-        const SizedBox(width: 8),
+            ),
+          )
+        ],
+      ),
+      actions: [
+
       ],
     );
   }

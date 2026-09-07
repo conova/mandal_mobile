@@ -1727,7 +1727,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cancelAllOrders => 'Cancel all orders';
 
   @override
-  String get dailyStockRate => 'Daily stock rate';
+  String get dailyStockRate => 'Daily change';
 
   @override
   String get last1Year => 'Last 1 year';
@@ -1832,4 +1832,31 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get stockTradingMarketPriceNotify =>
       'Please note that the total amount of market orders may vary depending on the market price at execution.';
+
+  @override
+  String cancelAllOrdersDesc(int Number) {
+    return 'You are about to cancel $Number active order(s). \n Do you wish to continue?';
+  }
+
+  @override
+  String get yesContinue => 'Yes, continue';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get primaryAccount => 'Primary Account';
+
+  @override
+  String get stockMoney => 'Stock money';
+
+  @override
+  String get bondMoney => 'Bond money';
+
+  @override
+  String get deleteAccountQuestion =>
+      'Are you sure you want to delete this account?';
 }
