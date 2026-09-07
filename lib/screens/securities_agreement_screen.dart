@@ -3,10 +3,10 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../services/content_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/auth/auth_step_app_bar.dart';
 import '../widgets/custom_button.dart';
@@ -51,8 +51,7 @@ class _SecuritiesAgreementScreenState extends State<SecuritiesAgreementScreen> {
 
   Future<void> _loadContracts() async {
     try {
-      final raw = await rootBundle.loadString('assets/data/contracts.json');
-      final body = jsonDecode(raw) as Map<String, dynamic>;
+      final body = await ContentService.contracts();
       if (!mounted) return;
       setState(() {
         _contracts = (body['contracts'] as List? ?? const [])

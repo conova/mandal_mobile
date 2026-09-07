@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import '../services/content_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 
-/// Гэрээний загвар — assets/data/contracts.json-оос уншина
+/// Гэрээний загвар — /api/mobile/contracts-оос уншина
+/// (сүлжээгүй үед assets/data/contracts.json)
 class ContractDoc {
   final String id;
   final String title;
@@ -59,8 +58,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
 
   Future<void> _load() async {
     try {
-      final raw = await rootBundle.loadString('assets/data/contracts.json');
-      final body = jsonDecode(raw) as Map<String, dynamic>;
+      final body = await ContentService.contracts();
       if (!mounted) return;
       setState(() {
         _contracts = (body['contracts'] as List? ?? const [])

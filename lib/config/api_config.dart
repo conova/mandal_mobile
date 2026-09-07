@@ -23,6 +23,15 @@ class ApiConfig {
   // DAN (E-Mongolia) service base URL
   static const String danServiceUrl = 'https://mandalcapital.mn/dan';
 
+  // ─── Статик контент (сервер талаас шинэчлэгддэг, нэвтрэлт шаардахгүй) ───
+  /// GET → { contracts: [{id, title, intro, sections: [{title, content}]}] }
+  static const String mobileContracts =
+      'https://mandalcapital.mn/api/mobile/contracts';
+
+  /// GET → { courses: [...], sections: [...] } — боловсролын хэсгийн бүх дата
+  static const String mobileEducationGuide =
+      'https://mandalcapital.mn/api/mobile/education-guide';
+
   /// NEGDI төлбөрийн линк авах (custid, amount, txntype, action)
   static const String paymentLink = '$danServiceUrl/api/payment/link';
 

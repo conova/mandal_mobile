@@ -1,8 +1,7 @@
-import 'dart:convert';
+import '../services/content_service.dart';
 
-import 'package:flutter/services.dart' show rootBundle;
-
-/// Боловсролын дэлгэцийн бүх дата — `assets/data/education_guide.json`.
+/// Боловсролын дэлгэцийн бүх дата — `/api/mobile/education-guide`
+/// (сүлжээгүй үед `assets/data/education_guide.json`).
 ///
 /// Текстүүд монгол/англи хоёр хэл дээр хадгалагдах бөгөөд
 /// `*Of(lang)` getter-үүдээр тухайн хэлний утгыг авна.
@@ -23,13 +22,10 @@ class EducationGuideData {
     );
   }
 
-  /// Asset-аас уншиж задлана
+  /// Серверээс (алдаа гарвал asset-аас) уншиж задлана
   static Future<EducationGuideData> load() async {
-    final raw = await rootBundle.loadString(
-      'assets/data/education_guide.json',
-    );
     return EducationGuideData.fromJson(
-      Map<String, dynamic>.from(jsonDecode(raw)),
+      await ContentService.educationGuide(),
     );
   }
 }

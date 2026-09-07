@@ -106,7 +106,12 @@
       "Read(//Users/altanshagai/**)",
       "Bash(unzip -p build/ios/ipa/mandal_capital.ipa \"Payload/Runner.app/Info.plist\")",
       "Bash(plutil -p -)",
-      "Bash(~/Library/Android/sdk/platform-tools/adb devices *)"
+      "Bash(~/Library/Android/sdk/platform-tools/adb devices *)",
+      "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/contracts\")",
+      "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/education-guide\")",
+      "Read(//private/tmp/**)",
+      "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/education-guide\" -o edu_remote.json)",
+      "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/contracts\" -o contracts_remote.json)"
     ]
   }
 }
