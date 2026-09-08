@@ -159,26 +159,28 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                     ),
             ),
             // Page indicator dots
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_recommendations.length, (index) {
-                final isActive = index == _currentPage;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
-                  width: isActive ? 24 : 6,
-                  height: 6,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    color: isActive
-                        ? extendedColors.neutral100
-                        : extendedColors.neutral400,
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 20),
+            if (_recommendations.isNotEmpty && _recommendations.length != 1) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(_recommendations.length, (index) {
+                  final isActive = index == _currentPage;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
+                    width: isActive ? 24 : 6,
+                    height: 6,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: isActive
+                          ? extendedColors.neutral100
+                          : extendedColors.neutral400,
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 20),
+            ],
           ],
         ),
       ),
@@ -249,13 +251,31 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                             ),
                             if (data.subtitle.isNotEmpty) ...[
                               const SizedBox(height: 2),
-                              Text(
-                                data.subtitle,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: extendedColors.neutral300,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    data.subtitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: extendedColors.neutral200,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6,),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        data.companyName,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: extendedColors.neutral300,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                             const SizedBox(height: 8),

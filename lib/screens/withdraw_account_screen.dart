@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../common/api_message.dart';
 import '../common/stock_row_format.dart';
@@ -214,6 +215,55 @@ class _WithdrawAccountScreenState extends State<WithdrawAccountScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (amount * rate > 5000000) ...[
+                            Container(
+                              padding: const EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    extendedColors.primary500,
+                                    extendedColors.primary300,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      extendedColors.primary200,
+                                      extendedColors.primary100,
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 10, top: 6),
+                                      child: CustomSvgIcon('annotation-info', size: 20, color: extendedColors.primaryMain,),
+                                    ),
+                                    Expanded(
+                                        child: Text(
+                                          l10n.withdrawAccountWarningDesc,
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            color: extendedColors.neutral100,
+                                          ),
+                                        )
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16,),
+                          ],
                           Text(
                             l10n.receiveAccount,
                             style: theme.textTheme.headlineSmall?.copyWith(

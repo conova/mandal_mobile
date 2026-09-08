@@ -225,12 +225,12 @@ class _BondMainScreenState extends State<BondMainScreen>
             )
           else ...[
             if (primary.isNotEmpty) ...[
-              SectionTitle(l10n.primaryMarket),
+              SectionTitle(l10n.primaryMarket, true),
               ..._buildBondCards(primary, l10n, extendedColors),
               const SizedBox(height: 40),
             ],
             if (secondary.isNotEmpty) ...[
-              SectionTitle(l10n.secondaryMarket),
+              SectionTitle(l10n.secondaryMarket, false),
               ..._buildBondCards(secondary, l10n, extendedColors),
             ],
           ],
@@ -249,7 +249,7 @@ class _BondMainScreenState extends State<BondMainScreen>
     for (var i = 0; i < bonds.length; i++) {
       if (i > 0) {
         widgets.add(
-          Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
+          const SizedBox(height: 10,),
         );
       }
       widgets.add(_buildBondListCard(bonds[i], l10n));
@@ -333,7 +333,7 @@ class _BondMainScreenState extends State<BondMainScreen>
             },
           ),
           const SizedBox(height: 48),
-          SectionTitle(l10n.myBond),
+          SectionTitle(l10n.myBond, false),
           const SizedBox(height: 24),
           if (_myBondsLoading)
             const Padding(

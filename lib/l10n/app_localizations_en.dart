@@ -1857,4 +1857,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountQuestion =>
       'Are you sure you want to delete this account?';
+
+  @override
+  String get withdrawAccountWarningDesc =>
+      'Please note that high-value transactions over 5,000,000.01 MNT will be processed on business days between 09:00 and 16:00.';
 }

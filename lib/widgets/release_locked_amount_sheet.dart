@@ -145,6 +145,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
       _selectedIndices.clear();
       await _fetchData();
       context.read<AuthService>().refreshActiveOrders();
+      Navigator.pop(context);
       //if (mounted) context.read<AuthService>().refreshActiveOrders();
     } catch (e) {
       if (mounted) CustomSnackbar.showError(context, e);

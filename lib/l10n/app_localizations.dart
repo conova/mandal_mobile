@@ -3585,6 +3585,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this account?'**
   String get deleteAccountQuestion;
+
+  /// No description provided for @withdrawAccountWarningDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please note that high-value transactions over 5,000,000.01 MNT will be processed on business days between 09:00 and 16:00.'**
+  String get withdrawAccountWarningDesc;
 }
 
 class _AppLocalizationsDelegate

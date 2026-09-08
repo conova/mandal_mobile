@@ -157,26 +157,28 @@ class _HomeStockRecommendationSectionState
                     ),
             ),
             // Page indicator dots
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_stocks.length, (index) {
-                final isActive = index == _currentPage;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
-                  width: isActive ? 24 : 6,
-                  height: 6,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    color: isActive
-                        ? extendedColors.neutral100
-                        : extendedColors.neutral400,
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 20),
+            if (_stocks.isNotEmpty && _stocks.length != 1) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(_stocks.length, (index) {
+                  final isActive = index == _currentPage;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    // Идэвхтэй үед сунасан pill, бусад нь жижиг дугуй
+                    width: isActive ? 24 : 6,
+                    height: 6,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: isActive
+                          ? extendedColors.neutral100
+                          : extendedColors.neutral400,
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 20),
+            ],
           ],
         ),
       ),

@@ -21,6 +21,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
   /// TODO: хувьцаа/бондын дансны тусдаа үлдэгдлийн API холбогдмогц салгана
   double _mntBalance = 0;
   double _usdBalance = 0;
+  double _usdRate = 0;
   bool _isLoading = true;
 
   @override
@@ -45,6 +46,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
       setState(() {
         _mntBalance = byType('mnt') - summary.holdAmount;
         _usdBalance = byType('usd');
+        _usdRate = summary.usdRate;
         _isLoading = false;
       });
     } catch (e) {
@@ -119,7 +121,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
                 onTap: () => Navigator.pushNamed(
                   context,
                   '/income_amount',
-                  arguments: 'mnt',
+                  arguments: {'currency': 'mnt', 'usdRate': _usdRate.toString()},
                 ),
               ),
               Divider(height: 1, color: extendedColors.neutral500),
@@ -162,7 +164,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
                 onTap: () => Navigator.pushNamed(
                   context,
                   '/income_amount',
-                  arguments: 'usd',
+                  arguments: {'currency': 'usd', 'usdRate': _usdRate.toString()},
                 ),
               ),
               Divider(height: 1, color: extendedColors.neutral500),
