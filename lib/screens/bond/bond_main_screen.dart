@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/screens/components/bond/bond_market_card_compact.dart';
+import 'package:mandal_capital/screens/components/bond/bond_primary_carousel.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../components/bond/bond_status_info_sheet.dart';
@@ -26,7 +27,6 @@ class _BondMainScreenState extends State<BondMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  final PageController _carouselController = PageController();
 
   bool _myBondsLoading = true;
   List<MarketInstrument> _myBonds = const [];
@@ -40,7 +40,6 @@ class _BondMainScreenState extends State<BondMainScreen>
   String _searchQuery = '';
   String _sortBy = 'yield'; // 'yield' | 'tenure'
   bool _isSearchExpanded = false;
-  int _carouselIndex = 0;
 
   @override
   void initState() {
@@ -97,7 +96,6 @@ class _BondMainScreenState extends State<BondMainScreen>
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
-    _carouselController.dispose();
     super.dispose();
   }
 
@@ -259,8 +257,8 @@ class _BondMainScreenState extends State<BondMainScreen>
             if (primary.isNotEmpty) ...[
               SectionTitle(l10n.primaryMarket, true),
               const SizedBox(height: 10,),
-              _buildPrimaryBondCarousel(primary, l10n, extendedColors, theme),
-              const SizedBox(height: 30),
+              BondPrimaryCarousel(bonds: primary),
+              const SizedBox(height: 20),
             ],
             SectionTitle(l10n.secondaryMarket, false),
             const SizedBox(height: 12),
@@ -287,193 +285,6 @@ class _BondMainScreenState extends State<BondMainScreen>
           ],
         ],
       ),
-    );
-  }
-
-  Widget _buildPrimaryBondCarousel(
-    List<MarketInstrument> bonds,
-    AppLocalizations l10n,
-    ExtendedColors extendedColors,
-    ThemeData theme,
-  ) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 180,
-          child: PageView.builder(
-            controller: _carouselController,
-            onPageChanged: (idx) => setState(() => _carouselIndex = idx),
-            itemCount: bonds.length,
-            itemBuilder: (context, idx) {
-              final bond = bonds[idx];
-              final progress = orderProgress(bond.orderedAmt, bond.amt) ?? 0.0;
-
-              final orderEndDate = parseStockDate(bond.orderEndDate);
-              final term = (bond.market == 'Primary' && orderEndDate != null)
-                    ? formatTimeLeftCompact(orderEndDate, l10n)
-                    : (bond.term.isEmpty
-                      ? '-'
-                      : (num.tryParse(bond.term) != null
-                        ? '${bond.term} ${l10n.monthLabel}'
-                        : bond.term));
-              List<String> termStr = term.split(' ');
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 6),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    bond.name,
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: extendedColors.neutral100,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    bond.subtitle,
-                                    style: theme.textTheme.labelLarge?.copyWith(
-                                      color: extendedColors.neutral300,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: CircularProgressIndicator(
-                                    value: 1.0,
-                                    strokeWidth: 4,
-                                    color: extendedColors.neutral500,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: CircularProgressIndicator(
-                                    value: progress,
-                                    strokeWidth: 4,
-                                    color: extendedColors.primaryMain,
-                                    strokeCap: StrokeCap.round,
-                                  ),
-                                ),
-                                Text(
-                                  '${(progress * 100).toInt()}%',
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10,
-                                    color: extendedColors.neutral100,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: EdgeInsets.only(left: 6),
-                        child: Row(
-                          children: [
-                            Text(
-                              '${formatIntRate(bond.intRate)}',
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                            Text(
-                              ' ${l10n.interestRate.toLowerCase()}',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.normal,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                            const SizedBox(width: 24),
-                            Text(
-                              termStr[0],
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                            Text(
-                              ' ${termStr[1]}',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.normal,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: CustomButton(
-                          label: l10n.placeOrder,
-                          onPressed: () => Navigator.pushNamed(
-                            context,
-                            '/bond_detail',
-                            arguments: {
-                              'bond': bond.raw,
-                              'languageCode': Localizations.localeOf(context).languageCode,
-                            },
-                          ),
-                          variant: CustomButtonVariant.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (bonds.length > 1) ...[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              bonds.length,
-              (idx) => Container(
-                width: _carouselIndex == idx ? 24 : 6,
-                height: 6,
-                margin: const EdgeInsets.symmetric(horizontal: 2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(3),
-                  color: _carouselIndex == idx
-                      ? extendedColors.neutral100
-                      : extendedColors.neutral500,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ],
     );
   }
 
@@ -564,7 +375,7 @@ class _BondMainScreenState extends State<BondMainScreen>
 
   Widget _buildSearchField(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       height: 48,
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
