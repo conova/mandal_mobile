@@ -3657,6 +3657,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 piece} other{{count} pieces}}'**
   String piece(int count);
+
+  /// No description provided for @owningBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Owning Bond'**
+  String get owningBond;
+
+  /// No description provided for @averageYield.
+  ///
+  /// In en, this message translates to:
+  /// **'average yield'**
+  String get averageYield;
 }
 
 class _AppLocalizationsDelegate

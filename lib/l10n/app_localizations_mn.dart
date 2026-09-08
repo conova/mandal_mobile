@@ -1899,4 +1899,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String piece(int count) {
     return '$count ширхэг';
   }
+
+  @override
+  String get owningBond => 'Эзэмшиж буй бонд';
+
+  @override
+  String get averageYield => 'дундаж өгөөж';
 }

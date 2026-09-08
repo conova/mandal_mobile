@@ -537,10 +537,80 @@ class _BondMainScreenState extends State<BondMainScreen>
               ),
             )
           else ...[
+            _buildMyBondStatusCard(_myBonds, l10n, extendedColors, theme),
             SectionTitle(l10n.ableToSell, false, false),
             const SizedBox(height: 24),
             ..._buildMyBondCards(_myBonds, l10n, extendedColors),
           ]
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMyBondStatusCard(
+    List<MarketInstrument> bonds,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+    ThemeData theme,
+  ) {
+    double totalValue = 0;
+    double totalWeightYield = 0;
+
+    for (final bond in bonds) {
+      final bal = bond.currentBal ?? 0;
+      final price = bond.stockPrice ?? bond.closePrice ?? bond.avgPrice ?? 0;
+      final value = bal * price;
+      totalValue += value;
+      totalWeightYield += (bond.intRate ?? 0) * value;
+    }
+
+    final avgYield = totalValue > 0 ? totalWeightYield / totalValue : 0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 24),
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.owningBond,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral200,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            formatStockAmount(totalValue, decimals: 0),
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: extendedColors.neutral100,
+              fontSize: 32,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Text(
+                '${avgYield.toStringAsFixed(1)}%',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: extendedColors.primaryMain,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                l10n.averageYield,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -594,30 +664,5 @@ class _BondMainScreenState extends State<BondMainScreen>
         arguments: bond.raw,
       ),
     );
-    // return MyBondCard(
-    //   title: bond.name,
-    //   subtitle: bond.subtitle,
-    //   status: bond.isForeign
-    //       ? l10n.foreign
-    //       : (bond.isOpen ? l10n.open : l10n.closed),
-    //   statusBgColor: bond.isOpen
-    //       ? extendedColors.primary100
-    //       : extendedColors.bgSecondary,
-    //   statusTextColor: bond.isOpen
-    //       ? extendedColors.primaryMain
-    //       : extendedColors.neutral100,
-    //   ownedAmount: formatStockAmount(bond.amt, isForeign: bond.isForeign),
-    //   interestRate: formatIntRate(bond.intRate),
-    //   onInfoTap: () => BondStatusInfoSheet.showForBond(
-    //     context,
-    //     isOpen: bond.isOpen,
-    //     isForeign: bond.isForeign,
-    //   ),
-    //   onSellPressed: () => Navigator.pushNamed(
-    //     context,
-    //     '/bond_sell',
-    //     arguments: bond.raw,
-    //   ),
-    // );
   }
 }

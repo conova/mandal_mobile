@@ -743,5 +743,7 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "owningBond": "Owning Bond",
+    "averageYield": "average yield"
 }

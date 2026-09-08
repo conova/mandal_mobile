@@ -1936,4 +1936,10 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get owningBond => 'Owning Bond';
+
+  @override
+  String get averageYield => 'average yield';
 }
