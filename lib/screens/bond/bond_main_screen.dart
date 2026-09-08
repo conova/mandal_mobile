@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/screens/components/bond/bond_market_card_compact.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../components/bond/bond_market_card.dart';
 import '../components/bond/bond_status_info_sheet.dart';
@@ -154,7 +155,7 @@ class _BondMainScreenState extends State<BondMainScreen>
                   return null; // Default behavior
                 }),
                 indicator: BoxDecoration(
-                  color: extendedColors.bgBase,
+                  color: AppColors.bgBase,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -164,7 +165,7 @@ class _BondMainScreenState extends State<BondMainScreen>
                     ),
                   ],
                 ),
-                labelColor: extendedColors.neutral100,
+                labelColor: AppColors.neutral100,
                 unselectedLabelColor: extendedColors.neutral200,
                 labelStyle: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,

@@ -203,7 +203,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                           const SizedBox(width: 14),
                           CustomSvgIcon(
                             'search-icon',
-                            color: extendedColors.neutral100,
+                            color: extendedColors.neutral300,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
