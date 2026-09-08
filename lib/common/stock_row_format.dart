@@ -95,6 +95,31 @@ String formatTimeLeft(DateTime? target, AppLocalizations l10n) {
   return l10n.today;
 }
 
+/// Одооноос тухайн огноо хүртэлх хугацааг "X сар үлдсэн", "X хоног үлдсэн"
+/// хэлбэрээр форматлана.
+String formatTimeLeftCompact(DateTime? target, AppLocalizations l10n) {
+  if (target == null) return '-';
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final targetDate = DateTime(target.year, target.month, target.day);
+
+  final diff = targetDate.difference(today);
+
+  if (diff.isNegative) {
+    return l10n.timeLeftExpired;
+  }
+
+  final days = diff.inDays;
+
+  if (days >= 30) {
+    final months = (days / 30).floor();
+    return l10n.timeLeftMonthsCompact(months);
+  } else if (days > 0) {
+    return l10n.timeLeftDaysCompact(days);
+  }
+  return l10n.today;
+}
+
 /// Захиалгын явц: ordered/total → 0.0..1.0
 double? orderProgress(dynamic ordered, dynamic total) {
   final o = num.tryParse(ordered?.toString().replaceAll(',', '') ?? '');

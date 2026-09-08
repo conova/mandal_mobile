@@ -34,7 +34,7 @@ class EmptyState extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.all(20),
-            child: CustomSvgIcon(icon, size: 24, color: extendedColors.neutral100),
+            child: CustomSvgIcon(icon, size: 24, color: extendedColors.neutral300),
           ),
         ),
         const SizedBox(height: 24),

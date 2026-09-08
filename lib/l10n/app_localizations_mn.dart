@@ -1869,4 +1869,20 @@ class AppLocalizationsMn extends AppLocalizations {
   String timeLeftDays(int count) {
     return '$count хоног үлдсэн';
   }
+
+  @override
+  String get search => 'Хайх';
+
+  @override
+  String timeLeftMonthsCompact(int count) {
+    return '$count сар';
+  }
+
+  @override
+  String timeLeftDaysCompact(int count) {
+    return '$count хоног';
+  }
+
+  @override
+  String get searchByCompanyName => 'Компанийн нэрээр хайх';
 }

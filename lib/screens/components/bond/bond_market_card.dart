@@ -5,6 +5,7 @@ import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 
+// Obsolete widget
 class BondMarketCard extends StatelessWidget {
   /// /stocks/* API-ийн түүхий мөр — detail дэлгэц рүү бүхэлд нь дамжуулна
   final Map<String, dynamic> bond;

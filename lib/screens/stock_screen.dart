@@ -311,7 +311,7 @@ class _StockScreenState extends State<StockScreen> {
             color: extendedColors.neutral200,
           ),
           border: InputBorder.none,
-          icon: CustomSvgIcon('search-icon', color: extendedColors.neutral100),
+          icon: CustomSvgIcon('search-icon', color: extendedColors.neutral300),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
                   icon: CustomSvgIcon(

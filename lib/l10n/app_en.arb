@@ -709,5 +709,27 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "search": "Search",
+    "timeLeftMonthsCompact": "{count, plural, =1{1 month} other{{count} months}}",
+    "@timeLeftMonthsCompact": {
+        "type": "String",
+        "description": "Displays the number of remaining months without left",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "timeLeftDaysCompact": "{count, plural, =1{1 day} other{{count} days}}",
+    "@timeLeftDaysCompact": {
+        "type": "String",
+        "description": "Displays the number of remaining days without left",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "searchByCompanyName": "Search by company name"
 }

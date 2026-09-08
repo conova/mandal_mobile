@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/screens/components/bond/bond_market_card_compact.dart';
+import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
-import '../components/bond/bond_market_card.dart';
 import '../components/bond/bond_status_info_sheet.dart';
 import '../components/bond/pledge_bond_banner.dart';
 import '../components/bond/my_bond_card.dart';
@@ -12,6 +12,8 @@ import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/custom_snackbar.dart';
 import '../../widgets/section_title.dart';
+import '../../widgets/custom_svg_icon.dart';
+import '../../widgets/custom_button.dart';
 
 class BondMainScreen extends StatefulWidget {
   const BondMainScreen({super.key});
@@ -23,6 +25,8 @@ class BondMainScreen extends StatefulWidget {
 class _BondMainScreenState extends State<BondMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
+  final PageController _carouselController = PageController();
 
   bool _myBondsLoading = true;
   List<MarketInstrument> _myBonds = const [];
@@ -31,6 +35,12 @@ class _BondMainScreenState extends State<BondMainScreen>
   List<MarketInstrument> _bondList = const [];
 
   bool _isScrolled = false;
+
+  // Search and Sort State
+  String _searchQuery = '';
+  String _sortBy = 'yield'; // 'yield' | 'tenure'
+  bool _isSearchExpanded = false;
+  int _carouselIndex = 0;
 
   @override
   void initState() {
@@ -86,6 +96,8 @@ class _BondMainScreenState extends State<BondMainScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
+    _carouselController.dispose();
     super.dispose();
   }
 
@@ -146,7 +158,7 @@ class _BondMainScreenState extends State<BondMainScreen>
                   return null; // Default behavior
                 }),
                 indicator: BoxDecoration(
-                  color: extendedColors.bgBase,
+                  color: AppColors.bgBase,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -156,7 +168,7 @@ class _BondMainScreenState extends State<BondMainScreen>
                     ),
                   ],
                 ),
-                labelColor: extendedColors.neutral100,
+                labelColor: AppColors.neutral100,
                 unselectedLabelColor: extendedColors.neutral200,
                 labelStyle: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
@@ -198,7 +210,26 @@ class _BondMainScreenState extends State<BondMainScreen>
   ) {
     // /stocks/bondlist-ийг зах зээлээр нь анхдагч/хоёрдогч гэж хуваана
     final primary = _bondList.where((b) => b.isPrimaryMarket).toList();
-    final secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
+    var secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
+
+    // Filter secondary list based on search query
+    if (_searchQuery.isNotEmpty) {
+      secondary = secondary.where((b) =>
+        b.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+        b.symbol.toLowerCase().contains(_searchQuery.toLowerCase())
+      ).toList();
+    }
+
+    // Sort secondary list
+    if (_sortBy == 'yield') {
+      secondary.sort((a, b) => (b.intRate ?? 0).compareTo(a.intRate ?? 0));
+    } else {
+      secondary.sort((a, b) {
+        final aDate = parseStockDate(a.endDate) ?? DateTime(2099);
+        final bDate = parseStockDate(b.endDate) ?? DateTime(2099);
+        return aDate.compareTo(bDate);
+      });
+    }
 
     return RefreshIndicator(
       onRefresh: _handleRefresh,
@@ -227,15 +258,341 @@ class _BondMainScreenState extends State<BondMainScreen>
           else ...[
             if (primary.isNotEmpty) ...[
               SectionTitle(l10n.primaryMarket, true),
-              ..._buildBondCards(primary, l10n, extendedColors),
-              const SizedBox(height: 40),
+              const SizedBox(height: 10,),
+              _buildPrimaryBondCarousel(primary, l10n, extendedColors, theme),
+              const SizedBox(height: 30),
             ],
-            if (secondary.isNotEmpty) ...[
-              SectionTitle(l10n.secondaryMarket, false),
+            SectionTitle(l10n.secondaryMarket, false),
+            const SizedBox(height: 12),
+            _buildFilterRow(l10n, extendedColors, theme),
+            if (_isSearchExpanded) ...[
+              const SizedBox(height: 12),
+              _buildSearchField(l10n, extendedColors, theme),
+            ],
+            const SizedBox(height: 16),
+            if (secondary.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 48),
+                child: Center(
+                  child: Text(
+                    l10n.noData,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral300,
+                    ),
+                  ),
+                ),
+              )
+            else
               ..._buildBondCards(secondary, l10n, extendedColors),
-            ],
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildPrimaryBondCarousel(
+    List<MarketInstrument> bonds,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+    ThemeData theme,
+  ) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 180,
+          child: PageView.builder(
+            controller: _carouselController,
+            onPageChanged: (idx) => setState(() => _carouselIndex = idx),
+            itemCount: bonds.length,
+            itemBuilder: (context, idx) {
+              final bond = bonds[idx];
+              final progress = orderProgress(bond.orderedAmt, bond.amt) ?? 0.0;
+
+              final orderEndDate = parseStockDate(bond.orderEndDate);
+              final term = (bond.market == 'Primary' && orderEndDate != null)
+                    ? formatTimeLeftCompact(orderEndDate, l10n)
+                    : (bond.term.isEmpty
+                      ? '-'
+                      : (num.tryParse(bond.term) != null
+                        ? '${bond.term} ${l10n.monthLabel}'
+                        : bond.term));
+              List<String> termStr = term.split(' ');
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 6),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    bond.name,
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: extendedColors.neutral100,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    bond.subtitle,
+                                    style: theme.textTheme.labelLarge?.copyWith(
+                                      color: extendedColors.neutral300,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: CircularProgressIndicator(
+                                    value: 1.0,
+                                    strokeWidth: 4,
+                                    color: extendedColors.neutral500,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: CircularProgressIndicator(
+                                    value: progress,
+                                    strokeWidth: 4,
+                                    color: extendedColors.primaryMain,
+                                    strokeCap: StrokeCap.round,
+                                  ),
+                                ),
+                                Text(
+                                  '${(progress * 100).toInt()}%',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                    color: extendedColors.neutral100,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: EdgeInsets.only(left: 6),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${formatIntRate(bond.intRate)}',
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: extendedColors.neutral100,
+                              ),
+                            ),
+                            Text(
+                              ' ${l10n.interestRate.toLowerCase()}',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.normal,
+                                color: extendedColors.neutral100,
+                              ),
+                            ),
+                            const SizedBox(width: 24),
+                            Text(
+                              termStr[0],
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: extendedColors.neutral100,
+                              ),
+                            ),
+                            Text(
+                              ' ${termStr[1]}',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.normal,
+                                color: extendedColors.neutral100,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: CustomButton(
+                          label: l10n.placeOrder,
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            '/bond_detail',
+                            arguments: {
+                              'bond': bond.raw,
+                              'languageCode': Localizations.localeOf(context).languageCode,
+                            },
+                          ),
+                          variant: CustomButtonVariant.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (bonds.length > 1) ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              bonds.length,
+              (idx) => Container(
+                width: _carouselIndex == idx ? 24 : 6,
+                height: 6,
+                margin: const EdgeInsets.symmetric(horizontal: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
+                  color: _carouselIndex == idx
+                      ? extendedColors.neutral100
+                      : extendedColors.neutral500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildFilterRow(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
+    return Row(
+      children: [
+        _buildSortChip(
+          label: l10n.yield,
+          isActive: _sortBy == 'yield',
+          onTap: () => setState(() => _sortBy = 'yield'),
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+        const SizedBox(width: 8),
+        _buildSortChip(
+          label: l10n.term,
+          isActive: _sortBy == 'tenure',
+          onTap: () => setState(() => _sortBy = 'tenure'),
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _isSearchExpanded = !_isSearchExpanded;
+              if (!_isSearchExpanded) {
+                _searchQuery = '';
+                _searchController.clear();
+              }
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: _isSearchExpanded ? extendedColors.neutral100 : extendedColors.bgSecondary,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomSvgIcon(
+                  'search-icon',
+                  color: _isSearchExpanded ? extendedColors.bgBase : extendedColors.neutral300,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.search,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: _isSearchExpanded ? extendedColors.bgBase : extendedColors.neutral100,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSortChip({
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+    required ExtendedColors extendedColors,
+    required ThemeData theme,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? extendedColors.neutral100 : extendedColors.bgSecondary,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: isActive ? extendedColors.bgBase : extendedColors.neutral100,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchField(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 4),
+      height: 48,
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (value) => setState(() => _searchQuery = value),
+        style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral100),
+        decoration: InputDecoration(
+          hintText: l10n.searchByCompanyName,
+          hintStyle: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: CustomSvgIcon('search-icon', color: extendedColors.neutral300, size: 20),
+          ),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const CustomSvgIcon('x-icon', size: 20),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _searchQuery = '');
+                  },
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        ),
       ),
     );
   }
@@ -279,7 +636,7 @@ class _BondMainScreenState extends State<BondMainScreen>
 
     return BondMarketCardCompact(
       bond.raw,
-      title: bond.name,
+      title: bond.companyName,
       tenure: tenure,
       yield: formatIntRate(bond.intRate),
       payday: bond.payday,

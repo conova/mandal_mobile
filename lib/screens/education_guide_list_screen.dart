@@ -100,7 +100,7 @@ class _EducationGuideListScreenState extends State<EducationGuideListScreen> {
                     padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 8),
                     child: CustomSvgIcon(
                       'search-icon',
-                      color: extendedColors.neutral200,
+                      color: extendedColors.neutral300,
                     ),
                   ),
                   filled: true,

@@ -3609,6 +3609,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 day left} other{{count} days left}}'**
   String timeLeftDays(int count);
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// Displays the number of remaining months without left
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String timeLeftMonthsCompact(int count);
+
+  /// Displays the number of remaining days without left
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String timeLeftDaysCompact(int count);
+
+  /// No description provided for @searchByCompanyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by company name'**
+  String get searchByCompanyName;
 }
 
 class _AppLocalizationsDelegate
