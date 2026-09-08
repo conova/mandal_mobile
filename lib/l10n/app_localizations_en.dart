@@ -1861,4 +1861,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get withdrawAccountWarningDesc =>
       'Please note that high-value transactions over 5,000,000.01 MNT will be processed on business days between 09:00 and 16:00.';
+
+  @override
+  String get timeLeftExpired => 'Expired';
+
+  @override
+  String timeLeftMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months left',
+      one: '1 month left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeLeftDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days left',
+      one: '1 day left',
+    );
+    return '$_temp0';
+  }
 }

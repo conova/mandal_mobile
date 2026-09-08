@@ -1,6 +1,8 @@
 /// /stocks/* API мөрүүдийн (mystocks, mybonds, nbo) дундын форматлагчид.
 library;
 
+import '../l10n/app_localizations.dart';
+
 /// AMT г.м. тоон утгыг мянгачилж, валютын тэмдэгтэй буцаана:
 ///   7428770000 → "7,428,770,000.00₮" (isForeign бол "...$")
 ///   null/хоосон → "-"
@@ -19,7 +21,7 @@ String formatNumbers(dynamic raw, {int decimals = 0}) {
   final wholePart = dotIdx == -1 ? str : str.substring(0, dotIdx);
   final whole = wholePart.replaceAllMapped(
     RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (m) => '${m[1]},',
+      (m) => '${m[1]},',
   );
   return dotIdx == -1 ? whole : '$whole${str.substring(dotIdx)}';
 }
@@ -27,7 +29,9 @@ String formatNumbers(dynamic raw, {int decimals = 0}) {
 /// "2026/07/18", "2026.07.18", "2026-07-18" → DateTime (болохгүй бол null)
 /// Мөн "01-AUG-26" гэх мэт форматыг дэмжинэ.
 DateTime? parseStockDate(dynamic raw) {
-  final s = raw?.toString() ?? '';
+  if (raw == null) return null;
+  if (raw is DateTime) return raw;
+  final s = raw.toString().trim();
   if (s.isEmpty) return null;
 
   final parts = s.split(RegExp(r'[/.\-]'));
@@ -66,8 +70,32 @@ String formatStockDate(DateTime date) {
   return '${date.year}/${two(date.month)}/${two(date.day)}';
 }
 
-/// Захиалгын явц: ordered/total → 0.0..1.0 (аль нэг нь тоо биш эсвэл
-/// total ≤ 0 бол null — progress харуулахгүй)
+/// Одооноос тухайн огноо хүртэлх хугацааг "X сар үлдсэн", "X хоног үлдсэн"
+/// хэлбэрээр форматлана.
+String formatTimeLeft(DateTime? target, AppLocalizations l10n) {
+  if (target == null) return '-';
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final targetDate = DateTime(target.year, target.month, target.day);
+
+  final diff = targetDate.difference(today);
+
+  if (diff.isNegative) {
+    return l10n.timeLeftExpired;
+  }
+
+  final days = diff.inDays;
+
+  if (days >= 30) {
+    final months = (days / 30).floor();
+    return l10n.timeLeftMonths(months);
+  } else if (days > 0) {
+    return l10n.timeLeftDays(days);
+  }
+  return l10n.today;
+}
+
+/// Захиалгын явц: ordered/total → 0.0..1.0
 double? orderProgress(dynamic ordered, dynamic total) {
   final o = num.tryParse(ordered?.toString().replaceAll(',', '') ?? '');
   final t = num.tryParse(total?.toString().replaceAll(',', '') ?? '');
@@ -75,10 +103,12 @@ double? orderProgress(dynamic ordered, dynamic total) {
   return (o / t).clamp(0.0, 1.0).toDouble();
 }
 
-/// INTRATE → "3.5%", null/хоосон → "-"
+/// INTRATE → "3.5%", null/хоосон → "0.0%"
 String formatIntRate(dynamic raw) {
-  if (raw == null || raw.toString().isEmpty) return '0%';
-  return '$raw%';
+  if (raw == null || raw.toString().isEmpty) return '0.0%';
+  final n = num.tryParse(raw.toString().replaceAll(',', ''));
+  if (n == null) return '0.0%';
+  return '${n.toStringAsFixed(1)}%';
 }
 
 /// Дүнг сая/тэрбум нэгжээр товчилно (home recommendation-тэй ижил дүрэм):
@@ -106,7 +136,7 @@ String formatCompactAmount(dynamic raw, {String languageCode = 'mn'}) {
     return isEnglish ? '${fmt(value / 1e6)}M' : '${fmt(value / 1e6)} сая';
   }
   return value.toStringAsFixed(0).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (m) => '${m[1]},',
-      );
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (m) => '${m[1]},',
+  );
 }

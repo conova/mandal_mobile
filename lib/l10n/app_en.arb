@@ -688,5 +688,26 @@
     "stockMoney": "Stock money",
     "bondMoney": "Bond money",
     "deleteAccountQuestion": "Are you sure you want to delete this account?",
-    "withdrawAccountWarningDesc": "Please note that high-value transactions over 5,000,000.01 MNT will be processed on business days between 09:00 and 16:00."
+    "withdrawAccountWarningDesc": "Please note that high-value transactions over 5,000,000.01 MNT will be processed on business days between 09:00 and 16:00.",
+    "timeLeftExpired": "Expired",
+    "timeLeftMonths": "{count, plural, =1{1 month left} other{{count} months left}}",
+    "@timeLeftMonths": {
+        "type": "String",
+        "description": "Displays the number of remaining months",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "timeLeftDays": "{count, plural, =1{1 day left} other{{count} days left}}",
+    "@timeLeftDays": {
+        "type": "String",
+        "description": "Displays the number of remaining days",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    }
 }
