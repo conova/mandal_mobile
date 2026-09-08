@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../common/payment_webview.dart';
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import '../widgets/currency_suffix_formatter.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 
@@ -19,12 +22,15 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
   /// Сонгогдсон quick amount (сая) — гараар оруулбал арилна
   int? _selectedQuickAmount;
 
-  bool get _hasValue => _amount != '0';
+  String currency = 'MNT';
+  double _usdRate = 0;
+
+  bool get _hasValue => double.tryParse(_amount) != null && double.parse(_amount) > 0;
 
   String get _formattedAmount {
     if (_amount == '0') return '0';
-    // Remove leading zeros
-    final cleaned = _amount.replaceFirst(RegExp(r'^0+'), '');
+    // Remove leading zeros but keep if followed by dot
+    final cleaned = _amount.replaceFirst(RegExp(r'^0+(?=\d)'), '');
     if (cleaned.isEmpty) return '0';
 
     // Handle decimal
@@ -35,6 +41,18 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
     }
 
     return _formatNumber(cleaned);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      setState(() {
+        currency = args['currency'] == 'usd' ? 'USD' : 'MNT';
+        _usdRate = double.tryParse(args['usdRate']?.toString() ?? '0') ?? 0;
+      });
+    }
   }
 
   String _formatNumber(String number) {
@@ -73,8 +91,6 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
     if (_isSubmitting) return;
     final amount = double.tryParse(_amount.replaceAll(',', '')) ?? 0.0;
     // Валют — route args ('mnt' | 'usd')
-    final args = ModalRoute.of(context)?.settings.arguments as String?;
-    final currency = args == 'usd' ? 'USD' : 'MNT';
     setState(() => _isSubmitting = true);
     try {
       final result = await openPaymentWebview(
@@ -126,9 +142,18 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final args = ModalRoute.of(context)?.settings.arguments as String?;
-    final isMnt = args != 'usd';
+    final isMnt = currency == 'MNT';
     final currencySymbol = isMnt ? '₮' : '\$';
+
+    // Calculate approximate MNT if currency is USD
+    String mntEquivalentStr = '0.00₮';
+    if (currency == 'USD') {
+      final usdAmount = double.tryParse(_amount) ?? 0.0;
+      final mntAmount = usdAmount * _usdRate;
+      if (mntAmount > 0) {
+        mntEquivalentStr = CurrencySuffixFormatter.format(mntAmount.toStringAsFixed(2), suffix: '₮');
+      }
+    }
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -165,7 +190,15 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
                         color: extendedColors.neutral100,
                       ),
                     ),
-                    //if (cu)
+                    if (currency == 'USD') ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        '≈$mntEquivalentStr',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral200,
+                        ),
+                      )
+                    ]
                   ],
                 ),
               ),
@@ -176,15 +209,13 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children:
-                    (isMnt ? [1, 5, 10, 50] : [100, 500, 1000, 5000])
-                        .map((amount) {
-                  final value = isMnt ? amount * 1000000 : amount;
-                  final isSelected = _selectedQuickAmount == value;
+                children: [1, 5, 10, 50].map((amount) {
+                  final val = amount * 1000000;
+                  final isSelected = _selectedQuickAmount == val;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: GestureDetector(
-                      onTap: () => _onQuickAmount(value),
+                      onTap: () => _onQuickAmount(val),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -202,9 +233,7 @@ class _IncomeAmountScreenState extends State<IncomeAmountScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          isMnt
-                              ? '$amount ${l10n.million}'
-                              : '${_formatNumber('$amount')}\$',
+                          '$amount ${l10n.million}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: isSelected
                                 ? extendedColors.bgBase

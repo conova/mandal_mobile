@@ -1852,4 +1852,21 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get deleteAccountQuestion =>
       'Та энэ дансыг устгахдаа итгэлтэй байна уу?';
+
+  @override
+  String get withdrawAccountWarningDesc =>
+      '5,000,000.01₮-с дээш дүнтэй буюу их дүнтэй гүйлгээ ажлын өдрүүдэд 09:00-16:00 цагийн хооронд хийгдэх болохыг анхаарна уу.';
+
+  @override
+  String get timeLeftExpired => 'Хугацаа дууссан';
+
+  @override
+  String timeLeftMonths(int count) {
+    return '$count сар үлдсэн';
+  }
+
+  @override
+  String timeLeftDays(int count) {
+    return '$count хоног үлдсэн';
+  }
 }

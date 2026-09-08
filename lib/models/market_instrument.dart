@@ -103,6 +103,8 @@ class MarketInstrument {
   final String? startDate;
   final String? endDate;
 
+  final String companyName;
+
 
   /// API-ийн анхны мөр — route arguments-аар цааш дамжуулахад ашиглана
   final Map<String, dynamic> raw;
@@ -162,6 +164,7 @@ class MarketInstrument {
     this.endDate,
     required this.raw,
     this.stockPrice,
+    required this.companyName,
   });
 
   factory MarketInstrument.fromJson(Map<String, dynamic> json) {
@@ -231,6 +234,7 @@ class MarketInstrument {
       orderEndDate: str('ORDER_ENDDATE'),
       startDate: str('STARTDATE'),
       endDate: str('ENDDATE'),
+      companyName: firstNonEmpty(['COMPNAME', 'COMPNAME2']),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/screens/components/bond/bond_market_card_compact.dart';
 import 'package:provider/provider.dart';
 import '../components/bond/bond_market_card.dart';
 import '../components/bond/bond_status_info_sheet.dart';
@@ -203,7 +204,7 @@ class _BondMainScreenState extends State<BondMainScreen>
       onRefresh: _handleRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 50),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 60),
         children: [
           const SizedBox(height: 24),
           if (_bondListLoading)
@@ -225,12 +226,12 @@ class _BondMainScreenState extends State<BondMainScreen>
             )
           else ...[
             if (primary.isNotEmpty) ...[
-              SectionTitle(l10n.primaryMarket),
+              SectionTitle(l10n.primaryMarket, true),
               ..._buildBondCards(primary, l10n, extendedColors),
               const SizedBox(height: 40),
             ],
             if (secondary.isNotEmpty) ...[
-              SectionTitle(l10n.secondaryMarket),
+              SectionTitle(l10n.secondaryMarket, false),
               ..._buildBondCards(secondary, l10n, extendedColors),
             ],
           ],
@@ -249,7 +250,7 @@ class _BondMainScreenState extends State<BondMainScreen>
     for (var i = 0; i < bonds.length; i++) {
       if (i > 0) {
         widgets.add(
-          Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
+          const SizedBox(height: 10,),
         );
       }
       widgets.add(_buildBondListCard(bonds[i], l10n));
@@ -264,47 +265,61 @@ class _BondMainScreenState extends State<BondMainScreen>
 
     final endDt = parseStockDate(bond.endDate);
     final orderEndDate = parseStockDate(bond.orderEndDate);
-    final tenureStr = endDt != null && bond.market == 'Secondary'
-        ? formatStockDate(endDt)
-        : orderEndDate != null && bond.market == 'Primary'
-          ? formatStockDate(orderEndDate)
-          : (bond.term.isEmpty
-            ? '-'
-            : (num.tryParse(bond.term) != null ? '${bond.term} сар' : bond.term));
 
-    return BondMarketCard(
+    // Prioritize DateTime objects for the tenure display to enable "X left" format.
+    final dynamic tenure = (bond.market == 'Secondary' && endDt != null)
+        ? endDt
+        : (bond.market == 'Primary' && orderEndDate != null)
+            ? orderEndDate
+            : (bond.term.isEmpty
+                ? '-'
+                : (num.tryParse(bond.term) != null
+                    ? '${bond.term} ${l10n.monthLabel}'
+                    : bond.term));
+
+    return BondMarketCardCompact(
       bond.raw,
       title: bond.name,
-      subtitle: bond.subtitle,
-      status: bond.isForeign
-          ? l10n.foreign
-          : (bond.isOpen ? l10n.open : l10n.closed),
-      tenure: tenureStr,
+      tenure: tenure,
       yield: formatIntRate(bond.intRate),
-      totalAmount: formatCompactAmount(
-        bond.amt,
-        languageCode: Localizations.localeOf(context).languageCode,
-      ),
-      progress: progress,
       payday: bond.payday,
       market: bond.market,
-      progressLabel: progress == null
-          ? ''
-          : formatStockAmount(
-              bond.orderedAmt,
-              isForeign: bond.isForeign,
-              decimals: 0,
-            ),
-      progressLabel2: progress == null
-          ? ''
-          : formatStockAmount(bond.amt, isForeign: bond.isForeign, decimals: 0),
-      onInfoTap: () => BondStatusInfoSheet.showForBond(
-        context,
-        isOpen: bond.isOpen,
-        isForeign: bond.isForeign,
-      ),
       context: context,
     );
+
+    // return BondMarketCard(
+    //   bond.raw,
+    //   title: bond.name,
+    //   subtitle: bond.subtitle,
+    //   status: bond.isForeign
+    //       ? l10n.foreign
+    //       : (bond.isOpen ? l10n.open : l10n.closed),
+    //   tenure: tenureStr,
+    //   yield: formatIntRate(bond.intRate),
+    //   totalAmount: formatCompactAmount(
+    //     bond.amt,
+    //     languageCode: Localizations.localeOf(context).languageCode,
+    //   ),
+    //   progress: progress,
+    //   payday: bond.payday,
+    //   market: bond.market,
+    //   progressLabel: progress == null
+    //       ? ''
+    //       : formatStockAmount(
+    //     bond.orderedAmt,
+    //     isForeign: bond.isForeign,
+    //     decimals: 0,
+    //   ),
+    //   progressLabel2: progress == null
+    //       ? ''
+    //       : formatStockAmount(bond.amt, isForeign: bond.isForeign, decimals: 0),
+    //   onInfoTap: () => BondStatusInfoSheet.showForBond(
+    //     context,
+    //     isOpen: bond.isOpen,
+    //     isForeign: bond.isForeign,
+    //   ),
+    //   context: context,
+    // );
   }
 
   Widget _buildSellTab(
@@ -333,7 +348,7 @@ class _BondMainScreenState extends State<BondMainScreen>
             },
           ),
           const SizedBox(height: 48),
-          SectionTitle(l10n.myBond),
+          SectionTitle(l10n.myBond, false),
           const SizedBox(height: 24),
           if (_myBondsLoading)
             const Padding(

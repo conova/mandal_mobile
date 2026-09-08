@@ -48,8 +48,12 @@ class BondMarketCard extends StatelessWidget {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 0),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(18),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

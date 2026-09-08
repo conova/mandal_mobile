@@ -3585,6 +3585,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this account?'**
   String get deleteAccountQuestion;
+
+  /// No description provided for @withdrawAccountWarningDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please note that high-value transactions over 5,000,000.01 MNT will be processed on business days between 09:00 and 16:00.'**
+  String get withdrawAccountWarningDesc;
+
+  /// No description provided for @timeLeftExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get timeLeftExpired;
+
+  /// Displays the number of remaining months
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month left} other{{count} months left}}'**
+  String timeLeftMonths(int count);
+
+  /// Displays the number of remaining days
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day left} other{{count} days left}}'**
+  String timeLeftDays(int count);
 }
 
 class _AppLocalizationsDelegate
