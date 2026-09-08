@@ -16,7 +16,6 @@ class BondMarketCardCompact extends StatelessWidget {
   final String yield;
   final String? payday;
   final String? market;
-  final bool isBuy;
 
   const BondMarketCardCompact(
     this.bond, {
@@ -27,7 +26,6 @@ class BondMarketCardCompact extends StatelessWidget {
     required this.yield,
     this.payday,
     this.market,
-    this.isBuy = true,
   });
 
   @override
@@ -42,8 +40,6 @@ class BondMarketCardCompact extends StatelessWidget {
     } else if (tenure != null) {
       tenureStr = tenure.toString();
     }
-
-    // Format the interest rate here to ensure "X.X%" format
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),

@@ -709,5 +709,6 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "search": "Search"
 }

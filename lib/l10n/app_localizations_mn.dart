@@ -1869,4 +1869,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String timeLeftDays(int count) {
     return '$count хоног үлдсэн';
   }
+
+  @override
+  String get search => 'Хайх';
 }

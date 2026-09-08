@@ -12,6 +12,7 @@ import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/custom_snackbar.dart';
 import '../../widgets/section_title.dart';
+import '../../widgets/custom_svg_icon.dart';
 
 class BondMainScreen extends StatefulWidget {
   const BondMainScreen({super.key});
@@ -23,6 +24,7 @@ class BondMainScreen extends StatefulWidget {
 class _BondMainScreenState extends State<BondMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
 
   bool _myBondsLoading = true;
   List<MarketInstrument> _myBonds = const [];
@@ -31,6 +33,11 @@ class _BondMainScreenState extends State<BondMainScreen>
   List<MarketInstrument> _bondList = const [];
 
   bool _isScrolled = false;
+
+  // Search and Sort State
+  String _searchQuery = '';
+  String _sortBy = 'yield'; // 'yield' | 'tenure'
+  bool _isSearchExpanded = false;
 
   @override
   void initState() {
@@ -86,6 +93,7 @@ class _BondMainScreenState extends State<BondMainScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -198,7 +206,26 @@ class _BondMainScreenState extends State<BondMainScreen>
   ) {
     // /stocks/bondlist-ийг зах зээлээр нь анхдагч/хоёрдогч гэж хуваана
     final primary = _bondList.where((b) => b.isPrimaryMarket).toList();
-    final secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
+    var secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
+
+    // Filter secondary list based on search query
+    if (_searchQuery.isNotEmpty) {
+      secondary = secondary.where((b) =>
+        b.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+        b.symbol.toLowerCase().contains(_searchQuery.toLowerCase())
+      ).toList();
+    }
+
+    // Sort secondary list
+    if (_sortBy == 'yield') {
+      secondary.sort((a, b) => (b.intRate ?? 0).compareTo(a.intRate ?? 0));
+    } else {
+      secondary.sort((a, b) {
+        final aDate = parseStockDate(a.endDate) ?? DateTime(2099);
+        final bDate = parseStockDate(b.endDate) ?? DateTime(2099);
+        return aDate.compareTo(bDate);
+      });
+    }
 
     return RefreshIndicator(
       onRefresh: _handleRefresh,
@@ -230,12 +257,150 @@ class _BondMainScreenState extends State<BondMainScreen>
               ..._buildBondCards(primary, l10n, extendedColors),
               const SizedBox(height: 40),
             ],
-            if (secondary.isNotEmpty) ...[
-              SectionTitle(l10n.secondaryMarket, false),
-              ..._buildBondCards(secondary, l10n, extendedColors),
+            SectionTitle(l10n.secondaryMarket, false),
+            const SizedBox(height: 12),
+            _buildFilterRow(l10n, extendedColors, theme),
+            if (_isSearchExpanded) ...[
+              const SizedBox(height: 12),
+              _buildSearchField(l10n, extendedColors, theme),
             ],
+            const SizedBox(height: 16),
+            if (secondary.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 48),
+                child: Center(
+                  child: Text(
+                    l10n.noData,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral300,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ..._buildBondCards(secondary, l10n, extendedColors),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildFilterRow(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
+    return Row(
+      children: [
+        _buildSortChip(
+          label: l10n.yield,
+          isActive: _sortBy == 'yield',
+          onTap: () => setState(() => _sortBy = 'yield'),
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+        const SizedBox(width: 8),
+        _buildSortChip(
+          label: l10n.term,
+          isActive: _sortBy == 'tenure',
+          onTap: () => setState(() => _sortBy = 'tenure'),
+          extendedColors: extendedColors,
+          theme: theme,
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _isSearchExpanded = !_isSearchExpanded;
+              if (!_isSearchExpanded) {
+                _searchQuery = '';
+                _searchController.clear();
+              }
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: _isSearchExpanded ? extendedColors.neutral100 : extendedColors.bgSecondary,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomSvgIcon(
+                  'search-icon',
+                  color: _isSearchExpanded ? extendedColors.bgBase : extendedColors.neutral300,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.search,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: _isSearchExpanded ? extendedColors.bgBase : extendedColors.neutral100,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSortChip({
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+    required ExtendedColors extendedColors,
+    required ThemeData theme,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? extendedColors.neutral100 : extendedColors.bgSecondary,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: isActive ? extendedColors.bgBase : extendedColors.neutral100,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchField(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 4),
+      height: 48,
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (value) => setState(() => _searchQuery = value),
+        style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral100),
+        decoration: InputDecoration(
+          hintText: l10n.searchByName,
+          hintStyle: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: CustomSvgIcon('search-icon', color: extendedColors.neutral300, size: 20),
+          ),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const CustomSvgIcon('x-icon', size: 20),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _searchQuery = '');
+                  },
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        ),
       ),
     );
   }
