@@ -6,6 +6,7 @@ import '../theme/extended_colors.dart';
 class SectionTitle extends StatelessWidget {
   final String title;
   final bool isPrimary;
+  final bool isBuy;
 
   /// Доогуур зураасны өнгө — заагаагүй бол primaryMain
   final Color? underlineColor;
@@ -13,6 +14,7 @@ class SectionTitle extends StatelessWidget {
   const SectionTitle(
     this.title,
     this.isPrimary,
+    this.isBuy,
     {
       super.key,
       this.underlineColor,
@@ -38,7 +40,7 @@ class SectionTitle extends StatelessWidget {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: underlineColor ?? extendedColors.primaryMain,
+                color: extendedColors.primaryMain,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -48,7 +50,7 @@ class SectionTitle extends StatelessWidget {
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: underlineColor ?? extendedColors.primaryMain,
+              color: isBuy ? extendedColors.primaryMain : extendedColors.red,
               borderRadius: BorderRadius.circular(4),
             ),
           ),

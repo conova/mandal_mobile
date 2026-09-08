@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/screens/components/bond/bond_market_card_compact.dart';
+import 'package:mandal_capital/screens/components/bond/bond_primary_carousel.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../components/bond/bond_status_info_sheet.dart';
@@ -26,7 +27,6 @@ class _BondMainScreenState extends State<BondMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  final PageController _carouselController = PageController();
 
   bool _myBondsLoading = true;
   List<MarketInstrument> _myBonds = const [];
@@ -40,7 +40,6 @@ class _BondMainScreenState extends State<BondMainScreen>
   String _searchQuery = '';
   String _sortBy = 'yield'; // 'yield' | 'tenure'
   bool _isSearchExpanded = false;
-  int _carouselIndex = 0;
 
   @override
   void initState() {
@@ -97,7 +96,6 @@ class _BondMainScreenState extends State<BondMainScreen>
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
-    _carouselController.dispose();
     super.dispose();
   }
 
@@ -257,12 +255,12 @@ class _BondMainScreenState extends State<BondMainScreen>
             )
           else ...[
             if (primary.isNotEmpty) ...[
-              SectionTitle(l10n.primaryMarket, true),
+              SectionTitle(l10n.primaryMarket, true, true),
               const SizedBox(height: 10,),
-              _buildPrimaryBondCarousel(primary, l10n, extendedColors, theme),
-              const SizedBox(height: 30),
+              BondPrimaryCarousel(bonds: primary),
+              const SizedBox(height: 20),
             ],
-            SectionTitle(l10n.secondaryMarket, false),
+            SectionTitle(l10n.secondaryMarket, false, true),
             const SizedBox(height: 12),
             _buildFilterRow(l10n, extendedColors, theme),
             if (_isSearchExpanded) ...[
@@ -287,193 +285,6 @@ class _BondMainScreenState extends State<BondMainScreen>
           ],
         ],
       ),
-    );
-  }
-
-  Widget _buildPrimaryBondCarousel(
-    List<MarketInstrument> bonds,
-    AppLocalizations l10n,
-    ExtendedColors extendedColors,
-    ThemeData theme,
-  ) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 180,
-          child: PageView.builder(
-            controller: _carouselController,
-            onPageChanged: (idx) => setState(() => _carouselIndex = idx),
-            itemCount: bonds.length,
-            itemBuilder: (context, idx) {
-              final bond = bonds[idx];
-              final progress = orderProgress(bond.orderedAmt, bond.amt) ?? 0.0;
-
-              final orderEndDate = parseStockDate(bond.orderEndDate);
-              final term = (bond.market == 'Primary' && orderEndDate != null)
-                    ? formatTimeLeftCompact(orderEndDate, l10n)
-                    : (bond.term.isEmpty
-                      ? '-'
-                      : (num.tryParse(bond.term) != null
-                        ? '${bond.term} ${l10n.monthLabel}'
-                        : bond.term));
-              List<String> termStr = term.split(' ');
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 6),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    bond.name,
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: extendedColors.neutral100,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    bond.subtitle,
-                                    style: theme.textTheme.labelLarge?.copyWith(
-                                      color: extendedColors.neutral300,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: CircularProgressIndicator(
-                                    value: 1.0,
-                                    strokeWidth: 4,
-                                    color: extendedColors.neutral500,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: CircularProgressIndicator(
-                                    value: progress,
-                                    strokeWidth: 4,
-                                    color: extendedColors.primaryMain,
-                                    strokeCap: StrokeCap.round,
-                                  ),
-                                ),
-                                Text(
-                                  '${(progress * 100).toInt()}%',
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10,
-                                    color: extendedColors.neutral100,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: EdgeInsets.only(left: 6),
-                        child: Row(
-                          children: [
-                            Text(
-                              '${formatIntRate(bond.intRate)}',
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                            Text(
-                              ' ${l10n.interestRate.toLowerCase()}',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.normal,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                            const SizedBox(width: 24),
-                            Text(
-                              termStr[0],
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                            Text(
-                              ' ${termStr[1]}',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.normal,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: CustomButton(
-                          label: l10n.placeOrder,
-                          onPressed: () => Navigator.pushNamed(
-                            context,
-                            '/bond_detail',
-                            arguments: {
-                              'bond': bond.raw,
-                              'languageCode': Localizations.localeOf(context).languageCode,
-                            },
-                          ),
-                          variant: CustomButtonVariant.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (bonds.length > 1) ...[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              bonds.length,
-              (idx) => Container(
-                width: _carouselIndex == idx ? 24 : 6,
-                height: 6,
-                margin: const EdgeInsets.symmetric(horizontal: 2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(3),
-                  color: _carouselIndex == idx
-                      ? extendedColors.neutral100
-                      : extendedColors.neutral500,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ],
     );
   }
 
@@ -564,7 +375,7 @@ class _BondMainScreenState extends State<BondMainScreen>
 
   Widget _buildSearchField(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       height: 48,
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
@@ -690,23 +501,6 @@ class _BondMainScreenState extends State<BondMainScreen>
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
         children: [
-          PledgeBondBanner(
-            onPledgePressed: () {
-              // Барьцаалах бонд байхгүй бол sheet-ээр мэдэгдэнэ
-              if (!_myBondsLoading && _myBonds.isEmpty) {
-                BondStatusInfoSheet.show(
-                  context,
-                  title: l10n.sorryTitle,
-                  description: l10n.noPledgeBondDesc,
-                );
-                return;
-              }
-              Navigator.pushNamed(context, '/pledge_bond_select');
-            },
-          ),
-          const SizedBox(height: 48),
-          SectionTitle(l10n.myBond, false),
-          const SizedBox(height: 24),
           if (_myBondsLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
@@ -714,18 +508,109 @@ class _BondMainScreenState extends State<BondMainScreen>
             )
           else if (_myBonds.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.only(top: 160),
               child: Center(
-                child: Text(
-                  l10n.noData,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral300,
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      'assets/images/safe_box.png',
+                      height: 101,
+                      width: 101,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.youHaveNoBond,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.neutral100,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      l10n.youHaveNoBondDesc,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
-          else
+          else ...[
+            _buildMyBondStatusCard(_myBonds, l10n, extendedColors, theme),
+            SectionTitle(l10n.ableToSell, false, false),
+            const SizedBox(height: 24),
             ..._buildMyBondCards(_myBonds, l10n, extendedColors),
+          ]
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMyBondStatusCard(
+    List<MarketInstrument> bonds,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+    ThemeData theme,
+  ) {
+    double totalValue = 0;
+    double totalWeightYield = 0;
+
+    for (final bond in bonds) {
+      final bal = bond.currentBal ?? 0;
+      final price = bond.stockPrice ?? bond.closePrice ?? bond.avgPrice ?? 0;
+      final value = bal * price;
+      totalValue += value;
+      totalWeightYield += (bond.intRate ?? 0) * value;
+    }
+
+    final avgYield = totalValue > 0 ? totalWeightYield / totalValue : 0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 24),
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.owningBond,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral200,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            formatStockAmount(totalValue, decimals: 0),
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: extendedColors.neutral100,
+              fontSize: 32,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Text(
+                '${avgYield.toStringAsFixed(1)}%',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: extendedColors.primaryMain,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                l10n.averageYield,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -743,12 +628,6 @@ class _BondMainScreenState extends State<BondMainScreen>
         widgets.add(
           const SizedBox(height: 10,)
         );
-        widgets.add(
-          Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
-        );
-        widgets.add(
-          const SizedBox(height: 25,)
-        );
       }
       widgets.add(_buildMyBondCard(bonds[i], l10n, extendedColors));
     }
@@ -761,25 +640,24 @@ class _BondMainScreenState extends State<BondMainScreen>
     AppLocalizations l10n,
     ExtendedColors extendedColors,
   ) {
+    final endDt = parseStockDate(bond.endDate);
+    final orderEndDate = parseStockDate(bond.orderEndDate);
+    // Prioritize DateTime objects for the tenure display to enable "X left" format.
+    final dynamic tenure = (bond.market == 'Secondary' && endDt != null)
+        ? endDt
+        : (bond.market == 'Primary' && orderEndDate != null)
+        ? orderEndDate
+        : (bond.term.isEmpty
+        ? '-'
+        : (num.tryParse(bond.term) != null
+        ? '${bond.term} ${l10n.monthLabel}'
+        : bond.term));
+
     return MyBondCard(
-      title: bond.name,
-      subtitle: bond.subtitle,
-      status: bond.isForeign
-          ? l10n.foreign
-          : (bond.isOpen ? l10n.open : l10n.closed),
-      statusBgColor: bond.isOpen
-          ? extendedColors.primary100
-          : extendedColors.bgSecondary,
-      statusTextColor: bond.isOpen
-          ? extendedColors.primaryMain
-          : extendedColors.neutral100,
-      ownedAmount: formatStockAmount(bond.amt, isForeign: bond.isForeign),
+      title: bond.companyName,
+      ownedAmount: bond.currentBal ?? 0,
+      tenure: tenure,
       interestRate: formatIntRate(bond.intRate),
-      onInfoTap: () => BondStatusInfoSheet.showForBond(
-        context,
-        isOpen: bond.isOpen,
-        isForeign: bond.isForeign,
-      ),
       onSellPressed: () => Navigator.pushNamed(
         context,
         '/bond_sell',

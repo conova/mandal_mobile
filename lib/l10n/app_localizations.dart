@@ -3633,6 +3633,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search by company name'**
   String get searchByCompanyName;
+
+  /// No description provided for @youHaveNoBond.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no bond'**
+  String get youHaveNoBond;
+
+  /// No description provided for @youHaveNoBondDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Is it time to start investing?'**
+  String get youHaveNoBondDesc;
+
+  /// No description provided for @ableToSell.
+  ///
+  /// In en, this message translates to:
+  /// **'Able to sell'**
+  String get ableToSell;
+
+  /// No description provided for @piece.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 piece} other{{count} pieces}}'**
+  String piece(int count);
+
+  /// No description provided for @owningBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Owning Bond'**
+  String get owningBond;
+
+  /// No description provided for @averageYield.
+  ///
+  /// In en, this message translates to:
+  /// **'average yield'**
+  String get averageYield;
 }
 
 class _AppLocalizationsDelegate

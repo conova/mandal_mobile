@@ -4,6 +4,8 @@ import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_svg_icon.dart';
 
+// Obsolete bottom sheet
+
 /// Бондын төлвийн тайлбарын bottom sheet — картуудын ⓘ icon дээр дарахад
 /// гарна. Гарчиг/тайлбарыг [showForBond]-оор бондын төлвөөс автоматаар
 /// сонгоно (нээлттэй / хаалттай / гадаад).
