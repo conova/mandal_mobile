@@ -1916,4 +1916,24 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get searchByCompanyName => 'Search by company name';
+
+  @override
+  String get youHaveNoBond => 'You have no bond';
+
+  @override
+  String get youHaveNoBondDesc => 'Is it time to start investing?';
+
+  @override
+  String get ableToSell => 'Able to sell';
+
+  @override
+  String piece(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pieces',
+      one: '1 piece',
+    );
+    return '$_temp0';
+  }
 }

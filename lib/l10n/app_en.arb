@@ -731,5 +731,17 @@
             }
         }
     },
-    "searchByCompanyName": "Search by company name"
+    "searchByCompanyName": "Search by company name",
+    "youHaveNoBond": "You have no bond",
+    "youHaveNoBondDesc": "Is it time to start investing?",
+    "ableToSell": "Able to sell",
+    "piece": "{count, plural, =1{1 piece} other{{count} pieces}}",
+    "@piece": {
+        "type": "String",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    }
 }

@@ -1885,4 +1885,18 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get searchByCompanyName => 'Компанийн нэрээр хайх';
+
+  @override
+  String get youHaveNoBond => 'Танд бонд байхгүй байна';
+
+  @override
+  String get youHaveNoBondDesc => 'Хөрөнгө оруулалт хийж эхлэх үү?';
+
+  @override
+  String get ableToSell => 'Зарах боломжтой';
+
+  @override
+  String piece(int count) {
+    return '$count ширхэг';
+  }
 }

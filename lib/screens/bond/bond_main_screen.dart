@@ -255,12 +255,12 @@ class _BondMainScreenState extends State<BondMainScreen>
             )
           else ...[
             if (primary.isNotEmpty) ...[
-              SectionTitle(l10n.primaryMarket, true),
+              SectionTitle(l10n.primaryMarket, true, true),
               const SizedBox(height: 10,),
               BondPrimaryCarousel(bonds: primary),
               const SizedBox(height: 20),
             ],
-            SectionTitle(l10n.secondaryMarket, false),
+            SectionTitle(l10n.secondaryMarket, false, true),
             const SizedBox(height: 12),
             _buildFilterRow(l10n, extendedColors, theme),
             if (_isSearchExpanded) ...[
@@ -501,23 +501,6 @@ class _BondMainScreenState extends State<BondMainScreen>
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
         children: [
-          PledgeBondBanner(
-            onPledgePressed: () {
-              // Барьцаалах бонд байхгүй бол sheet-ээр мэдэгдэнэ
-              if (!_myBondsLoading && _myBonds.isEmpty) {
-                BondStatusInfoSheet.show(
-                  context,
-                  title: l10n.sorryTitle,
-                  description: l10n.noPledgeBondDesc,
-                );
-                return;
-              }
-              Navigator.pushNamed(context, '/pledge_bond_select');
-            },
-          ),
-          const SizedBox(height: 48),
-          SectionTitle(l10n.myBond, false),
-          const SizedBox(height: 24),
           if (_myBondsLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
@@ -525,18 +508,39 @@ class _BondMainScreenState extends State<BondMainScreen>
             )
           else if (_myBonds.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.only(top: 160),
               child: Center(
-                child: Text(
-                  l10n.noData,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral300,
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      'assets/images/safe_box.png',
+                      height: 101,
+                      width: 101,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.youHaveNoBond,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: extendedColors.neutral100,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      l10n.youHaveNoBondDesc,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
-          else
+          else ...[
+            SectionTitle(l10n.ableToSell, false, false),
+            const SizedBox(height: 24),
             ..._buildMyBondCards(_myBonds, l10n, extendedColors),
+          ]
         ],
       ),
     );
@@ -554,12 +558,6 @@ class _BondMainScreenState extends State<BondMainScreen>
         widgets.add(
           const SizedBox(height: 10,)
         );
-        widgets.add(
-          Divider(height: 1, thickness: 1, color: extendedColors.neutral500),
-        );
-        widgets.add(
-          const SizedBox(height: 25,)
-        );
       }
       widgets.add(_buildMyBondCard(bonds[i], l10n, extendedColors));
     }
@@ -572,30 +570,54 @@ class _BondMainScreenState extends State<BondMainScreen>
     AppLocalizations l10n,
     ExtendedColors extendedColors,
   ) {
+    final endDt = parseStockDate(bond.endDate);
+    final orderEndDate = parseStockDate(bond.orderEndDate);
+    // Prioritize DateTime objects for the tenure display to enable "X left" format.
+    final dynamic tenure = (bond.market == 'Secondary' && endDt != null)
+        ? endDt
+        : (bond.market == 'Primary' && orderEndDate != null)
+        ? orderEndDate
+        : (bond.term.isEmpty
+        ? '-'
+        : (num.tryParse(bond.term) != null
+        ? '${bond.term} ${l10n.monthLabel}'
+        : bond.term));
+
     return MyBondCard(
-      title: bond.name,
-      subtitle: bond.subtitle,
-      status: bond.isForeign
-          ? l10n.foreign
-          : (bond.isOpen ? l10n.open : l10n.closed),
-      statusBgColor: bond.isOpen
-          ? extendedColors.primary100
-          : extendedColors.bgSecondary,
-      statusTextColor: bond.isOpen
-          ? extendedColors.primaryMain
-          : extendedColors.neutral100,
-      ownedAmount: formatStockAmount(bond.amt, isForeign: bond.isForeign),
+      title: bond.companyName,
+      ownedAmount: bond.currentBal ?? 0,
+      tenure: tenure,
       interestRate: formatIntRate(bond.intRate),
-      onInfoTap: () => BondStatusInfoSheet.showForBond(
-        context,
-        isOpen: bond.isOpen,
-        isForeign: bond.isForeign,
-      ),
       onSellPressed: () => Navigator.pushNamed(
         context,
         '/bond_sell',
         arguments: bond.raw,
       ),
     );
+    // return MyBondCard(
+    //   title: bond.name,
+    //   subtitle: bond.subtitle,
+    //   status: bond.isForeign
+    //       ? l10n.foreign
+    //       : (bond.isOpen ? l10n.open : l10n.closed),
+    //   statusBgColor: bond.isOpen
+    //       ? extendedColors.primary100
+    //       : extendedColors.bgSecondary,
+    //   statusTextColor: bond.isOpen
+    //       ? extendedColors.primaryMain
+    //       : extendedColors.neutral100,
+    //   ownedAmount: formatStockAmount(bond.amt, isForeign: bond.isForeign),
+    //   interestRate: formatIntRate(bond.intRate),
+    //   onInfoTap: () => BondStatusInfoSheet.showForBond(
+    //     context,
+    //     isOpen: bond.isOpen,
+    //     isForeign: bond.isForeign,
+    //   ),
+    //   onSellPressed: () => Navigator.pushNamed(
+    //     context,
+    //     '/bond_sell',
+    //     arguments: bond.raw,
+    //   ),
+    // );
   }
 }
