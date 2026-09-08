@@ -1891,4 +1891,29 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get search => 'Search';
+
+  @override
+  String timeLeftMonthsCompact(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeLeftDaysCompact(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchByCompanyName => 'Search by company name';
 }

@@ -644,5 +644,22 @@
             }
         }
     },
-    "search": "Хайх"
+    "search": "Хайх",
+    "timeLeftMonthsCompact": "{count} сар",
+    "@timeLeftMonthsCompact": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "timeLeftDaysCompact": "{count} хоног",
+    "@timeLeftDaysCompact": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "searchByCompanyName": "Компанийн нэрээр хайх"
 }
