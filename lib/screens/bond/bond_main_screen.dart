@@ -3,8 +3,6 @@ import 'package:mandal_capital/screens/components/bond/bond_market_card_compact.
 import 'package:mandal_capital/screens/components/bond/bond_primary_carousel.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
-import '../components/bond/bond_status_info_sheet.dart';
-import '../components/bond/pledge_bond_banner.dart';
 import '../components/bond/my_bond_card.dart';
 import '../../common/stock_row_format.dart';
 import '../../models/market_instrument.dart';
@@ -14,7 +12,6 @@ import '../../theme/extended_colors.dart';
 import '../../widgets/custom_snackbar.dart';
 import '../../widgets/section_title.dart';
 import '../../widgets/custom_svg_icon.dart';
-import '../../widgets/custom_button.dart';
 
 class BondMainScreen extends StatefulWidget {
   const BondMainScreen({super.key});

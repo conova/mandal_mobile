@@ -218,12 +218,13 @@ class _StockScreenState extends State<StockScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        toolbarHeight: 120,
+        titleSpacing: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
+        leadingWidth: 200,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        titleSpacing: 0,
-        toolbarHeight: 64,
         shape: Border(
           bottom: BorderSide(
             color: _isScrolled
@@ -231,9 +232,21 @@ class _StockScreenState extends State<StockScreen> {
                 : Colors.transparent,
           ),
         ),
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _buildSearchBar(l10n, theme, extendedColors),
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 16, left: 20),
+          child: Text(
+            l10n.stocks,
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: _buildSearchBar(l10n, theme, extendedColors),
+          ),
         ),
       ),
       body: NotificationListener<ScrollNotification>(
@@ -297,6 +310,7 @@ class _StockScreenState extends State<StockScreen> {
     ExtendedColors extendedColors,
   ) {
     return Container(
+      height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
@@ -305,6 +319,9 @@ class _StockScreenState extends State<StockScreen> {
       child: TextField(
         controller: _searchController,
         textInputAction: TextInputAction.search,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: extendedColors.neutral100,
+        ),
         decoration: InputDecoration(
           hintText: l10n.searchByName,
           hintStyle: theme.textTheme.bodyMedium?.copyWith(
