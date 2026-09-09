@@ -1,24 +1,29 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/order_book_entry.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
-/// Захиалгын самбар — /stocks/order_book-ийн BUY/SELL мөрүүдийг зэрэгцүүлж
-/// харуулна. Талбар бүрийн дэвсгэрийн дүүргэлт нь тухайн талын хамгийн их
-/// ширхэгт харьцуулсан хэмжээ.
-class StockTradingOrderBoard extends StatelessWidget {
+class StockTradingOrderBoard extends StatefulWidget {
   final List<OrderBookEntry> buyOrders;
   final List<OrderBookEntry> sellOrders;
+  final double? marketPrice;
 
   const StockTradingOrderBoard({
     super.key,
     this.buyOrders = const [],
     this.sellOrders = const [],
+    this.marketPrice,
   });
 
-  /// Үнийг мянгачилж форматлана: 1000100.12 → "1,000,100.12₮"
+  @override
+  State<StockTradingOrderBoard> createState() => _StockTradingOrderBoardState();
+}
+
+class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
+  bool _isExpanded = false;
+
   String _formatPrice(double price) {
     final str = price % 1 == 0
         ? price.toStringAsFixed(0)
@@ -27,7 +32,7 @@ class StockTradingOrderBoard extends StatelessWidget {
     final wholePart = dotIdx == -1 ? str : str.substring(0, dotIdx);
     final whole = wholePart.replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (m) => '${m[1]},',
+          (m) => '${m[1]},',
     );
     final formatted = dotIdx == -1 ? whole : '$whole${str.substring(dotIdx)}';
     return '$formatted₮';
@@ -39,48 +44,161 @@ class StockTradingOrderBoard extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
 
-    final rowCount = max(buyOrders.length, sellOrders.length);
-    // Дүүргэлтийн харьцааг талын хамгийн их ширхэгт харьцуулж бодно
-    final maxBuyQty = buyOrders.fold<int>(1, (m, e) => max(m, e.quantity));
-    final maxSellQty = sellOrders.fold<int>(1, (m, e) => max(m, e.quantity));
+    // 1. Highest Buy & Lowest Sell
+    final highestBuy = widget.buyOrders.isNotEmpty
+        ? widget.buyOrders.map((e) => e.price).reduce(max)
+        : null;
+    final lowestSell = widget.sellOrders.isNotEmpty
+        ? widget.sellOrders.map((e) => e.price).reduce(min)
+        : null;
+
+    // Max quantity calculations for depth bars relative size
+    final maxBuyQty = widget.buyOrders.fold<int>(1, (m, e) => max(m, e.quantity));
+    final maxSellQty = widget.sellOrders.fold<int>(1, (m, e) => max(m, e.quantity));
+
+    // Sort: Sell orders descending (top to bottom down to market price), Buy orders descending from market price down
+    final sortedSellOrders = List<OrderBookEntry>.from(widget.sellOrders)
+      ..sort((a, b) => b.price.compareTo(a.price));
+
+    final sortedBuyOrders = List<OrderBookEntry>.from(widget.buyOrders)
+      ..sort((a, b) => b.price.compareTo(a.price));
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Толгой — бүтэн өргөнтэй саарал pill, "Авах"/"Зарах" голд ойрхон
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            color: extendedColors.bgSecondary,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
+        Padding(
+          padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      l10n.buyTab,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
+              // Section Title
+              Text(
+                l10n.orderBoard,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Summary Cards Box
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildSummaryCard(
+                      title: l10n.highestBuyPrice,
+                      price: highestBuy != null ? _formatPrice(highestBuy) : '-',
+                      bgColor: extendedColors.primary100,
+                      textColor: extendedColors.primaryMain,
+                      extendedColors: extendedColors,
+                      theme: theme,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                      leftAlign: true,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: _buildSummaryCard(
+                      title: l10n.lowestSellPrice,
+                      price: lowestSell != null ? _formatPrice(lowestSell) : '-',
+                      bgColor: extendedColors.red.withValues(alpha: 0.1),
+                      textColor: extendedColors.red,
+                      extendedColors: extendedColors,
+                      theme: theme,
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      leftAlign: false,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // Expanded Order Book View
+              if (_isExpanded) ...[
+                const SizedBox(height: 12),
+                // 1. Sell Orders List (Red Bars - Right Side)
+                if (sortedSellOrders.isEmpty)
+                  _buildEmptyState(theme, extendedColors, l10n)
+                else
+                  for (final order in sortedSellOrders)
+                    _buildSellRow(
+                      entry: order,
+                      maxQty: maxSellQty,
+                      extendedColors: extendedColors,
+                      theme: theme,
+                    ),
+
+                // 2. Market Price Separator Divider
+                if (widget.marketPrice != null) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: extendedColors.bgSecondary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Зах зээлийн үнэ: ${_formatPrice(widget.marketPrice!)}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral100,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      l10n.sellTab,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
-                      ),
+                  const SizedBox(height: 8),
+                ],
+
+                // 3. Buy Orders List (Green/Primary Bars - Left Side)
+                if (sortedBuyOrders.isEmpty)
+                  _buildEmptyState(theme, extendedColors, l10n)
+                else
+                  for (final order in sortedBuyOrders)
+                    _buildBuyRow(
+                      entry: order,
+                      maxQty: maxBuyQty,
+                      extendedColors: extendedColors,
+                      theme: theme,
+                    ),
+
+                const SizedBox(height: 16),
+              ],
+
+              // Toggle Expand/Collapse Button
+              Center(
+                child: InkWell(
+                  onTap: () => setState(() => _isExpanded = !_isExpanded),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _isExpanded ? 'Хураах' : 'Дэлгэрэнгүй',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        CustomSvgIcon(
+                          _isExpanded
+                              ? 'chevron-up'
+                              : 'chevron-down',
+                          color: extendedColors.neutral200,
+                          size: 20,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -88,170 +206,199 @@ class StockTradingOrderBoard extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 4),
-        if (rowCount == 0)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Text(
-              l10n.noData,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral300,
-              ),
-            ),
-          )
-        else
-          for (var i = 0; i < rowCount; i++)
-            _buildOrderDepthRow(
-              buy: i < buyOrders.length ? buyOrders[i] : null,
-              sell: i < sellOrders.length ? sellOrders[i] : null,
-              maxBuyQty: maxBuyQty,
-              maxSellQty: maxSellQty,
-              extendedColors: extendedColors,
-              theme: theme,
-            ),
+        Divider(height: 1, color: extendedColors.neutral500,)
       ],
     );
   }
 
-  Widget _buildOrderDepthRow({
-    required OrderBookEntry? buy,
-    required OrderBookEntry? sell,
-    required int maxBuyQty,
-    required int maxSellQty,
+  Widget _buildSummaryCard({
+    required String title,
+    required String price,
+    required Color bgColor,
+    required Color textColor,
+    required ExtendedColors extendedColors,
+    required ThemeData theme,
+    required BorderRadius borderRadius,
+    required bool leftAlign
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: borderRadius,
+      ),
+      child: Column(
+        crossAxisAlignment: leftAlign ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+        children: [
+          Text(
+            title,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: extendedColors.neutral200,
+              height: 1.3,
+            ),
+            textAlign: leftAlign ? TextAlign.start : TextAlign.end,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            price,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Sell Row (Price on center-left, Bar starts after GAP, Quantity follows right end of bar)
+  Widget _buildSellRow({
+    required OrderBookEntry entry,
+    required int maxQty,
     required ExtendedColors extendedColors,
     required ThemeData theme,
   }) {
-    const rowHeight = 41.0;
-
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: SizedBox(
-        height: rowHeight,
-        child: Row(
-          children: [
-            // Авах тал — bar голоос ЗҮҮН тийш сунана
-            Expanded(
-              child: buy == null
-                  ? const SizedBox()
-                  : LayoutBuilder(
-                      builder: (context, constraints) {
-                        final barWidth =
-                            (constraints.maxWidth * (buy.quantity / maxBuyQty))
-                                .clamp(8.0, constraints.maxWidth);
-                        return Stack(
-                          children: [
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              bottom: 0,
-                              width: barWidth,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: extendedColors.primary100,
-                                  borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(8),
-                                    topRight: Radius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Ширхэг — зүүн захад
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Text(
-                                  buy.quantity.toString(),
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w400,
-                                    color: extendedColors.neutral100,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Үнэ — голд ойрхон (баруун зах)
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: Text(
-                                  _formatPrice(buy.price),
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w400,
-                                    color: extendedColors.neutral100,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          // Empty left side alignment spacer
+          const Expanded(child: SizedBox()),
+
+          // Center-Left: Price Column
+          SizedBox(
+            width: 80,
+            child: Text(
+              _formatPrice(entry.price),
+              textAlign: TextAlign.right,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: extendedColors.neutral100,
+              ),
             ),
-            const SizedBox(width: 4),
-            // Зарах тал — bar голоос БАРУУН тийш сунана
-            Expanded(
-              child: sell == null
-                  ? const SizedBox()
-                  : LayoutBuilder(
-                      builder: (context, constraints) {
-                        final barWidth =
-                            (constraints.maxWidth *
-                                    (sell.quantity / maxSellQty))
-                                .clamp(8.0, constraints.maxWidth);
-                        return Stack(
-                          children: [
-                            Positioned(
-                              left: 0,
-                              top: 0,
-                              bottom: 0,
-                              width: barWidth,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: extendedColors.red.withValues(
-                                    alpha: 0.1,
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(8),
-                                    topLeft: Radius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Үнэ — голд ойрхон (зүүн зах)
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Text(
-                                  _formatPrice(sell.price),
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w400,
-                                    color: extendedColors.red,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Ширхэг — баруун захад
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: Text(
-                                  sell.quantity.toString(),
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w400,
-                                    color: extendedColors.neutral100,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+          ),
+
+          // GAP between Center Price Column and Graph Bar
+          const SizedBox(width: 16),
+
+          // Right Side: Graph Bar + Quantity following right end
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Reserve max 60px space for quantity text
+                final maxBarSpace = constraints.maxWidth - 60;
+                final barWidth =
+                (maxBarSpace * (entry.quantity / maxQty)).clamp(12.0, maxBarSpace);
+
+                return Row(
+                  children: [
+                    Container(
+                      height: 18,
+                      width: barWidth,
+                      decoration: BoxDecoration(
+                        color: extendedColors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
+                    const SizedBox(width: 8),
+                    Text(
+                      entry.quantity.toString(),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: extendedColors.neutral100,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Buy Row (Quantity on left end of bar, Bar extends right, GAP, Price on center-right)
+  Widget _buildBuyRow({
+    required OrderBookEntry entry,
+    required int maxQty,
+    required ExtendedColors extendedColors,
+    required ThemeData theme,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          // Left Side: Quantity text following left end + Graph Bar
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Reserve max 60px space for quantity text
+                final maxBarSpace = constraints.maxWidth - 60;
+                final barWidth =
+                (maxBarSpace * (entry.quantity / maxQty)).clamp(12.0, maxBarSpace);
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      entry.quantity.toString(),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: extendedColors.neutral100,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      height: 18,
+                      width: barWidth,
+                      decoration: BoxDecoration(
+                        color: extendedColors.primaryMain,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+
+          // GAP between Graph Bar and Center Price Column
+          const SizedBox(width: 16),
+
+          // Center-Right: Price Column
+          SizedBox(
+            width: 80,
+            child: Text(
+              _formatPrice(entry.price),
+              textAlign: TextAlign.left,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: extendedColors.neutral100,
+              ),
+            ),
+          ),
+
+          // Empty right side alignment spacer
+          const Expanded(child: SizedBox()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(
+      ThemeData theme,
+      ExtendedColors extendedColors,
+      AppLocalizations l10n,
+      ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Center(
+        child: Text(
+          l10n.noData,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: extendedColors.neutral300,
+          ),
         ),
       ),
     );

@@ -1917,4 +1917,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get barePiece => 'Ширхэг';
+
+  @override
+  String get highestBuyPrice => 'Хамгийн өндөр \nавах үнэ';
+
+  @override
+  String get lowestSellPrice => 'Хамгийн хямд \nзарах үнэ';
 }
