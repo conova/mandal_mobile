@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../widgets/currency_suffix_formatter.dart';
+import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_svg_icon.dart';
@@ -632,30 +633,18 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
                 position: _buttonSlideAnimation,
                 child: SizedBox(
                   width: double.infinity,
-                  child: TextButton(
+                  child: CustomButton(
                     onPressed: () {
                       // Захиалга харах — main-ий Захиалга tab (индекс 3) руу
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         '/main',
-                        (route) => false,
+                            (route) => false,
                         arguments: {'tab': 3},
                       );
                     },
-                    style: TextButton.styleFrom(
-                      backgroundColor: extendedColors.bgBase,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.viewOrders,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: extendedColors.neutral100,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    label: l10n.viewOrders,
+                    variant: CustomButtonVariant.white,
                   ),
                 ),
               ),

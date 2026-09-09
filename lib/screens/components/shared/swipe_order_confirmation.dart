@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/circle_back_button.dart';
+import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_svg_icon.dart';
 
 /// Баталгаажуулалтын дэлгэцийн нэг мөр (шошго + утга)
@@ -548,23 +549,11 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                 position: _buttonSlideAnimation,
                 child: SizedBox(
                   width: double.infinity,
-                  child: TextButton(
+                  child: CustomButton(
+                    label: widget.successButtonLabel,
                     onPressed: _handleFinish,
-                    style: TextButton.styleFrom(
-                      backgroundColor: extendedColors.bgBase,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                    ),
-                    child: Text(
-                      widget.successButtonLabel,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: extendedColors.neutral100,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                    variant: CustomButtonVariant.white,
+                  )
                 ),
               ),
             ),

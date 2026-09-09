@@ -9,6 +9,7 @@ class StockDetailHeader extends StatelessWidget {
   final String price;
   final String change;
   final bool? isGrowing;
+  final String? periodLabel;
 
   const StockDetailHeader({
     super.key,
@@ -17,6 +18,7 @@ class StockDetailHeader extends StatelessWidget {
     this.price = '-',
     this.change = '-',
     this.isGrowing,
+    this.periodLabel,
   });
 
   @override
@@ -76,7 +78,7 @@ class StockDetailHeader extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                l10n.today,
+                periodLabel ?? l10n.today,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: extendedColors.neutral200,
                 ),
