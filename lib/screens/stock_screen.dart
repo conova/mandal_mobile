@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
-import 'package:mandal_capital/widgets/section_title.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../common/stock_row_format.dart';
@@ -11,7 +9,6 @@ import '../services/auth_service.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../widgets/empty_state.dart';
-import '../widgets/custom_button.dart';
 import 'components/stock/stock_ipo_carousel.dart';
 
 /// Хувьцааны жагсаалтын дэлгэц:
@@ -280,7 +277,7 @@ class _StockScreenState extends State<StockScreen> {
   ) {
     return Container(
       height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.only(left: 4, right: 16),
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
         borderRadius: BorderRadius.circular(30),
@@ -291,13 +288,18 @@ class _StockScreenState extends State<StockScreen> {
         style: theme.textTheme.bodyMedium?.copyWith(
           color: extendedColors.neutral100,
         ),
+        textAlignVertical: TextAlignVertical.center,
         decoration: InputDecoration(
+          isDense: true,
           hintText: l10n.searchByName,
           hintStyle: theme.textTheme.bodyMedium?.copyWith(
             color: extendedColors.neutral200,
           ),
           border: InputBorder.none,
-          icon: CustomSvgIcon('search-icon', color: extendedColors.neutral300),
+          prefixIcon: Padding(
+            padding: EdgeInsets.all(12),
+            child: CustomSvgIcon('search-icon', color: extendedColors.neutral300),
+          ),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
                   icon: CustomSvgIcon(
@@ -308,6 +310,7 @@ class _StockScreenState extends State<StockScreen> {
                   onPressed: () => _searchController.clear(),
                 )
               : null,
+          contentPadding: EdgeInsets.zero,
         ),
       ),
     );

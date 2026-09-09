@@ -401,7 +401,9 @@ class _BondMainScreenState extends State<BondMainScreen>
         controller: _searchController,
         onChanged: (value) => setState(() => _searchQuery = value),
         style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral100),
+        textAlignVertical: TextAlignVertical.center,
         decoration: InputDecoration(
+          isDense: true,
           hintText: l10n.searchByCompanyName,
           hintStyle: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
           prefixIcon: Padding(
@@ -418,7 +420,7 @@ class _BondMainScreenState extends State<BondMainScreen>
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          contentPadding: EdgeInsets.zero,
         ),
       ),
     );
