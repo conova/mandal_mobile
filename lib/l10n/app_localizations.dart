@@ -3669,6 +3669,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'average yield'**
   String get averageYield;
+
+  /// No description provided for @cancelOrderDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this order?'**
+  String get cancelOrderDesc;
 }
 
 class _AppLocalizationsDelegate

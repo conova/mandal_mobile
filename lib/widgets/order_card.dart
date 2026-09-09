@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
+import 'custom_button.dart';
 import 'custom_svg_icon.dart';
 
 enum OrderType { buy, sell }
@@ -22,6 +23,7 @@ class OrderCard extends StatelessWidget {
   final MarketType market;
   final VoidCallback? onEdit;
   final VoidCallback? onTap;
+  final VoidCallback? onCancel;
 
   const OrderCard({
     super.key,
@@ -36,6 +38,7 @@ class OrderCard extends StatelessWidget {
     required this.market,
     this.onEdit,
     this.onTap,
+    this.onCancel,
   });
 
   @override
@@ -182,6 +185,15 @@ class OrderCard extends StatelessWidget {
                 date,
                 extendedColors
             ),
+            if (onCancel != null && status == OrderStatus.open) ...[
+              const SizedBox(height: 10),
+              CustomButton(
+                label: l10n.cancelOrder,
+                onPressed: onCancel,
+                size: CustomButtonSize.small,
+                variant: CustomButtonVariant.tertiary,
+              ),
+            ],
           ],
         ),
       ),

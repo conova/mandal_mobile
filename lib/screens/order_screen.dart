@@ -86,6 +86,49 @@ class _OrderScreenState extends State<OrderScreen>
     }
   }
 
+  Future<void> _handleCancelOrder(Order order) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final confirm = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => CustomBottomSheet(
+          title: l10n.cancelOrder,
+          description: l10n.cancelOrderDesc,
+          confirmText: l10n.yesContinue,
+          cancelText: l10n.back,
+          onConfirm: () => Navigator.pop(ctx, true),
+          onCancel: () => Navigator.pop(ctx, false),
+          buttonVariantTop: CustomButtonVariant.primary,
+        )
+    );
+
+    if (confirm != true) return;
+    setState(() => _isCanceling = true);
+    try {
+      final auth = context.read<AuthService>();
+      final cancelList = [
+        {
+          'TXNID': order.txnId,
+          'ORDERNO': order.orderNo,
+        }
+      ];
+
+      final msg = await auth.cancelOrders(cancelList);
+      if (!mounted) return;
+      CustomSnackbar.show(context, message: msg);
+      // fetch() will be triggered by refreshActiveOrders() listener if we kept it
+      // but here we call it explicitly as well to be safe or because it's local action
+      await auth.refreshActiveOrders();
+    } catch (e) {
+      if (!mounted) return;
+      CustomSnackbar.showError(context, e);
+    } finally {
+      if (mounted) setState(() => _isCanceling = false);
+    }
+  }
+
   Future<void> _handleCancelAll() async {
     final l10n = AppLocalizations.of(context)!;
 
@@ -336,6 +379,7 @@ class _OrderScreenState extends State<OrderScreen>
                     '/order_detail',
                     arguments: {'order': order},
                   ),
+                  onCancel: () => _handleCancelOrder(order)
                 ),
               ),
             const SizedBox(height: 20),
@@ -349,25 +393,6 @@ class _OrderScreenState extends State<OrderScreen>
                   variant: CustomButtonVariant.error,
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 8),
-              //   child: Center(
-              //     child: GestureDetector(
-              //       onTap: () {
-              //         //
-              //       },
-              //       child: Text(
-              //         '${l10n.cancelAllOrders} (${orders.length})',
-              //         style: theme.textTheme.bodyLarge?.copyWith(
-              //           color: extendedColors.red,
-              //           decoration: TextDecoration.underline,
-              //           decorationColor: extendedColors.red,
-              //           decorationThickness: 2,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             const SizedBox(height: 80),
           ],
         ),

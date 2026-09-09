@@ -745,5 +745,6 @@
         }
     },
     "owningBond": "Owning Bond",
-    "averageYield": "average yield"
+    "averageYield": "average yield",
+    "cancelOrderDesc": "Are you sure you want to cancel this order?"
 }

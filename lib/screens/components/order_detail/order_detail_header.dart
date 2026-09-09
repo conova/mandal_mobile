@@ -70,12 +70,21 @@ class OrderDetailHeader extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               // Нээлттэй/Хаалттай
-              _buildBadge(
-                (order.isOpen ? l10n.open : l10n.closed).toUpperCase(),
-                extendedColors.bgSecondary,
-                extendedColors.neutral100,
-                theme,
-              ),
+              if(order.isBond) ...[
+                _buildBadge(
+                  (order.isOpen ? l10n.open : l10n.closed).toUpperCase(),
+                  extendedColors.bgSecondary,
+                  extendedColors.neutral100,
+                  theme,
+                ),
+              ] else ...[
+                _buildBadge(
+                  (order.orderName2 == 'LIMIT') ? l10n.limitPrice.toUpperCase() : l10n.marketPrice.toUpperCase(),
+                  extendedColors.bgSecondary,
+                  extendedColors.neutral100,
+                  theme,
+                ),
+              ],
               const SizedBox(width: 8),
               // Бонд/Хувьцаа
               _buildBadge(
