@@ -719,32 +719,25 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                 const SizedBox(height: 32),
                 const Divider(height: 1, thickness: 1),
                 const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.orderBoardTitle,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_orderBookLoading)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: CircularProgressIndicator(),
                         ),
+                      )
+                    else
+                      StockTradingOrderBoard(
+                        buyOrders: _buyOrders,
+                        sellOrders: _sellOrders,
+                        marketPrice: _stockInfo?.closePrice ??
+                            double.tryParse(_args['price']?.toString() ?? '0') ??
+                            0.0,
                       ),
-                      const SizedBox(height: 24),
-                      if (_orderBookLoading)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 24),
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                      else
-                        StockTradingOrderBoard(
-                          buyOrders: _buyOrders,
-                          sellOrders: _sellOrders,
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 120),
               ],

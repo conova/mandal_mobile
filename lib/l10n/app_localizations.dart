@@ -3693,6 +3693,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Piece(s)'**
   String get barePiece;
+
+  /// No description provided for @highestBuyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest \nBuy Price'**
+  String get highestBuyPrice;
+
+  /// No description provided for @lowestSellPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowest \nSell Price'**
+  String get lowestSellPrice;
 }
 
 class _AppLocalizationsDelegate

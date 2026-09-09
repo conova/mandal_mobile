@@ -749,5 +749,7 @@
     "cancelOrderDesc": "Are you sure you want to cancel this order?",
     "historyOrder": "History",
     "recieveAmount": "Recieve amount",
-    "barePiece": "Piece(s)"
+    "barePiece": "Piece(s)",
+    "highestBuyPrice": "Highest \nBuy Price",
+    "lowestSellPrice": "Lowest \nSell Price"
 }

@@ -1952,4 +1952,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get barePiece => 'Piece(s)';
+
+  @override
+  String get highestBuyPrice => 'Highest \nBuy Price';
+
+  @override
+  String get lowestSellPrice => 'Lowest \nSell Price';
 }
