@@ -1,15 +1,17 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
+import '../../models/order_book_entry.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
+import '../../widgets/custom_snackbar.dart';
 import '../../widgets/custom_svg_icon.dart';
 import '../components/bond/bond_payment_details_bottom_sheet.dart';
 import '../components/bond/bond_price_slider.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_order_board.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/custom_button.dart';
 
@@ -29,6 +31,17 @@ class _BondSellScreenState extends State<BondSellScreen> {
   /// Шимтгэлийн хувь (1 = 1%) — /user/fees-аас STOCKTYPE-аар нь татна
   double _feePct = 0;
 
+  List<OrderBookEntry> _sellOrders = const [];
+  bool _orderBookLoading = true;
+  Timer? _orderBookTimer;
+  bool _orderBookFetching = false;
+
+  @override
+  void dispose() {
+    _orderBookTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -38,6 +51,16 @@ class _BondSellScreenState extends State<BondSellScreen> {
     if (args is Map) _bond = Map<String, dynamic>.from(args);
     _selectedPrice = _unitPrice;
     _fetchFee();
+    _fetchOrderBook();
+
+    final stockcode = _str(['STOCKCODE']);
+    if (stockcode.isNotEmpty) {
+      _orderBookTimer?.cancel();
+      _orderBookTimer = Timer.periodic(
+        const Duration(seconds: 5),
+        (_) => _fetchOrderBook(),
+      );
+    }
   }
 
   Future<void> _fetchFee() async {
@@ -45,6 +68,31 @@ class _BondSellScreenState extends State<BondSellScreen> {
           stockType: _bond['STOCKTYPE']?.toString() ?? '',
         );
     if (mounted) setState(() => _feePct = pct);
+  }
+
+  Future<void> _fetchOrderBook() async {
+    final stockcode = _str(['STOCKCODE']);
+    if (stockcode.isEmpty) {
+      if (mounted) setState(() => _orderBookLoading = false);
+      return;
+    }
+    if (_orderBookFetching) return;
+    _orderBookFetching = true;
+    try {
+      final rows = await context.read<AuthService>().getOrderBook(stockcode);
+      if (!mounted) return;
+      setState(() {
+        _sellOrders = OrderBookEntry.sideFromJson(rows, 'SELL');
+        _orderBookLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      final wasInitialLoad = _orderBookLoading;
+      setState(() => _orderBookLoading = false);
+      if (wasInitialLoad) CustomSnackbar.showError(context, e);
+    } finally {
+      _orderBookFetching = false;
+    }
   }
 
   double _num(List<String> keys) {
@@ -203,7 +251,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 onChanged: (price) {
                   setState(() => _selectedPrice = price);
                 },
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
                 ),
@@ -218,25 +266,33 @@ class _BondSellScreenState extends State<BondSellScreen> {
               },
               isBuy: false,
               borderRadius: (_unitPrice > 0)
-                  ? BorderRadius.only(
+                  ? const BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   )
                   : null,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildProceedsCard(l10n, extendedColors, theme),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildInfoBanner(l10n, extendedColors, theme),
-            const SizedBox(height: 32),
-            BondOrderBoard(
-              orders: [
-                BondOrderEntry(price: 993000, quantity: 50),
-                BondOrderEntry(price: 994000, quantity: 24),
-                BondOrderEntry(price: 1005000, quantity: 20),
-                BondOrderEntry(price: 1010000, quantity: 10),
-              ],
-            ),
+            const SizedBox(height: 24),
+            Divider(height: 1, color: extendedColors.neutral500,),
+            const SizedBox(height: 20),
+            if (_orderBookLoading)
+              const Center(child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: CircularProgressIndicator(),
+              ))
+            else
+              BondOrderBoard(
+                orders: _sellOrders
+                    .map((e) => BondOrderEntry(
+                          price: e.price.toInt(),
+                          quantity: e.quantity,
+                        ))
+                    .toList(),
+              ),
             const SizedBox(height: 120),
           ],
         ),
@@ -265,10 +321,13 @@ class _BondSellScreenState extends State<BondSellScreen> {
   }
 
   Widget _buildProceedsCard(
-    AppLocalizations l10n,
-    ExtendedColors extendedColors,
-    ThemeData theme,
-  ) {
+      AppLocalizations l10n,
+      ExtendedColors extendedColors,
+      ThemeData theme,
+      ) {
+    // Extract accrued interest dynamically if available in bond data
+    final double accruedInterest = _num(['ACCRUEDINTEREST', 'INTEREST']);
+
     return GestureDetector(
       onTap: () {
         showModalBottomSheet(
@@ -277,9 +336,10 @@ class _BondSellScreenState extends State<BondSellScreen> {
           backgroundColor: Colors.transparent,
           builder: (context) => BondPaymentDetailsBottomSheet(
             quantity: _quantity,
-            piecePrice: _unitPrice,
-            accruedInterest: 0,
+            piecePrice: _price, // Fix 1: Pass selected price instead of base unit price
+            accruedInterest: accruedInterest, // Fix 2: Pass dynamic interest value
             commissionRate: _feePct / 100,
+            isSell: true,
           ),
         );
       },
@@ -364,7 +424,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.only(top: 10),
               child: CustomSvgIcon(
                 'annotation-info',
                 size: 20,

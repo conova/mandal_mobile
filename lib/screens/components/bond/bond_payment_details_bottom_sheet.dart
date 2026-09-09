@@ -31,6 +31,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
   final double piecePrice;
   final double accruedInterest;
   final double commissionRate;
+  final bool? isSell;
 
   const BondPaymentDetailsBottomSheet({
     super.key,
@@ -38,6 +39,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
     required this.piecePrice,
     required this.accruedInterest,
     required this.commissionRate,
+    this.isSell,
   });
 
   @override
@@ -49,7 +51,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
 
     final unitPrice = piecePrice + accruedInterest;
     final commission = quantity * unitPrice * commissionRate;
-    final totalPayment = (quantity * unitPrice) + commission;
+    final totalPayment = (isSell ?? false) ? (quantity * unitPrice) - commission : (quantity * unitPrice) + commission;
 
     return Container(
       decoration: BoxDecoration(
@@ -91,7 +93,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
               _DataCard(
                 children: [
                   _DataRow(
-                    label: l10n.buyQuantity,
+                    label: (isSell ?? false) ? l10n.sellQuantity : l10n.buyQuantity,
                     value: quantity.toString(),
                   ),
                   const SizedBox(height: 16),
@@ -109,7 +111,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
                     child: _DashedDivider(),
                   ),
                   _DataRow(
-                    label: l10n.totalPayment,
+                    label: (isSell ?? false) ? l10n.recieveAmount : l10n.totalPayment,
                     value: '${currencyFormat.format(totalPayment)}₮',
                   ),
                 ],
