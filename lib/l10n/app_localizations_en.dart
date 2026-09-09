@@ -1946,4 +1946,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get historyOrder => 'History';
+
+  @override
+  String get recieveAmount => 'Recieve amount';
 }

@@ -96,7 +96,8 @@ class AccruedInterestDescBottomSheet extends StatelessWidget {
             ),
           ),
           // Separate button at the bottom
-          const SizedBox(height: 20),
+          Divider(height: 1, color: extendedColors.neutral500,),
+          const SizedBox(height: 10),
           Center(
             child: CustomButton(
               label: l10n.returnBack,

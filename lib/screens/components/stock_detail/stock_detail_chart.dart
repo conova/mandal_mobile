@@ -7,20 +7,26 @@ import '../../../common/stock_row_format.dart';
 import '../../../services/auth_service.dart';
 import '../../../widgets/finance_chart.dart';
 
+enum StockPeriod { d1, d7, m1, m3, y1, all }
+
 /// Stock chart — `/stocks/{SYMBOL}/chart` API-аас өгөгдөл татаж зурна.
 /// `symbol` дамжуулаагүй бол placeholder зурна (хуучин зан хадгална).
 class StockDetailChart extends StatefulWidget {
   final String? symbol;
-  const StockDetailChart({super.key, this.symbol});
+  final ValueChanged<StockPeriod>? onPeriodChanged;
+
+  const StockDetailChart({
+    super.key,
+    this.symbol,
+    this.onPeriodChanged,
+  });
 
   @override
   State<StockDetailChart> createState() => _StockDetailChartState();
 }
 
-enum _Period { d1, d7, m1, m3, y1, all }
-
 class _StockDetailChartState extends State<StockDetailChart> {
-  _Period _selected = _Period.d1;
+  StockPeriod _selected = StockPeriod.d1;
   List<FlSpot> _spots = const [];
 
   /// Эхний цэгийн огноо — tooltip дээр өдрийн огноо харуулахад
@@ -39,12 +45,12 @@ class _StockDetailChartState extends State<StockDetailChart> {
   (DateTime, DateTime) _periodRange() {
     final now = DateTime.now();
     return switch (_selected) {
-      _Period.d1 => (now.subtract(const Duration(days: 1)), now),
-      _Period.d7 => (now.subtract(const Duration(days: 7)), now),
-      _Period.m1 => (DateTime(now.year, now.month - 1, now.day), now),
-      _Period.m3 => (DateTime(now.year, now.month - 3, now.day), now),
-      _Period.y1 => (DateTime(now.year - 1, now.month, now.day), now),
-      _Period.all => (DateTime(2000, 1, 1), now),
+      StockPeriod.d1 => (now.subtract(const Duration(days: 1)), now),
+      StockPeriod.d7 => (now.subtract(const Duration(days: 7)), now),
+      StockPeriod.m1 => (DateTime(now.year, now.month - 1, now.day), now),
+      StockPeriod.m3 => (DateTime(now.year, now.month - 3, now.day), now),
+      StockPeriod.y1 => (DateTime(now.year - 1, now.month, now.day), now),
+      StockPeriod.all => (DateTime(2000, 1, 1), now),
     };
   }
 
@@ -157,23 +163,24 @@ class _StockDetailChartState extends State<StockDetailChart> {
   Widget _buildPeriodSelector(ThemeData theme, ExtendedColors extendedColors) {
     final l10n = AppLocalizations.of(context)!;
     final labels = {
-      _Period.d1: l10n.d1,
-      _Period.d7: l10n.d7,
-      _Period.m1: l10n.m1,
-      _Period.m3: l10n.m3,
-      _Period.y1: l10n.y1,
-      _Period.all: l10n.all,
+      StockPeriod.d1: l10n.d1,
+      StockPeriod.d7: l10n.d7,
+      StockPeriod.m1: l10n.m1,
+      StockPeriod.m3: l10n.m3,
+      StockPeriod.y1: l10n.y1,
+      StockPeriod.all: l10n.all,
     };
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: _Period.values.map((p) {
+        children: StockPeriod.values.map((p) {
           final isSelected = p == _selected;
           return TextButton(
             onPressed: () {
               if (p == _selected) return;
               setState(() => _selected = p);
+              widget.onPeriodChanged?.call(p);
               _fetch();
             },
             style: TextButton.styleFrom(

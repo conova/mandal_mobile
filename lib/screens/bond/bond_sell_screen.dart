@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
+import '../../widgets/custom_svg_icon.dart';
+import '../components/bond/bond_payment_details_bottom_sheet.dart';
 import '../components/bond/bond_price_slider.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_order_board.dart';
@@ -142,7 +144,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -173,12 +175,23 @@ class _BondSellScreenState extends State<BondSellScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              '${l10n.ownedAmountLabel}: ${formatStockAmount(_ownedAmount, isForeign: _isForeign, decimals: 0)}',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.primaryMain,
-                fontWeight: AppTextStyles.bold,
-              ),
+            Row(
+              children: [
+                Text(
+                  '${l10n.ownedAmountLabel}: ',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral100,
+                    fontWeight: FontWeight.w200,
+                  ),
+                ),
+                Text(
+                  formatStockAmount(_ownedAmount, isForeign: _isForeign, decimals: 0),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.primaryMain,
+                    fontWeight: FontWeight.w200,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 32),
             if (_unitPrice > 0)
@@ -190,8 +203,11 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 onChanged: (price) {
                   setState(() => _selectedPrice = price);
                 },
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
               ),
-            const SizedBox(height: 24),
             BondQuantitySelector(
               maxQuantity: _maxQuantity,
               initialQuantity: 1,
@@ -200,6 +216,13 @@ class _BondSellScreenState extends State<BondSellScreen> {
                   _quantity = value;
                 });
               },
+              isBuy: false,
+              borderRadius: (_unitPrice > 0)
+                  ? BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  )
+                  : null,
             ),
             const SizedBox(height: 24),
             _buildProceedsCard(l10n, extendedColors, theme),
@@ -246,52 +269,67 @@ class _BondSellScreenState extends State<BondSellScreen> {
     ExtendedColors extendedColors,
     ThemeData theme,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: extendedColors.bgSecondary,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Text(
-              l10n.receivableAmountLabel,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: extendedColors.neutral400,
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => BondPaymentDetailsBottomSheet(
+            quantity: _quantity,
+            piecePrice: _unitPrice,
+            accruedInterest: 0,
+            commissionRate: _feePct / 100,
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: extendedColors.bgSecondary,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                l10n.recieveAmount,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral200,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    formatStockAmount(_proceeds, isForeign: _isForeign, decimals: 0),
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      formatStockAmount(_proceeds, isForeign: _isForeign, decimals: 0),
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.right,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.chevron_right,
-                  color: extendedColors.neutral100,
-                  size: 20,
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  CustomSvgIcon(
+                    'chevron-right',
+                    color: extendedColors.neutral200,
+                    size: 20,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -302,31 +340,50 @@ class _BondSellScreenState extends State<BondSellScreen> {
     ThemeData theme,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(1),
       decoration: BoxDecoration(
-        color: extendedColors.primary100,
+        gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [extendedColors.primary500, extendedColors.primary300]
+        ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            color: extendedColors.neutral100,
-            size: 24,
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [extendedColors.primary200, extendedColors.primary100]
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              l10n.sellPriceDesc,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: AppTextStyles.light,
-                color: extendedColors.neutral100,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: CustomSvgIcon(
+                'annotation-info',
+                size: 20,
+                color: extendedColors.primaryMain,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10,),
+            Expanded(
+              child: Text(
+                l10n.sellPriceDesc,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w300,
+                  color: extendedColors.neutral100,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
-
 }

@@ -1911,4 +1911,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get historyOrder => 'Түүх';
+
+  @override
+  String get recieveAmount => 'Хүлээн авах дүн';
 }

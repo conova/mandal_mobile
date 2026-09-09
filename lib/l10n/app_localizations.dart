@@ -3681,6 +3681,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'History'**
   String get historyOrder;
+
+  /// No description provided for @recieveAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Recieve amount'**
+  String get recieveAmount;
 }
 
 class _AppLocalizationsDelegate
