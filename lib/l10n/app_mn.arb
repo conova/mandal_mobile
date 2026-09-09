@@ -680,5 +680,6 @@
     "recieveAmount": "Хүлээн авах дүн",
     "barePiece": "Ширхэг",
     "highestBuyPrice": "Хамгийн өндөр \nавах үнэ",
-    "lowestSellPrice": "Хамгийн хямд \nзарах үнэ"
+    "lowestSellPrice": "Хамгийн хямд \nзарах үнэ",
+    "collapse": "Хураах"
 }

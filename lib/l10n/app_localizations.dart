@@ -3705,6 +3705,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lowest \nSell Price'**
   String get lowestSellPrice;
+
+  /// No description provided for @collapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse'**
+  String get collapse;
 }
 
 class _AppLocalizationsDelegate

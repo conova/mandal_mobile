@@ -1923,4 +1923,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get lowestSellPrice => 'Хамгийн хямд \nзарах үнэ';
+
+  @override
+  String get collapse => 'Хураах';
 }
