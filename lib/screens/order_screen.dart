@@ -184,7 +184,7 @@ class _OrderScreenState extends State<OrderScreen>
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 120,
         titleSpacing: 0,

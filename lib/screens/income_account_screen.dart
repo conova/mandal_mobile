@@ -115,7 +115,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 70,
         leadingWidth: 60,

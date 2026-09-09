@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../common/payment_webview.dart';
 import '../l10n/app_localizations.dart';
-import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/currency_suffix_formatter.dart';
