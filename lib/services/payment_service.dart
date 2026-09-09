@@ -56,42 +56,7 @@ class PaymentService {
 
   /// NEGDI төлбөрийн линк авах — negdiurl буцаана.
   /// POST https://mandalcapital.mn/dan/api/payment/link
-  /// Body: {custid, amount, txntype, action}
-  /// Зарлага гаргах хүсэлт илгээнэ.
-  /// [accountType] — аль данснаас мөнгө авах:
-  ///   'tugrugiin dans' | 'usd dans' | 'bondiin dans'
-  Future<String> withdraw({
-    required num amount,
-    required String curCode,
-    required String accountType,
-  }) async {
-    try {
-      final response = await _dio.post(
-        // Бүтэн URL — dan сервисийн base
-        ApiConfig.paymentWithdrawal,
-        data: {
-          'api': 'withdrawal',
-          'amount': amount,
-          'curCode': curCode,
-          'accountType': accountType,
-        },
-      );
-      final body = response.data as Map<String, dynamic>;
-      if (body['code']?.toString() == '0') {
-        return body['title']?.toString() ??
-            body['message']?.toString() ??
-            'Зарлагын хүсэлт амжилттай илгээгдлээ';
-      }
-      throw PaymentException(
-        body['title']?.toString() ??
-            body['message']?.toString() ??
-            'Зарлага гаргахад алдаа гарлаа',
-      );
-    } on DioException catch (e) {
-      throw PaymentException(_extractError(e));
-    }
-  }
-
+  /// Body: {custid, amount, txntype, action, currency}
   Future<String> getPaymentLink({
     required String custid,
     required num amount,

@@ -111,7 +111,12 @@
       "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/education-guide\")",
       "Read(//private/tmp/**)",
       "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/education-guide\" -o edu_remote.json)",
-      "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/contracts\" -o contracts_remote.json)"
+      "Bash(curl -sk \"https://mandalcapital.mn/api/mobile/contracts\" -o contracts_remote.json)",
+      "Bash(plutil -p build/ios/archive/Runner.xcarchive/Info.plist)",
+      "Bash(plutil -convert json -o - build/ios/ipa/DistributionSummary.plist)",
+      "Bash(curl -sk -o /dev/null -w \"withdrawal/withdrawal: %{http_code}\\\\n\" -X POST \"https://bds.techfi.mn/bdc/api/withdrawal/withdrawal\" -H \"Content-Type: application/json\" -d '{\"data\":{}}')",
+      "Bash(curl -sk -o /dev/null -w \"account/statement \\(known good\\): %{http_code}\\\\n\" -X POST \"https://bds.techfi.mn/bdc/api/account/statement\" -H \"Content-Type: application/json\" -d '{\"data\":{}}')",
+      "Bash(curl -sk -o /dev/null -w \"bogus route: %{http_code}\\\\n\" -X POST \"https://bds.techfi.mn/bdc/api/withdrawal/nonexistent\" -H \"Content-Type: application/json\" -d '{\"data\":{}}')"
     ]
   }
 }
