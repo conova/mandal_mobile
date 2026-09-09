@@ -748,5 +748,6 @@
     "averageYield": "average yield",
     "cancelOrderDesc": "Are you sure you want to cancel this order?",
     "historyOrder": "History",
-    "recieveAmount": "Recieve amount"
+    "recieveAmount": "Recieve amount",
+    "barePiece": "Piece(s)"
 }

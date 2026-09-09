@@ -7,9 +7,11 @@ import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
 import '../../widgets/custom_snackbar.dart';
 import '../../widgets/custom_svg_icon.dart';
+import '../../widgets/currency_suffix_formatter.dart';
 import '../components/bond/bond_payment_details_bottom_sheet.dart';
-import '../components/bond/bond_price_slider.dart';
+import '../components/bond/bond_trading_input_box.dart';
 import '../components/bond/bond_quantity_selector.dart';
+import '../components/bond/bond_price_slider.dart';
 import '../components/bond/bond_order_board.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/extended_colors.dart';
@@ -32,14 +34,37 @@ class _BondSellScreenState extends State<BondSellScreen> {
   double _feePct = 0;
 
   List<OrderBookEntry> _sellOrders = const [];
+  List<OrderBookEntry> _buyOrders = const [];
   bool _orderBookLoading = true;
   Timer? _orderBookTimer;
   bool _orderBookFetching = false;
 
+  late TextEditingController _priceController;
+  late FocusNode _priceFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _priceController = TextEditingController();
+    _priceFocusNode = FocusNode();
+    _priceController.addListener(_onPriceInputChanged);
+  }
+
   @override
   void dispose() {
     _orderBookTimer?.cancel();
+    _priceController.removeListener(_onPriceInputChanged);
+    _priceController.dispose();
+    _priceFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onPriceInputChanged() {
+    final text = _priceController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final price = double.tryParse(text) ?? 0;
+    if (_selectedPrice != price) {
+      setState(() => _selectedPrice = price);
+    }
   }
 
   @override
@@ -50,6 +75,12 @@ class _BondSellScreenState extends State<BondSellScreen> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map) _bond = Map<String, dynamic>.from(args);
     _selectedPrice = _unitPrice;
+
+    _priceController.text = CurrencySuffixFormatter.format(
+      _selectedPrice.toInt().toString(),
+      suffix: '₮',
+    );
+
     _fetchFee();
     _fetchOrderBook();
 
@@ -58,15 +89,17 @@ class _BondSellScreenState extends State<BondSellScreen> {
       _orderBookTimer?.cancel();
       _orderBookTimer = Timer.periodic(
         const Duration(seconds: 5),
-        (_) => _fetchOrderBook(),
+            (_) => _fetchOrderBook(),
       );
     }
   }
 
   Future<void> _fetchFee() async {
+    final isPrimary = _bond['MARKET']?.toString().toLowerCase() == 'primary';
     final pct = await context.read<AuthService>().getFeePercent(
-          stockType: _bond['STOCKTYPE']?.toString() ?? '',
-        );
+      stockType: _bond['STOCKTYPE']?.toString() ?? '',
+      ipo: isPrimary,
+    );
     if (mounted) setState(() => _feePct = pct);
   }
 
@@ -82,6 +115,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
       final rows = await context.read<AuthService>().getOrderBook(stockcode);
       if (!mounted) return;
       setState(() {
+        _buyOrders = OrderBookEntry.sideFromJson(rows, 'BUY');
         _sellOrders = OrderBookEntry.sideFromJson(rows, 'SELL');
         _orderBookLoading = false;
       });
@@ -118,6 +152,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
 
   bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
 
+  bool get _isOpen => (_bond['ISOPEN']?.toString() ?? '1') == '1';
 
   /// Эзэмшиж буй ширхэг — CNT талбар ирвэл түүнийг, үгүй бол дүн/нэгж үнэ
   int get _maxQuantity {
@@ -241,56 +276,36 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 32),
-            if (_unitPrice > 0)
-              BondPriceSlider(
-                // Нэгж үнийн ±2%-ийн мужид зарах үнээ сонгоно
-                min: _unitPrice * 0.98,
-                max: _unitPrice * 1.02,
-                initialValue: _unitPrice,
-                onChanged: (price) {
-                  setState(() => _selectedPrice = price);
-                },
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-              ),
-            BondQuantitySelector(
-              maxQuantity: _maxQuantity,
-              initialQuantity: 1,
-              onChanged: (value) {
-                setState(() {
-                  _quantity = value;
-                });
-              },
-              isBuy: false,
-              borderRadius: (_unitPrice > 0)
-                  ? const BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
-                  )
-                  : null,
-            ),
+            const SizedBox(height: 24),
+
+            // Render view dynamically based on bond openness
+            if (_isOpen) _buildOpenBondControls() else _buildClosedBondControls(),
+
             const SizedBox(height: 16),
+
+            // Хүлээн авах дүн Card
             _buildProceedsCard(l10n, extendedColors, theme),
             const SizedBox(height: 16),
-            _buildInfoBanner(l10n, extendedColors, theme),
+
+            if (!_isOpen) _buildInfoBanner(l10n, extendedColors, theme),
             const SizedBox(height: 24),
-            Divider(height: 1, color: extendedColors.neutral500,),
+            Divider(height: 1, color: extendedColors.neutral500),
             const SizedBox(height: 20),
+
             if (_orderBookLoading)
-              const Center(child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: CircularProgressIndicator(),
-              ))
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: CircularProgressIndicator(),
+                ),
+              )
             else
               BondOrderBoard(
                 orders: _sellOrders
                     .map((e) => BondOrderEntry(
-                          price: e.price.toInt(),
-                          quantity: e.quantity,
-                        ))
+                  price: e.price.toInt(),
+                  quantity: e.quantity,
+                ))
                     .toList(),
               ),
             const SizedBox(height: 120),
@@ -320,12 +335,76 @@ class _BondSellScreenState extends State<BondSellScreen> {
     );
   }
 
+  /// Open Bond Controls (Input Box for custom sell rate + Quantity Selector)
+  Widget _buildOpenBondControls() {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      children: [
+        BondTradingInputBox(
+          label: l10n.sellingPrice,
+          controller: _priceController,
+          focusNode: _priceFocusNode,
+          currencySymbol: '₮',
+        ),
+        BondQuantitySelector(
+          maxQuantity: _maxQuantity,
+          initialQuantity: _quantity,
+          onChanged: (val) => setState(() => _quantity = val),
+          isBuy: false,
+          label: l10n.barePiece,
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(24),
+            bottomRight: Radius.circular(24),
+          )
+        ),
+      ],
+    );
+  }
+
+  /// Closed Bond Controls (Price Range Slider + Connected Quantity Selector)
+  Widget _buildClosedBondControls() {
+    return Column(
+      children: [
+        if (_unitPrice > 0)
+          BondPriceSlider(
+            min: _unitPrice * 0.98,
+            max: _unitPrice * 1.02,
+            initialValue: _unitPrice,
+            onChanged: (price) {
+              setState(() {
+                _selectedPrice = price;
+                _priceController.text = CurrencySuffixFormatter.format(
+                  price.toInt().toString(),
+                  suffix: '₮',
+                );
+              });
+            },
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+        BondQuantitySelector(
+          maxQuantity: _maxQuantity,
+          initialQuantity: _quantity,
+          onChanged: (val) => setState(() => _quantity = val),
+          isBuy: false,
+          borderRadius: (_unitPrice > 0)
+              ? const BorderRadius.only(
+            bottomLeft: Radius.circular(24),
+            bottomRight: Radius.circular(24),
+          )
+              : null,
+        ),
+      ],
+    );
+  }
+
   Widget _buildProceedsCard(
       AppLocalizations l10n,
       ExtendedColors extendedColors,
       ThemeData theme,
       ) {
-    // Extract accrued interest dynamically if available in bond data
     final double accruedInterest = _num(['ACCRUEDINTEREST', 'INTEREST']);
 
     return GestureDetector(
@@ -336,8 +415,8 @@ class _BondSellScreenState extends State<BondSellScreen> {
           backgroundColor: Colors.transparent,
           builder: (context) => BondPaymentDetailsBottomSheet(
             quantity: _quantity,
-            piecePrice: _price, // Fix 1: Pass selected price instead of base unit price
-            accruedInterest: accruedInterest, // Fix 2: Pass dynamic interest value
+            piecePrice: _price,
+            accruedInterest: accruedInterest,
             commissionRate: _feePct / 100,
             isSell: true,
           ),
@@ -395,17 +474,17 @@ class _BondSellScreenState extends State<BondSellScreen> {
   }
 
   Widget _buildInfoBanner(
-    AppLocalizations l10n,
-    ExtendedColors extendedColors,
-    ThemeData theme,
-  ) {
+      AppLocalizations l10n,
+      ExtendedColors extendedColors,
+      ThemeData theme,
+      ) {
     return Container(
       padding: const EdgeInsets.all(1),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [extendedColors.primary500, extendedColors.primary300]
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [extendedColors.primary500, extendedColors.primary300],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -413,9 +492,9 @@ class _BondSellScreenState extends State<BondSellScreen> {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [extendedColors.primary200, extendedColors.primary100]
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [extendedColors.primary200, extendedColors.primary100],
           ),
           borderRadius: BorderRadius.circular(16),
         ),
@@ -431,7 +510,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 color: extendedColors.primaryMain,
               ),
             ),
-            const SizedBox(width: 10,),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 l10n.sellPriceDesc,
@@ -440,7 +519,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
                   color: extendedColors.neutral100,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
