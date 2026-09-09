@@ -1945,4 +1945,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cancelOrderDesc => 'Are you sure you want to cancel this order?';
+
+  @override
+  String get historyOrder => 'History';
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
+import 'package:mandal_capital/widgets/section_title.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../common/stock_row_format.dart';
@@ -11,6 +12,7 @@ import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/custom_button.dart';
+import 'components/stock/stock_ipo_carousel.dart';
 
 /// Хувьцааны жагсаалтын дэлгэц:
 ///   • IPO карусель (олон нийтэд анх удаа зарагдаж буй хувьцаанууд)
@@ -41,10 +43,6 @@ class _StockScreenState extends State<StockScreen> {
   List<MarketInstrument> _searchResults = [];
   bool _isSearching = false;
 
-  final PageController _ipoPageController =
-      PageController(viewportFraction: 0.92);
-  int _ipoPage = 0;
-
   bool _isScrolled = false;
 
   @override
@@ -67,7 +65,6 @@ class _StockScreenState extends State<StockScreen> {
   void dispose() {
     _debounce?.cancel();
     _searchController.dispose();
-    _ipoPageController.dispose();
     super.dispose();
   }
 
@@ -115,37 +112,6 @@ class _StockScreenState extends State<StockScreen> {
       });
     }
   }
-
-  /// Dev preview-ийн mock IPO мөрүүд — API хоосон үед каруселийг
-  /// харуулахад ашиглана
-  // List<MarketInstrument> _mockIpoStocks() {
-  //   return MarketInstrument.listFromJson(const [
-  //     {
-  //       'SYMBOL': 'AAA',
-  //       'STOCKNAME': 'FullName',
-  //       'STOCKCODE': '',
-  //       'CLOSEPRICE': 1000,
-  //       'BEGDATE': '2026-08-15',
-  //       'ENDDATE': '2026-08-20',
-  //     },
-  //     {
-  //       'SYMBOL': 'BBB',
-  //       'STOCKNAME': 'Demo Company',
-  //       'STOCKCODE': '',
-  //       'CLOSEPRICE': 2500,
-  //       'BEGDATE': '2026-09-01',
-  //       'ENDDATE': '2026-09-10',
-  //     },
-  //     {
-  //       'SYMBOL': 'CCC',
-  //       'STOCKNAME': 'Sample JSC',
-  //       'STOCKCODE': '',
-  //       'CLOSEPRICE': 500,
-  //       'BEGDATE': '2026-09-05',
-  //       'ENDDATE': '2026-09-12',
-  //     },
-  //   ]);
-  // }
 
   Future<void> _search() async {
     if (_searchQuery.isEmpty) return;
@@ -288,7 +254,10 @@ class _StockScreenState extends State<StockScreen> {
               else ...[
                 if (_ipoStocks.isNotEmpty)
                   SliverToBoxAdapter(
-                    child: _buildIpoCarousel(l10n, theme, extendedColors),
+                    child: IpoCarousel(
+                      ipoStocks: _ipoStocks,
+                      onStockTap: _openDetail,
+                    ),
                   ),
                 if (_topGainer != null || _topLoser != null)
                   SliverToBoxAdapter(
@@ -344,241 +313,6 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  // ─── IPO карусель ───
-
-  Widget _buildIpoCarousel(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      padding: const EdgeInsets.only(top: 16, bottom: 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [extendedColors.primary200, extendedColors.bgBase],
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.ipo,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  l10n.ipoSubtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral100,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 150,
-            child: PageView.builder(
-              controller: _ipoPageController,
-              itemCount: _ipoStocks.length,
-              onPageChanged: (i) => setState(() => _ipoPage = i),
-              itemBuilder: (context, i) =>
-                  _buildIpoCard(_ipoStocks[i], l10n, theme, extendedColors),
-            ),
-          ),
-          if (_ipoStocks.length > 1) ...[
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_ipoStocks.length, (i) {
-                final active = i == _ipoPage;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: active ? 24 : 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: active
-                        ? extendedColors.neutral100
-                        : extendedColors.neutral400,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                );
-              }),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  /// IPO хугацаа — raw мөрөөс эхлэх/дуусах огноог олж "2026/08/15 – 2026/08/20"
-  /// хэлбэрээр буцаана.
-  String _ipoPeriod(MarketInstrument row) {
-    String fmt(dynamic raw) {
-      final d = parseStockDate(raw);
-      if (d == null) return '';
-      String two(int n) => n.toString().padLeft(2, '0');
-      return '${two(d.month)}/${two(d.day)}';
-    }
-
-    final sFmt = fmt(row.orderBeginDate);
-    final eFmt = fmt(row.orderEndDate);
-
-    if (sFmt.isEmpty && eFmt.isEmpty) return '-';
-    if (sFmt.isNotEmpty && eFmt.isNotEmpty) return '$sFmt – $eFmt';
-    return sFmt.isNotEmpty ? sFmt : eFmt;
-  }
-
-  Widget _buildIpoCard(
-    MarketInstrument row,
-    AppLocalizations l10n,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
-    final price = row.stockPrice == null
-        ? row.closePrice == null
-          ? '-'
-          : formatStockAmount(row.closePrice, decimals: 2)
-        : formatStockAmount(row.stockPrice, decimals: 2);
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(0, 0, 6, 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: extendedColors.bgBase,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          row.symbol,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: extendedColors.neutral100,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            row.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: extendedColors.neutral200,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: extendedColors.bgSecondary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        l10n.ipo,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              CustomButton(
-                label: l10n.subscribe,
-                size: CustomButtonSize.small,
-                onPressed: () => _openDetail(row),
-                minWidth: 90,
-              ),
-            ],
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      l10n.term,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: extendedColors.neutral200,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _ipoPeriod(row),
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral100,
-                      ),
-                      maxLines: 2,
-                    ),
-                  ],
-                ),
-              ),
-              Container(width: 1, height: 32, color: extendedColors.neutral500),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      l10n.unitStockPrice,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: extendedColors.neutral200,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      price,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral100,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   // ─── ТОП өсөлт / бууралт ───
 
   Widget _buildTopMovers(
@@ -612,28 +346,20 @@ class _StockScreenState extends State<StockScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        row.symbol,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: color,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '${pct >= 0 ? '+' : ''}${pct.toStringAsFixed(2)}%',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: color,
-                      ),
-                    ),
-                  ],
+                Text(
+                  row.symbol,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                ),
+                Text(
+                  '${pct >= 0 ? '+' : ''}${pct.toStringAsFixed(2)}%',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: color,
+                  ),
                 ),
               ],
             ),
@@ -684,7 +410,7 @@ class _StockScreenState extends State<StockScreen> {
               crossAxisCount: 3,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              childAspectRatio: 0.95,
+              childAspectRatio: 1.1,
             ),
             delegate: SliverChildBuilderDelegate(
               (context, i) => _buildStockTile(rows[i], theme, extendedColors),
@@ -752,18 +478,29 @@ class _StockScreenState extends State<StockScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.neutral100,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 Text(
                   '${pct > 0 ? '+' : ''}${pct.toStringAsFixed(1)}%',
-                  style: AppTextStyles.caption.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: pctColor,
                   ),
                 ),
               ],
             ),
-            const Spacer(flex: 2),
+            Expanded(
+              child: Text(
+                row.companyName,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w300,
+                  color: extendedColors.neutral200,
+                ),
+              )
+            ),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
@@ -772,27 +509,6 @@ class _StockScreenState extends State<StockScreen> {
                   color: extendedColors.neutral100,
                 ),
               ),
-            ),
-             const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    open == null
-                        ? '-'
-                        : formatStockAmount(open, decimals: 2),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.caption.copyWith(
-                      color: extendedColors.neutral100,
-                    ),
-                  ),
-                ),
-                Text(
-                  deltaStr,
-                  style: AppTextStyles.caption.copyWith(color: pctColor),
-                ),
-              ],
             ),
           ],
         ),
@@ -853,7 +569,7 @@ class _StockScreenState extends State<StockScreen> {
             crossAxisCount: 3,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio: 0.95,
+            childAspectRatio: 1.1,
           ),
           delegate: SliverChildBuilderDelegate(
             (context, i) => _buildStockTile(

@@ -1908,4 +1908,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get cancelOrderDesc => 'Та энэ захиалгыг устгахдаа итгэлтэй байна уу?';
+
+  @override
+  String get historyOrder => 'Түүх';
 }

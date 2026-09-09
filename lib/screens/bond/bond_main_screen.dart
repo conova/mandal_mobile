@@ -230,17 +230,17 @@ class _BondMainScreenState extends State<BondMainScreen>
       onRefresh: _handleRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 60),
+        padding: const EdgeInsets.only(bottom: 60),
         children: [
           const SizedBox(height: 24),
           if (_bondListLoading)
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 48),
+              padding: EdgeInsets.symmetric(vertical: 48, horizontal: 16),
               child: Center(child: CircularProgressIndicator()),
             )
           else if (_bondList.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 48),
+              padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
               child: Center(
                 child: Text(
                   l10n.noData,
@@ -252,22 +252,32 @@ class _BondMainScreenState extends State<BondMainScreen>
             )
           else ...[
             if (primary.isNotEmpty) ...[
-              SectionTitle(l10n.primaryMarket, true, true),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SectionTitle(l10n.primaryMarket, true, true),
+              ),
               const SizedBox(height: 10,),
               BondPrimaryCarousel(bonds: primary),
               const SizedBox(height: 20),
             ],
-            SectionTitle(l10n.secondaryMarket, false, true),
-            const SizedBox(height: 12),
-            _buildFilterRow(l10n, extendedColors, theme),
-            if (_isSearchExpanded) ...[
-              const SizedBox(height: 12),
-              _buildSearchField(l10n, extendedColors, theme),
-            ],
-            const SizedBox(height: 16),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  SectionTitle(l10n.secondaryMarket, false, true),
+                  const SizedBox(height: 12),
+                  _buildFilterRow(l10n, extendedColors, theme),
+                  if (_isSearchExpanded) ...[
+                    const SizedBox(height: 12),
+                    _buildSearchField(l10n, extendedColors, theme),
+                  ],
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
             if (secondary.isEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 48),
+                padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
                 child: Center(
                   child: Text(
                     l10n.noData,
@@ -278,7 +288,16 @@ class _BondMainScreenState extends State<BondMainScreen>
                 ),
               )
             else
-              ..._buildBondCards(secondary, l10n, extendedColors),
+              Column(
+                children: [
+                  ..._buildBondCards(secondary, l10n, extendedColors).map(
+                    (widget) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: widget,
+                    ),
+                  ),
+                ],
+              )
           ],
         ],
       ),
@@ -315,7 +334,7 @@ class _BondMainScreenState extends State<BondMainScreen>
             });
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: _isSearchExpanded ? extendedColors.neutral100 : extendedColors.bgSecondary,
               borderRadius: BorderRadius.circular(20),
@@ -354,7 +373,7 @@ class _BondMainScreenState extends State<BondMainScreen>
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
           color: isActive ? extendedColors.neutral100 : extendedColors.bgSecondary,
           borderRadius: BorderRadius.circular(20),
@@ -373,10 +392,10 @@ class _BondMainScreenState extends State<BondMainScreen>
   Widget _buildSearchField(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: TextField(
         controller: _searchController,
@@ -386,7 +405,7 @@ class _BondMainScreenState extends State<BondMainScreen>
           hintText: l10n.searchByCompanyName,
           hintStyle: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral300),
           prefixIcon: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(10.0),
             child: CustomSvgIcon('search-icon', color: extendedColors.neutral300, size: 20),
           ),
           suffixIcon: _searchQuery.isNotEmpty

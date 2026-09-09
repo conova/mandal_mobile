@@ -250,8 +250,8 @@ class _OrderScreenState extends State<OrderScreen>
                   fontWeight: FontWeight.w500,
                 ),
                 tabs: [
-                  Tab(text: l10n.activeOrders),
-                  Tab(text: l10n.orderHistory),
+                  Tab(text: l10n.active),
+                  Tab(text: l10n.historyOrder),
                 ],
               ),
             ),
@@ -385,12 +385,13 @@ class _OrderScreenState extends State<OrderScreen>
             const SizedBox(height: 20),
             if (!_isLoading && orders.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: CustomButton(
                   label: '${l10n.cancelAllOrders} (${orders.length})',
                   isLoading: _isCanceling,
                   onPressed: _isCanceling ? null : _handleCancelAll,
                   variant: CustomButtonVariant.error,
+                  size: CustomButtonSize.medium,
                 ),
               ),
             const SizedBox(height: 80),

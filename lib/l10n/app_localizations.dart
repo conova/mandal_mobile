@@ -3675,6 +3675,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to cancel this order?'**
   String get cancelOrderDesc;
+
+  /// No description provided for @historyOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyOrder;
 }
 
 class _AppLocalizationsDelegate
