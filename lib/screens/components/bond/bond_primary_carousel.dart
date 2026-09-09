@@ -18,8 +18,18 @@ class BondPrimaryCarousel extends StatefulWidget {
 }
 
 class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
-  final PageController _controller = PageController();
+  late bool _onlyPrimary;
+  late PageController _controller;
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _onlyPrimary = widget.bonds.length < 2;
+    _controller = PageController(
+      viewportFraction: _onlyPrimary ? 1 : 0.85,
+    );
+  }
 
   @override
   void dispose() {
@@ -43,6 +53,7 @@ class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
             controller: _controller,
             onPageChanged: (idx) => setState(() => _currentIndex = idx),
             itemCount: widget.bonds.length,
+            allowImplicitScrolling: true,
             itemBuilder: (context, idx) {
               final bond = widget.bonds[idx];
               final progress = orderProgress(bond.orderedAmt, bond.amt) ?? 0.0;
@@ -57,9 +68,9 @@ class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
                           : bond.term));
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: _onlyPrimary ? 16 : 6),
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: extendedColors.bgSecondary,
                     borderRadius: BorderRadius.circular(24),
@@ -157,7 +168,7 @@ class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
-                        height: 48,
+                        height: 44,
                         child: CustomButton(
                           label: l10n.placeOrder,
                           onPressed: () => Navigator.pushNamed(
@@ -168,6 +179,7 @@ class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
                               'languageCode': Localizations.localeOf(context).languageCode,
                             },
                           ),
+                          size: CustomButtonSize.medium,
                           variant: CustomButtonVariant.primary,
                         ),
                       ),
@@ -179,12 +191,12 @@ class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
           ),
         ),
         const SizedBox(height: 12),
-        if (widget.bonds.length > 1)
+        if (!_onlyPrimary)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               widget.bonds.length,
-              (idx) => Container(
+              (idx) => AnimatedContainer(
                 width: _currentIndex == idx ? 24 : 6,
                 height: 6,
                 margin: const EdgeInsets.symmetric(horizontal: 2),
@@ -192,8 +204,9 @@ class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
                   borderRadius: BorderRadius.circular(3),
                   color: _currentIndex == idx
                       ? extendedColors.neutral100
-                      : extendedColors.neutral500,
+                      : extendedColors.neutral400,
                 ),
+                duration: const Duration(milliseconds: 200),
               ),
             ),
           ),

@@ -705,10 +705,10 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       const SizedBox(height: 16),
                       StockTradingInfoBox(
                         label: isSell ? l10n.totalReceivableLabel : l10n.totalPaymentLabel,
-                        value: CurrencySuffixFormatter.format(
+                        value: '≈ ${CurrencySuffixFormatter.format(
                           _totalPayment.toString(),
                           suffix: '₮',
-                        ),
+                        )}',
                         valueColor: !isSell && _totalPayment > _availableCash
                             ? extendedColors.red
                             : null,

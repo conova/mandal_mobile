@@ -4,7 +4,7 @@ import 'package:mandal_capital/theme/extended_colors.dart';
 
 enum CustomButtonVariant { primary, secondary, tertiary, text, error, neutral, purple, orange, red }
 
-enum CustomButtonSize { large, small }
+enum CustomButtonSize { large, medium, small }
 
 class CustomButton extends StatelessWidget {
   final String label;
@@ -84,12 +84,14 @@ class CustomButton extends StatelessWidget {
     }
 
     // Dimensions based on size
-    final double height = size == CustomButtonSize.large ? 52 : 40;
+    final double height = size == CustomButtonSize.large ? 52 : CustomButtonSize.medium == size ? 44 : 40;
     final EdgeInsets padding = size == CustomButtonSize.large
         ? const EdgeInsets.symmetric(horizontal: 24, vertical: 16)
-        : const EdgeInsets.symmetric(horizontal: 0, vertical: 10);
+        : size == CustomButtonSize.medium
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 10)
+            : const EdgeInsets.symmetric(horizontal: 0, vertical: 10);
     final double iconSize = size == CustomButtonSize.large ? 20 : 20;
-    final double borderRadius = size == CustomButtonSize.large ? 26 : 20;
+    final double borderRadius = size == CustomButtonSize.large ? 26 : size == CustomButtonSize.medium ? 22 : 20;
 
     Widget content = Row(
       mainAxisSize: MainAxisSize.min,
@@ -124,7 +126,12 @@ class CustomButton extends StatelessWidget {
                     fontWeight: AppTextStyles.regular,
                     color: foregroundColor,
                   )
-                : theme.textTheme.labelLarge?.copyWith(
+                : size == CustomButtonSize.medium
+                  ? theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: AppTextStyles.regular,
+                      color: foregroundColor,
+                    )
+                  : theme.textTheme.labelLarge?.copyWith(
                     fontWeight: AppTextStyles.regular,
                     color: foregroundColor,
                   ),

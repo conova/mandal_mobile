@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_text_styles.dart';
-import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
@@ -71,7 +70,7 @@ class MyBondCard extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            l10n.piece(ownedAmount as int),
+                            l10n.piece(ownedAmount.toInt()),
                             style: theme.textTheme.labelMedium?.copyWith(
                               fontWeight: AppTextStyles.regular,
                               color: extendedColors.neutral200,

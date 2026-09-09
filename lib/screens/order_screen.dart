@@ -27,6 +27,7 @@ class _OrderScreenState extends State<OrderScreen>
   bool _isLoading = true;
   bool _isCanceling = false;
   List<Order> _orders = const [];
+  bool _isScrolled = false;
 
   AuthService? _authService;
 
@@ -85,9 +86,51 @@ class _OrderScreenState extends State<OrderScreen>
     }
   }
 
+  Future<void> _handleCancelOrder(Order order) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final confirm = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => CustomBottomSheet(
+          title: l10n.cancelOrder,
+          description: l10n.cancelOrderDesc,
+          confirmText: l10n.yesContinue,
+          cancelText: l10n.back,
+          onConfirm: () => Navigator.pop(ctx, true),
+          onCancel: () => Navigator.pop(ctx, false),
+          buttonVariantTop: CustomButtonVariant.primary,
+        )
+    );
+
+    if (confirm != true) return;
+    setState(() => _isCanceling = true);
+    try {
+      final auth = context.read<AuthService>();
+      final cancelList = [
+        {
+          'TXNID': order.txnId,
+          'ORDERNO': order.orderNo,
+        }
+      ];
+
+      final msg = await auth.cancelOrders(cancelList);
+      if (!mounted) return;
+      CustomSnackbar.show(context, message: msg);
+      // fetch() will be triggered by refreshActiveOrders() listener if we kept it
+      // but here we call it explicitly as well to be safe or because it's local action
+      await auth.refreshActiveOrders();
+    } catch (e) {
+      if (!mounted) return;
+      CustomSnackbar.showError(context, e);
+    } finally {
+      if (mounted) setState(() => _isCanceling = false);
+    }
+  }
+
   Future<void> _handleCancelAll() async {
     final l10n = AppLocalizations.of(context)!;
-    final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
 
     final confirm = await showModalBottomSheet<bool>(
         context: context,
@@ -141,33 +184,97 @@ class _OrderScreenState extends State<OrderScreen>
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: extendedColors.bgBase,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        toolbarHeight: 120,
+        titleSpacing: 0,
+        centerTitle: true,
+        leadingWidth: 200,
+        automaticallyImplyLeading: false,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled
+                ? extendedColors.neutral500.withValues(alpha: 0.1)
+                : Colors.transparent,
+          ),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 16, left: 20),
+          child: Text(
+            l10n.orders,
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0),
-          child: TabBar(
-            controller: _tabController,
-            indicatorColor: extendedColors.primaryMain,
-            indicatorWeight: 4,
-            labelColor: extendedColors.neutral100,
-            labelStyle: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w400,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: extendedColors.bgSecondary,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: TabBar(
+                indicatorSize: TabBarIndicatorSize.tab,
+                controller: _tabController,
+                dividerColor: Colors.transparent,
+                overlayColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.hovered)) {
+                    return extendedColors.bgSecondary;
+                  }
+                  if (states.contains(WidgetState.pressed)) {
+                    return extendedColors.bgSecondary;
+                  }
+                  return null;
+                }),
+                indicator: BoxDecoration(
+                  color: extendedColors.bgBase,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: extendedColors.neutral500,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                labelColor: extendedColors.neutral100,
+                unselectedLabelColor: extendedColors.neutral200,
+                labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: [
+                  Tab(text: l10n.active),
+                  Tab(text: l10n.historyOrder),
+                ],
+              ),
             ),
-            tabs: [
-              Tab(text: l10n.activeOrders),
-              Tab(text: l10n.orderHistory),
-            ],
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildOrderList(context, theme, extendedColors, l10n, filters),
-          const OrderHistoryTab(),
-        ],
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification.depth == 1) {
+            final bool scrolled = notification.metrics.pixels > 0;
+            if (scrolled != _isScrolled) {
+              setState(() => _isScrolled = scrolled);
+            }
+          }
+          return false;
+        },
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildOrderList(context, theme, extendedColors, l10n, filters),
+            const OrderHistoryTab(),
+          ],
+        ),
       ),
     );
   }
@@ -272,38 +379,21 @@ class _OrderScreenState extends State<OrderScreen>
                     '/order_detail',
                     arguments: {'order': order},
                   ),
+                  onCancel: () => _handleCancelOrder(order)
                 ),
               ),
             const SizedBox(height: 20),
             if (!_isLoading && orders.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: CustomButton(
                   label: '${l10n.cancelAllOrders} (${orders.length})',
                   isLoading: _isCanceling,
                   onPressed: _isCanceling ? null : _handleCancelAll,
                   variant: CustomButtonVariant.error,
+                  size: CustomButtonSize.medium,
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 8),
-              //   child: Center(
-              //     child: GestureDetector(
-              //       onTap: () {
-              //         //
-              //       },
-              //       child: Text(
-              //         '${l10n.cancelAllOrders} (${orders.length})',
-              //         style: theme.textTheme.bodyLarge?.copyWith(
-              //           color: extendedColors.red,
-              //           decoration: TextDecoration.underline,
-              //           decorationColor: extendedColors.red,
-              //           decorationThickness: 2,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             const SizedBox(height: 80),
           ],
         ),
