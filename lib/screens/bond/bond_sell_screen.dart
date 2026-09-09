@@ -321,10 +321,13 @@ class _BondSellScreenState extends State<BondSellScreen> {
   }
 
   Widget _buildProceedsCard(
-    AppLocalizations l10n,
-    ExtendedColors extendedColors,
-    ThemeData theme,
-  ) {
+      AppLocalizations l10n,
+      ExtendedColors extendedColors,
+      ThemeData theme,
+      ) {
+    // Extract accrued interest dynamically if available in bond data
+    final double accruedInterest = _num(['ACCRUEDINTEREST', 'INTEREST']);
+
     return GestureDetector(
       onTap: () {
         showModalBottomSheet(
@@ -333,9 +336,10 @@ class _BondSellScreenState extends State<BondSellScreen> {
           backgroundColor: Colors.transparent,
           builder: (context) => BondPaymentDetailsBottomSheet(
             quantity: _quantity,
-            piecePrice: _unitPrice,
-            accruedInterest: 0,
+            piecePrice: _price, // Fix 1: Pass selected price instead of base unit price
+            accruedInterest: accruedInterest, // Fix 2: Pass dynamic interest value
             commissionRate: _feePct / 100,
+            isSell: true,
           ),
         );
       },
