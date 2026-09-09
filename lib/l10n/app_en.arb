@@ -751,5 +751,6 @@
     "recieveAmount": "Recieve amount",
     "barePiece": "Piece(s)",
     "highestBuyPrice": "Highest \nBuy Price",
-    "lowestSellPrice": "Lowest \nSell Price"
+    "lowestSellPrice": "Lowest \nSell Price",
+    "collapse": "Collapse"
 }

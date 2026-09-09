@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:mandal_capital/screens/components/stock_trading/stock_trading_order_board.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
 import '../../models/order_book_entry.dart';
@@ -298,6 +299,12 @@ class _BondSellScreenState extends State<BondSellScreen> {
                   padding: EdgeInsets.symmetric(vertical: 20),
                   child: CircularProgressIndicator(),
                 ),
+              )
+            else if (_isOpen)
+              StockTradingOrderBoard(
+                buyOrders: _buyOrders,
+                sellOrders: _sellOrders,
+                marketPrice: _unitPrice,
               )
             else
               BondOrderBoard(

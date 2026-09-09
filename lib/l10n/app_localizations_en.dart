@@ -1958,4 +1958,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lowestSellPrice => 'Lowest \nSell Price';
+
+  @override
+  String get collapse => 'Collapse';
 }

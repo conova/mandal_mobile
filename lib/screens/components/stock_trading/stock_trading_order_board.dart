@@ -25,17 +25,13 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
   bool _isExpanded = false;
 
   String _formatPrice(double price) {
-    final str = price % 1 == 0
-        ? price.toStringAsFixed(0)
-        : price.toStringAsFixed(2);
-    final dotIdx = str.indexOf('.');
-    final wholePart = dotIdx == -1 ? str : str.substring(0, dotIdx);
-    final whole = wholePart.replaceAllMapped(
+    final str = price.toStringAsFixed(2);
+    final parts = str.split('.');
+    final whole = parts[0].replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (m) => '${m[1]},',
+      (m) => '${m[1]},',
     );
-    final formatted = dotIdx == -1 ? whole : '$whole${str.substring(dotIdx)}';
-    return '$formatted₮';
+    return '$whole.${parts[1]}₮';
   }
 
   @override
@@ -146,12 +142,24 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: Text(
-                        'Зах зээлийн үнэ: ${_formatPrice(widget.marketPrice!)}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${l10n.marketPrice}: ',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral200,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          Text(
+                            _formatPrice(widget.marketPrice!),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral100,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -184,9 +192,9 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _isExpanded ? 'Хураах' : 'Дэлгэрэнгүй',
+                          _isExpanded ? l10n.collapse : l10n.details,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w400,
                             color: extendedColors.neutral100,
                           ),
                         ),
@@ -272,7 +280,7 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
               _formatPrice(entry.price),
               textAlign: TextAlign.right,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
                 color: extendedColors.neutral100,
               ),
             ),
@@ -301,11 +309,18 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      entry.quantity.toString(),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: extendedColors.neutral100,
-                        fontWeight: FontWeight.w500,
+                    SizedBox(
+                      width: 50,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          entry.quantity.toString(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: extendedColors.neutral100,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -341,11 +356,18 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
-                      entry.quantity.toString(),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: extendedColors.neutral100,
-                        fontWeight: FontWeight.w500,
+                    SizedBox(
+                      width: 50,
+                      child: FittedBox(
+                        alignment: Alignment.centerRight,
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          entry.quantity.toString(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: extendedColors.neutral100,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -373,7 +395,7 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
               _formatPrice(entry.price),
               textAlign: TextAlign.left,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
                 color: extendedColors.neutral100,
               ),
             ),

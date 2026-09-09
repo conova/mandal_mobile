@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/screens/components/bond/bond_trading_input_box.dart';
 import 'package:mandal_capital/screens/components/bond/bond_trading_quantity_selector.dart';
+import 'package:mandal_capital/screens/components/stock_trading/stock_trading_order_board.dart';
 import 'package:mandal_capital/widgets/currency_suffix_formatter.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import 'package:mandal_capital/widgets/percent_suffix_formatter.dart';
@@ -15,7 +16,6 @@ import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/release_locked_amount_sheet.dart';
 import 'bond_payment_details.dart';
 import 'bond_payment_details_bottom_sheet.dart';
-import 'bond_trading_order_board.dart';
 
 /// Хоёрдогч + НЭЭЛТТЭЙ бондын арилжааны дизайн: авах ханш, ширхэг
 /// сонгогч, төлбөрийн задаргаа, захиалгын самбар.
@@ -191,9 +191,10 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
         const SizedBox(height: 32),
         Divider(height: 1, color: extendedColors.neutral500),
         const SizedBox(height: 24),
-        BondTradingOrderBoard(
+        StockTradingOrderBoard(
           buyOrders: widget.buyOrders,
           sellOrders: widget.sellOrders,
+          marketPrice: widget.bond?.closePrice ?? 0,
         ),
       ],
     );
