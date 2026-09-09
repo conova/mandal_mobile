@@ -1914,4 +1914,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get recieveAmount => 'Хүлээн авах дүн';
+
+  @override
+  String get barePiece => 'Ширхэг';
 }

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../l10n/app_localizations.dart';
@@ -11,6 +10,7 @@ class BondQuantitySelector extends StatefulWidget {
   final bool isBuy;
   final ValueChanged<int> onChanged;
   final BorderRadius? borderRadius;
+  final String? label;
 
   const BondQuantitySelector({
     super.key,
@@ -19,6 +19,7 @@ class BondQuantitySelector extends StatefulWidget {
     required this.isBuy,
     required this.onChanged,
     this.borderRadius,
+    this.label,
   });
 
   @override
@@ -31,9 +32,9 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
   late FocusNode _focusNode;
 
   int get _effectiveMax => widget.maxQuantity;
-
   bool get isBuy => widget.isBuy;
   BorderRadius? get _borderRadius => widget.borderRadius;
+  String? get _label => widget.label;
 
   @override
   void initState() {
@@ -99,7 +100,7 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isBuy ? l10n.buyQuantity : l10n.sellQuantity,
+                      _label ?? (isBuy ? l10n.buyQuantity : l10n.sellQuantity),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: extendedColors.neutral200,
                       ),

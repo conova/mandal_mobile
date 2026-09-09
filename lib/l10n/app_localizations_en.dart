@@ -1949,4 +1949,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recieveAmount => 'Recieve amount';
+
+  @override
+  String get barePiece => 'Piece(s)';
 }

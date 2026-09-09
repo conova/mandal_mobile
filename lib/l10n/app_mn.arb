@@ -677,5 +677,6 @@
     "averageYield": "дундаж өгөөж",
     "cancelOrderDesc": "Та энэ захиалгыг устгахдаа итгэлтэй байна уу?",
     "historyOrder": "Түүх",
-    "recieveAmount": "Хүлээн авах дүн"
+    "recieveAmount": "Хүлээн авах дүн",
+    "barePiece": "Ширхэг"
 }

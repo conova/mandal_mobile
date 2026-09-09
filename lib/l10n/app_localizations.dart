@@ -3687,6 +3687,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recieve amount'**
   String get recieveAmount;
+
+  /// No description provided for @barePiece.
+  ///
+  /// In en, this message translates to:
+  /// **'Piece(s)'**
+  String get barePiece;
 }
 
 class _AppLocalizationsDelegate
