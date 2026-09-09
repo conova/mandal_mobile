@@ -373,7 +373,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 70,
         leadingWidth: 60,

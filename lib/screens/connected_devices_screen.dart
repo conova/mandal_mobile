@@ -68,7 +68,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 70,
         leadingWidth: 60,
@@ -80,6 +80,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
             child: CircleBackButton(),
           ),
         ),
+        centerTitle: true,
         title: Padding(
           padding: EdgeInsets.only(top: 10),
           child: Text(

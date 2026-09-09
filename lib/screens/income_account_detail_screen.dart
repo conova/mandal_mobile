@@ -130,7 +130,7 @@ class _IncomeAccountDetailScreenState extends State<IncomeAccountDetailScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 70,
         leadingWidth: 60,

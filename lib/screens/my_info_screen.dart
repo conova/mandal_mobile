@@ -42,7 +42,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     if (name == null || name.isEmpty) return name;
     final trimmed = name.trim();
     if (trimmed.isEmpty) return trimmed;
-    return trimmed[0].toUpperCase() + trimmed.substring(1).toLowerCase();
+    return trimmed.split('-').map((part) {
+      if (part.isEmpty) return part;
+      return part[0].toUpperCase() + part.substring(1).toLowerCase();
+    }).join('-');
   }
 
   /// И-мэйл нэмэх/засах dialog. Хадгалахад /user/add_email API дуудна.
@@ -148,7 +151,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 70,
         leadingWidth: 60,
@@ -160,6 +163,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             child: CircleBackButton(),
           ),
         ),
+        centerTitle: true,
         title: Padding(
           padding: EdgeInsets.only(top: 10),
           child: Text(

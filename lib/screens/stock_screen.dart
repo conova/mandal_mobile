@@ -179,7 +179,7 @@ class _StockScreenState extends State<StockScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 120,
         titleSpacing: 0,
@@ -413,7 +413,7 @@ class _StockScreenState extends State<StockScreen> {
               crossAxisCount: 3,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              childAspectRatio: 1.1,
+              childAspectRatio: 1,
             ),
             delegate: SliverChildBuilderDelegate(
               (context, i) => _buildStockTile(rows[i], theme, extendedColors),
@@ -572,7 +572,7 @@ class _StockScreenState extends State<StockScreen> {
             crossAxisCount: 3,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio: 1.1,
+            childAspectRatio: 1,
           ),
           delegate: SliverChildBuilderDelegate(
             (context, i) => _buildStockTile(
