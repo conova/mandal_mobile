@@ -1330,6 +1330,39 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  /// Зарлага гаргах (мөнгө хүсэх) хүсэлт — POST /withdrawal/withdrawal.
+  /// [acntNo] — харилцагчийн сонгосон, төлбөр хүлээн авах банкны данс.
+  /// [type] — аль данснаас татах: 'mnt' | 'usd' | 'bond'.
+  Future<String> requestWithdrawal({
+    required String acntNo,
+    required num amount,
+    required String type,
+  }) async {
+    try {
+      final response = await _authedDio.post(
+        ApiConfig.withdrawalRequest,
+        data: {
+          'data': {
+            'acntNo': acntNo,
+            'amount': amount,
+            'type': type,
+          },
+        },
+      );
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0') {
+        return apiMessage(body) ??
+            localMessage(
+              'Зарлагын хүсэлт амжилттай илгээгдлээ',
+              'Withdrawal request sent successfully',
+            );
+      }
+      throw Exception(apiMessage(body) ?? 'Зарлага гаргахад алдаа гарлаа');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   /// Дансны хуулга.
   /// POST /account/statement — body: {"data": {acntType, cashType, bond,
   /// stocks, curCode, start, end}}. Хоосон утга = тухайн шүүлт хэрэглэхгүй.

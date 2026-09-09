@@ -7,7 +7,7 @@ import '../config/api_config.dart';
 import '../l10n/app_localizations.dart';
 import '../models/income_account.dart';
 import '../services/api_service.dart';
-import '../services/payment_service.dart';
+import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
@@ -89,29 +89,29 @@ class _WithdrawAccountScreenState extends State<WithdrawAccountScreen> {
     }
   }
 
-  /// Зарлага гаргах хүсэлт — /api/payment/WITHDRAWAL
+  /// Зарлага гаргах хүсэлт — POST /withdrawal/withdrawal.
+  /// Харилцагчийн сонгосон дансыг acntNo-гоор дамжуулна.
   Future<void> _handleWithdraw() async {
-    if (_selectedAccountNo == null || _isSubmitting) return;
+    final acntNo = _selectedAccountNo;
+    if (acntNo == null || _isSubmitting) return;
 
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
             const {};
     final amount = (args['amount'] as num?)?.toDouble() ?? 0;
-    final isMnt = args['currency']?.toString() != 'usd';
-    // Аль данснаас татах — stock | bond | usd → серверийн accountType
-    final account = args['account']?.toString() ?? 'stock';
-    final accountType = switch (account) {
-      'bond' => 'bondiin dans',
-      'usd' => 'usd dans',
-      _ => 'tugrugiin dans',
+    // Аль данснаас татах — stock | bond | usd → серверийн type
+    final type = switch (args['account']?.toString()) {
+      'bond' => 'bond',
+      'usd' => 'usd',
+      _ => 'mnt',
     };
 
     setState(() => _isSubmitting = true);
     try {
-      await context.read<PaymentService>().withdraw(
+      await context.read<AuthService>().requestWithdrawal(
+            acntNo: acntNo,
             amount: amount,
-            curCode: isMnt ? 'MNT' : 'USD',
-            accountType: accountType,
+            type: type,
           );
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/withdraw_success');
