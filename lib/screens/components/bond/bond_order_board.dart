@@ -24,31 +24,42 @@ class BondOrderBoard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+
+        // Header Row (50/50 ratio matching data rows)
         Container(
           decoration: BoxDecoration(
             color: extendedColors.bgSecondary,
             borderRadius: BorderRadius.circular(16),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.sellPrice,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: extendedColors.neutral300,
+              Expanded(
+                flex: 1,
+                child: Text(
+                  l10n.sellPrice,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral100,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
-              Text(
-                l10n.quantityLabel,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: extendedColors.neutral300,
+              Expanded(
+                flex: 1,
+                child: Text(
+                  l10n.quantityLabel,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral100,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ],
           ),
         ),
         const SizedBox(height: 8),
+
+        // List Items
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -57,7 +68,7 @@ class BondOrderBoard extends StatelessWidget {
             final order = orders[index];
             return Container(
               margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: index % 2 == 0
                     ? extendedColors.bgBase
@@ -65,28 +76,30 @@ class BondOrderBoard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(
-                    child: Text(
-                      '${order.price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.red,
-                        fontWeight: FontWeight.bold,
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        '${order.price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Flexible(
+                  Expanded(
+                    flex: 1,
                     child: Text(
                       '${order.quantity}',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: extendedColors.neutral100,
                       ),
-                      textAlign: TextAlign.right,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
