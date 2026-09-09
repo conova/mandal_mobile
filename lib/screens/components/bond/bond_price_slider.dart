@@ -7,11 +7,13 @@ class CustomRoundSliderThumbShape extends SliderComponentShape {
   final double enabledThumbRadius;
   final Color borderColor;
   final double borderWidth;
+  final BorderRadius? borderRadius;
 
   const CustomRoundSliderThumbShape({
     this.enabledThumbRadius = 10.0,
     this.borderColor = Colors.white,
     this.borderWidth = 2.0,
+    this.borderRadius,
   });
 
   @override
@@ -55,6 +57,7 @@ class BondPriceSlider extends StatefulWidget {
   final double max;
   final double initialValue;
   final ValueChanged<double> onChanged;
+  final BorderRadiusGeometry? borderRadius;
 
   const BondPriceSlider({
     super.key,
@@ -62,6 +65,7 @@ class BondPriceSlider extends StatefulWidget {
     required this.max,
     required this.initialValue,
     required this.onChanged,
+    this.borderRadius,
   });
 
   @override
@@ -79,6 +83,8 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
 
   double get _progress =>
       (_currentValue - widget.min) / (widget.max - widget.min);
+
+  BorderRadiusGeometry? get borderRadius => widget.borderRadius;
 
   String _getProbabilityText(AppLocalizations l10n) {
     if (_progress < 0.3) return l10n.high;
@@ -102,53 +108,65 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: borderRadius ?? BorderRadius.circular(24),
         border: Border.all(color: extendedColors.neutral500),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.sellPrice,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: extendedColors.neutral300,
-                ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.executionProbability,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: extendedColors.neutral300,
+                    l10n.sellPrice,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral200,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
-                  const SizedBox(width: 8),
                   Text(
-                    _getProbabilityText(l10n),
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: _getProbabilityColor(extendedColors),
+                    '${_currentValue.toInt().toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]},")}₮',
+                    style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  _buildBars(extendedColors),
                 ],
               ),
+              IntrinsicWidth(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.executionProbability,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: extendedColors.neutral200,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          _getProbabilityText(l10n),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: _getProbabilityColor(extendedColors),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        _buildBars(extendedColors),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            '${_currentValue.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}₮',
-            style: theme.textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: extendedColors.neutral100,
-            ),
           ),
           const SizedBox(height: 16),
           SliderTheme(
@@ -182,16 +200,16 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
             children: [
               Text(
                 'Min: ${widget.min.toInt()}₮',
-                style: theme.textTheme.labelSmall?.copyWith(
+                style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: AppTextStyles.light,
-                  color: extendedColors.neutral300,
+                  color: extendedColors.neutral200,
                 ),
               ),
               Text(
                 'Max: ${widget.max.toInt()}₮',
-                style: theme.textTheme.labelSmall?.copyWith(
+                style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: AppTextStyles.light,
-                  color: extendedColors.neutral300,
+                  color: extendedColors.neutral200,
                 ),
               ),
             ],
@@ -210,16 +228,18 @@ class _BondPriceSliderState extends State<BondPriceSlider> {
     }
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min, // Prevents inner row from expanding
       children: List.generate(3, (index) {
         return Container(
-          width: 4,
-          height: 8 + (index * 4).toDouble(),
-          margin: const EdgeInsets.only(left: 2),
+          width: 8,
+          height: 8 + (index * 8).toDouble(),
+          margin: const EdgeInsets.only(left: 4),
           decoration: BoxDecoration(
             color: index < activeBars
                 ? _getProbabilityColor(extendedColors)
                 : extendedColors.neutral500,
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(4),
           ),
         );
       }),

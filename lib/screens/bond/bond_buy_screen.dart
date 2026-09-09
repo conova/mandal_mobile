@@ -221,6 +221,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   _quantity = quantity;
                 });
               },
+              isBuy: true,
             ),
             const SizedBox(height: 24),
             BondPaymentDetails(

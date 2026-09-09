@@ -8,13 +8,17 @@ import '../../../widgets/custom_svg_icon.dart';
 class BondQuantitySelector extends StatefulWidget {
   final int initialQuantity;
   final int maxQuantity;
+  final bool isBuy;
   final ValueChanged<int> onChanged;
+  final BorderRadius? borderRadius;
 
   const BondQuantitySelector({
     super.key,
     this.initialQuantity = 0,
     required this.maxQuantity,
+    required this.isBuy,
     required this.onChanged,
+    this.borderRadius,
   });
 
   @override
@@ -27,6 +31,9 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
   late FocusNode _focusNode;
 
   int get _effectiveMax => widget.maxQuantity;
+
+  bool get isBuy => widget.isBuy;
+  BorderRadius? get _borderRadius => widget.borderRadius;
 
   @override
   void initState() {
@@ -70,7 +77,7 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: _borderRadius ?? BorderRadius.circular(24),
         border: _focusNode.hasFocus
           ? Border.all(
             color: extendedColors.primaryMain,
@@ -81,86 +88,89 @@ class _BondQuantitySelectorState extends State<BondQuantitySelector> {
             width: 1,
           ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.buyQuantity,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral200,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    _MaxQuantityFormatter(_effectiveMax),
-                  ],
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  onChanged: (value) {
-                    final newQuantity = int.tryParse(value) ?? 0;
-                    if (newQuantity != _quantity) {
-                      setState(() {
-                        _quantity = newQuantity;
-                      });
-                      widget.onChanged(_quantity);
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${l10n.availableQuantity}: ',
+                      isBuy ? l10n.buyQuantity : l10n.sellQuantity,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: extendedColors.neutral200,
                       ),
                     ),
-                    Text(
-                      '$_effectiveMax ${l10n.bondsPiece}',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        _MaxQuantityFormatter(_effectiveMax),
+                      ],
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                         color: extendedColors.neutral100,
                       ),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      onChanged: (value) {
+                        final newQuantity = int.tryParse(value) ?? 0;
+                        if (newQuantity != _quantity) {
+                          setState(() {
+                            _quantity = newQuantity;
+                          });
+                          widget.onChanged(_quantity);
+                        }
+                      },
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Row(
+                children: [
+                  _buildButton(
+                    'minus',
+                        () => _updateQuantity(-1),
+                    extendedColors,
+                  ),
+                  const SizedBox(width: 12),
+                  _buildButton(
+                    'plus',
+                        () => _updateQuantity(1),
+                    extendedColors,
+                  ),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
+          const SizedBox(height: 10),
           Row(
             children: [
-              _buildButton(
-                'minus',
-                () => _updateQuantity(-1),
-                extendedColors,
+              Text(
+                '${l10n.availableQuantity}: ',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral200,
+                ),
               ),
-              const SizedBox(width: 12),
-              _buildButton(
-                'plus',
-                () => _updateQuantity(1),
-                extendedColors,
+              Text(
+                '$_effectiveMax ${l10n.bondsPiece}',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: extendedColors.neutral100,
+                ),
               ),
             ],
           ),
         ],
-      ),
+      )
     );
   }
 

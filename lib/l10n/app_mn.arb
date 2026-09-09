@@ -676,5 +676,6 @@
     "owningBond": "Эзэмшиж буй бонд",
     "averageYield": "дундаж өгөөж",
     "cancelOrderDesc": "Та энэ захиалгыг устгахдаа итгэлтэй байна уу?",
-    "historyOrder": "Түүх"
+    "historyOrder": "Түүх",
+    "recieveAmount": "Хүлээн авах дүн"
 }
