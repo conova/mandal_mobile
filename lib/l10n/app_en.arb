@@ -768,5 +768,11 @@
     "taxLabel": "Tax",
     "scheduledPayments": "Scheduled payments",
     "timesPaid": "times paid",
-    "remainingPayments": "payments left"
+    "remainingPayments": "payments left",
+    "historicalProfitLoss": "Historical profit/loss",
+    "receivedTab": "Received",
+    "futureTab": "Upcoming",
+    "nothingYet": "Nothing yet",
+    "growAssetsPrompt": "Would you like to grow your assets safely with bonds?",
+    "yieldCount": "Payments"
 }

@@ -107,6 +107,10 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   /// хуваарийн дизайн
   bool get _isSecondary => _bond != null && !_isForeign && !_isPrimary;
 
+  /// Хоёрдогч болон гадаад дизайнд нэрийн блок нь өнгөт дэвсгэр,
+  /// цэгэн хээтэй
+  bool get _hasTintedHeader => _isSecondary || _isForeign;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -115,7 +119,11 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      appBar: AppBar(
+      // Хоёрдогч дизайнд буцах товч, нэр нь нэг дэвсгэртэй блок дотор
+      // байрлах тул AppBar ашиглахгүй
+      appBar: _hasTintedHeader
+          ? null
+          : AppBar(
         toolbarHeight: 70,
         leadingWidth: 60,
         leading: Padding(
@@ -159,12 +167,65 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
         onRefresh: _fetch,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Анхдагч дизайнд нэр нь bar дээр гарах тул энд давхардуулахгүй
-              if (!_isPrimary) ...[
+              // Хоёрдогч/гадаад дизайн — буцах товч, нэр нэг дэвсгэртэй
+              // блокт, баруун дээд буланд цэгэн хээ
+              if (_hasTintedHeader)
+                Container(
+                  width: double.infinity,
+                  color: extendedColors.bgSecondary,
+                  child: ClipRect(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Image.asset(
+                            'assets/images/dots.png',
+                            fit: BoxFit.contain,
+                            alignment: Alignment.topRight,
+                            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                          ),
+                        ),
+                        SafeArea(
+                          bottom: false,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: CircleBackButton(),
+                                ),
+                                const SizedBox(height: 28),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 4),
+                                  child: BondDetailHeader(
+                                    bond: _bond,
+                                    availableCash:
+                                        (_portfolioSummary?.cashBalance ?? 0) -
+                                            (_portfolioSummary?.holdAmount ??
+                                                0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+              // Анхдагч дизайнд нэр нь bar дээр, хоёрдогчид дээрх блокт
+              if (!_isPrimary && !_hasTintedHeader) ...[
                 BondDetailHeader(
                   bond: _bond,
                   availableCash: (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
@@ -179,7 +240,10 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
                 BondDetailSecondaryView(bond: _bond)
               else
                 BondDetailClosedView(bond: _bond),
-              const SizedBox(height: 140), // Bottom bar space
+                    const SizedBox(height: 140), // Bottom bar space
+                  ],
+                ),
+              ),
             ],
           ),
         ),

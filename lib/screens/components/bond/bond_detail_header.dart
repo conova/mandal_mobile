@@ -27,8 +27,8 @@ class BondDetailHeader extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    final title = bond?.name ?? 'Net Capital';
-    final subtitle = bond?.subtitle ?? 'Нэт Капитал';
+    final title = bond?.name ?? '';
+    final subtitle = bond?.subtitle ?? '';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

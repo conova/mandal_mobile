@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/theme/app_text_styles.dart';
-import 'package:mandal_capital/widgets/custom_button.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
+import '../../../theme/app_text_styles.dart';
 import '../../../theme/extended_colors.dart';
-import '../../../widgets/custom_svg_icon.dart';
-import 'bond_detail_info_list.dart';
-import 'bond_progress.dart';
+import 'bond_close_date_banner.dart';
+import 'bond_date_row.dart';
+import 'bond_fact_card.dart';
+import 'bond_payment_schedule.dart';
 
-/// ГАДААД + хоёрдогч бондын дизайн: цуглуулах дүнгийн явц
-/// (ORDEREDAMT/AMT), арилжаа биелэх төлөвлөгөөт огноо (PAYDAY),
-/// үзүүлэлтүүдийн карт, танилцуулга үзэх товч.
+/// ГАДААД бондын дизайн: цугларсан дүнгийн явц, үзүүлэлтүүдийн карт,
+/// хаагдах төлөвлөгөөт огноо, хүүгийн төлбөрийн хуваарь.
 class BondDetailForeignView extends StatelessWidget {
   final MarketInstrument? bond;
 
   const BondDetailForeignView({super.key, required this.bond});
+
+  /// Хүү төлөх давтамж — locale-ийн дагуу (хоосон бол нөгөөгөөр нөхнө)
+  String _payPeriodOf(BuildContext context) {
+    final mn = bond?.payPeriod ?? '';
+    final en = bond?.payPeriod2 ?? '';
+    final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+    final value =
+        isEnglish ? (en.isNotEmpty ? en : mn) : (mn.isNotEmpty ? mn : en);
+    return value.isEmpty ? '-' : value;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,77 +32,132 @@ class BondDetailForeignView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    final progress =
-        bond == null ? null : orderProgress(bond!.orderedAmt, bond!.amt);
-    final paydayDate = parseStockDate(bond?.payday);
+    final progress = orderProgress(bond?.orderedAmt, bond?.amt);
+    // Захиалга хаагдах огноо — байхгүй бол арилжааны огноогоор нөхнө
+    final closeDate =
+        parseStockDate(bond?.orderEndDate) ?? parseStockDate(bond?.payday);
+
+    // Төлбөрийн хуваарь — дата дутуу бол хэсгийг харуулахгүй
+    final schedule = BondSchedule.build(
+      start: parseStockDate(bond?.startDate),
+      end: parseStockDate(bond?.endDate),
+      payPeriod: bond?.payPeriod ?? '',
+      nextPayday: parseStockDate(bond?.payday),
+    );
+    final maturity =
+        parseStockDate(bond?.endDate) ?? parseStockDate(bond?.term);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (progress != null) ...[
-          BondProgress(
-            current: formatStockAmount(
-              bond?.orderedAmt,
-              isForeign: true,
-              decimals: 0,
+          Text(
+            l10n.collectedAmount,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: AppTextStyles.light,
+              color: extendedColors.neutral200,
             ),
-            total: formatStockAmount(bond?.amt, isForeign: true, decimals: 0),
-            percentage: progress,
           ),
-          const SizedBox(height: 24),
-        ],
-        if (paydayDate != null) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            decoration: BoxDecoration(
-              color: extendedColors.primary100,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomSvgIcon(
-                  'info-circle',
-                  color: extendedColors.primaryMain,
-                  size: 24,
+          const SizedBox(height: 4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Text(
+                  formatStockAmount(
+                    bond?.orderedAmt ?? 0,
+                    isForeign: true,
+                    decimals: 0,
+                  ),
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: extendedColors.neutral100,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.tradePlannedDate,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: AppTextStyles.extraLight,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        formatStockDate(paydayDate),
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: AppTextStyles.bold,
-                        ),
-                      ),
-                    ],
+              ),
+              const SizedBox(width: 12),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  '${(progress * 100).round()}%',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: AppTextStyles.regular,
+                    color: extendedColors.primaryMain,
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: extendedColors.bgTertiary,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                extendedColors.primaryMain,
+              ),
+              minHeight: 12,
             ),
           ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Text(
+                '${l10n.targetAmount}: ',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: AppTextStyles.light,
+                  color: extendedColors.neutral200,
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  formatStockAmount(
+                    bond?.amt ?? 0,
+                    isForeign: true,
+                    decimals: 0,
+                  ),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: AppTextStyles.semiBold,
+                    color: extendedColors.neutral100,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+        ],
+        BondFactCard(
+          facts: [
+            BondFact(l10n.annualInterest, formatIntRate(bond?.intRate)),
+            BondFact(l10n.paymentFrequency, _payPeriodOf(context)),
+          ],
+        ),
+        if (closeDate != null) ...[
+          const SizedBox(height: 20),
+          BondCloseDateBanner(date: closeDate),
+        ],
+        const SizedBox(height: 32),
+        if (schedule != null) ...[
+          BondPaymentSchedule(schedule: schedule),
           const SizedBox(height: 24),
         ],
-        BondDetailInfoList(bond: bond),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: CustomButton(
-            onPressed: () {},
-            label: l10n.viewBondPresentation,
-            variant: CustomButtonVariant.tertiary,
-          ),
+        BondDateRow(
+          label: l10n.lastInterestPaymentDate,
+          date: schedule?.lastPaid,
+        ),
+        BondDateRow(
+          label: l10n.nextInterestPayDate,
+          date: schedule?.nextPay ?? parseStockDate(bond?.payday),
+        ),
+        BondDateRow(
+          label: l10n.bondMaturityDate,
+          date: maturity,
+          isLast: true,
         ),
       ],
     );

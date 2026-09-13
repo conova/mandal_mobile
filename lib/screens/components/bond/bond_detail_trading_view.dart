@@ -174,7 +174,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
         const SizedBox(height: 24),
         BondPaymentDetails(
           totalPayment: formatStockAmount(total, decimals: 2),
-          yieldPercent: PercentSuffixFormatter.format(rate), // formatStockAmount(expectedReturn, decimals: 2),
+          yieldValue: PercentSuffixFormatter.format(rate), // formatStockAmount(expectedReturn, decimals: 2),
           onDetailsPressed: () {
             //bond payment detail sheet
             // Хуримтлагдсан хүү - accruedInterest

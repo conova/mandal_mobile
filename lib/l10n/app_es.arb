@@ -48,5 +48,11 @@
     "taxLabel": "Impuesto",
     "scheduledPayments": "Pagos programados",
     "timesPaid": "pagos realizados",
-    "remainingPayments": "pagos restantes"
+    "remainingPayments": "pagos restantes",
+    "historicalProfitLoss": "Ganancia/pérdida histórica",
+    "receivedTab": "Recibido",
+    "futureTab": "Próximo",
+    "nothingYet": "Nada todavía",
+    "growAssetsPrompt": "¿Desea hacer crecer su patrimonio con bonos?",
+    "yieldCount": "Pagos"
 }

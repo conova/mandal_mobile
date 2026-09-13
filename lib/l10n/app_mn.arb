@@ -697,5 +697,11 @@
     "taxLabel": "Татвар",
     "scheduledPayments": "Хуваарьт төлбөрүүд",
     "timesPaid": "удаа төлөгдсөн",
-    "remainingPayments": "үлдсэн төлөлт"
+    "remainingPayments": "үлдсэн төлөлт",
+    "historicalProfitLoss": "Түүхэн ашиг/алдагдал",
+    "receivedTab": "Нийт авсан",
+    "futureTab": "Ирээдүйд авах",
+    "nothingYet": "Одоогоор байхгүй",
+    "growAssetsPrompt": "Та бонд авч хөрөнгө найдвартай өсгөх үү?",
+    "yieldCount": "Өгөөжийн тоо"
 }

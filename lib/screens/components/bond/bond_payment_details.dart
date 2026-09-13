@@ -5,13 +5,14 @@ import '../../../widgets/custom_svg_icon.dart';
 
 class BondPaymentDetails extends StatelessWidget {
   final String totalPayment;
-  final String yieldPercent;
+  /// Өгөөжийн утга — дүн эсвэл хувиар (дуудагчаас хамаарна)
+  final String yieldValue;
   final VoidCallback onDetailsPressed;
 
   const BondPaymentDetails({
     super.key,
     required this.totalPayment,
-    required this.yieldPercent,
+    required this.yieldValue,
     required this.onDetailsPressed,
   });
 
@@ -61,7 +62,6 @@ class BondPaymentDetails extends StatelessWidget {
                   Text(
                     totalPayment,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
                     ),
                     textAlign: TextAlign.right,
@@ -70,9 +70,8 @@ class BondPaymentDetails extends StatelessWidget {
                   ),
                   const SizedBox(height: 20,),
                   Text(
-                    yieldPercent,
+                    yieldValue,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: extendedColors.neutral100,
                     ),
                     textAlign: TextAlign.right,

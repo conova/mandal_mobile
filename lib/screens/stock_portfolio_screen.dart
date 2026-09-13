@@ -21,6 +21,9 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
   bool _isLoading = true;
   List<MarketInstrument> _holdings = const [];
 
+  /// Түүхийн хэсэгт дэлгэрүүлж харуулсан хувьцаанууд (symbol)
+  final Set<String> _expandedSymbols = {};
+
   @override
   void initState() {
     super.initState();
@@ -177,12 +180,17 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
               ),
             const SizedBox(height: 16),
             Divider(height: 1, color: extendedColors.neutral500),
-            // History section — эхний мөрөнд бүх хувьцааны нийлбэр
-            if (_holdings.isNotEmpty)
-              _buildTotalHistoryCard(theme, extendedColors, l10n),
-            ..._holdings.map(
-              (stock) => _buildHistoryCard(stock, theme, extendedColors, l10n),
-            ),
+            // Түүхэн ашиг/алдагдал — нийлбэр товчоо, дараа нь хувьцаа
+            // тус бүрийн задаргаа (дэлгэрүүлж үзнэ)
+            if (_holdings.isNotEmpty) ...[
+              const SizedBox(height: 28),
+              _buildHistorySummary(theme, extendedColors, l10n),
+              const SizedBox(height: 24),
+              ..._holdings.map(
+                (stock) =>
+                    _buildHistoryCard(stock, theme, extendedColors, l10n),
+              ),
+            ],
             // Хэрэгжээгүй ашгийн тайлбар — шимтгэл, татвар ороогүй
             if (_holdings.isNotEmpty)
               Padding(
@@ -260,6 +268,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
               formatStockAmount(_headerAmount ?? 0),
               theme,
               extendedColors,
+              false
             ),
           ],
         ),
@@ -271,12 +280,13 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
     String amount,
     ThemeData theme,
     ExtendedColors extendedColors,
+    bool isMedium,
   ) {
     final dotIndex = amount.indexOf('.');
     if (dotIndex == -1) {
       return Text(
         amount,
-        style: theme.textTheme.headlineLarge?.copyWith(
+        style: (isMedium? theme.textTheme.labelMedium : theme.textTheme.headlineLarge)?.copyWith(
           fontWeight: FontWeight.bold,
           color: extendedColors.neutral100,
         ),
@@ -291,14 +301,14 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
         children: [
           TextSpan(
             text: integerPart,
-            style: theme.textTheme.headlineLarge?.copyWith(
+            style: (isMedium? theme.textTheme.headlineMedium : theme.textTheme.headlineLarge)?.copyWith(
               fontWeight: FontWeight.bold,
               color: extendedColors.neutral100,
             ),
           ),
           TextSpan(
             text: decimalPart,
-            style: theme.textTheme.headlineLarge?.copyWith(
+            style: (isMedium? theme.textTheme.headlineMedium : theme.textTheme.headlineLarge)?.copyWith(
               fontWeight: FontWeight.bold,
               color: extendedColors.neutral300,
             ),
@@ -420,7 +430,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       if (change != null)
-                        CustomSvgIcon(arrow, size: 6, color: profitColor),
+                        CustomSvgIcon(arrow, size: 6 , color: profitColor),
                       const SizedBox(width: 4),
                       Text(
                         change == null
@@ -442,8 +452,9 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
     );
   }
 
-  /// Бүх хувьцааны нийлбэрээр нэг хураангуй карт — жагсаалтын эхэнд гарна
-  Widget _buildTotalHistoryCard(
+  /// Түүхэн ашиг/алдагдлын товчоо — icon, нийт дүн, хэрэгжсэн ашиг болон
+  /// ногдол ашгийн багана
+  Widget _buildHistorySummary(
     ThemeData theme,
     ExtendedColors extendedColors,
     AppLocalizations l10n,
@@ -451,151 +462,214 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
     double sumOf(double? Function(MarketInstrument s) pick) =>
         _holdings.fold(0.0, (sum, s) => sum + (pick(s) ?? 0));
 
-    return _historyCardLayout(
-      title: l10n.historyAll,
-      subtitle: '',
-      totalProfit: formatStockAmount(sumOf((s) => s.totalProfit)),
-      realizedProfit: formatStockAmount(sumOf((s) => s.realized)),
-      unrealizedProfit: formatStockAmount(sumOf((s) => s.unrealized)),
-      dividendProfit: formatStockAmount(sumOf((s) => s.dividend)),
-      theme: theme,
-      extendedColors: extendedColors,
-      l10n: l10n,
+    return Column(
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: extendedColors.bgBase,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: extendedColors.orange.withValues(alpha: 0.16),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Center(
+            child: CustomSvgIcon(
+              'clock-refresh',
+              color: extendedColors.orange,
+              size: 24,
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+        Text(
+          l10n.historicalProfitLoss,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: extendedColors.neutral200,
+            fontWeight: FontWeight.w200,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildAmountText(
+          formatStockAmount(sumOf((s) => s.totalProfit)),
+          theme,
+          extendedColors,
+          true
+        ),
+        const SizedBox(height: 20),
+        IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildCenterStat(
+                  l10n.realizedProfit,
+                  formatStockAmount(sumOf((s) => s.realized)),
+                  theme,
+                  extendedColors,
+                ),
+              ),
+              VerticalDivider(
+                width: 1,
+                thickness: 1,
+                color: extendedColors.neutral500,
+              ),
+              Expanded(
+                child: _buildCenterStat(
+                  l10n.dividendProfit,
+                  formatStockAmount(sumOf((s) => s.dividend)),
+                  theme,
+                  extendedColors,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
+  Widget _buildCenterStat(
+    String label,
+    String value,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+  ) {
+    return Column(
+      children: [
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: extendedColors.neutral200,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+        const SizedBox(height: 6),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: extendedColors.neutral100,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Хувьцаа тус бүрийн задаргаа — дарахад дэлгэрч 4 үзүүлэлт харагдана
   Widget _buildHistoryCard(
     MarketInstrument stock,
     ThemeData theme,
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
-    // TOTALPROFIT / REALIZED / UNREALIZED / DIVIDEND — null бол 0
-    return _historyCardLayout(
-      title: stock.symbol,
-      subtitle: stock.name,
-      totalProfit: formatStockAmount(
-        stock.totalProfit ?? 0,
-        isForeign: stock.curCode != 'MNT',
-      ),
-      realizedProfit: formatStockAmount(
-        stock.realized ?? 0,
-        isForeign: stock.curCode != 'MNT',
-      ),
-      unrealizedProfit: formatStockAmount(
-        stock.unrealized ?? 0,
-        isForeign: stock.curCode != 'MNT',
-      ),
-      dividendProfit: formatStockAmount(
-        stock.dividend ?? 0,
-        isForeign: stock.curCode != 'MNT',
-      ),
-      theme: theme,
-      extendedColors: extendedColors,
-      l10n: l10n,
-    );
-  }
+    final isExpanded = _expandedSymbols.contains(stock.symbol);
+    final isForeign = stock.curCode != 'MNT';
 
-  /// Түүхийн картын нийтлэг харагдац
-  Widget _historyCardLayout({
-    required String title,
-    required String subtitle,
-    required String totalProfit,
-    required String realizedProfit,
-    required String unrealizedProfit,
-    required String dividendProfit,
-    required ThemeData theme,
-    required ExtendedColors extendedColors,
-    required AppLocalizations l10n,
-  }) {
-    final item = (
-      symbol: title,
-      name: subtitle,
-      totalProfit: totalProfit,
-      realizedProfit: realizedProfit,
-      unrealizedProfit: unrealizedProfit,
-      dividendProfit: dividendProfit,
-    );
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        // Зөвхөн доод талын хүрээ
-        border: Border(bottom: BorderSide(color: extendedColors.neutral500)),
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Flexible(
-                child: Text(
-                  item.symbol,
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => setState(() {
+              if (isExpanded) {
+                _expandedSymbols.remove(stock.symbol);
+              } else {
+                _expandedSymbols.add(stock.symbol);
+              }
+            }),
+            child: Row(
+              children: [
+                Text(
+                  stock.symbol,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w500,
                     color: extendedColors.neutral100,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              if (item.name.isNotEmpty) ...[
                 const SizedBox(width: 8),
-                Flexible(
+                Expanded(
                   child: Text(
-                    item.name,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w400,
-                      color: extendedColors.neutral200,
-                    ),
+                    stock.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w300,
+                      color: extendedColors.neutral200,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                CustomSvgIcon(
+                  isExpanded ? 'chevron-up' : 'chevron-down',
+                  size: 20,
+                  color: extendedColors.neutral200,
+                ),
+              ],
+            ),
+          ),
+          if (isExpanded) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatItem(
+                    l10n.totalProfit,
+                    formatStockAmount(stock.totalProfit ?? 0,
+                        isForeign: isForeign),
+                    theme,
+                    extendedColors,
+                  ),
+                ),
+                Expanded(
+                  child: _buildStatItem(
+                    l10n.realizedProfit,
+                    formatStockAmount(stock.realized ?? 0,
+                        isForeign: isForeign),
+                    theme,
+                    extendedColors,
                   ),
                 ),
               ],
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatItem(
-                  l10n.totalProfit,
-                  item.totalProfit,
-                  theme,
-                  extendedColors,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatItem(
+                    l10n.unrealizedProfit,
+                    formatStockAmount(stock.unrealized ?? 0,
+                        isForeign: isForeign),
+                    theme,
+                    extendedColors,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _buildStatItem(
-                  l10n.realizedProfit,
-                  item.realizedProfit,
-                  theme,
-                  extendedColors,
+                Expanded(
+                  child: _buildStatItem(
+                    l10n.dividendProfit,
+                    formatStockAmount(stock.dividend ?? 0,
+                        isForeign: isForeign),
+                    theme,
+                    extendedColors,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatItem(
-                  l10n.unrealizedProfit,
-                  item.unrealizedProfit,
-                  theme,
-                  extendedColors,
-                ),
-              ),
-              Expanded(
-                child: _buildStatItem(
-                  l10n.dividendProfit,
-                  item.dividendProfit,
-                  theme,
-                  extendedColors,
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );

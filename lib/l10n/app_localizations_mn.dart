@@ -1975,4 +1975,22 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get remainingPayments => 'үлдсэн төлөлт';
+
+  @override
+  String get historicalProfitLoss => 'Түүхэн ашиг/алдагдал';
+
+  @override
+  String get receivedTab => 'Нийт авсан';
+
+  @override
+  String get futureTab => 'Ирээдүйд авах';
+
+  @override
+  String get nothingYet => 'Одоогоор байхгүй';
+
+  @override
+  String get growAssetsPrompt => 'Та бонд авч хөрөнгө найдвартай өсгөх үү?';
+
+  @override
+  String get yieldCount => 'Өгөөжийн тоо';
 }

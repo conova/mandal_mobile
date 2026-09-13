@@ -158,14 +158,14 @@ class BondPaymentSchedule extends StatelessWidget {
           children: [
             Text(
               _fmt(schedule.start),
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.labelMedium?.copyWith(
                 fontWeight: AppTextStyles.light,
                 color: extendedColors.neutral200,
               ),
             ),
             Text(
               _fmt(schedule.end),
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.labelMedium?.copyWith(
                 fontWeight: AppTextStyles.light,
                 color: extendedColors.neutral200,
               ),
@@ -205,7 +205,7 @@ class _CountLabel extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 3),
       child: Text(
         label,
-        style: theme.textTheme.bodyLarge?.copyWith(
+        style: theme.textTheme.labelLarge?.copyWith(
           fontWeight: AppTextStyles.light,
           color: extendedColors.neutral200,
         ),

@@ -17,16 +17,11 @@ class BondPortfolioStatisticScreen extends StatefulWidget {
 }
 
 class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScreen> {
-  int _selectedFilter = 0;
+  /// 1 — Нийт авсан өгөөж, 2 — Ирээдүйд авах өгөөж
+  int _selectedFilter = 1;
 
   bool _isLoading = true;
   List<MarketInstrument> _holdings = const [];
-
-  /// Бондын нийт дүн (₮) — home-ийн хөрөнгийн задаргаа API-аас
-  double? _bondTotal;
-
-  /// USD ханш (amountMnt/amount) — ойролцоо $ дүн тооцоход
-  double? _usdRate;
 
   @override
   void initState() {
@@ -45,31 +40,10 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
 
   Future<void> _fetch() async {
     try {
-      final auth = context.read<AuthService>();
-      // Миний бонд + задаргааг зэрэг татна (задаргаа нь header-ийн дүн)
-      final results = await Future.wait([
-        auth.getMyBonds(),
-        auth
-            .getAssetBreakdown()
-            .catchError((_) => <Map<String, dynamic>>[]),
-      ]);
+      final rows = await context.read<AuthService>().getMyBonds();
       if (!mounted) return;
-
-      final breakdown = results[1];
-      double? bondTotal;
-      double? usdRate;
-      for (final item in breakdown) {
-        usdRate = (item['usdRate'] as num?)?.toDouble();
-        final type = item['type']?.toString() ?? '';
-        if (type == 'bond' || type == 'bonds') {
-          bondTotal = (item['amountMnt'] as num?)?.toDouble();
-        }
-      }
-
       setState(() {
-        _holdings = MarketInstrument.listFromJson(results[0]);
-        _bondTotal = bondTotal;
-        _usdRate = usdRate;
+        _holdings = MarketInstrument.listFromJson(rows);
         _isLoading = false;
       });
     } catch (e) {
@@ -79,42 +53,25 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     }
   }
 
-  /// Огноог "2026.2.10 (122 хоног)" хэлбэрээр — үлдсэн хоногтой нь
-  String _daysLeftFromToday(String raw, AppLocalizations l10n) {
-    final date = parseStockDate(raw);
-    if (date == null) return raw.isEmpty ? '-' : raw.replaceAll('/', '.');
-    final days = date.difference(DateTime.now()).inDays;
-    return '${days.toString()} ${l10n.daysLeft}';
-  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    // Calculate total amount based on the selected filter
-    final totalValue = switch (_selectedFilter) {
-      1 => _holdings.fold<double>(0.0, (sum, item) => sum + (item.rcvYield ?? 0.0)),
-      2 => _holdings.fold<double>(0.0, (sum, item) => sum + (item.expYield ?? 0.0)),
-      _ => _holdings.fold<double>(0.0, (sum, item) => sum + ((item.currentBal ?? 0.0) * (item.stockPrice ?? 0.0))),
-    };
+    // Сонгосон таб-ын дагуу нийлбэр дүн
+    final totalValue = _holdings.fold<double>(
+      0.0,
+      (sum, item) =>
+          sum +
+          ((_selectedFilter == 2 ? item.expYield : item.rcvYield) ?? 0.0),
+    );
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
-        title: Padding(
-          padding: EdgeInsets.only(top: 10),
-          child: Text(
-            (switch (_selectedFilter ) {
-              1 => l10n.totalReturnReceived,
-              2 => l10n.futureReturn,
-              _ => l10n.amountPieces,
-            }),
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: extendedColors.neutral100,
-            ),
-          ),
-        ),
+        backgroundColor: extendedColors.bgBase,
+        elevation: 0,
         toolbarHeight: 70,
         leadingWidth: 60,
         leading: Padding(
@@ -126,43 +83,45 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10,),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16,),
-              child: Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: extendedColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      switch (_selectedFilter) {
-                        1 => l10n.totalYieldGot,
-                        2 => l10n.totalYield,
-                        _ => l10n.amountPieces,
-                      },
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral200,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        textAlign: TextAlign.end,
-                        formatStockAmount(totalValue),
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w400,
+            const SizedBox(height: 4),
+            _buildSegmentedTabs(theme, extendedColors, l10n),
+            const SizedBox(height: 16),
+            // Хураангуй дүн — зөвхөн жагсаалт хоосон биш үед
+            if (!_isLoading && _holdings.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _selectedFilter == 2
+                              ? '${l10n.futureReturn}:'
+                              : '${l10n.totalReturnReceived}:',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            color: extendedColors.neutral200,
+                          ),
                         ),
-                      )
-                    )
-                  ],
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        formatStockAmount(totalValue),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: extendedColors.neutral100,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 8,),
             /*// Table header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -197,55 +156,55 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_holdings.isEmpty)
-              Center(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Image.asset(
-                      'assets/images/safe_box.png',
-                      height: 101,
-                      errorBuilder: (_, _, _) => const SizedBox(height: 80),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.noBondsYet,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
+              Padding(
+                padding: const EdgeInsets.only(top: 40),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'assets/images/safe_box.png',
+                        height: 180,
+                        errorBuilder: (_, _, _) => const SizedBox(height: 140),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        l10n.startInvestingPrompt,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                            color: extendedColors.neutral100,
-                            fontWeight: FontWeight.w200
+                      const SizedBox(height: 24),
+                      Text(
+                        l10n.nothingYet,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: extendedColors.neutral100,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: 130,
-                      child: CustomButton(
-                        variant: CustomButtonVariant.purple,
-                        onPressed: () {
-                          // Home (main) руу буцаж бондын tab-ийг нээнэ
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/main',
-                                (route) => false,
-                            arguments: {'tab': 1},
-                          );
-                        },
-                        label: l10n.buyBond,
-                        size: CustomButtonSize.small,
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          l10n.growAssetsPrompt,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: extendedColors.neutral200,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+                      const SizedBox(height: 28),
+                      SizedBox(
+                        width: 190,
+                        child: CustomButton(
+                          onPressed: () {
+                            // Home (main) руу буцаж бондын tab-ийг нээнэ
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              '/main',
+                              (route) => false,
+                              arguments: {'tab': 1},
+                            );
+                          },
+                          label: l10n.buyBond,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               )
             else
@@ -266,12 +225,63 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     );
   }
 
+  /// Segmented toggle — "Нийт авсан" / "Ирээдүйд авах"
+  Widget _buildSegmentedTabs(
+    ThemeData theme,
+    ExtendedColors extendedColors,
+    AppLocalizations l10n,
+  ) {
+    Widget tab(int filter, String label) {
+      final isSelected = _selectedFilter == filter;
+      return Expanded(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => setState(() => _selectedFilter = filter),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              color: isSelected ? extendedColors.bgBase : Colors.transparent,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: isSelected
+                    ? extendedColors.neutral100
+                    : extendedColors.neutral200,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          tab(1, l10n.receivedTab),
+          tab(2, l10n.futureTab),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBondRow(
-      MarketInstrument bond,
-      ThemeData theme,
-      ExtendedColors extendedColors,
-      AppLocalizations l10n,
-      ) {
+    MarketInstrument bond,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+    AppLocalizations l10n,
+  ) {
+    final cnt = bond.divCnt ?? 0;
+    final total = bond.divTotal ?? 0;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
@@ -287,14 +297,13 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                       child: Text(
                         bond.name,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w400,
                           color: extendedColors.neutral100,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         bond.subtitle,
@@ -308,110 +317,53 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                if (_selectedFilter == 2)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: extendedColors.yellow200,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      _daysLeftFromToday(bond.term, l10n),
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
-                      )
-                    )
-                  )
-                else
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: extendedColors.bgSecondary,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      bond.isForeign
-                          ? l10n.foreign
-                          : (bond.isOpen ? l10n.open : l10n.closed),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
-                      ),
-                    ),
-                  )
+                const SizedBox(height: 6),
+                Text(
+                  '${l10n.yieldCount} $cnt/$total',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w300,
+                    color: extendedColors.neutral200,
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          // Flexible биш — агуулгаараа хэмжигдэж баруун захад наалдана
-          // (Expanded + Flexible хослол сул зайг хувааж дүнг голд гацаадаг)
           _buildRowValue(bond, theme, extendedColors, l10n),
         ],
       ),
     );
   }
 
-  /// Мөрийн баруун баганын утга — сонгосон filter-ээс хамаарна:
-  ///   0 — Эзэмшиж буй дүн (ширхэг × дундаж үнэ, доор нь хүү | ширхэг)
-  ///   1 — Нийт авсан өгөөж (RCVYEILD, доор нь авсан тоо)
-  ///   2 — Ирээдүйд авах өгөөж (EXPYEILD, доор нь үлдсэн тоо)
+  /// Мөрийн баруун багана — өгөөжийн дүн, доор нь огноо
   Widget _buildRowValue(
-      MarketInstrument bond,
-      ThemeData theme,
-      ExtendedColors extendedColors,
-      AppLocalizations l10n,
-      ) {
-    final cnt = bond.divCnt ?? 0;
-    final total = bond.divTotal ?? 0;
-
-    final String amountText;
-    final Color amountColor;
-    final String subText;
-
-    switch (_selectedFilter) {
-      case 1:
-        final yield_ = bond.rcvYield ?? 0;
-        amountText = formatStockAmount(yield_, isForeign: bond.curCode != 'MNT');
-        // Өгөөж авсан бол ягаанаар тодруулна
-        amountColor = yield_ > 0
-            ? extendedColors.purple500
-            : extendedColors.neutral100;
-        subText = cnt > 0 ? l10n.timesReceived(cnt, total) : '$cnt/$total';
-      case 2:
-        final yield_ = bond.expYield ?? 0;
-        amountText = formatStockAmount(yield_, isForeign:  bond.curCode != 'MNT');
-        amountColor = extendedColors.neutral100;
-        subText = bond.term.replaceAll('/', '.');
-      default:
-      // Эзэмшиж буй дүн = ширхэг × дундаж үнэ
-        final bal = bond.currentBal ?? 0;
-        //final value = bal * (bond.avgPrice ?? 0);
-        final value = bal * (bond.stockPrice ?? 0);
-        amountText = formatStockAmount(value, isForeign:  bond.curCode != 'MNT');
-        amountColor = extendedColors.neutral100;
-        subText =
-        '${l10n.interestRateShort} - ${formatIntRate(bond.intRate)} | '
-            '${formatStockAmount(bal, decimals: 0, isForeign:  bond.curCode != 'MNT').replaceAll('₮', '')}${l10n.pieces}';
-    }
+    MarketInstrument bond,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+    AppLocalizations l10n,
+  ) {
+    final isForeign = bond.curCode != 'MNT';
+    final amount = _selectedFilter == 2
+        ? (bond.expYield ?? 0)
+        : (bond.rcvYield ?? 0);
+    final date = _selectedFilter == 2 ? bond.term : bond.payday;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          amountText,
+          formatStockAmount(amount, isForeign: isForeign),
           style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w400,
-            color: amountColor,
+            color: extendedColors.neutral100,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
-          subText,
+          date.isEmpty ? '-' : date.replaceAll('/', '.'),
           style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w300,
             color: extendedColors.neutral200,
           ),
           maxLines: 1,

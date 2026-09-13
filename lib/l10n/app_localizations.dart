@@ -3807,6 +3807,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'payments left'**
   String get remainingPayments;
+
+  /// No description provided for @historicalProfitLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Historical profit/loss'**
+  String get historicalProfitLoss;
+
+  /// No description provided for @receivedTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get receivedTab;
+
+  /// No description provided for @futureTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get futureTab;
+
+  /// No description provided for @nothingYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet'**
+  String get nothingYet;
+
+  /// No description provided for @growAssetsPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to grow your assets safely with bonds?'**
+  String get growAssetsPrompt;
+
+  /// No description provided for @yieldCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get yieldCount;
 }
 
 class _AppLocalizationsDelegate

@@ -2011,4 +2011,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get remainingPayments => 'pagos restantes';
+
+  @override
+  String get historicalProfitLoss => 'Ganancia/pérdida histórica';
+
+  @override
+  String get receivedTab => 'Recibido';
+
+  @override
+  String get futureTab => 'Próximo';
+
+  @override
+  String get nothingYet => 'Nada todavía';
+
+  @override
+  String get growAssetsPrompt => '¿Desea hacer crecer su patrimonio con bonos?';
+
+  @override
+  String get yieldCount => 'Pagos';
 }

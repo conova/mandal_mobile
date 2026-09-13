@@ -4,8 +4,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../theme/extended_colors.dart';
-import '../../../widgets/custom_svg_icon.dart';
 import 'bond_circular_progress.dart';
+import 'bond_close_date_banner.dart';
 import 'bond_fact_card.dart';
 
 /// АНХДАГЧ зах зээлийн бондын дизайн: дүүргэлтийн дугуй индикатор,
@@ -94,47 +94,8 @@ class BondDetailPrimaryView extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         if (closeDate != null) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              color: extendedColors.orange200,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CustomSvgIcon(
-                  'annotation-info',
-                  color: extendedColors.orange,
-                  size: 20,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.bondClosePlannedDate,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: AppTextStyles.regular,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        formatStockDate(closeDate).replaceAll('/', '.'),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: AppTextStyles.regular,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+          BondCloseDateBanner(date: closeDate),
+          const SizedBox(height: 24),
         ],
         // Үзүүлэлтүүд + танилцуулга үзэх товч нэг картад
         BondFactCard(

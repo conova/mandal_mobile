@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mandal_capital/widgets/percent_suffix_formatter.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
 import '../../services/auth_service.dart';
@@ -201,14 +200,12 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   '${l10n.availableCash}: ',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.neutral100,
-                    fontWeight: AppTextStyles.bold,
                   ),
                 ),
                 Text(
                   formatStockAmount(_availableCash, decimals: 0),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.primaryMain,
-                    fontWeight: AppTextStyles.bold,
                   ),
                 ),
               ],
@@ -230,12 +227,12 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 isForeign: _isForeign,
                 decimals: 0,
               ),
-              yieldPercent: PercentSuffixFormatter.format(_intRate),
-              // formatStockAmount(
-              //   _expectedReturn,
-              //   isForeign: _isForeign,
-              //   decimals: 0,
-              // ),
+              // Авах өгөөжийг хувиар биш, тооцоолсон дүнгээр харуулна
+              yieldValue: formatStockAmount(
+                _expectedReturn,
+                isForeign: _isForeign,
+                decimals: 0,
+              ),
               onDetailsPressed: () {
                 showModalBottomSheet(
                   context: context,

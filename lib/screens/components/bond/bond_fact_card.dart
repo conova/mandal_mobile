@@ -30,7 +30,7 @@ class BondFactCard extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: extendedColors.neutral500),
@@ -45,6 +45,7 @@ class BondFactCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: CustomButton(
+              size: CustomButtonSize.small,
               onPressed: onPresentation ?? () {},
               label: l10n.viewBondPresentation,
               variant: CustomButtonVariant.secondary,
@@ -69,6 +70,7 @@ class _FactRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(width: 8),
         Expanded(
           flex: 5,
           child: Text(
@@ -85,11 +87,11 @@ class _FactRow extends StatelessWidget {
           child: Text(
             fact.value,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: AppTextStyles.semiBold,
               color: extendedColors.neutral100,
             ),
           ),
         ),
+        const SizedBox(width: 8),
       ],
     );
   }
