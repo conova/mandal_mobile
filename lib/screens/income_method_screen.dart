@@ -161,11 +161,8 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
                   decimals: 0,
                 ),
                 isLoading: _isLoading,
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  '/income_amount',
-                  arguments: {'currency': 'usd', 'usdRate': _usdRate.toString()},
-                ),
+                onTap: () =>
+                    Navigator.pushNamed(context, '/usd_deposit_info'),
               ),
               Divider(height: 1, color: extendedColors.neutral500),
             ],

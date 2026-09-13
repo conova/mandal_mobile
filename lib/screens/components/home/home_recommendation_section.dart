@@ -3,9 +3,9 @@ import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../common/stock_row_format.dart';
 import '../../../models/market_instrument.dart';
 import '../../../services/auth_service.dart';
+import '../../../theme/app_text_styles.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_snackbar.dart';
 
@@ -134,7 +134,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
             const SizedBox(height: 20),
             // PageView carousel
             SizedBox(
-              height: 196,
+              height: 112,
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : PageView.builder(
@@ -147,7 +147,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                       itemBuilder: (context, index) {
                         final item = _recommendations[index];
                         return Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 16),
+                          padding: const EdgeInsets.fromLTRB(4, 4, 4, 22),
                           child: _buildRecommendationCard(
                             context: context,
                             data: item,
@@ -196,6 +196,8 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     return languageCode == 'en' ? '$term month' : '$term сар';
   }
 
+  /// Мокапын авсаархан карт: зүүнд нэр + хугацаа, баруунд өгөөж болон
+  /// "Авах" товч.
   Widget _buildRecommendationCard({
     required BuildContext context,
     required MarketInstrument data,
@@ -204,7 +206,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
   }) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
         borderRadius: BorderRadius.circular(16),
@@ -217,210 +219,70 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  // Контент өндөр/өргөнөөс хэтэрвэл бүхэлдээ жижигрэх тул
-                  // текстүүд ямар ч үед нэг мөрөнд багтана (overflow гарахгүй)
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.topLeft,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: constraints.maxWidth,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              data.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: extendedColors.neutral100,
-                              ),
-                            ),
-                            if (data.subtitle.isNotEmpty) ...[
-                              const SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Text(
-                                    data.subtitle,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: extendedColors.neutral200,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6,),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(top: 2),
-                                      child: Text(
-                                        data.companyName,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: extendedColors.neutral300,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: extendedColors.bgSecondary,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                data.isOpen ? l10n.open : l10n.closed,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: extendedColors.neutral100,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                Text(
+                  data.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: extendedColors.neutral100,
                   ),
                 ),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(
-                    context,
-                    '/bond_detail',
-                    arguments: data.raw,
+                const SizedBox(height: 2),
+                Text(
+                  _formatDuration(
+                    data,
+                    Localizations.localeOf(context).languageCode,
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: extendedColors.purple,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                  ),
-                  child: Text(
-                    l10n.buy,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: extendedColors.bgBase,
-                    ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral300,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          IntrinsicHeight(
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildStatColumn(
-                    l10n.term,
-                    _formatDuration(
-                      data,
-                      Localizations.localeOf(context).languageCode,
-                    ),
-                    theme,
-                    extendedColors,
-                  ),
-                ),
-                VerticalDivider(
-                  color: extendedColors.neutral400,
-                  thickness: 1,
-                  width: 24,
-                ),
-                Expanded(
-                  child: _buildStatColumn(
-                    l10n.yield,
-                    data.intRate == null ? '-' : '${data.intRate}%',
-                    theme,
-                    extendedColors,
-                  ),
-                ),
-                VerticalDivider(
-                  color: extendedColors.neutral400,
-                  thickness: 1,
-                  width: 24,
-                ),
-                Expanded(
-                  child: _buildStatColumn(
-                    l10n.balance,
-                    data.amt == null
-                        ? '-'
-                        : formatCompactAmount(
-                            data.amt,
-                            languageCode: Localizations.localeOf(
-                              context,
-                            ).languageCode,
-                          ),
-                    theme,
-                    extendedColors,
-                  ),
-                ),
-              ],
+          const SizedBox(width: 12),
+          Text(
+            data.intRate == null ? '-' : '${data.intRate}%',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: extendedColors.purple,
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(
+              context,
+              '/bond_detail',
+              arguments: data.raw,
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: extendedColors.purple,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            ),
+            child: Text(
+              l10n.buy,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: AppTextStyles.bold,
+                color: extendedColors.bgBase,
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatColumn(
-    String label,
-    String value,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            label,
-            maxLines: 1,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: extendedColors.neutral300,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: 8),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            value,
-            maxLines: 1,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: extendedColors.neutral100,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -42,7 +42,7 @@ class BondMarketCardCompact extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
         borderRadius: BorderRadius.circular(18),

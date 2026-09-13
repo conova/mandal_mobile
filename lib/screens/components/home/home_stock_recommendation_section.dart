@@ -150,7 +150,7 @@ class _HomeStockRecommendationSectionState
                       itemBuilder: (context, index) {
                         final item = _stocks[index];
                         return Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 16),
+                          padding: const EdgeInsets.fromLTRB(4, 4, 4, 22),
                           child: _buildStockCard(item, extendedColors),
                         );
                       },

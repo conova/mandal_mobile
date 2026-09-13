@@ -390,32 +390,45 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         children: [
           if (_isLoading && _report.isEmpty)
             const Center(child: CircularProgressIndicator())
-          // Portfolio дата хоосон — "тайлан үүсээгүй" төлөв
+          // Portfolio дата хоосон — "тайлан үүсээгүй" төлөв.
+          // Шүүлтүүрийг энд ч харуулна; эс тэгвэл дататай хугацаа руу
+          // буцаж шилжих боломжгүй болно.
           else if (_report.isEmpty)
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'assets/images/box.png',
-                    width: 180,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, _, _) => Icon(
-                      Icons.folder_open_outlined,
-                      size: 96,
-                      color: extendedColors.neutral400,
+            Column(
+              children: [
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _buildTimeFilters(l10n, theme, extendedColors),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/images/box.png',
+                          width: 180,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => Icon(
+                            Icons.folder_open_outlined,
+                            size: 96,
+                            color: extendedColors.neutral400,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noReportYet,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                        const SizedBox(height: 120),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.noReportYet,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral100,
-                    ),
-                  ),
-                  const SizedBox(height: 120),
-                ],
-              ),
+                ),
+              ],
             )
           else
             SingleChildScrollView(
@@ -516,6 +529,17 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
               ),
             ),
           ]*/
+          // Шүүлтүүр солиход хуучин дата дэлгэцэн дээр үлддэг тул
+          // дахин татаж байгааг индикатораар мэдэгдэнэ
+          if (_isLoading && !_report.isEmpty)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: ColoredBox(
+                  color: extendedColors.bgBase.withValues(alpha: 0.6),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+              ),
+            ),
         ],
       ),
       bottomNavigationBar: !_report.isEmpty

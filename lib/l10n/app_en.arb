@@ -752,5 +752,21 @@
     "barePiece": "Piece(s)",
     "highestBuyPrice": "Highest \nBuy Price",
     "lowestSellPrice": "Lowest \nSell Price",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "usdDepositTitle": "Top up USD account",
+    "accountNo": "Account number",
+    "bankTdbShort": "TDB",
+    "bankTdb": "Trade and Development Bank",
+    "bankGolomt": "Golomt Bank",
+    "fetchChildListEmongolia": "Fetch children list from E-Mongolia",
+    "childListEmpty": "No children found in E-Mongolia",
+    "selectChildLabel": "Select your child",
+    "fillRate": "Filled",
+    "collectedAmount": "Collected amount",
+    "targetAmount": "Target amount",
+    "bondClosePlannedDate": "Planned bond closing date",
+    "taxLabel": "Tax",
+    "scheduledPayments": "Scheduled payments",
+    "timesPaid": "times paid",
+    "remainingPayments": "payments left"
 }

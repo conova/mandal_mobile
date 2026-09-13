@@ -8,19 +8,30 @@ import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import 'components/shared/deposit_info_row.dart';
 
-/// Бондын данс цэнэглэх — банкны шилжүүлгийн мэдээлэл (МҮЦТХ данс руу).
+/// Долларын данс цэнэглэх — банкны шилжүүлгийн мэдээлэл.
 ///
-/// Бүх харилцагч нэг МҮЦТХ данс руу шилжүүлэх ба гүйлгээний утганд
-/// бичигдэх регистрийн дугаараар харилцагчийг ялгана.
-class DepositInfoScreen extends StatelessWidget {
-  const DepositInfoScreen({super.key});
+/// Мандал Капиталын хоёр банкны данснаас сонгож шилжүүлэх боломжтой;
+/// дансны дугаар хоёуланд нь ижил бөгөөд гүйлгээний утгаар (uid +
+/// регистрийн дугаар) харилцагчийг ялгана.
+class UsdDepositInfoScreen extends StatefulWidget {
+  const UsdDepositInfoScreen({super.key});
 
-  /// МҮЦТХ — банкны код 95 (лого server-ээс)
-  static const String _bankCode = '95';
-  static const String _bankName = 'Монголын үнэт цаасны төвлөрсөн хадгаламж';
+  @override
+  State<UsdDepositInfoScreen> createState() => _UsdDepositInfoScreenState();
+}
 
-  /// МҮЦТХ-ийн хүлээн авах IBAN данс (бүх харилцагчид нэг)
-  static const String _iban = '800020010 5055224020';
+class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
+  /// Хүлээн авах данс — банк солигдсон ч дугаар ижил
+  static const String _accountNo = '5055224020';
+
+  /// Худалдаа хөгжлийн банк — 04, Голомт банк — 15 (лого server-ээс)
+  static const String _tdbCode = '04';
+  static const String _golomtCode = '15';
+
+  /// 0 — Худалдаа хөгжлийн банк, 1 — Голомт банк
+  int _selectedBank = 0;
+
+  bool get _isTdb => _selectedBank == 0;
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +40,10 @@ class DepositInfoScreen extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     final info = context.read<AuthService>().userInfo;
-
-    final receiver =
-        '${info?['lastName'] ?? ''} ${info?['firstName'] ?? ''}'.trim();
-    // Гүйлгээний утга — харилцагчийг ялгах регистрийн дугаар
-    final memo = info?['registerNumber']?.toString() ?? '';
+    final auth = context.read<AuthService>();
+    // Гүйлгээний утга — uid болон регистрийн дугаарын нийлбэр
+    final memo =
+        '${auth.uid ?? ''}${info?['registerNumber']?.toString() ?? ''}';
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -55,7 +65,7 @@ class DepositInfoScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Center(
                       child: Text(
-                        l10n.bondDepositTitle,
+                        l10n.usdDepositTitle,
                         style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.neutral100,
@@ -65,38 +75,42 @@ class DepositInfoScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Center(
                       child: Padding(
-                        padding: EdgeInsetsGeometry.symmetric(horizontal: 24),
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Text(
                           l10n.depositInfoSubtitle,
                           textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyLarge?.copyWith(
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: extendedColors.neutral200,
                           ),
                         ),
-                      )
+                      ),
                     ),
                     const SizedBox(height: 24),
+                    _buildBankTabs(theme, l10n, extendedColors),
+                    const SizedBox(height: 16),
                     Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
                         color: extendedColors.bgSecondary,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Column(
                         children: [
                           DepositInfoRow(
                             label: l10n.receiverBank,
-                            value: _bankName,
+                            value: _isTdb ? l10n.bankTdb : l10n.bankGolomt,
                             trailing: ClipOval(
                               child: Container(
                                 color: Colors.white,
                                 padding: const EdgeInsets.all(4),
                                 child: Image.network(
-                                  ApiConfig.bankLogoUrl(_bankCode),
+                                  ApiConfig.bankLogoUrl(
+                                    _isTdb ? _tdbCode : _golomtCode,
+                                  ),
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit.contain,
@@ -110,15 +124,14 @@ class DepositInfoScreen extends StatelessWidget {
                             ),
                           ),
                           DepositInfoRow(
-                            label: l10n.ibanAccountNo,
-                            value: _iban,
-                            // Банкны апп руу буулгахад зай саад болохгүй
-                            copyValue: _iban.replaceAll(' ', ''),
+                            label: l10n.accountNo,
+                            value: _accountNo,
+                            copyValue: _accountNo,
                           ),
                           DepositInfoRow(
                             label: l10n.receiver,
-                            value: receiver.isNotEmpty ? receiver : '-',
-                            copyValue: receiver,
+                            value: l10n.mandalCapital,
+                            copyValue: l10n.mandalCapital,
                           ),
                           DepositInfoRow(
                             label: l10n.transactionMemo,
@@ -146,6 +159,59 @@ class DepositInfoScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Банк сонгох segmented control — сонгосон нь цагаан дэвсгэртэй
+  Widget _buildBankTabs(
+    ThemeData theme,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+  ) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Row(
+        children: [
+          _buildBankTab(0, l10n.bankTdbShort, theme, extendedColors),
+          _buildBankTab(1, l10n.bankGolomt, theme, extendedColors),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBankTab(
+    int index,
+    String label,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+  ) {
+    final isSelected = _selectedBank == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedBank = index),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+          decoration: BoxDecoration(
+            color: isSelected ? extendedColors.bgBase : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: isSelected
+                  ? extendedColors.neutral100
+                  : extendedColors.neutral200,
+            ),
+          ),
         ),
       ),
     );

@@ -32,5 +32,21 @@
     "listUpdated": "Lista actualizada",
     "changed": "Cambiado",
     "hasError": "Tiene error",
-    "helloWorld": "¡Hola Mundo!"
+    "helloWorld": "¡Hola Mundo!",
+    "usdDepositTitle": "Recargar cuenta USD",
+    "accountNo": "Número de cuenta",
+    "bankTdbShort": "TDB",
+    "bankTdb": "Trade and Development Bank",
+    "bankGolomt": "Golomt Bank",
+    "fetchChildListEmongolia": "Obtener lista de hijos de E-Mongolia",
+    "childListEmpty": "No se encontraron hijos en E-Mongolia",
+    "selectChildLabel": "Seleccione a su hijo",
+    "fillRate": "Completado",
+    "collectedAmount": "Monto recaudado",
+    "targetAmount": "Monto objetivo",
+    "bondClosePlannedDate": "Fecha prevista de cierre del bono",
+    "taxLabel": "Impuesto",
+    "scheduledPayments": "Pagos programados",
+    "timesPaid": "pagos realizados",
+    "remainingPayments": "pagos restantes"
 }

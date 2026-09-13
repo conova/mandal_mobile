@@ -31,12 +31,12 @@ class DanService {
 
   /// E-Mongolia баталгаажуулалт эхлүүлэх — webview-д нээх uri авна.
   /// POST /api/e/uri
-  /// body: { unique, callback, services: [{code}] }
+  /// body: { unique, callback, services: [{code, params?}] }
   /// response: { code, response: { uri, state, requestId }, title }
   Future<DanEUriResult> startEMongolia({
     required String unique,
     required String callback,
-    required List<String> serviceCodes,
+    required List<DanServiceRequest> services,
   }) async {
     try {
       final response = await _dio.post(
@@ -44,7 +44,7 @@ class DanService {
         data: {
           'unique': unique,
           'callback': callback,
-          'services': serviceCodes.map((c) => {'code': c}).toList(),
+          'services': services.map((s) => s.toJson()).toList(),
         },
       );
       final body = response.data as Map<String, dynamic>;
@@ -72,6 +72,23 @@ class DanService {
     }
     return e.message ?? 'Network error';
   }
+}
+
+/// E-Mongolia-гаас хүсэх нэг үйлчилгээ.
+///
+/// Зарим үйлчилгээ нэмэлт параметр шаардана — жнь `CHILD_INFO` нь
+/// эцэг/эхийн `registeredNum` (иргэний үнэмлэхний бүртгэлийн дугаар)
+/// болон `regnum` (регистрийн дугаар) хоёрыг авна.
+class DanServiceRequest {
+  final String code;
+  final Map<String, String> params;
+
+  const DanServiceRequest(this.code, {this.params = const {}});
+
+  Map<String, dynamic> toJson() => {
+        'code': code,
+        if (params.isNotEmpty) 'params': params,
+      };
 }
 
 class DanException implements Exception {

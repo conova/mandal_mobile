@@ -9,6 +9,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:dio/dio.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../common/api_message.dart';
+import '../models/child_info.dart';
 import '../models/order.dart';
 import '../models/sub_account.dart';
 import '../config/api_config.dart';
@@ -1324,6 +1325,25 @@ class AuthService with ChangeNotifier {
             .toList();
       }
       // Түүх байхгүй үед алдаа биш — хоосон жагсаалт
+      return [];
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
+  /// E-Mongolia-аас татагдаж сервер дээр хадгалагдсан хүүхдүүдийн жагсаалт.
+  /// GET /user/childs
+  Future<List<ChildInfo>> getChildren() async {
+    try {
+      final response = await _authedDio.get(ApiConfig.userChilds);
+      final body = response.data as Map<String, dynamic>;
+      if (body['code']?.toString() == '0' && body['data'] is List) {
+        return (body['data'] as List)
+            .whereType<Map>()
+            .map((e) => ChildInfo.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+      // Хүүхэд бүртгэгдээгүй үед алдаа биш — хоосон жагсаалт
       return [];
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));

@@ -40,6 +40,10 @@ class ApiConfig {
   ///   type: "mnt" | "usd" | "bond" } }
   static const String withdrawalRequest = '/bdc/api/withdrawal/withdrawal';
   static const String danEUri = '/api/e/uri';
+
+  /// DAN gateway баталгаажуулалт дуусаад redirect хийх URL.
+  /// WebView энэ prefix-тэй хаяг руу орохыг мэдэрч хаагдана.
+  static const String danStatusCallback = '$baseUrl/bdc/api/kyc/dan_status';
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 15);
 
@@ -83,6 +87,10 @@ class ApiConfig {
   ///   Response data row: { TXNACNTNO, TXNACNTNAME, TXNBANKNO, BANKNAME,
   ///   BANKNAME2, REGDATE, ISPRIMARY ("1" | "0") }
   static const String userAccounts = '/bdc/api/user/acnts';
+
+  /// GET /user/childs → E-Mongolia-аас татагдсан хүүхдүүдийн жагсаалт
+  ///   Row: { id, firstName, lastName, registerNumber }
+  static const String userChilds = '/bdc/api/user/childs';
 
   /// GET /user/fees → харилцагчийн шимтгэлийн хувиуд
   ///   Row: { STOCKTYPE, FEE ("1" = 1%), FEEIPO, SIDE, TYPENAME, ... }

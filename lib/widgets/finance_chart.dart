@@ -38,6 +38,25 @@ class _FinanceChartState extends State<FinanceChart> {
       TransformationController();
 
   @override
+  void didUpdateWidget(FinanceChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Шинэ дата (жнь өөр хугацааны шүүлтүүр) ирэхэд өмнөх zoom/pan
+    // хэвээр үлдвэл график огт өөрчлөгдөөгүй мэт харагдана
+    if (!_sameSpots(oldWidget.spots, widget.spots)) {
+      _transformationController.value = Matrix4.identity();
+    }
+  }
+
+  static bool _sameSpots(List<FlSpot>? a, List<FlSpot>? b) {
+    if (identical(a, b)) return true;
+    if (a == null || b == null || a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].x != b[i].x || a[i].y != b[i].y) return false;
+    }
+    return true;
+  }
+
+  @override
   void dispose() {
     _transformationController.dispose();
     super.dispose();

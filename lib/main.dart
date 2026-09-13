@@ -28,6 +28,7 @@ import 'screens/currency_detail_screen.dart';
 import 'screens/bond_portfolio_screen.dart';
 import 'screens/stock_portfolio_screen.dart';
 import 'screens/deposit_info_screen.dart';
+import 'screens/usd_deposit_info_screen.dart';
 import 'screens/income_method_screen.dart';
 import 'screens/income_amount_screen.dart';
 import 'screens/income_success_screen.dart';
@@ -570,6 +571,7 @@ class MyApp extends StatelessWidget {
               '/stock_portfolio': (context) => const StockPortfolioScreen(),
               '/income_method': (context) => const IncomeMethodScreen(),
               '/deposit_info': (context) => const DepositInfoScreen(),
+              '/usd_deposit_info': (context) => const UsdDepositInfoScreen(),
               '/income_amount': (context) => const IncomeAmountScreen(),
               '/income_success': (context) => const IncomeSuccessScreen(),
               '/withdraw_method': (context) => const WithdrawMethodScreen(),

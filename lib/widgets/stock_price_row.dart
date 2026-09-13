@@ -30,7 +30,7 @@ class StockPriceRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -38,7 +38,7 @@ class StockPriceRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(symbol, style: theme.textTheme.headlineSmall),
+                  Text(symbol, style: theme.textTheme.bodyLarge),
                   const SizedBox(height: 4),
                   Text(
                     name,
@@ -54,8 +54,7 @@ class StockPriceRow extends StatelessWidget {
                 children: [
                   Text(
                     price,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    style: theme.textTheme.bodyLarge?.copyWith(
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -78,7 +77,6 @@ class StockPriceRow extends StatelessWidget {
                       Text(
                         change,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
                           color: isGrowing == null || change == '0.00%'
                               ? theme.textTheme.bodySmall?.color ?? Colors.grey
                               : (isGrowing!

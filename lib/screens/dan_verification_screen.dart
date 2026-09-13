@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
+import '../config/api_config.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/dan_service.dart';
@@ -34,14 +35,14 @@ class _DanVerificationScreenState extends State<DanVerificationScreen> {
       // дахин unfo татаж шинэчилнэ.
       final unique = auth.uid ?? '';
       // callback — DAN gateway хэрэглэгчийг redirect хийх URL.
-      const callback = 'https://bds.techfi.mn/bdc/api/kyc/dan_status';
+      const callback = ApiConfig.danStatusCallback;
 
       final result = await dan.startEMongolia(
         unique: unique,
         callback: callback,
-        serviceCodes: const [
-          'CITIZEN_ID_CARD_INFO',
-          'CITIZEN_ADDRESS_INFO',
+        services: const [
+          DanServiceRequest('CITIZEN_ID_CARD_INFO'),
+          DanServiceRequest('CITIZEN_ADDRESS_INFO'),
         ],
       );
 

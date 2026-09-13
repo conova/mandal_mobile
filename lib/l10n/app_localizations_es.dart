@@ -1963,4 +1963,52 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get collapse => 'Collapse';
+
+  @override
+  String get usdDepositTitle => 'Recargar cuenta USD';
+
+  @override
+  String get accountNo => 'Número de cuenta';
+
+  @override
+  String get bankTdbShort => 'TDB';
+
+  @override
+  String get bankTdb => 'Trade and Development Bank';
+
+  @override
+  String get bankGolomt => 'Golomt Bank';
+
+  @override
+  String get fetchChildListEmongolia => 'Obtener lista de hijos de E-Mongolia';
+
+  @override
+  String get childListEmpty => 'No se encontraron hijos en E-Mongolia';
+
+  @override
+  String get selectChildLabel => 'Seleccione a su hijo';
+
+  @override
+  String get fillRate => 'Completado';
+
+  @override
+  String get collectedAmount => 'Monto recaudado';
+
+  @override
+  String get targetAmount => 'Monto objetivo';
+
+  @override
+  String get bondClosePlannedDate => 'Fecha prevista de cierre del bono';
+
+  @override
+  String get taxLabel => 'Impuesto';
+
+  @override
+  String get scheduledPayments => 'Pagos programados';
+
+  @override
+  String get timesPaid => 'pagos realizados';
+
+  @override
+  String get remainingPayments => 'pagos restantes';
 }

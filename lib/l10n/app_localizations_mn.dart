@@ -1926,4 +1926,53 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get collapse => 'Хураах';
+
+  @override
+  String get usdDepositTitle => 'Долларын данс цэнэглэх';
+
+  @override
+  String get accountNo => 'Дансны дугаар';
+
+  @override
+  String get bankTdbShort => 'Худалдаа хөгжил';
+
+  @override
+  String get bankTdb => 'Худалдаа хөгжлийн банк';
+
+  @override
+  String get bankGolomt => 'Голомт банк';
+
+  @override
+  String get fetchChildListEmongolia =>
+      'E-Mongolia-аас хүүхдийн жагсаалт татах';
+
+  @override
+  String get childListEmpty => 'E-Mongolia-д бүртгэлтэй хүүхэд олдсонгүй';
+
+  @override
+  String get selectChildLabel => 'Хүүхдээ сонгоно уу';
+
+  @override
+  String get fillRate => 'Дүүргэлт';
+
+  @override
+  String get collectedAmount => 'Цугларсан дүн';
+
+  @override
+  String get targetAmount => 'Зорилтот дүн';
+
+  @override
+  String get bondClosePlannedDate => 'Бонд хаагдах төлөвлөгөөт огноо';
+
+  @override
+  String get taxLabel => 'Татвар';
+
+  @override
+  String get scheduledPayments => 'Хуваарьт төлбөрүүд';
+
+  @override
+  String get timesPaid => 'удаа төлөгдсөн';
+
+  @override
+  String get remainingPayments => 'үлдсэн төлөлт';
 }

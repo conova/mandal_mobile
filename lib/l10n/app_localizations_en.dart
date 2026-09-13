@@ -1961,4 +1961,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collapse => 'Collapse';
+
+  @override
+  String get usdDepositTitle => 'Top up USD account';
+
+  @override
+  String get accountNo => 'Account number';
+
+  @override
+  String get bankTdbShort => 'TDB';
+
+  @override
+  String get bankTdb => 'Trade and Development Bank';
+
+  @override
+  String get bankGolomt => 'Golomt Bank';
+
+  @override
+  String get fetchChildListEmongolia => 'Fetch children list from E-Mongolia';
+
+  @override
+  String get childListEmpty => 'No children found in E-Mongolia';
+
+  @override
+  String get selectChildLabel => 'Select your child';
+
+  @override
+  String get fillRate => 'Filled';
+
+  @override
+  String get collectedAmount => 'Collected amount';
+
+  @override
+  String get targetAmount => 'Target amount';
+
+  @override
+  String get bondClosePlannedDate => 'Planned bond closing date';
+
+  @override
+  String get taxLabel => 'Tax';
+
+  @override
+  String get scheduledPayments => 'Scheduled payments';
+
+  @override
+  String get timesPaid => 'times paid';
+
+  @override
+  String get remainingPayments => 'payments left';
 }

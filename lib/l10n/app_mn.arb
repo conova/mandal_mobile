@@ -681,5 +681,21 @@
     "barePiece": "Ширхэг",
     "highestBuyPrice": "Хамгийн өндөр \nавах үнэ",
     "lowestSellPrice": "Хамгийн хямд \nзарах үнэ",
-    "collapse": "Хураах"
+    "collapse": "Хураах",
+    "usdDepositTitle": "Долларын данс цэнэглэх",
+    "accountNo": "Дансны дугаар",
+    "bankTdbShort": "Худалдаа хөгжил",
+    "bankTdb": "Худалдаа хөгжлийн банк",
+    "bankGolomt": "Голомт банк",
+    "fetchChildListEmongolia": "E-Mongolia-аас хүүхдийн жагсаалт татах",
+    "childListEmpty": "E-Mongolia-д бүртгэлтэй хүүхэд олдсонгүй",
+    "selectChildLabel": "Хүүхдээ сонгоно уу",
+    "fillRate": "Дүүргэлт",
+    "collectedAmount": "Цугларсан дүн",
+    "targetAmount": "Зорилтот дүн",
+    "bondClosePlannedDate": "Бонд хаагдах төлөвлөгөөт огноо",
+    "taxLabel": "Татвар",
+    "scheduledPayments": "Хуваарьт төлбөрүүд",
+    "timesPaid": "удаа төлөгдсөн",
+    "remainingPayments": "үлдсэн төлөлт"
 }

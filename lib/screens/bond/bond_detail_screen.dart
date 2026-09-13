@@ -1,26 +1,26 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/stock_row_format.dart';
 import '../../models/market_instrument.dart';
-import '../../models/order_book_entry.dart';
 import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/circle_back_button.dart';
-import '../../widgets/custom_snackbar.dart';
 import '../components/bond/bond_action_bottom_bar.dart';
 import '../components/bond/bond_detail_closed_view.dart';
 import '../components/bond/bond_detail_foreign_view.dart';
 import '../components/bond/bond_detail_header.dart';
-import '../components/bond/bond_detail_trading_view.dart';
+import '../components/bond/bond_detail_primary_view.dart';
+import '../components/bond/bond_detail_secondary_view.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_text_styles.dart';
 
-/// Бондын дэлгэрэнгүй — бондын төлвөөс хамаарч 3 дизайнтай, вариант бүр
-/// тусдаа component (screens/components/bond/):
-///   • Хоёрдогч + хаалттай → [BondDetailClosedView]
-///   • Хоёрдогч + нээлттэй → [BondDetailTradingView] (арилжаа)
-///   • Гадаад + хоёрдогч  → [BondDetailForeignView]
+/// Бондын дэлгэрэнгүй — зах зээл/төлвөөс хамаарч вариант бүр тусдаа
+/// component (screens/components/bond/):
+///   • Анхдагч  → [BondDetailPrimaryView] (дүүргэлт, нэр нь bar дээр)
+///   • Хоёрдогч → [BondDetailSecondaryView] (төлбөрийн хуваарь)
+///   • Гадаад   → [BondDetailForeignView]
+///
+/// Захиалгыг дэлгэц дээр биш /bond_buy дээр өгнө.
 class BondDetailScreen extends StatefulWidget {
   const BondDetailScreen({super.key});
 
@@ -29,24 +29,12 @@ class BondDetailScreen extends StatefulWidget {
 }
 
 class _BondDetailScreenState extends State<BondDetailScreen> {
-  int _quantity = 0;
-  double _price = 0;
-
   MarketInstrument? _bond;
   bool _argsParsed = false;
   
   bool _isLoading = true;
   PortfolioSummary? _portfolioSummary;
   AuthService? _authService;
-
-  /// /stocks/order_book — авах/зарах талууд
-  List<OrderBookEntry> _buyOrders = const [];
-  List<OrderBookEntry> _sellOrders = const [];
-  bool _orderBookLoading = true;
-
-  /// Дэлгэц идэвхтэй байх үед самбарыг 5 секунд тутам шинэчилнэ
-  Timer? _orderBookTimer;
-  bool _orderBookFetching = false;
 
   @override
   void initState() {
@@ -62,7 +50,6 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   @override
   void dispose() {
     _authService?.removeListener(_onAuthNotify);
-    _orderBookTimer?.cancel();
     super.dispose();
   }
 
@@ -108,53 +95,17 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
       }
     }
 
-    if (_bond != null) {
-      _fetchOrderBook();
-
-      // 5 секунд тутамд чимээгүй шинэчилнэ (dispose дээр зогсоно)
-      if ((_bond?.stockcode ?? '').isNotEmpty) {
-        _orderBookTimer?.cancel();
-        _orderBookTimer = Timer.periodic(
-          const Duration(seconds: 5),
-          (_) => _fetchOrderBook(),
-        );
-      }
-    }
   }
 
-
-  Future<void> _fetchOrderBook() async {
-    final stockcode = _bond?.stockcode ?? '';
-    if (stockcode.isEmpty) {
-      setState(() => _orderBookLoading = false);
-      return;
-    }
-    if (_orderBookFetching) return;
-    _orderBookFetching = true;
-    try {
-      final rows = await context.read<AuthService>().getOrderBook(stockcode);
-      if (!mounted) return;
-      setState(() {
-        _buyOrders = OrderBookEntry.sideFromJson(rows, 'BUY');
-        _sellOrders = OrderBookEntry.sideFromJson(rows, 'SELL');
-        _orderBookLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      final wasInitialLoad = _orderBookLoading;
-      setState(() => _orderBookLoading = false);
-      if (wasInitialLoad) CustomSnackbar.showError(context, e);
-    } finally {
-      _orderBookFetching = false;
-    }
-  }
 
   bool get _isForeign => _bond?.isForeign ?? false;
-  bool get _isOpen => _bond?.isOpen ?? false;
 
-  /// Гадаад → progress дизайн; нээлттэй → арилжааны дизайн;
-  /// бусад (хаалттай / демо) → мэдээллийн дизайн
-  bool get _isTrading => _bond != null && !_isForeign && _isOpen;
+  /// Анхдагч зах зээл → дүүргэлтийн дизайн
+  bool get _isPrimary => _bond?.isPrimaryMarket ?? false;
+
+  /// Бүх хоёрдогч бонд (нээлттэй эсэхээс үл хамаарч) → төлбөрийн
+  /// хуваарийн дизайн
+  bool get _isSecondary => _bond != null && !_isForeign && !_isPrimary;
 
   @override
   Widget build(BuildContext context) {
@@ -177,6 +128,32 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
         ),
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
+        // Анхдагч зах зээлд нэр, дэд нэр нь bar дээр голлож харагдана
+        centerTitle: true,
+        title: !_isPrimary
+            ? null
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _bond?.name ?? '',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  if ((_bond?.subtitle ?? '').isNotEmpty)
+                    Text(
+                      _bond!.subtitle,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: AppTextStyles.light,
+                        color: extendedColors.neutral200,
+                      ),
+                    ),
+                ],
+              ),
       ),
       body: RefreshIndicator(
         onRefresh: _fetch,
@@ -186,24 +163,20 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BondDetailHeader(
-                bond: _bond,
-                showAvailableCash: _isTrading,
-                availableCash: (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
-              ),
-              const SizedBox(height: 24),
-              if (_isTrading)
-                BondDetailTradingView(
+              // Анхдагч дизайнд нэр нь bar дээр гарах тул энд давхардуулахгүй
+              if (!_isPrimary) ...[
+                BondDetailHeader(
                   bond: _bond,
-                  price: _price,
-                  quantity: _quantity,
-                  onQuantityChanged: (q) => setState(() => _quantity = q),
-                  onPriceChanged: (p) => setState(() => _price = p),
-                  buyOrders: _buyOrders,
-                  sellOrders: _sellOrders,
-                )
+                  availableCash: (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
+                ),
+                const SizedBox(height: 24),
+              ],
+              if (_isPrimary)
+                BondDetailPrimaryView(bond: _bond)
               else if (_isForeign)
                 BondDetailForeignView(bond: _bond)
+              else if (_isSecondary)
+                BondDetailSecondaryView(bond: _bond)
               else
                 BondDetailClosedView(bond: _bond),
               const SizedBox(height: 140), // Bottom bar space
@@ -211,23 +184,17 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _isTrading
-          ? BondDetailTradingBottomBar(
-              bond: _bond,
-              price: _price,
-              quantity: _quantity,
-              lockedAmount: _portfolioSummary?.holdAmount,
-            )
-          : BondActionBottomBar(
-              label: l10n.availableCash,
-              amount: formatStockAmount(
-                (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
-                isForeign: _isForeign,
-              ),
-              buttonText: l10n.buyBond,
-              onPressed: () =>
-                  Navigator.pushNamed(context, '/bond_buy', arguments: _bond?.raw),
-            ),
+      bottomNavigationBar: BondActionBottomBar(
+        label: l10n.availableCash,
+        amount: formatStockAmount(
+          (_portfolioSummary?.cashBalance ?? 0) -
+              (_portfolioSummary?.holdAmount ?? 0),
+          isForeign: _isForeign,
+        ),
+        buttonText: l10n.buyBond,
+        onPressed: () =>
+            Navigator.pushNamed(context, '/bond_buy', arguments: _bond?.raw),
+      ),
     );
   }
 }

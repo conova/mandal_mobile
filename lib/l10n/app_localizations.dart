@@ -3711,6 +3711,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Collapse'**
   String get collapse;
+
+  /// No description provided for @usdDepositTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top up USD account'**
+  String get usdDepositTitle;
+
+  /// No description provided for @accountNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Account number'**
+  String get accountNo;
+
+  /// No description provided for @bankTdbShort.
+  ///
+  /// In en, this message translates to:
+  /// **'TDB'**
+  String get bankTdbShort;
+
+  /// No description provided for @bankTdb.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade and Development Bank'**
+  String get bankTdb;
+
+  /// No description provided for @bankGolomt.
+  ///
+  /// In en, this message translates to:
+  /// **'Golomt Bank'**
+  String get bankGolomt;
+
+  /// No description provided for @fetchChildListEmongolia.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch children list from E-Mongolia'**
+  String get fetchChildListEmongolia;
+
+  /// No description provided for @childListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No children found in E-Mongolia'**
+  String get childListEmpty;
+
+  /// No description provided for @selectChildLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your child'**
+  String get selectChildLabel;
+
+  /// No description provided for @fillRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled'**
+  String get fillRate;
+
+  /// No description provided for @collectedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected amount'**
+  String get collectedAmount;
+
+  /// No description provided for @targetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Target amount'**
+  String get targetAmount;
+
+  /// No description provided for @bondClosePlannedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned bond closing date'**
+  String get bondClosePlannedDate;
+
+  /// No description provided for @taxLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get taxLabel;
+
+  /// No description provided for @scheduledPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled payments'**
+  String get scheduledPayments;
+
+  /// No description provided for @timesPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'times paid'**
+  String get timesPaid;
+
+  /// No description provided for @remainingPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'payments left'**
+  String get remainingPayments;
 }
 
 class _AppLocalizationsDelegate
