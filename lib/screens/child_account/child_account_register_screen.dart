@@ -184,6 +184,7 @@ class _ChildAccountRegisterScreenState
                 const SizedBox(height: 16),
                 // Регистрээ гараар бичихийн оронд E-Mongolia-аас татах
                 CustomButton(
+                  size: CustomButtonSize.small,
                   label: l10n.fetchChildListEmongolia,
                   variant: CustomButtonVariant.secondary,
                   isLoading: _isFetchingChildren,
