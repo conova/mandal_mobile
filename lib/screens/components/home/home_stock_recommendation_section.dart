@@ -177,7 +177,7 @@ class _HomeStockRecommendationSectionState
                   );
                 }),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
             ],
           ],
         ),

@@ -774,5 +774,16 @@
     "futureTab": "Upcoming",
     "nothingYet": "Nothing yet",
     "growAssetsPrompt": "Would you like to grow your assets safely with bonds?",
-    "yieldCount": "Payments"
+    "yieldCount": "Payments",
+    "firstClass": "1st class",
+    "secondClass": "2nd class",
+    "thirdClass": "3rd class",
+    "fourthClass": "4th class",
+    "fifthClass": "5th class",
+    "sixthClass": "6th class",
+    "other": "Other",
+    "stateOwnedJointStockCompany": "State-Owned Joint-Stock company",
+    "firstClassDesc": "A company valued at over 10 billion tugriks (or 10 billion MNT)",
+    "secondClassDesc": "A company valued between 1 billion tugriks (or 1 billion MNT)",
+    "thirdClassDesc": "High-risk companies"
 }

@@ -3843,6 +3843,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payments'**
   String get yieldCount;
+
+  /// No description provided for @firstClass.
+  ///
+  /// In en, this message translates to:
+  /// **'1st class'**
+  String get firstClass;
+
+  /// No description provided for @secondClass.
+  ///
+  /// In en, this message translates to:
+  /// **'2nd class'**
+  String get secondClass;
+
+  /// No description provided for @thirdClass.
+  ///
+  /// In en, this message translates to:
+  /// **'3rd class'**
+  String get thirdClass;
+
+  /// No description provided for @fourthClass.
+  ///
+  /// In en, this message translates to:
+  /// **'4th class'**
+  String get fourthClass;
+
+  /// No description provided for @fifthClass.
+  ///
+  /// In en, this message translates to:
+  /// **'5th class'**
+  String get fifthClass;
+
+  /// No description provided for @sixthClass.
+  ///
+  /// In en, this message translates to:
+  /// **'6th class'**
+  String get sixthClass;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @stateOwnedJointStockCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'State-Owned Joint-Stock company'**
+  String get stateOwnedJointStockCompany;
+
+  /// No description provided for @firstClassDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A company valued at over 10 billion tugriks (or 10 billion MNT)'**
+  String get firstClassDesc;
+
+  /// No description provided for @secondClassDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A company valued between 1 billion tugriks (or 1 billion MNT)'**
+  String get secondClassDesc;
+
+  /// No description provided for @thirdClassDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'High-risk companies'**
+  String get thirdClassDesc;
 }
 
 class _AppLocalizationsDelegate

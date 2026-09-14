@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
@@ -18,11 +19,36 @@ class ConnectedDevicesScreen extends StatefulWidget {
 class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
   List<Map<String, dynamic>> _devices = [];
   bool _isLoading = true;
+  bool _isScrolledDown = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _fetchDevices();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+      if (!_isScrolledDown) {
+        setState(() {
+          _isScrolledDown = true;
+        });
+      }
+    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+      if (_isScrolledDown) {
+        setState(() {
+          _isScrolledDown = false;
+        });
+      }
+    }
   }
 
   Future<void> _fetchDevices() async {
@@ -93,7 +119,11 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -123,16 +153,14 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                       final deviceName = deviceInfo.isNotEmpty
                           ? deviceInfo
                           : (deviceId.length > 12
-                                ? 'Device ${deviceId.substring(0, 8)}…'
-                                : 'Device $deviceId');
+                          ? 'Device ${deviceId.substring(0, 8)}…'
+                          : 'Device $deviceId');
 
                       return Column(
                         children: [
                           DeviceItem(
                             deviceName: deviceName,
-                            status: statusName.isNotEmpty
-                                ? statusName
-                                : (isActive ? l10n.active : l10n.inactive),
+                            status: isActive ? l10n.active.toUpperCase() : l10n.inactive.toUpperCase(),
                             isActive: isActive,
                             date: lastUpdate,
                             ip: ipAddress,
@@ -143,22 +171,37 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
                         ],
                       );
                     }),
-                  Divider(thickness: 1, color: extendedColors.neutral500,),
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Text(
-                      l10n.connectedDevicesDesc,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral200,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 40,),
                 ],
               ),
             ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: _isScrolledDown
+                ? const SizedBox.shrink()
+                : SafeArea(
+              top: false,
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: extendedColors.bgBase,
+                  border: BorderDirectional(top: BorderSide(color: extendedColors.neutral500)),
+                ),
+                child: Text(
+                  l10n.connectedDevicesDesc,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

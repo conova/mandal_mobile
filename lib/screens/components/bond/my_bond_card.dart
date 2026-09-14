@@ -118,7 +118,7 @@ class MyBondCard extends StatelessWidget {
                   label: l10n.sell,
                   size: CustomButtonSize.small,
                   onPressed: onSellPressed,
-                  variant: CustomButtonVariant.error,
+                  variant: CustomButtonVariant.red200,
                 ),
               ),
             ],

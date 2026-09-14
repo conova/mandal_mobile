@@ -247,11 +247,14 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
             textAlign: leftAlign ? TextAlign.start : TextAlign.end,
           ),
           const SizedBox(height: 12),
-          Text(
-            price,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: textColor,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              price,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
             ),
           ),
         ],
@@ -273,15 +276,22 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
           // Empty left side alignment spacer
           const Expanded(child: SizedBox()),
 
+          // Balance space
+          const SizedBox(width: 16),
+
           // Center-Left: Price Column
           SizedBox(
             width: 80,
-            child: Text(
-              _formatPrice(entry.price),
-              textAlign: TextAlign.right,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w400,
-                color: extendedColors.neutral100,
+            child: FittedBox(
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              child: Text(
+                _formatPrice(entry.price),
+                textAlign: TextAlign.right,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w400,
+                  color: extendedColors.neutral100,
+                ),
               ),
             ),
           ),
@@ -391,15 +401,22 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
           // Center-Right: Price Column
           SizedBox(
             width: 80,
-            child: Text(
-              _formatPrice(entry.price),
-              textAlign: TextAlign.left,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w400,
-                color: extendedColors.neutral100,
+            child: FittedBox(
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              child: Text(
+                _formatPrice(entry.price),
+                textAlign: TextAlign.left,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w400,
+                  color: extendedColors.neutral100,
+                ),
               ),
             ),
           ),
+
+          // Balance space
+          const SizedBox(width: 16),
 
           // Empty right side alignment spacer
           const Expanded(child: SizedBox()),

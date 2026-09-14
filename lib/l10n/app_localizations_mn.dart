@@ -1993,4 +1993,37 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get yieldCount => 'Өгөөжийн тоо';
+
+  @override
+  String get firstClass => '1-р ангилал';
+
+  @override
+  String get secondClass => '2-р ангилал';
+
+  @override
+  String get thirdClass => '3-р ангилал';
+
+  @override
+  String get fourthClass => '4-р ангилал';
+
+  @override
+  String get fifthClass => '5-р ангилал';
+
+  @override
+  String get sixthClass => '6-р ангилал';
+
+  @override
+  String get other => 'Бусад';
+
+  @override
+  String get stateOwnedJointStockCompany => 'Төрийн өмчит хувьцаат компани';
+
+  @override
+  String get firstClassDesc => '10 тэрбум төгрөгөөс дээш үнэлгээтэй компани';
+
+  @override
+  String get secondClassDesc => '1 тэрбум төгрөгөөс дээш үнэлгээтэй компани';
+
+  @override
+  String get thirdClassDesc => 'Өндөр эрсдэлтэй компаниуд';
 }

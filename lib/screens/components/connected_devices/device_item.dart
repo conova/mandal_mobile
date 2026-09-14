@@ -35,14 +35,38 @@ class DeviceItem extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  deviceName,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      deviceName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? extendedColors.primary100
+                            : extendedColors.bgSecondary,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        status,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: isActive
+                              ? extendedColors.primaryMain
+                              : extendedColors.neutral100,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 12),
@@ -57,25 +81,6 @@ class DeviceItem extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? extendedColors.primary100
-                  : extendedColors.bgSecondary,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              status,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: isActive
-                    ? extendedColors.primaryMain
-                    : extendedColors.neutral100,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -100,6 +105,7 @@ class DeviceItem extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

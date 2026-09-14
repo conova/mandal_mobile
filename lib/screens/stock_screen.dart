@@ -128,32 +128,39 @@ class _StockScreenState extends State<StockScreen> {
     }
   }
 
-  /// Зах зээл (market) бүрийн хувьцаанууд — MARKETNAME-ээр бүлэглэнэ,
-  /// нэргүй мөрүүд "Бусад" бүлэгт орно
+  /// Хувьцаануудыг ангиллаар (className) бүлэглэж, classOrder-оор эрэмбэлнэ.
+  /// Primary market (IPO) буюу 'Primary' зах зээлийн хувьцааг энд харуулдаггүй.
   Map<String, List<MarketInstrument>> get _grouped {
     final map = <String, List<MarketInstrument>>{};
     for (final s in _stocks) {
-      final key = s.marketName.trim().isNotEmpty
-          ? s.marketName.trim()
-          : (s.market.trim().isNotEmpty ? s.market.trim() : 'Бусад');
+      if (s.isPrimaryMarket) continue;
+      final key = (s.className ?? '').trim().isNotEmpty
+          ? s.className!.trim()
+          : 'Бусад';
       map.putIfAbsent(key, () => []).add(s);
     }
-    // "Бусад" бүлгийг төгсгөлд, бусдыг нэрээр эрэмбэлнэ
-    return Map.fromEntries(
-      map.entries.toList()
-        ..sort((a, b) {
-          if (a.key == 'Бусад') return 1;
-          if (b.key == 'Бусад') return -1;
-          return b.key.compareTo(a.key);
-        }),
-    );
+
+    final sortedEntries = map.entries.toList()
+      ..sort((a, b) {
+        if (a.key == 'Бусад') return 1;
+        if (b.key == 'Бусад') return -1;
+
+        final orderA = a.value.first.classOrder ?? 999;
+        final orderB = b.value.first.classOrder ?? 999;
+
+        final cmp = orderA.compareTo(orderB);
+        if (cmp != 0) return cmp;
+        return a.key.compareTo(b.key);
+      });
+
+    return Map.fromEntries(sortedEntries);
   }
 
   void _openDetail(MarketInstrument row) {
     final priceStr = row.closePrice == null
         ? row.stockPrice == null
-          ? '-'
-          : formatStockAmount(row.stockPrice, decimals: 2)
+            ? '-'
+            : formatStockAmount(row.stockPrice, decimals: 2)
         : formatStockAmount(row.closePrice, decimals: 2);
     final pct = row.priceChange;
     Navigator.pushNamed(
@@ -260,7 +267,7 @@ class _StockScreenState extends State<StockScreen> {
                   SliverToBoxAdapter(
                     child: _buildTopMovers(l10n, theme, extendedColors),
                   ),
-                ..._buildGroupSlivers(theme, extendedColors),
+                ..._buildGroupSlivers(theme, extendedColors, l10n),
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ],
@@ -388,15 +395,47 @@ class _StockScreenState extends State<StockScreen> {
   List<Widget> _buildGroupSlivers(
     ThemeData theme,
     ExtendedColors extendedColors,
+    AppLocalizations l10n,
   ) {
     final slivers = <Widget>[];
     _grouped.forEach((title, rows) {
+      final classOrder = rows.isNotEmpty ? rows.first.classOrder : null;
+
+      // classOrder дээр үндэслэн харуулах текстээ сонгоно
+      String displayTitle;
+      String displayDesc;
+      switch (classOrder) {
+        case 1:
+          displayTitle = l10n.firstClass;
+          displayDesc = l10n.firstClassDesc;
+          break;
+        case 2:
+          displayTitle = l10n.secondClass;
+          displayDesc = l10n.secondClassDesc;
+          break;
+        case 3:
+          displayTitle = l10n.thirdClass;
+          displayDesc = l10n.thirdClassDesc;
+          break;
+        case 4:
+          displayTitle = l10n.stateOwnedJointStockCompany;
+          displayDesc = '';
+          break;
+        case 5:
+          displayTitle = l10n.stateOwnedJointStockCompany;
+          displayDesc = '';
+          break;
+        default:
+          displayTitle = title;
+          displayDesc = '';
+      }
+
       slivers.add(
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 32, 16, 6),
             child: Text(
-              title,
+              displayTitle,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: extendedColors.neutral100,
@@ -404,6 +443,22 @@ class _StockScreenState extends State<StockScreen> {
             ),
           ),
         ),
+      );
+      slivers.add(
+        SliverToBoxAdapter(
+          child: (displayDesc.isNotEmpty)
+              ? Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Text(
+                  displayDesc,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: extendedColors.neutral200,
+                    fontWeight: FontWeight.w200,
+                  ),
+                ),
+              )
+              : const SizedBox.shrink(),
+        )
       );
       slivers.add(
         SliverPadding(
@@ -519,7 +574,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  // ─── Хайлтын горим ───
+  // ─── Хайлтын илэрц ───
 
   List<Widget> _buildSearchSlivers(
     AppLocalizations l10n,

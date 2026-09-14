@@ -179,7 +179,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                   );
                 }),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
             ],
           ],
         ),
