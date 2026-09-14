@@ -50,10 +50,13 @@ class DepositInfoRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: extendedColors.neutral100,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    value,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: extendedColors.neutral100,
+                    ),
                   ),
                 ),
               ],

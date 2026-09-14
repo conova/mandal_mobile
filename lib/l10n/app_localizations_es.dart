@@ -2029,4 +2029,39 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get yieldCount => 'Pagos';
+
+  @override
+  String get firstClass => '1st class';
+
+  @override
+  String get secondClass => '2nd class';
+
+  @override
+  String get thirdClass => '3rd class';
+
+  @override
+  String get fourthClass => '4th class';
+
+  @override
+  String get fifthClass => '5th class';
+
+  @override
+  String get sixthClass => '6th class';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get stateOwnedJointStockCompany => 'State-Owned Joint-Stock company';
+
+  @override
+  String get firstClassDesc =>
+      'A company valued at over 10 billion tugriks (or 10 billion MNT)';
+
+  @override
+  String get secondClassDesc =>
+      'A company valued between 1 billion tugriks (or 1 billion MNT)';
+
+  @override
+  String get thirdClassDesc => 'High-risk companies';
 }

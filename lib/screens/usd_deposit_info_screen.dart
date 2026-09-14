@@ -30,8 +30,19 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
 
   /// 0 — Худалдаа хөгжлийн банк, 1 — Голомт банк
   int _selectedBank = 0;
+  late PageController _pageController;
 
-  bool get _isTdb => _selectedBank == 0;
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedBank);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +54,7 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
     final auth = context.read<AuthService>();
     // Гүйлгээний утга — uid болон регистрийн дугаарын нийлбэр
     final memo =
-        '${auth.uid ?? ''}${info?['registerNumber']?.toString() ?? ''}';
+        '${auth.uid ?? ''}, ${info?['registerNumber']?.toString() ?? ''}';
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -88,57 +99,18 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
                     const SizedBox(height: 24),
                     _buildBankTabs(theme, l10n, extendedColors),
                     const SizedBox(height: 16),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: extendedColors.bgSecondary,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
+                    SizedBox(
+                      height: 290,
+                      child: PageView(
+                        controller: _pageController,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _selectedBank = index;
+                          });
+                        },
                         children: [
-                          DepositInfoRow(
-                            label: l10n.receiverBank,
-                            value: _isTdb ? l10n.bankTdb : l10n.bankGolomt,
-                            trailing: ClipOval(
-                              child: Container(
-                                color: Colors.white,
-                                padding: const EdgeInsets.all(4),
-                                child: Image.network(
-                                  ApiConfig.bankLogoUrl(
-                                    _isTdb ? _tdbCode : _golomtCode,
-                                  ),
-                                  width: 40,
-                                  height: 40,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (_, _, _) => Icon(
-                                    Icons.account_balance,
-                                    size: 32,
-                                    color: extendedColors.neutral200,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          DepositInfoRow(
-                            label: l10n.accountNo,
-                            value: _accountNo,
-                            copyValue: _accountNo,
-                          ),
-                          DepositInfoRow(
-                            label: l10n.receiver,
-                            value: l10n.mandalCapital,
-                            copyValue: l10n.mandalCapital,
-                          ),
-                          DepositInfoRow(
-                            label: l10n.transactionMemo,
-                            value: memo.isNotEmpty ? memo : '-',
-                            copyValue: memo,
-                            isLast: true,
-                          ),
+                          _buildBankInfo(0, theme, l10n, extendedColors, memo),
+                          _buildBankInfo(1, theme, l10n, extendedColors, memo),
                         ],
                       ),
                     ),
@@ -148,7 +120,7 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
             ),
             Divider(height: 1, color: extendedColors.neutral500),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 10, 24, 16),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
               child: SizedBox(
                 width: double.infinity,
                 child: CustomButton(
@@ -171,8 +143,8 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
     ExtendedColors extendedColors,
   ) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(6),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
         borderRadius: BorderRadius.circular(32),
@@ -195,24 +167,95 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
     final isSelected = _selectedBank == index;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _selectedBank = index),
+        onTap: () {
+          _pageController.jumpToPage(
+            index,
+          );
+        },
         behavior: HitTestBehavior.opaque,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
           decoration: BoxDecoration(
             color: isSelected ? extendedColors.bgBase : Colors.transparent,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(24),
           ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: isSelected
-                  ? extendedColors.neutral100
-                  : extendedColors.neutral200,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: isSelected
+                    ? extendedColors.neutral100
+                    : extendedColors.neutral200,
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBankInfo(
+    int bankIndex,
+    ThemeData theme,
+    AppLocalizations l10n,
+    ExtendedColors extendedColors,
+    String memo,
+  ) {
+    final isTdb = bankIndex == 0;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DepositInfoRow(
+            label: l10n.receiverBank,
+            value: isTdb ? l10n.bankTdb : l10n.bankGolomt,
+            trailing: ClipOval(
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(4),
+                child: Image.network(
+                  ApiConfig.bankLogoUrl(
+                    isTdb ? _tdbCode : _golomtCode,
+                  ),
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) => Icon(
+                    Icons.account_balance,
+                    size: 32,
+                    color: extendedColors.neutral200,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          DepositInfoRow(
+            label: l10n.accountNo,
+            value: _accountNo,
+            copyValue: _accountNo,
+          ),
+          DepositInfoRow(
+            label: l10n.receiver,
+            value: l10n.mandalCapital,
+            copyValue: l10n.mandalCapital,
+          ),
+          DepositInfoRow(
+            label: l10n.transactionMemo,
+            value: memo.isNotEmpty ? memo : '-',
+            copyValue: memo,
+            isLast: true,
+          ),
+        ],
       ),
     );
   }

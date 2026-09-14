@@ -703,5 +703,16 @@
     "futureTab": "Ирээдүйд авах",
     "nothingYet": "Одоогоор байхгүй",
     "growAssetsPrompt": "Та бонд авч хөрөнгө найдвартай өсгөх үү?",
-    "yieldCount": "Өгөөжийн тоо"
+    "yieldCount": "Өгөөжийн тоо",
+    "firstClass": "1-р ангилал",
+    "secondClass": "2-р ангилал",
+    "thirdClass": "3-р ангилал",
+    "fourthClass": "4-р ангилал",
+    "fifthClass": "5-р ангилал",
+    "sixthClass": "6-р ангилал",
+    "other": "Бусад",
+    "stateOwnedJointStockCompany": "Төрийн өмчит хувьцаат компани",
+    "firstClassDesc": "10 тэрбум төгрөгөөс дээш үнэлгээтэй компани",
+    "secondClassDesc": "1 тэрбум төгрөгөөс дээш үнэлгээтэй компани",
+    "thirdClassDesc": "Өндөр эрсдэлтэй компаниуд"
 }
