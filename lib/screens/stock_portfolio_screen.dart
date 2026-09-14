@@ -194,8 +194,9 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
             // Хэрэгжээгүй ашгийн тайлбар — шимтгэл, татвар ороогүй
             if (_holdings.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
                 child: Text(
+                  textAlign: TextAlign.center,
                   l10n.unrealizedProfitNote,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: extendedColors.neutral300,

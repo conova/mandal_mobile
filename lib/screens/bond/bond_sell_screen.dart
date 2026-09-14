@@ -228,75 +228,83 @@ class _BondSellScreenState extends State<BondSellScreen> {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']),
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+            Padding(
+              padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.neutral100,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Flexible(
+                        child: Text(
+                          _str(['COMPNAME2', 'TYPENAME']),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral200,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 12),
-                Flexible(
-                  child: Text(
-                    _str(['COMPNAME2', 'TYPENAME']),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 8),
+
+                  Row(
+                    children: [
+                      Text(
+                        '${l10n.ownedAmountLabel}: ',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral100,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                      Text(
+                        formatStockAmount(_ownedAmount, isForeign: _isForeign, decimals: 0),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.primaryMain,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+
+                  // Render view dynamically based on bond openness
+                  if (_isOpen) _buildOpenBondControls() else _buildClosedBondControls(),
+
+                  const SizedBox(height: 16),
+
+                  // Хүлээн авах дүн Card
+                  _buildProceedsCard(l10n, extendedColors, theme),
+                  const SizedBox(height: 16),
+
+                  if (!_isOpen) _buildInfoBanner(l10n, extendedColors, theme),
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text(
-                  '${l10n.ownedAmountLabel}: ',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral100,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ),
-                Text(
-                  formatStockAmount(_ownedAmount, isForeign: _isForeign, decimals: 0),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.primaryMain,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
 
-            // Render view dynamically based on bond openness
-            if (_isOpen) _buildOpenBondControls() else _buildClosedBondControls(),
-
-            const SizedBox(height: 16),
-
-            // Хүлээн авах дүн Card
-            _buildProceedsCard(l10n, extendedColors, theme),
-            const SizedBox(height: 16),
-
-            if (!_isOpen) _buildInfoBanner(l10n, extendedColors, theme),
-            const SizedBox(height: 24),
             Divider(height: 1, color: extendedColors.neutral500),
             const SizedBox(height: 20),
 
             if (_orderBookLoading)
               const Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                   child: CircularProgressIndicator(),
                 ),
               )
@@ -307,13 +315,20 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 marketPrice: _unitPrice,
               )
             else
-              BondOrderBoard(
-                orders: _sellOrders
-                    .map((e) => BondOrderEntry(
-                  price: e.price.toInt(),
-                  quantity: e.quantity,
-                ))
-                    .toList(),
+              Padding(
+                padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    BondOrderBoard(
+                      orders: _sellOrders
+                          .map((e) => BondOrderEntry(
+                        price: e.price.toInt(),
+                        quantity: e.quantity,
+                      ))
+                          .toList(),
+                    ),
+                  ],
+                ),
               ),
             const SizedBox(height: 120),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
+import '../../../common/stock_row_format.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../services/auth_service.dart';
@@ -187,15 +188,6 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     );
   }
 
-  /// Хугацааг locale-ийн дагуу нэгжтэй харуулна:
-  ///   12 → "12 сар" (мон) / "12 month" (англи); огноо бол шууд
-  String _formatDuration(MarketInstrument data, String languageCode) {
-    final term = data.term;
-    if (term.isEmpty) return '-';
-    if (num.tryParse(term) == null) return term;
-    return languageCode == 'en' ? '$term month' : '$term сар';
-  }
-
   /// Мокапын авсаархан карт: зүүнд нэр + хугацаа, баруунд өгөөж болон
   /// "Авах" товч.
   Widget _buildRecommendationCard({
@@ -205,6 +197,28 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     required AppLocalizations l10n,
   }) {
     final theme = Theme.of(context);
+
+    final endDt = parseStockDate(data.endDate);
+    final orderEndDate = parseStockDate(data.orderEndDate);
+
+    // Prioritize DateTime objects for the tenure display to enable "X left" format.
+    final dynamic tenure = (data.market == 'Secondary' && endDt != null)
+        ? endDt
+        : (data.market == 'Primary' && orderEndDate != null)
+            ? orderEndDate
+            : (data.term.isEmpty
+                ? '-'
+                : (num.tryParse(data.term) != null
+                    ? '${data.term} ${l10n.monthLabel}'
+                    : data.term));
+
+    String tenureStr = '-';
+    if (tenure is DateTime) {
+      tenureStr = formatTimeLeft(tenure, l10n);
+    } else if (tenure != null) {
+      tenureStr = tenure.toString();
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       decoration: BoxDecoration(
@@ -236,10 +250,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _formatDuration(
-                    data,
-                    Localizations.localeOf(context).languageCode,
-                  ),
+                  tenureStr,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelMedium?.copyWith(
@@ -252,7 +263,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
           ),
           const SizedBox(width: 12),
           Text(
-            data.intRate == null ? '-' : '${data.intRate}%',
+            formatIntRate(data.intRate),
             style: theme.textTheme.bodyLarge?.copyWith(
               color: extendedColors.purple,
             ),

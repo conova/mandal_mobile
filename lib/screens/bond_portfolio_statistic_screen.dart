@@ -53,6 +53,16 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     }
   }
 
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    final velocity = details.primaryVelocity ?? 0;
+    if (velocity.abs() < 100) return;
+    if (velocity < 0 && _selectedFilter == 1) {
+      setState(() => _selectedFilter = 2);
+    } else if (velocity > 0 && _selectedFilter == 2) {
+      setState(() => _selectedFilter = 1);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -79,147 +89,152 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
           child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            _buildSegmentedTabs(theme, extendedColors, l10n),
-            const SizedBox(height: 16),
-            // Хураангуй дүн — зөвхөн жагсаалт хоосон биш үед
-            if (!_isLoading && _holdings.isNotEmpty)
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onHorizontalDragEnd: _onHorizontalDragEnd,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              _buildSegmentedTabs(theme, extendedColors, l10n),
+              const SizedBox(height: 16),
+              // Хураангуй дүн — зөвхөн жагсаалт хоосон биш үед
+              if (!_isLoading && _holdings.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: extendedColors.bgSecondary,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _selectedFilter == 2
+                                ? '${l10n.futureReturn}:'
+                                : '${l10n.totalReturnReceived}:',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w300,
+                              color: extendedColors.neutral200,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          formatStockAmount(totalValue),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 8,),
+              /*// Table header
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _selectedFilter == 2
-                              ? '${l10n.futureReturn}:'
-                              : '${l10n.totalReturnReceived}:',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w300,
-                            color: extendedColors.neutral200,
-                          ),
-                        ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.bondName,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral200,
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        formatStockAmount(totalValue),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: extendedColors.neutral100,
-                        ),
+                    ),
+                    Text(
+                      // Баруун баганын нэр сонгосон filter-ээ дагана
+                      switch (_selectedFilter) {
+                        1 => l10n.totalReturnReceived,
+                        2 => l10n.futureReturn,
+                        _ => l10n.amountPieces,
+                      },
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral200,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            const SizedBox(height: 8,),
-            /*// Table header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.bondName,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
-                  ),
-                  Text(
-                    // Баруун баганын нэр сонгосон filter-ээ дагана
-                    switch (_selectedFilter) {
-                      1 => l10n.totalReturnReceived,
-                      2 => l10n.futureReturn,
-                      _ => l10n.amountPieces,
-                    },
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),*/
-            // Bond rows
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_holdings.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 40),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        'assets/images/safe_box.png',
-                        height: 180,
-                        errorBuilder: (_, _, _) => const SizedBox(height: 140),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        l10n.nothingYet,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: extendedColors.neutral100,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          l10n.growAssetsPrompt,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: extendedColors.neutral200,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      SizedBox(
-                        width: 190,
-                        child: CustomButton(
-                          onPressed: () {
-                            // Home (main) руу буцаж бондын tab-ийг нээнэ
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              '/main',
-                              (route) => false,
-                              arguments: {'tab': 1},
-                            );
-                          },
-                          label: l10n.buyBond,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              )
-            else
-              Column(
-                children: _holdings
-                    .map(
-                      (bond) =>
-                      _buildBondRow(bond, theme, extendedColors, l10n),
+              const SizedBox(height: 16),*/
+              // Bond rows
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: CircularProgressIndicator()),
                 )
-                    .toList(),
-              ),
-            //const SizedBox(height: 8),
-            //Divider(height: 1, color: extendedColors.neutral500),
-            const SizedBox(height: 24),
-          ],
+              else if (_holdings.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/safe_box.png',
+                          height: 180,
+                          errorBuilder: (_, _, _) => const SizedBox(height: 140),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          l10n.nothingYet,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            l10n.growAssetsPrompt,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: extendedColors.neutral200,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        SizedBox(
+                          width: 190,
+                          child: CustomButton(
+                            onPressed: () {
+                              // Home (main) руу буцаж бондын tab-ийг нээнэ
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/main',
+                                (route) => false,
+                                arguments: {'tab': 1},
+                              );
+                            },
+                            label: l10n.buyBond,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Column(
+                  children: _holdings
+                      .map(
+                        (bond) =>
+                        _buildBondRow(bond, theme, extendedColors, l10n),
+                  )
+                      .toList(),
+                ),
+              //const SizedBox(height: 8),
+              //Divider(height: 1, color: extendedColors.neutral500),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
@@ -238,10 +253,10 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
           behavior: HitTestBehavior.opaque,
           onTap: () => setState(() => _selectedFilter = filter),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(
               color: isSelected ? extendedColors.bgBase : Colors.transparent,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               label,
