@@ -54,7 +54,7 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
     final auth = context.read<AuthService>();
     // Гүйлгээний утга — uid болон регистрийн дугаарын нийлбэр
     final memo =
-        '${auth.uid ?? ''}, ${info?['registerNumber']?.toString() ?? ''}';
+        '${info?['registerNumber']?.toString() ?? ''}, ${auth.uid ?? ''}';
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,

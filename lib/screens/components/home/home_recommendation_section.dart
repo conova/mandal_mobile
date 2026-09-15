@@ -282,7 +282,7 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
             ),
             child: Text(
               l10n.buy,
