@@ -106,6 +106,7 @@ class MarketInstrument {
   final String companyName;
 
   final String? className;
+  final String? className2;
 
   final int? classOrder;
 
@@ -170,6 +171,7 @@ class MarketInstrument {
     this.stockPrice,
     required this.companyName,
     this.className,
+    this.className2,
     this.classOrder,
   });
 
@@ -241,7 +243,8 @@ class MarketInstrument {
       startDate: str('STARTDATE'),
       endDate: str('ENDDATE'),
       companyName: firstNonEmpty(['COMPNAME', 'COMPNAME2']),
-      className: firstNonEmpty(['CLASSNAME', 'CLASSNAME2']),
+      className: str('CLASSNAME'),
+      className2: str('CLASSNAME2'),
       classOrder: int.tryParse(str('CLASSORDER')),
     );
   }

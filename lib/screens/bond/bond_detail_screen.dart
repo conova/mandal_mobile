@@ -122,8 +122,8 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
       // Хоёрдогч дизайнд буцах товч, нэр нь нэг дэвсгэртэй блок дотор
       // байрлах тул AppBar ашиглахгүй
       appBar: _hasTintedHeader
-          ? null
-          : AppBar(
+        ? null
+        : AppBar(
         toolbarHeight: 70,
         leadingWidth: 60,
         leading: Padding(
@@ -139,29 +139,29 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
         // Анхдагч зах зээлд нэр, дэд нэр нь bar дээр голлож харагдана
         centerTitle: true,
         title: !_isPrimary
-            ? null
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _bond?.name ?? '',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extendedColors.neutral100,
-                    ),
-                  ),
-                  if ((_bond?.subtitle ?? '').isNotEmpty)
-                    Text(
-                      _bond!.subtitle,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: AppTextStyles.light,
-                        color: extendedColors.neutral200,
-                      ),
-                    ),
-                ],
+          ? null
+          : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _bond?.name ?? '',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
               ),
+              if ((_bond?.subtitle ?? '').isNotEmpty)
+                Text(
+                  _bond!.subtitle,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral200,
+                  ),
+                ),
+            ],
+          ),
       ),
       body: RefreshIndicator(
         onRefresh: _fetch,
