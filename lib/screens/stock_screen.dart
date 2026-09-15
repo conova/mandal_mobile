@@ -400,33 +400,44 @@ class _StockScreenState extends State<StockScreen> {
     final slivers = <Widget>[];
     _grouped.forEach((title, rows) {
       final classOrder = rows.isNotEmpty ? rows.first.classOrder : null;
+      final locale = Localizations.localeOf(context);
 
       // classOrder дээр үндэслэн харуулах текстээ сонгоно
       String displayTitle;
       String displayDesc;
+      
+      if (rows.isNotEmpty) {
+        final firstRow = rows.first;
+        if (locale.languageCode == 'mn') {
+          displayTitle = (firstRow.className ?? '').trim().isNotEmpty
+              ? firstRow.className!.trim()
+              : title;
+        } else {
+          displayTitle = (firstRow.className2 ?? '').trim().isNotEmpty
+              ? firstRow.className2!.trim()
+              : title;
+        }
+      } else {
+        displayTitle = title;
+      }
+
       switch (classOrder) {
         case 1:
-          displayTitle = l10n.firstClass;
           displayDesc = l10n.firstClassDesc;
           break;
         case 2:
-          displayTitle = l10n.secondClass;
           displayDesc = l10n.secondClassDesc;
           break;
         case 3:
-          displayTitle = l10n.thirdClass;
           displayDesc = l10n.thirdClassDesc;
           break;
         case 4:
-          displayTitle = l10n.stateOwnedJointStockCompany;
           displayDesc = '';
           break;
         case 5:
-          displayTitle = l10n.stateOwnedJointStockCompany;
           displayDesc = '';
           break;
         default:
-          displayTitle = title;
           displayDesc = '';
       }
 
