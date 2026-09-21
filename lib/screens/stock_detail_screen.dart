@@ -161,6 +161,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
+    final languageCode = Localizations.localeOf(context).languageCode;
 
     final symbol = _display('symbol', _info?.symbol, '');
     final name = _display('name', _info?.name, '');
@@ -238,10 +239,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                     setState(() {
                       _selectedPeriodLabel = switch (period) {
                         StockPeriod.d1 => l10n.today,
-                        StockPeriod.d7 => l10n.d7,
-                        StockPeriod.m1 => l10n.m1,
-                        StockPeriod.m3 => l10n.m3,
-                        StockPeriod.y1 => l10n.y1,
+                        StockPeriod.d7 => l10n.last7Days,
+                        StockPeriod.m1 => l10n.last1Month,
+                        StockPeriod.m3 => l10n.last3Months,
+                        StockPeriod.y1 => l10n.last1Year,
                         StockPeriod.all => l10n.all,
                       };
                     });
@@ -252,13 +253,13 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                 StockDetailGeneralInfo(
                   marketCap: _info?.marketValue == null
                       ? '-'
-                      : '₮${formatCompactAmount(_info!.marketValue)}',
+                      : '₮${formatCompactAmount(_info!.marketValue, languageCode: languageCode)}',
                   avgVolume: _info?.avgTrade == null
                       ? '-'
-                      : '₮${formatCompactAmount(_info!.avgTrade)}',
+                      : '₮${formatCompactAmount(_info!.avgTrade, languageCode: languageCode)}',
                   dailyVolume: _info?.dayTrade == null
                       ? '-'
-                      : '₮${formatCompactAmount(_info!.dayTrade)}',
+                      : '₮${formatCompactAmount(_info!.dayTrade, languageCode: languageCode)}',
                   peRatio: _info?.peRatio?.toString() ?? '-',
                   pbRatio: _info?.pbRatio?.toString() ?? '-',
                   dividendYield:

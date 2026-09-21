@@ -142,9 +142,10 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final locale = Localizations.localeOf(context);
 
     final name = _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']);
-    final subtitle = _str(['COMPNAME2', 'TYPENAME']);
+    final subtitle = (locale.languageCode == 'mn') ? _str(['COMPNAME', 'TYPENAME']) : _str(['COMPNAME2', 'TYPENAME']);
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,

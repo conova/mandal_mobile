@@ -277,7 +277,7 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
           const Expanded(child: SizedBox()),
 
           // Balance space
-          const SizedBox(width: 16),
+          const SizedBox(width: 10),
 
           // Center-Left: Price Column
           SizedBox(
@@ -297,7 +297,7 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
           ),
 
           // GAP between Center Price Column and Graph Bar
-          const SizedBox(width: 16),
+          const SizedBox(width: 10),
 
           // Right Side: Graph Bar + Quantity following right end
           Expanded(
@@ -396,7 +396,7 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
           ),
 
           // GAP between Graph Bar and Center Price Column
-          const SizedBox(width: 16),
+          const SizedBox(width: 10),
 
           // Center-Right: Price Column
           SizedBox(
@@ -416,7 +416,7 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
           ),
 
           // Balance space
-          const SizedBox(width: 16),
+          const SizedBox(width: 10),
 
           // Empty right side alignment spacer
           const Expanded(child: SizedBox()),

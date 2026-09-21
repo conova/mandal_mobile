@@ -133,6 +133,7 @@ class _IpoCarouselState extends State<IpoCarousel> {
             ? '-'
             : formatStockAmount(row.closePrice, decimals: 2))
         : formatStockAmount(row.stockPrice, decimals: 2);
+    final locale = Localizations.localeOf(context);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: onlyPrimary ? 16 : 6),
@@ -156,7 +157,7 @@ class _IpoCarouselState extends State<IpoCarousel> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          row.companyName,
+                          (locale.languageCode == 'mn') ? row.companyName : row.companyName2,
                           style: theme.textTheme.headlineSmall?.copyWith(
                             color: extendedColors.neutral100,
                             fontWeight: FontWeight.bold,
