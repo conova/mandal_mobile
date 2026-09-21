@@ -48,30 +48,32 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
   }
 
   // ─── Шүүлтүүд → /account/statement параметрүүд ───
-  // Бүлэг доторх сонголт ганц бол тухайн утга, олон/хоосон бол '' (бүгд)
+  // Бүлэг доторх сонгогдсон утгуудыг ','-ээр зааглан нэгтгэнэ. Хоосон бол '' (бүгд)
 
-  String _pickOne(Map<FilterTag, String> mapping) {
-    final selected = mapping.keys.where(_activeFilters.contains).toList();
-    return selected.length == 1 ? mapping[selected.first]! : '';
+  String _joinSelected(Map<FilterTag, String> mapping) {
+    return mapping.entries
+        .where((e) => _activeFilters.contains(e.key))
+        .map((e) => e.value)
+        .join(',');
   }
 
-  String get _acntTypeParam => _pickOne({
+  String get _acntTypeParam => _joinSelected({
         FilterTag.nominal: 'nominal',
         FilterTag.csd: 'mcsd',
       });
 
-  String get _cashTypeParam => _pickOne({
+  String get _cashTypeParam => _joinSelected({
         FilterTag.cashIncome: '0',
         FilterTag.cashExpense: '1',
       });
 
-  String get _bondParam => _pickOne({
+  String get _bondParam => _joinSelected({
         FilterTag.bondBought: '0',
         FilterTag.bondSold: '1',
         FilterTag.bondReturn: 'B',
       });
 
-  String get _stocksParam => _pickOne({
+  String get _stocksParam => _joinSelected({
         FilterTag.stockBought: '0',
         FilterTag.stockSold: '1',
         FilterTag.stockDividend: 'D',
@@ -126,6 +128,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
             end: _fmt(end),
           );
       if (!mounted) return;
+
+      // Sort by REGDATE descending to show newest transactions first
+      rows.sort((a, b) {
+        final dateA = a['REGDATE']?.toString() ?? '';
+        final dateB = b['REGDATE']?.toString() ?? '';
+        return dateB.compareTo(dateA);
+      });
+
       setState(() {
         _rows = rows;
         _isLoading = false;
@@ -183,8 +193,15 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
         ) ??
         0;
     final txnType = _pickLang(row, 'TXNTYPE', 'TXNTYPE2', isEn);
+    final compName = _pickLang(row, 'COMPNAME', 'COMPNAME2', isEn);
+    final stockSymbol = row['SYMBOL']?.toString() ?? '';
+    final tagRow = _tagOf(row);
     final title = txnType.isNotEmpty
-        ? '$txnType - $curCode'
+        ? (tagRow == FilterTag.stockDividend || tagRow == FilterTag.stockBought || tagRow == FilterTag.stockSold)
+          ? '$stockSymbol $txnType'
+          : (tagRow == FilterTag.bondBought || tagRow == FilterTag.bondSold ||tagRow == FilterTag.bondReturn)
+            ? '$compName $txnType'
+            : '$txnType - ${row['CURCODE']}'
         : _pickLang(row, 'TXNNAME', 'TXNNAME2', isEn);
 
     return TransactionItem(
@@ -192,7 +209,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
       date: _formatRegDate(row['REGDATE']),
       amount: formatStockAmount(amount, isForeign: isUsd),
       isPositive: amount > 0,
-      tag: _tagOf(row),
+      tag:tagRow,
       currencyCode: curCode,
     );
   }

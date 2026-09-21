@@ -451,6 +451,8 @@ class _BondMainScreenState extends State<BondMainScreen>
 
     final endDt = parseStockDate(bond.endDate);
     final orderEndDate = parseStockDate(bond.orderEndDate);
+    final locale = Localizations.localeOf(context);
+
 
     // Prioritize DateTime objects for the tenure display to enable "X left" format.
     final dynamic tenure = (bond.market == 'Secondary' && endDt != null)
@@ -462,10 +464,11 @@ class _BondMainScreenState extends State<BondMainScreen>
                 : (num.tryParse(bond.term) != null
                     ? '${bond.term} ${l10n.monthLabel}'
                     : bond.term));
+    final compName = (locale.languageCode == 'mn') ? bond.companyName : bond.companyName2;
 
     return BondMarketCardCompact(
       bond.raw,
-      title: bond.companyName,
+      title: compName,
       tenure: tenure,
       yield: formatIntRate(bond.intRate),
       payday: bond.payday,

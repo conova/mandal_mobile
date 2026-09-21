@@ -500,6 +500,7 @@ class _StockScreenState extends State<StockScreen> {
     final pct = row.priceChange ?? 0;
     final isUp = pct > 0;
     final isDown = pct < 0;
+    final locale = Localizations.localeOf(context);
 
     final price = row.closePrice == null
         ? '-'
@@ -561,7 +562,7 @@ class _StockScreenState extends State<StockScreen> {
             ),
             Expanded(
               child: Text(
-                row.companyName,
+                (locale.languageCode == 'mn') ? row.companyName : row.companyName2,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_svg_icon.dart';
 
 enum FilterTag {
   cashIncome,
@@ -61,7 +62,6 @@ class TransactionListItem extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
                 Text(
                   transaction.date,
                   style: theme.textTheme.labelLarge?.copyWith(
@@ -94,27 +94,23 @@ class TransactionListItem extends StatelessWidget {
 
     Color bgColor;
     if (transaction.isPositive) {
-      bgColor = extendedColors.primary100.withValues(alpha: 0.3);
+      bgColor = extendedColors.primary100;
     } else {
       bgColor = extendedColors.bgSecondary;
     }
 
     Widget iconContent;
     if (isCash) {
-      final symbol = transaction.currencyCode == 'USD' ? '\$' : '₮';
-      iconContent = Text(
-        symbol,
-        style: TextStyle(
-          color: transaction.isPositive
-              ? extendedColors.primaryMain
-              : extendedColors.neutral300,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
+      iconContent = CustomSvgIcon(
+        (transaction.currencyCode == 'USD') ? 'currency-dollar' : 'tugrug-01',
+        color: transaction.isPositive
+            ? extendedColors.primaryMain
+            : extendedColors.neutral300,
+        size: 22,
       );
     } else if (isBond) {
-      iconContent = Icon(
-        Icons.description_outlined,
+      iconContent = CustomSvgIcon(
+        'bank-note-01',
         color: transaction.isPositive
             ? extendedColors.primaryMain
             : extendedColors.neutral300,
@@ -122,8 +118,8 @@ class TransactionListItem extends StatelessWidget {
       );
     } else {
       // Stock
-      iconContent = Icon(
-        Icons.show_chart,
+      iconContent = CustomSvgIcon(
+        'coins-swap-02',
         color: transaction.isPositive
             ? extendedColors.primaryMain
             : extendedColors.neutral300,
