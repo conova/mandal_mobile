@@ -66,6 +66,13 @@ class _ChildAccountDocumentScreenState
         image: base64Image,
         civilId: civilId,
       );
+
+      // Шинэ хүүхдийн данс профайл/дэд данснуудад орсон тул харилцагчийн
+      // мэдээллийг дахин татна (алдаа гарсан ч урсгалыг зогсоохгүй)
+      try {
+        await auth.refreshUserInfo();
+      } catch (_) {}
+
       if (!mounted) return;
       Navigator.pushNamed(context, '/child_account_success');
     } catch (e) {

@@ -26,7 +26,7 @@ class DepositInfoScreen extends StatefulWidget {
 
 class _DepositInfoScreenState extends State<DepositInfoScreen> {
   /// Хүлээн авах дансны банкны код — IBAN-ы 5, 6 дахь орон
-  static const String _targetBankCode = '92';
+  static const String _targetBankCode = '95';
 
   bool _isLoading = true;
   IncomeAccount? _account;
