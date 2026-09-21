@@ -714,5 +714,10 @@
     "stateOwnedJointStockCompany": "Төрийн өмчит хувьцаат компани",
     "firstClassDesc": "10 тэрбум төгрөгөөс дээш үнэлгээтэй компани",
     "secondClassDesc": "1 тэрбум төгрөгөөс дээш үнэлгээтэй компани",
-    "thirdClassDesc": "Өндөр эрсдэлтэй компаниуд"
+    "thirdClassDesc": "Өндөр эрсдэлтэй компаниуд",
+    "registeredNumber": "Иргэний бүртгэлийн дугаар",
+    "completeRegistrationPrompt": "Та бүртгэлээ дуусгана уу",
+    "mandalCapitalMarkets": "Мандал Капитал Маркетс ҮЦК",
+    "registeredNumberHint": "E-Mongolia → Төрсний гэрчилгээний лавлагаа → Хүүхэд → Иргэний бүртгэлийн дугаар",
+    "invalidNumber": "Дугаар буруу байна"
 }

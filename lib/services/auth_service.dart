@@ -1097,6 +1097,8 @@ class AuthService with ChangeNotifier {
   Future<String?> uploadKycDocument({
     required String type,
     required String image,
+    /// Хүүхдийн бичиг баримт (`id_child`) үед иргэний бүртгэлийн дугаар
+    String? civilId,
     void Function(int sent, int total)? onSendProgress,
   }) async {
     try {
@@ -1104,7 +1106,11 @@ class AuthService with ChangeNotifier {
         ApiConfig.kycUploadDocument,
         data: {
           'api': 'upload_document',
-          'data': {'type': type, 'image': image},
+          'data': {
+            'type': type,
+            'image': image,
+            if (civilId != null && civilId.isNotEmpty) 'civilId': civilId,
+          },
         },
         onSendProgress: onSendProgress,
       );
@@ -1346,7 +1352,15 @@ class AuthService with ChangeNotifier {
       // Хүүхэд бүртгэгдээгүй үед алдаа биш — хоосон жагсаалт
       return [];
     } on DioException catch (e) {
-      throw Exception(_extractErrorMessage(e));
+      // Статус кодыг мессежид оруулна — 404 бол зам буруу, 5xx бол
+      // сервер, аль нь ч биш бол жинхэнэ сүлжээний алдаа
+      final status = e.response?.statusCode;
+      debugPrint(
+        '[getChildren] ${ApiConfig.userChilds} → $status '
+        '${e.type.name} ${e.response?.data}',
+      );
+      final detail = status == null ? e.type.name : '$status';
+      throw Exception('${_extractErrorMessage(e)} ($detail)');
     }
   }
 

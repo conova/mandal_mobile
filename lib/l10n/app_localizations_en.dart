@@ -2063,4 +2063,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thirdClassDesc => 'High-risk companies';
+
+  @override
+  String get registeredNumber => 'Civil registration number';
+
+  @override
+  String get completeRegistrationPrompt => 'Please complete your registration';
+
+  @override
+  String get mandalCapitalMarkets => 'Mandal Capital Markets SC';
+
+  @override
+  String get registeredNumberHint =>
+      'E-Mongolia → Birth certificate reference → Child → Civil registration number';
+
+  @override
+  String get invalidNumber => 'Incorrect number';
 }

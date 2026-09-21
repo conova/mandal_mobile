@@ -54,5 +54,10 @@
     "futureTab": "Próximo",
     "nothingYet": "Nada todavía",
     "growAssetsPrompt": "¿Desea hacer crecer su patrimonio con bonos?",
-    "yieldCount": "Pagos"
+    "yieldCount": "Pagos",
+    "registeredNumber": "Número de registro civil",
+    "completeRegistrationPrompt": "Complete su registro",
+    "mandalCapitalMarkets": "Mandal Capital Markets SC",
+    "registeredNumberHint": "E-Mongolia → Certificado de nacimiento → Hijo → Número de registro civil",
+    "invalidNumber": "Número incorrecto"
 }

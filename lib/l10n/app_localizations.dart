@@ -3909,6 +3909,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'High-risk companies'**
   String get thirdClassDesc;
+
+  /// No description provided for @registeredNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Civil registration number'**
+  String get registeredNumber;
+
+  /// No description provided for @completeRegistrationPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete your registration'**
+  String get completeRegistrationPrompt;
+
+  /// No description provided for @mandalCapitalMarkets.
+  ///
+  /// In en, this message translates to:
+  /// **'Mandal Capital Markets SC'**
+  String get mandalCapitalMarkets;
+
+  /// No description provided for @registeredNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E-Mongolia → Birth certificate reference → Child → Civil registration number'**
+  String get registeredNumberHint;
+
+  /// No description provided for @invalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect number'**
+  String get invalidNumber;
 }
 
 class _AppLocalizationsDelegate

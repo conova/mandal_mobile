@@ -2026,4 +2026,20 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get thirdClassDesc => 'Өндөр эрсдэлтэй компаниуд';
+
+  @override
+  String get registeredNumber => 'Иргэний бүртгэлийн дугаар';
+
+  @override
+  String get completeRegistrationPrompt => 'Та бүртгэлээ дуусгана уу';
+
+  @override
+  String get mandalCapitalMarkets => 'Мандал Капитал Маркетс ҮЦК';
+
+  @override
+  String get registeredNumberHint =>
+      'E-Mongolia → Төрсний гэрчилгээний лавлагаа → Хүүхэд → Иргэний бүртгэлийн дугаар';
+
+  @override
+  String get invalidNumber => 'Дугаар буруу байна';
 }

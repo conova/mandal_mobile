@@ -1,39 +1,132 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../common/api_message.dart';
 import '../config/api_config.dart';
 import '../l10n/app_localizations.dart';
+import '../models/income_account.dart';
+import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_snackbar.dart';
 import 'components/shared/deposit_info_row.dart';
 
-/// Бондын данс цэнэглэх — банкны шилжүүлгийн мэдээлэл (МҮЦТХ данс руу).
+/// Данс цэнэглэх — банкны шилжүүлгийн мэдээлэл.
 ///
-/// Бүх харилцагч нэг МҮЦТХ данс руу шилжүүлэх ба гүйлгээний утганд
-/// бичигдэх регистрийн дугаараар харилцагчийг ялгана.
-class DepositInfoScreen extends StatelessWidget {
+/// Харилцагчийн дансны жагсаалтаас (/user/acnts) банкны кодоор нь
+/// хүлээн авах дансыг олж харуулна. Тийм данс бүртгэгдээгүй бол
+/// анхааруулаад буцна.
+class DepositInfoScreen extends StatefulWidget {
   const DepositInfoScreen({super.key});
 
-  /// МҮЦТХ — банкны код 95 (лого server-ээс)
-  static const String _bankCode = '95';
-  static const String _bankName = 'Монголын үнэт цаасны төвлөрсөн хадгаламж';
+  @override
+  State<DepositInfoScreen> createState() => _DepositInfoScreenState();
+}
 
-  /// МҮЦТХ-ийн хүлээн авах IBAN данс (бүх харилцагчид нэг)
-  static const String _iban = '800020010 5055224020';
+class _DepositInfoScreenState extends State<DepositInfoScreen> {
+  /// Хүлээн авах дансны банкны код — IBAN-ы 5, 6 дахь орон
+  static const String _targetBankCode = '92';
+
+  bool _isLoading = true;
+  IncomeAccount? _account;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_fetchAccount);
+  }
+
+  /// IBAN-ы 5, 6 дахь орноос банкны код
+  static String _bankCodeOf(String iban) =>
+      iban.length >= 6 ? iban.substring(4, 6) : '';
+
+  Future<void> _fetchAccount() async {
+    try {
+      final response =
+          await context.read<ApiService>().get(ApiConfig.userAccounts);
+      if (!mounted) return;
+      final body = response.data;
+
+      IncomeAccount? match;
+      if (body is Map &&
+          body['code']?.toString() == '0' &&
+          body['data'] is List) {
+        for (final row in (body['data'] as List).whereType<Map>()) {
+          final account =
+              IncomeAccount.fromJson(Map<String, dynamic>.from(row));
+          if (_bankCodeOf(account.accountNumber) == _targetBankCode) {
+            match = account;
+            break;
+          }
+        }
+      } else if (body is Map) {
+        throw Exception(apiMessage(body) ?? 'Данс татахад алдаа гарлаа');
+      }
+
+      if (match == null) {
+        // Шилжүүлэг хүлээн авах данс бүртгэгдээгүй байна
+        CustomSnackbar.show(
+          context,
+          message: AppLocalizations.of(context)!.completeRegistrationPrompt,
+          type: CustomSnackbarType.error,
+        );
+        Navigator.pop(context);
+        return;
+      }
+
+      setState(() {
+        _account = match;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      CustomSnackbar.showError(context, e);
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final lang = Localizations.localeOf(context).languageCode;
+
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: extendedColors.bgBase,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: CircleBackButton(),
+                ),
+              ),
+              const Expanded(child: Center(child: CircularProgressIndicator())),
+            ],
+          ),
+        ),
+      );
+    }
 
     final info = context.read<AuthService>().userInfo;
+    final account = _account;
 
-    final receiver =
-        '${info?['lastName'] ?? ''} ${info?['firstName'] ?? ''}'.trim();
-    // Гүйлгээний утга — харилцагчийг ялгах регистрийн дугаар
-    final memo = info?['registerNumber']?.toString() ?? '';
+    // Хүлээн авагч — дансны эзэмшигчийн нэр, байхгүй бол профайлаас
+    final receiver = (account?.accountName.isNotEmpty ?? false)
+        ? account!.accountName
+        : '${info?['lastName'] ?? ''} ${info?['firstName'] ?? ''}'.trim();
+    // Гүйлгээний утга — харилцагчийг ялгах регистрийн дугаар, утас
+    final memo = [
+      info?['registerNumber']?.toString() ?? '',
+      info?['phone']?.toString() ?? '',
+    ].where((v) => v.isNotEmpty).join(', ');
+    final iban = account?.accountNumber ?? '';
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -90,13 +183,15 @@ class DepositInfoScreen extends StatelessWidget {
                         children: [
                           DepositInfoRow(
                             label: l10n.receiverBank,
-                            value: _bankName,
+                            value: account?.localizedBankName(lang) ?? '-',
                             trailing: ClipOval(
                               child: Container(
                                 color: Colors.white,
                                 padding: const EdgeInsets.all(4),
                                 child: Image.network(
-                                  ApiConfig.bankLogoUrl(_bankCode),
+                                  ApiConfig.bankLogoUrl(
+                                    account?.bankCode ?? '',
+                                  ),
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit.contain,
@@ -111,9 +206,9 @@ class DepositInfoScreen extends StatelessWidget {
                           ),
                           DepositInfoRow(
                             label: l10n.ibanAccountNo,
-                            value: _iban,
+                            value: iban.isNotEmpty ? iban : '-',
                             // Банкны апп руу буулгахад зай саад болохгүй
-                            copyValue: _iban.replaceAll(' ', ''),
+                            copyValue: iban.replaceAll(' ', ''),
                           ),
                           DepositInfoRow(
                             label: l10n.receiver,

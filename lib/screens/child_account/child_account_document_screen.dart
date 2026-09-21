@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
+import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/auth_service.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/circle_back_button.dart';
 import '../../widgets/custom_button.dart';
@@ -8,7 +14,8 @@ import '../../widgets/custom_snackbar.dart';
 
 /// Хүүхдийн данс нээх — 2-р алхам: төрсний гэрчилгээний зураг оруулах.
 ///
-/// Route args: `{'register': String}` (1-р алхмаас)
+/// Route args: `{register, childId, firstName, lastName, registeredNum}`
+/// (1-р алхмаас). `registeredNum` нь upload хийхэд `civilId` болж явна.
 class ChildAccountDocumentScreen extends StatefulWidget {
   const ChildAccountDocumentScreen({super.key});
 
@@ -39,11 +46,26 @@ class _ChildAccountDocumentScreenState
   }
 
   Future<void> _send() async {
-    if (_photoResult == null || _isSending) return;
+    final photo = _photoResult;
+    if (photo is! String || photo == 'done' || _isSending) return;
+
+    final auth = context.read<AuthService>();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            const {};
+    final civilId = args['registeredNum']?.toString() ?? '';
+
     setState(() => _isSending = true);
     try {
-      // TODO: Хүүхдийн бүртгэлийн API холбогдох үед энд илгээнэ
-      // (register: args-аас, зураг: _photoResult)
+      // Web дээр камер base64 буцаадаг, mobile дээр файлын зам
+      final base64Image =
+          kIsWeb ? photo : base64Encode(await File(photo).readAsBytes());
+
+      await auth.uploadKycDocument(
+        type: 'id_child',
+        image: base64Image,
+        civilId: civilId,
+      );
       if (!mounted) return;
       Navigator.pushNamed(context, '/child_account_success');
     } catch (e) {

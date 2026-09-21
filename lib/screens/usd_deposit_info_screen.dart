@@ -21,8 +21,9 @@ class UsdDepositInfoScreen extends StatefulWidget {
 }
 
 class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
-  /// Хүлээн авах данс — банк солигдсон ч дугаар ижил
-  static const String _accountNo = '5055224020';
+  /// Мандал Капитал Маркетс ҮЦК-ийн хүлээн авах дансууд
+  static const String _tdbAccountNo = 'MN83000400404208038';
+  static const String _golomtAccountNo = 'MN25001500 2025142552 У';
 
   /// Худалдаа хөгжлийн банк — 04, Голомт банк — 15 (лого server-ээс)
   static const String _tdbCode = '04';
@@ -241,13 +242,15 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
           ),
           DepositInfoRow(
             label: l10n.accountNo,
-            value: _accountNo,
-            copyValue: _accountNo,
+            value: isTdb ? _tdbAccountNo : _golomtAccountNo,
+            // Банкны апп руу буулгахад зай саад болохгүй
+            copyValue:
+                (isTdb ? _tdbAccountNo : _golomtAccountNo).replaceAll(' ', ''),
           ),
           DepositInfoRow(
             label: l10n.receiver,
-            value: l10n.mandalCapital,
-            copyValue: l10n.mandalCapital,
+            value: l10n.mandalCapitalMarkets,
+            copyValue: l10n.mandalCapitalMarkets,
           ),
           DepositInfoRow(
             label: l10n.transactionMemo,

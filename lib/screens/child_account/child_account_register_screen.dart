@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../common/validators.dart';
 import '../../config/api_config.dart';
 import '../../l10n/app_localizations.dart';
-import '../../models/child_info.dart';
 import '../../services/auth_service.dart';
 import '../../services/dan_service.dart';
 import '../../theme/extended_colors.dart';
@@ -11,7 +9,6 @@ import '../../widgets/circle_back_button.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_input.dart';
 import '../../widgets/custom_snackbar.dart';
-import '../../widgets/initial_avatar.dart';
 import '../webview_screen.dart';
 
 /// Хүүхдийн данс нээх — 1-р алхам: хүүхдийн регистрийн дугаар оруулах.
@@ -25,47 +22,32 @@ class ChildAccountRegisterScreen extends StatefulWidget {
 
 class _ChildAccountRegisterScreenState
     extends State<ChildAccountRegisterScreen> {
-  final TextEditingController _registerController = TextEditingController();
+  /// E-Mongolia-гийн CHILD_INFO-д шаардагдах иргэний бүртгэлийн дугаар
+  final TextEditingController _registeredNumController =
+      TextEditingController();
 
-  /// E-Mongolia хүсэлт үүсгэж байгаа эсэх
-  bool _isFetchingChildren = false;
-
-  /// E-Mongolia-аас татагдаж сервер дээр хадгалагдсан хүүхдүүд.
-  /// Хоосон биш бол регистр гараар бичихийн оронд жагсаалтаас сонгоно.
-  List<ChildInfo> _children = const [];
-  int? _selectedChildId;
-
-  ChildInfo? get _selectedChild {
-    final id = _selectedChildId;
-    if (id == null) return null;
-    for (final c in _children) {
-      if (c.id == id) return c;
-    }
-    return null;
-  }
+  /// E-Mongolia хүсэлт явуулж байгаа эсэх
+  bool _isVerifying = false;
 
   @override
   void dispose() {
-    _registerController.dispose();
+    _registeredNumController.dispose();
     super.dispose();
   }
 
-  bool get _isValid =>
-      _registerController.text.trim().isNotEmpty;
-
-  /// E-Mongolia-аас хүүхдийн жагсаалт татах — DAN баталгаажуулалттай ижил
-  /// урсгал, зөвхөн CHILD_INFO service код-оор хүсэлт илгээнэ.
-  Future<void> _fetchChildrenFromEMongolia() async {
-    if (_isFetchingChildren) return;
-    setState(() => _isFetchingChildren = true);
+  /// Иргэний бүртгэлийн дугаарыг E-Mongolia-гаар баталгаажуулна —
+  /// DAN-тай ижил урсгал, зөвхөн CHILD_INFO service код-оор.
+  Future<void> _verifyWithEMongolia() async {
+    if (_isVerifying) return;
+    setState(() => _isVerifying = true);
 
     final l10n = AppLocalizations.of(context)!;
     try {
       final dan = context.read<DanService>();
       final auth = context.read<AuthService>();
 
-      // CHILD_INFO нь эцэг/эхийн бүртгэлийн болон регистрийн дугаарыг
-      // параметрээр шаардана
+      // CHILD_INFO — иргэний бүртгэлийн дугаарыг талбараас, регистрийн
+      // дугаарыг харилцагчийн мэдээллээс авна
       final info = auth.userInfo;
       final result = await dan.startEMongolia(
         unique: auth.uid ?? '',
@@ -74,7 +56,7 @@ class _ChildAccountRegisterScreenState
           DanServiceRequest(
             'CHILD_INFO',
             params: {
-              'registeredNum': info?['civilId']?.toString() ?? '',
+              'registeredNum': _registeredNumController.text.trim(),
               'regnum':
                   (info?['registerNum'] ?? info?['registerNumber'])
                           ?.toString() ??
@@ -93,7 +75,9 @@ class _ChildAccountRegisterScreenState
           'url': result.uri,
           'title': 'E-Mongolia',
           'callbackPrefix': ApiConfig.danStatusCallback,
-          'homeRoute': '/main',
+          // Үр дүнг нүүр рүү шилжихийн оронд энэ дэлгэц рүү буцаана —
+          // алдаатай үед хэрэглэгч урсгалаасаа гарахгүй
+          'popWithResult': true,
         },
       );
 
@@ -102,29 +86,32 @@ class _ChildAccountRegisterScreenState
       if (returned == WebViewScreen.popResultHome) return;
 
       if (returned != null) {
-        // E-Mongolia амжилттай хариу өгсөн — серверт хадгалагдсан
-        // хүүхдүүдийн жагсаалтыг татаж харуулна
-        final children = await auth.getChildren();
-        if (!mounted) return;
-        setState(() {
-          _children = children;
-          // Ганц хүүхэдтэй бол шууд сонгож өгнө
-          _selectedChildId = children.length == 1 ? children.first.id : null;
-        });
-        if (children.isEmpty) {
+        // Үр дүн хоёр хэлбэрээр ирж болно:
+        //   • {result, message} — хуудас MandalApp сувгаар мэдэгдсэн
+        //   • callback URL (string) — `result` query параметртэй
+        final callbackResult = returned is Map
+            ? returned['result']?.toString().toLowerCase()
+            : Uri.tryParse(returned.toString())
+                ?.queryParameters['result']
+                ?.toLowerCase();
+        if (callbackResult != null && callbackResult != 'success') {
           CustomSnackbar.show(
             context,
-            message: l10n.childListEmpty,
-            type: CustomSnackbarType.info,
+            message: l10n.invalidNumber,
+            type: CustomSnackbarType.error,
           );
+          return;
         }
+
+        // Баталгаажсан — шууд бичиг баримтын алхам руу
+        _goToDocumentStep();
       }
     } on DanException catch (e) {
       if (mounted) CustomSnackbar.showError(context, e.message);
     } catch (e) {
       if (mounted) CustomSnackbar.showError(context, e);
     } finally {
-      if (mounted) setState(() => _isFetchingChildren = false);
+      if (mounted) setState(() => _isVerifying = false);
     }
   }
 
@@ -152,50 +139,41 @@ class _ChildAccountRegisterScreenState
                 ],
               ),
               const SizedBox(height: 32),
-              Text(
-                l10n.childRegisterTitle,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+              // Гарчиг, агуулга — гар гарч ирэхэд багтахгүй болохоос
+              // сэргийлж гүйлгэдэг талбарт байрлана
+              // Гар гарч ирэхэд багтахгүй болохоос сэргийлж гүйлгэнэ
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeaderTexts(theme, l10n, extendedColors),
+                      const SizedBox(height: 24),
+                      // E-Mongolia-гаар баталгаажуулахад шаардагдана
+                      CustomInput(
+                        label: l10n.registeredNumber,
+                        controller: _registeredNumController,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      const SizedBox(height: 8),
+                      // Дугаараа хаанаас олохыг зааж өгнө
+                      Text(
+                        l10n.registeredNumberHint,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w200,
+                          color: extendedColors.neutral300,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.childRegisterDesc,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w200,
-                  color: extendedColors.neutral200,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // E-Mongolia-аас хүүхэд татагдсан бол жагсаалтаас сонгоно,
-              // үгүй бол регистрийг нь гараар оруулна
-              if (_children.isNotEmpty)
-                Expanded(child: _buildChildList(theme, l10n, extendedColors))
-              else ...[
-                CustomInput(
-                  label: l10n.registrationNumber,
-                  controller: _registerController,
-                  validator: (v) =>
-                      Validators.validateMongolianRegister(v, l10n),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  onChanged: (_) => setState(() {}),
-                ),
-                const SizedBox(height: 16),
-                // Регистрээ гараар бичихийн оронд E-Mongolia-аас татах
-                CustomButton(
-                  size: CustomButtonSize.small,
-                  label: l10n.fetchChildListEmongolia,
-                  variant: CustomButtonVariant.secondary,
-                  isLoading: _isFetchingChildren,
-                  onPressed:
-                      _isFetchingChildren ? null : _fetchChildrenFromEMongolia,
-                ),
-                const Spacer(),
-              ],
+              const SizedBox(height: 16),
+              // E-Mongolia-гаар баталгаажуулж, амжилттай бол 2-р алхам руу
               CustomButton(
-                label: _children.isNotEmpty ? l10n.continueLabel : l10n.register,
-                onPressed: _canContinue ? _goToDocumentStep : null,
+                label: l10n.register,
+                isLoading: _isVerifying,
+                onPressed: _canContinue ? _verifyWithEMongolia : null,
               ),
               const SizedBox(height: 24),
             ],
@@ -205,29 +183,8 @@ class _ChildAccountRegisterScreenState
     );
   }
 
-  /// Жагсаалттай үед хүүхэд сонгогдсон, үгүй бол регистр бичигдсэн байх ёстой
-  bool get _canContinue =>
-      _children.isNotEmpty ? _selectedChild != null : _isValid;
-
-  /// 2-р алхам руу — сонгосон хүүхдийн (эсвэл гараар бичсэн) мэдээллээр
-  void _goToDocumentStep() {
-    final child = _selectedChild;
-    Navigator.pushNamed(
-      context,
-      '/child_account_document',
-      arguments: {
-        'register': child?.registerNumber ?? _registerController.text.trim(),
-        if (child != null) ...{
-          'childId': child.id,
-          'firstName': child.firstName,
-          'lastName': child.lastName,
-        },
-      },
-    );
-  }
-
-  /// E-Mongolia-аас татагдсан хүүхдүүд — radio-той сонгох жагсаалт
-  Widget _buildChildList(
+  /// Дэлгэцийн гарчиг, тайлбар — хоёр салбар хуваалцана
+  Widget _buildHeaderTexts(
     ThemeData theme,
     AppLocalizations l10n,
     ExtendedColors extendedColors,
@@ -236,106 +193,35 @@ class _ChildAccountRegisterScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.selectChildLabel,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
+          l10n.childRegisterTitle,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
             color: extendedColors.neutral100,
           ),
         ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.zero,
-            itemCount: _children.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
-            itemBuilder: (context, index) => _buildChildCard(
-              _children[index],
-              theme,
-              extendedColors,
-            ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.childRegisterDesc,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w200,
+            color: extendedColors.neutral200,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildChildCard(
-    ChildInfo child,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
-    final isSelected = _selectedChildId == child.id;
+  /// Иргэний бүртгэлийн дугаар бичигдсэн байх ёстой
+  bool get _canContinue =>
+      !_isVerifying && _registeredNumController.text.trim().isNotEmpty;
 
-    return GestureDetector(
-      onTap: () => setState(() => _selectedChildId = child.id),
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? extendedColors.primaryMain
-                : extendedColors.neutral500,
-          ),
-        ),
-        child: Row(
-          children: [
-            InitialAvatar(
-              initial: child.initial,
-              color: extendedColors.primaryMain,
-              size: 40,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    child.fullName,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral100,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    child.registerNumber,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? extendedColors.primaryMain
-                      : extendedColors.neutral400,
-                  width: 2,
-                ),
-              ),
-              child: isSelected
-                  ? Center(
-                      child: Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: extendedColors.primaryMain,
-                        ),
-                      ),
-                    )
-                  : null,
-            ),
-          ],
-        ),
-      ),
+  /// 2-р алхам руу — баталгаажсан иргэний бүртгэлийн дугаартайгаа
+  void _goToDocumentStep() {
+    Navigator.pushNamed(
+      context,
+      '/child_account_document',
+      // Бичиг баримт илгээхэд civilId болж явна
+      arguments: {'registeredNum': _registeredNumController.text.trim()},
     );
   }
 }

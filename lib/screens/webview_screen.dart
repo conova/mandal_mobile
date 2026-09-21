@@ -71,6 +71,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
     // байх зориулалттай.
     final exitPrefix = args['exitPrefix'] as String?;
     final homeRoute = args['homeRoute'] as String?;
+    // popWithResult — үр дүн ирэхэд home руу шилжихийн оронд дуудагч
+    // дэлгэц рүү {result, message} буцаана (жнь хүүхдийн бүртгэлийн
+    // урсгал өөрийн дэлгэцэн дээрээ алдааг харуулна)
+    final popWithResult = args['popWithResult'] == true;
     // Home руу шилжихэд onboarding (баталгаажуулалтын) sheet нээх эсэх.
     // DAN урсгалд true, төлбөрийн webview-д false дамжуулна.
     _showOnboardingOnHome = args['showOnboardingOnHome'] != false;
@@ -102,13 +106,16 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
     // JavaScript bridge — webview доторх хуудас `MandalApp.postMessage(...)`
     // дуудаж home руу шилжих action илгээх боломжтой.
-    if (homeRoute != null && homeRoute.isNotEmpty) {
+    if (popWithResult || (homeRoute != null && homeRoute.isNotEmpty)) {
       controller.addJavaScriptChannel(
         jsChannelName,
         onMessageReceived: (msg) {
           final cmd = _parseNavigateHomeMessage(msg.message);
-          if (cmd != null) {
-            _navigateHome(homeRoute, cmd);
+          if (cmd == null) return;
+          if (popWithResult) {
+            _popWithResult(cmd);
+          } else {
+            _navigateHome(homeRoute!, cmd);
           }
         },
       );
@@ -150,10 +157,15 @@ class _WebViewScreenState extends State<WebViewScreen> {
             // (1) Home scheme — webview доторх хуудас `mandalapp://home` руу
             // redirect хийж home tab руу шилжүүлж болно. Query string-ээс
             // `result` болон `message` уншина.
-            if (homeRoute != null &&
-                homeRoute.isNotEmpty &&
+            if ((popWithResult ||
+                    (homeRoute != null && homeRoute.isNotEmpty)) &&
                 req.url.startsWith(homeUrlScheme)) {
-              _navigateHome(homeRoute, _parseNavigateHomeUrl(req.url));
+              final cmd = _parseNavigateHomeUrl(req.url);
+              if (popWithResult) {
+                _popWithResult(cmd);
+              } else {
+                _navigateHome(homeRoute!, cmd);
+              }
               return NavigationDecision.prevent;
             }
             // (2) Callback URL — баталгаажуулалт амжилттай дуусгасан тохиолдол
@@ -248,6 +260,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
   /// [WebViewScreen.popResultHome] утгаар буцаана.
   /// `cmd.result != 'success'` бол home tab дээр гарсны дараа `CustomSnackbar`
   /// гарч ирнэ.
+  /// Webview-г хааж, үр дүнг дуудагч дэлгэц рүү буцаана.
+  /// Дуудагч нь {result: 'success'|'error'|..., message: String?} авна.
+  void _popWithResult(_NavigateHomeCommand cmd) {
+    if (!mounted) return;
+    Navigator.of(context).pop({'result': cmd.result, 'message': cmd.message});
+  }
+
   void _navigateHome(String homeRoute, _NavigateHomeCommand cmd) {
     if (!mounted) return;
     final navigator = Navigator.of(context);

@@ -785,5 +785,10 @@
     "stateOwnedJointStockCompany": "State-Owned Joint-Stock company",
     "firstClassDesc": "A company valued at over 10 billion tugriks (or 10 billion MNT)",
     "secondClassDesc": "A company valued between 1 billion tugriks (or 1 billion MNT)",
-    "thirdClassDesc": "High-risk companies"
+    "thirdClassDesc": "High-risk companies",
+    "registeredNumber": "Civil registration number",
+    "completeRegistrationPrompt": "Please complete your registration",
+    "mandalCapitalMarkets": "Mandal Capital Markets SC",
+    "registeredNumberHint": "E-Mongolia → Birth certificate reference → Child → Civil registration number",
+    "invalidNumber": "Incorrect number"
 }

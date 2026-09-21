@@ -123,7 +123,10 @@
       "Bash(perl -0pi -e 's/final Set<String> _expandedSymbols = \\\\{\\\\};\\\\n\\\\n\\\\n/final Set<String> _expandedSymbols = {};\\\\n\\\\n/' lib/screens/bond_portfolio_screen.dart lib/screens/stock_portfolio_screen.dart)",
       "Bash(sed -i '' 's/final String yieldPercent;/\\\\/\\\\/\\\\/ Өгөөжийн утга — дүн эсвэл хувиар \\(дуудагчаас хамаарна\\)\\\\n  final String yieldValue;/; s/required this.yieldPercent,/required this.yieldValue,/; s/^                    yieldPercent,$/                    yieldValue,/' lib/screens/components/bond/bond_payment_details.dart)",
       "Bash(sed -i '' 's/yieldPercent: PercentSuffixFormatter.format\\(rate\\)/yieldValue: PercentSuffixFormatter.format\\(rate\\)/' lib/screens/components/bond/bond_detail_trading_view.dart)",
-      "Bash(sed -i '' 's|    - assets/images/safe_box.png|    - assets/images/safe_box.png\\\\n    - assets/images/dots.png|' pubspec.yaml)"
+      "Bash(sed -i '' 's|    - assets/images/safe_box.png|    - assets/images/safe_box.png\\\\n    - assets/images/dots.png|' pubspec.yaml)",
+      "Bash(curl -sk -o jspdf.js \"https://bds.techfi.mn/plugins/libs/jspdf.umd.min.js\")",
+      "Bash(grep -v \"^--$\")",
+      "Bash(perl -0pi -e 's/\\\\n\\\\n\\\\}\\\\n\\\\n\\\\/\\\\/\\\\/ Баруун дээд/\\\\n}\\\\n\\\\n\\\\/\\\\/\\\\/ Баруун дээд/' lib/screens/child_account/child_account_register_screen.dart)"
     ]
   }
 }
