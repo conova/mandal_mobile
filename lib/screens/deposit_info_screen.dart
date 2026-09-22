@@ -25,7 +25,7 @@ class DepositInfoScreen extends StatefulWidget {
 }
 
 class _DepositInfoScreenState extends State<DepositInfoScreen> {
-  /// Хүлээн авах дансны банкны код — IBAN-ы 5, 6 дахь орон
+  /// Хүлээн авах дансны банкны код (TXNBANKNO)
   static const String _targetBankCode = '95';
 
   bool _isLoading = true;
@@ -36,10 +36,6 @@ class _DepositInfoScreenState extends State<DepositInfoScreen> {
     super.initState();
     Future.microtask(_fetchAccount);
   }
-
-  /// IBAN-ы 5, 6 дахь орноос банкны код
-  static String _bankCodeOf(String iban) =>
-      iban.length >= 6 ? iban.substring(4, 6) : '';
 
   Future<void> _fetchAccount() async {
     try {
@@ -55,7 +51,7 @@ class _DepositInfoScreenState extends State<DepositInfoScreen> {
         for (final row in (body['data'] as List).whereType<Map>()) {
           final account =
               IncomeAccount.fromJson(Map<String, dynamic>.from(row));
-          if (_bankCodeOf(account.accountNumber) == _targetBankCode) {
+          if (account.bankCode.trim() == _targetBankCode) {
             match = account;
             break;
           }
