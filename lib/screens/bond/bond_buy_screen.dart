@@ -255,13 +255,9 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
       bottomSheet: Container(
         decoration: BoxDecoration(
           color: extendedColors.bgBase,
-          boxShadow: [
-            BoxShadow(
-              color: extendedColors.neutral500.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
+          border: BorderDirectional(
+            top: BorderSide(color: extendedColors.neutral500, width: 1),
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

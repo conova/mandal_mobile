@@ -39,16 +39,19 @@ class BondDetailHeader extends StatelessWidget {
           spacing: 12,
           runSpacing: 4,
           children: [
-            Text(
-              title,
-              style: theme.textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: extendedColors.neutral100,
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                title,
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
               ),
             ),
             if (subtitle.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
+              SizedBox(
+                width: double.infinity,
                 child: Text(
                   subtitle,
                   style: theme.textTheme.bodyLarge?.copyWith(

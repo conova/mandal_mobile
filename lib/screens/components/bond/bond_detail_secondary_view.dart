@@ -10,8 +10,9 @@ import 'bond_payment_schedule.dart';
 /// төлбөрийн хуваарь болон гол огноонууд.
 class BondDetailSecondaryView extends StatelessWidget {
   final MarketInstrument? bond;
+  final double topPadding;
 
-  const BondDetailSecondaryView({super.key, required this.bond});
+  const BondDetailSecondaryView({super.key, required this.bond, required this.topPadding});
 
   /// Хувь хүний бондын хүүгийн татвар — API-аас ирээгүй бол 10%
   static const String _defaultTaxRate = '10%';
@@ -46,31 +47,35 @@ class BondDetailSecondaryView extends StatelessWidget {
     );
     final maturity = parseStockDate(bond?.endDate) ?? parseStockDate(bond?.term);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        BondFactCard(
-          facts: [
-            BondFact(l10n.annualYield, formatIntRate(bond?.intRate)),
-            BondFact(l10n.paymentFrequency, _payPeriodOf(context)),
-            BondFact(l10n.taxLabel, _taxLabel),
+    return Padding(
+      padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: topPadding),
+          BondFactCard(
+            facts: [
+              BondFact(l10n.annualYield, formatIntRate(bond?.intRate)),
+              BondFact(l10n.paymentFrequency, _payPeriodOf(context)),
+              BondFact(l10n.taxLabel, _taxLabel),
+            ],
+          ),
+          const SizedBox(height: 32),
+          if (schedule != null) ...[
+            BondPaymentSchedule(schedule: schedule),
+            const SizedBox(height: 24),
           ],
-        ),
-        const SizedBox(height: 32),
-        if (schedule != null) ...[
-          BondPaymentSchedule(schedule: schedule),
-          const SizedBox(height: 24),
+          BondDateRow(
+            label: l10n.lastInterestPaymentDate,
+            date: schedule?.lastPaid,
+          ),
+          BondDateRow(
+            label: l10n.nextInterestPayDate,
+            date: schedule?.nextPay ?? parseStockDate(bond?.payday),
+          ),
+          BondDateRow(label: l10n.bondMaturityDate, date: maturity, isLast: true),
         ],
-        BondDateRow(
-          label: l10n.lastInterestPaymentDate,
-          date: schedule?.lastPaid,
-        ),
-        BondDateRow(
-          label: l10n.nextInterestPayDate,
-          date: schedule?.nextPay ?? parseStockDate(bond?.payday),
-        ),
-        BondDateRow(label: l10n.bondMaturityDate, date: maturity, isLast: true),
-      ],
+      ),
     );
   }
 }

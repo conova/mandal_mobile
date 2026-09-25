@@ -26,13 +26,9 @@ class BondActionBottomBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 10, 24, 32),
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        boxShadow: [
-          BoxShadow(
-            color: extendedColors.neutral500,
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        border: BorderDirectional(
+          top: BorderSide(color: extendedColors.neutral500, width: 1),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/screens/components/bond/bond_trading_input_box.dart';
 import 'package:mandal_capital/screens/components/bond/bond_trading_quantity_selector.dart';
@@ -12,6 +13,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../models/order_book_entry.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_snackbar.dart';
 import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/release_locked_amount_sheet.dart';
 import 'bond_payment_details.dart';
@@ -20,23 +22,21 @@ import 'bond_payment_details_bottom_sheet.dart';
 /// Хоёрдогч + НЭЭЛТТЭЙ бондын арилжааны дизайн: авах ханш, ширхэг
 /// сонгогч, төлбөрийн задаргаа, захиалгын самбар.
 class BondDetailTradingView extends StatefulWidget {
-  final MarketInstrument? bond;
+  final double cash;
+  final MarketInstrument bond;
   final double price;
   final int quantity;
   final ValueChanged<int> onQuantityChanged;
   final ValueChanged<double> onPriceChanged;
-  final List<OrderBookEntry> buyOrders;
-  final List<OrderBookEntry> sellOrders;
 
   const BondDetailTradingView({
     super.key,
+    required this.cash,
     required this.bond,
     required this.price,
     required this.quantity,
     required this.onQuantityChanged,
     required this.onPriceChanged,
-    this.buyOrders = const [],
-    this.sellOrders = const [],
   });
 
   @override
@@ -51,10 +51,16 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
   late FocusNode _priceFocusNode;
   late FocusNode _quantityFocusNode;
 
+  List<OrderBookEntry> _buyOrders = const [];
+  List<OrderBookEntry> _sellOrders = const [];
+  bool _orderBookLoading = true;
+  Timer? _orderBookTimer;
+  bool _orderBookFetching = false;
+
   @override
   void initState() {
     super.initState();
-    final initialPrice = widget.bond?.closePrice ?? widget.bond?.openPrice ?? 0;
+    final initialPrice = widget.bond.closePrice ?? widget.bond.openPrice ?? 0;
     _priceController = TextEditingController(
       text: CurrencySuffixFormatter.format(initialPrice.toString(), suffix: '₮'),
     );
@@ -67,12 +73,24 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     _priceController.addListener(_onInputsChanged);
     _quantityController.addListener(_onInputsChanged);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchFee());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchFee();
+      _fetchOrderBook();
+      _startOrderBookPolling();
+    });
+  }
+
+  void _startOrderBookPolling() {
+    _orderBookTimer?.cancel();
+    _orderBookTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _fetchOrderBook(),
+    );
   }
 
   Future<void> _fetchFee() async {
     if (!mounted) return;
-    final raw = widget.bond?.raw ?? const {};
+    final raw = widget.bond.raw;
     final isPrimary = raw['MARKET']?.toString().toLowerCase() == 'primary';
     final pct = await context.read<AuthService>().getFeePercent(
           stockType: raw['STOCKTYPE']?.toString() ?? '',
@@ -81,18 +99,35 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     if (mounted) setState(() => _feePct = pct);
   }
 
+  Future<void> _fetchOrderBook() async {
+    final stockcode = widget.bond.stockcode;
+    if (stockcode.isEmpty) {
+      if (mounted) setState(() => _orderBookLoading = false);
+      return;
+    }
+    if (_orderBookFetching) return;
+    _orderBookFetching = true;
+    try {
+      final rows = await context.read<AuthService>().getOrderBook(stockcode);
+      if (!mounted) return;
+      setState(() {
+        _buyOrders = OrderBookEntry.sideFromJson(rows, 'BUY');
+        _sellOrders = OrderBookEntry.sideFromJson(rows, 'SELL');
+        _orderBookLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      final wasInitialLoad = _orderBookLoading;
+      setState(() => _orderBookLoading = false);
+      if (wasInitialLoad) CustomSnackbar.showError(context, e);
+    } finally {
+      _orderBookFetching = false;
+    }
+  }
+
   @override
   void didUpdateWidget(BondDetailTradingView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If the bond data arrives late (initially null), update the price controller
-    if (oldWidget.bond == null && widget.bond != null) {
-      _fetchFee();
-      final newPrice = widget.bond?.closePrice ?? widget.bond?.openPrice ?? 0;
-      final formatted = CurrencySuffixFormatter.format(newPrice.toString(), suffix: '₮');
-      if (_priceController.text != formatted) {
-        _priceController.text = formatted;
-      }
-    }
     
     // Sync quantity if it changes from outside
     if (oldWidget.quantity != widget.quantity) {
@@ -101,10 +136,16 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
         _quantityController.text = formatted;
       }
     }
+
+    if (oldWidget.bond.stockcode != widget.bond.stockcode) {
+      _fetchOrderBook();
+      _startOrderBookPolling();
+    }
   }
 
   @override
   void dispose() {
+    _orderBookTimer?.cancel();
     _priceController.removeListener(_onInputsChanged);
     _quantityController.removeListener(_onInputsChanged);
     _priceController.dispose();
@@ -116,8 +157,8 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
   void _onInputsChanged() {
     setState(() {});
-    widget.onPriceChanged(_currentPrice.toDouble());
-    widget.onQuantityChanged(_currentQuantity);
+    widget.onPriceChanged.call(_currentPrice.toDouble());
+    widget.onQuantityChanged.call(_currentQuantity);
   }
 
   int get _currentPrice {
@@ -140,62 +181,112 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     final price = _currentPrice;
     final quantity = _currentQuantity;
     final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
-    final rate = widget.bond?.intRate ?? 0;
+    final rate = widget.bond.intRate ?? 0.0;
     final expectedReturn = total * rate / 100;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Авах ханш
-        BondTradingInputBox(
-          label: l10n.buyRate,
-          controller: _priceController,
-          focusNode: _priceFocusNode,
-          currencySymbol: '₮',
-        ),
-        BondTradingQuantitySelector(
-          controller: _quantityController,
-          focusNode: _quantityFocusNode,
-          onIncrease: () {
-            final current = _currentQuantity;
-            final newVal = current + 1;
-            _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
-            // widget.onQuantityChanged(newVal); // redundant due to listener
-          },
-          onDecrease: () {
-            final current = _currentQuantity;
-            if (current > 0) {
-              final newVal = current - 1;
-              _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
-            }
-          },
-          onChanged: (val) {},
-        ),
-        const SizedBox(height: 24),
-        BondPaymentDetails(
-          totalPayment: formatStockAmount(total, decimals: 2),
-          yieldValue: PercentSuffixFormatter.format(rate), // formatStockAmount(expectedReturn, decimals: 2),
-          onDetailsPressed: () {
-            //bond payment detail sheet
-            // Хуримтлагдсан хүү - accruedInterest
-            // Ширхэгийн үнэ - piecePrice
-            showBondPaymentDetailsSheet(
-              context: context,
-              quantity: quantity,
-              piecePrice: _currentPrice.toDouble(),
-              accruedInterest: expectedReturn,
-              commissionRate: commissionRate,
-            );
-          },
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${widget.bond.name} ',
+                      style: theme.textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
+                      ),
+                    ),
+                    if (widget.bond.subtitle.isNotEmpty)
+                      TextSpan(
+                        text: widget.bond.subtitle,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: extendedColors.neutral200,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text(
+                    '${l10n.availableCash}: ',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                  Text(
+                    formatStockAmount(widget.cash, decimals: 0),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.primaryMain,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Авах ханш
+              BondTradingInputBox(
+                label: l10n.buyRate,
+                controller: _priceController,
+                focusNode: _priceFocusNode,
+                currencySymbol: '₮',
+              ),
+              BondTradingQuantitySelector(
+                controller: _quantityController,
+                focusNode: _quantityFocusNode,
+                onIncrease: () {
+                  final current = _currentQuantity;
+                  final newVal = current + 1;
+                  _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
+                },
+                onDecrease: () {
+                  final current = _currentQuantity;
+                  if (current > 0) {
+                    final newVal = current - 1;
+                    _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
+                  }
+                },
+                onChanged: (val) {},
+              ),
+              const SizedBox(height: 24),
+              BondPaymentDetails(
+                totalPayment: formatStockAmount(total, decimals: 2),
+                yieldValue: PercentSuffixFormatter.format(rate),
+                onDetailsPressed: () {
+                  showBondPaymentDetailsSheet(
+                    context: context,
+                    quantity: quantity,
+                    piecePrice: _currentPrice.toDouble(),
+                    accruedInterest: expectedReturn,
+                    commissionRate: commissionRate,
+                  );
+                },
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 32),
         Divider(height: 1, color: extendedColors.neutral500),
         const SizedBox(height: 24),
-        StockTradingOrderBoard(
-          buyOrders: widget.buyOrders,
-          sellOrders: widget.sellOrders,
-          marketPrice: widget.bond?.closePrice ?? 0,
-        ),
+        if (_orderBookLoading)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else
+          StockTradingOrderBoard(
+            buyOrders: _buyOrders,
+            sellOrders: _sellOrders,
+            marketPrice: widget.bond.stockPrice ?? widget.bond.closePrice ?? 0,
+          ),
       ],
     );
   }
@@ -226,13 +317,9 @@ class BondDetailTradingBottomBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        boxShadow: [
-          BoxShadow(
-            color: extendedColors.neutral500,
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        border: BorderDirectional(
+          top: BorderSide(color: extendedColors.neutral500, width: 1),
+        )
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

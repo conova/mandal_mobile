@@ -335,16 +335,12 @@ class _BondSellScreenState extends State<BondSellScreen> {
         ),
       ),
       bottomSheet: Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: const EdgeInsets.fromLTRB(24, 10, 24, 32),
         decoration: BoxDecoration(
           color: extendedColors.bgBase,
-          boxShadow: [
-            BoxShadow(
-              color: extendedColors.neutral500,
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
+          border: BorderDirectional(
+            top: BorderSide(color: extendedColors.neutral500, width: 1),
+          ),
         ),
         child: SizedBox(
           width: double.infinity,

@@ -88,6 +88,7 @@ class _FactRow extends StatelessWidget {
             fact.value,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: extendedColors.neutral100,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
