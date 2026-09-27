@@ -13,8 +13,9 @@ import 'bond_payment_schedule.dart';
 /// хаагдах төлөвлөгөөт огноо, хүүгийн төлбөрийн хуваарь.
 class BondDetailForeignView extends StatelessWidget {
   final MarketInstrument? bond;
+  final double topPadding;
 
-  const BondDetailForeignView({super.key, required this.bond});
+  const BondDetailForeignView({super.key, required this.bond, required this.topPadding});
 
   /// Хүү төлөх давтамж — locale-ийн дагуу (хоосон бол нөгөөгөөр нөхнө)
   String _payPeriodOf(BuildContext context) {
@@ -47,119 +48,123 @@ class BondDetailForeignView extends StatelessWidget {
     final maturity =
         parseStockDate(bond?.endDate) ?? parseStockDate(bond?.term);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (progress != null) ...[
-          Text(
-            l10n.collectedAmount,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: AppTextStyles.light,
-              color: extendedColors.neutral200,
+    return Padding(
+      padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: topPadding),
+          if (progress != null) ...[
+            Text(
+              l10n.collectedAmount,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: AppTextStyles.light,
+                color: extendedColors.neutral200,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Text(
-                  formatStockAmount(
-                    bond?.orderedAmt ?? 0,
-                    isForeign: true,
-                    decimals: 0,
-                  ),
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  '${(progress * 100).round()}%',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: AppTextStyles.regular,
-                    color: extendedColors.primaryMain,
+            const SizedBox(height: 4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Text(
+                    formatStockAmount(
+                      bond?.orderedAmt ?? 0,
+                      isForeign: true,
+                      decimals: 0,
+                    ),
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: extendedColors.bgTertiary,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                extendedColors.primaryMain,
-              ),
-              minHeight: 12,
+                const SizedBox(width: 12),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    '${(progress * 100).round()}%',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: AppTextStyles.regular,
+                      color: extendedColors.primaryMain,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Text(
-                '${l10n.targetAmount}: ',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: AppTextStyles.light,
-                  color: extendedColors.neutral200,
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: extendedColors.bgTertiary,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  extendedColors.primaryMain,
                 ),
+                minHeight: 12,
               ),
-              Flexible(
-                child: Text(
-                  formatStockAmount(
-                    bond?.amt ?? 0,
-                    isForeign: true,
-                    decimals: 0,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Text(
+                  '${l10n.targetAmount}: ',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: AppTextStyles.light,
+                    color: extendedColors.neutral200,
                   ),
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: AppTextStyles.semiBold,
-                    color: extendedColors.neutral100,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 28),
-        ],
-        BondFactCard(
-          facts: [
-            BondFact(l10n.annualInterest, formatIntRate(bond?.intRate)),
-            BondFact(l10n.paymentFrequency, _payPeriodOf(context)),
+                Flexible(
+                  child: Text(
+                    formatStockAmount(
+                      bond?.amt ?? 0,
+                      isForeign: true,
+                      decimals: 0,
+                    ),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: AppTextStyles.semiBold,
+                      color: extendedColors.neutral100,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 28),
           ],
-        ),
-        if (closeDate != null) ...[
-          const SizedBox(height: 20),
-          BondCloseDateBanner(date: closeDate),
+          BondFactCard(
+            facts: [
+              BondFact(l10n.annualInterest, formatIntRate(bond?.intRate)),
+              BondFact(l10n.paymentFrequency, _payPeriodOf(context)),
+            ],
+          ),
+          if (closeDate != null) ...[
+            const SizedBox(height: 20),
+            BondCloseDateBanner(date: closeDate),
+          ],
+          const SizedBox(height: 32),
+          if (schedule != null) ...[
+            BondPaymentSchedule(schedule: schedule),
+            const SizedBox(height: 24),
+          ],
+          BondDateRow(
+            label: l10n.lastInterestPaymentDate,
+            date: schedule?.lastPaid,
+          ),
+          BondDateRow(
+            label: l10n.nextInterestPayDate,
+            date: schedule?.nextPay ?? parseStockDate(bond?.payday),
+          ),
+          BondDateRow(
+            label: l10n.bondMaturityDate,
+            date: maturity,
+            isLast: true,
+          ),
         ],
-        const SizedBox(height: 32),
-        if (schedule != null) ...[
-          BondPaymentSchedule(schedule: schedule),
-          const SizedBox(height: 24),
-        ],
-        BondDateRow(
-          label: l10n.lastInterestPaymentDate,
-          date: schedule?.lastPaid,
-        ),
-        BondDateRow(
-          label: l10n.nextInterestPayDate,
-          date: schedule?.nextPay ?? parseStockDate(bond?.payday),
-        ),
-        BondDateRow(
-          label: l10n.bondMaturityDate,
-          date: maturity,
-          isLast: true,
-        ),
-      ],
+      ),
     );
   }
 }

@@ -25,13 +25,9 @@ class StockTradingBottomBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: extendedColors.bgBase,
-        boxShadow: [
-          BoxShadow(
-            color: extendedColors.neutral500.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        border: BorderDirectional(
+          top: BorderSide(color: extendedColors.neutral500, width: 1),
+        )
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -41,7 +37,6 @@ class StockTradingBottomBar extends StatelessWidget {
               amount: lockedAmount,
               onRelease: onReleaseLocked,
             ),
-          const Divider(height: 1, thickness: 1),
           Container(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: SafeArea(

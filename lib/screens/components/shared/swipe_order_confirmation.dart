@@ -277,36 +277,25 @@ class _SwipeOrderConfirmationState extends State<SwipeOrderConfirmation>
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 24,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          widget.title,
-                                          style: theme.textTheme.headlineLarge
-                                              ?.copyWith(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: '${widget.title} ',
+                                          style: theme.textTheme.headlineLarge?.copyWith(
                                             fontWeight: FontWeight.bold,
                                             color: extendedColors.neutral100,
                                           ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      ),
-                                      if (widget.subtitle.isNotEmpty) ...[
-                                        const SizedBox(width: 12),
-                                        Flexible(
-                                          child: Text(
-                                            widget.subtitle,
-                                            style: theme.textTheme.bodyLarge
-                                                ?.copyWith(
-                                              color:
-                                                  extendedColors.neutral200,
+                                        if (widget.subtitle.isNotEmpty)
+                                          TextSpan(
+                                            text: widget.subtitle,
+                                            style: theme.textTheme.bodyLarge?.copyWith(
+                                              color: extendedColors.neutral200,
                                             ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ),
                                       ],
-                                    ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 48),

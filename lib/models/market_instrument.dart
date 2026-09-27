@@ -34,6 +34,7 @@ class MarketInstrument {
   final double? openPrice;
   final double? priceChange;
   final double? stockFee;
+  final double? cnt;
 
   // /stocks/info-ийн нэмэлт талбарууд (бусад API-д null)
   final double? peRatio;
@@ -135,6 +136,7 @@ class MarketInstrument {
     required this.openPrice,
     required this.priceChange,
     required this.stockFee,
+    required this.cnt,
     this.peRatio,
     this.pbRatio,
     this.marketValue,
@@ -209,6 +211,7 @@ class MarketInstrument {
       openPrice: num_('OPENPRICE'),
       priceChange: num_('PRICECHANGE'),
       stockFee: num_('STOCKFEE'),
+      cnt: num_('CNT'),
       peRatio: num_('PERATIO'),
       pbRatio: num_('PBRATIO'),
       marketValue: num_('MARKETVALUE'),

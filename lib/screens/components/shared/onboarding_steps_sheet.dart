@@ -187,12 +187,10 @@ class OnboardingStepsSheet extends StatelessWidget {
             ),
             if (step.isCompleted == true)
               Stack(
+                alignment: Alignment.center,
                 children: [
                   CustomSvgIcon('check-circle', color: extendedColors.primaryMain),
-                  Padding(
-                    padding: EdgeInsets.only(left: 7, top: 8, bottom: 8, right: 8),
-                    child: CustomSvgIcon('check', color: Colors.white, size: 8,),
-                  ),
+                  CustomSvgIcon('check', color: Colors.white, size: 12,),
                 ],
               )
             else

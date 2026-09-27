@@ -9,6 +9,7 @@ import '../common/stock_row_format.dart';
 import '../models/summary_report_data.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../theme/app_colors.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
@@ -31,6 +32,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   bool _isLoading = true;
 
   SummaryReportData _report = SummaryReportData.empty;
+  EquityChart _chart = EquityChart.empty;
 
   @override
   void initState() {
@@ -64,13 +66,23 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   Future<void> _fetch() async {
     setState(() => _isLoading = true);
     try {
-      final data = await context.read<AuthService>().getSummaryReport(
-        start: _formatQueryDate(_startDate()),
-        end: _formatQueryDate(DateTime.now()),
-      );
+      final auth = context.read<AuthService>();
+      final startStr = _formatQueryDate(_startDate());
+      final endStr = _formatQueryDate(DateTime.now());
+
+      final results = await Future.wait([
+        auth.getSummaryReport(start: startStr, end: endStr),
+        auth.getEquityChart(start: startStr, end: endStr),
+      ]);
+
       if (!mounted) return;
       setState(() {
-        _report = SummaryReportData.fromJson(data);
+        if (results[0] != null) {
+          _report = SummaryReportData.fromJson(results[0] as Map<String, dynamic>);
+        } else {
+          _report = SummaryReportData.empty;
+        }
+        _chart = results[1] as EquityChart;
         _isLoading = false;
       });
     } catch (e) {
@@ -85,6 +97,14 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     setState(() => _period = period);
     _fetch();
   }
+
+  String _periodLabel(AppLocalizations l10n, _Period period) => switch (period) {
+        _Period.oneMonth => l10n.last1Month,
+        _Period.threeMonths => l10n.last3Months,
+        _Period.sixMonths => l10n.last6Months,
+        _Period.oneYear => l10n.last1Year,
+        _Period.all => l10n.all,
+      };
 
   // ── Тайлан татах ───────────────────────────────────────────────────────
 
@@ -337,9 +357,17 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     final dates = _dates;
     final latestTotal = dates.isEmpty ? 0.0 : _totalOf(dates.last);
-    final earliestTotal = dates.isEmpty ? 0.0 : _totalOf(dates.first);
-    final diff = latestTotal - earliestTotal;
-    final pct = earliestTotal == 0 ? 0.0 : diff / earliestTotal * 100;
+    
+    final points = _chart.points;
+    double diff = 0.0;
+    double pct = 0.0;
+    if (points.length >= 2) {
+      final first = points.first.value;
+      final last = points.last.value;
+      diff = last - first;
+      pct = first != 0 ? diff / first * 100 : 0.0;
+    }
+
     final isPositive = diff >= 0;
     final changeColor = isPositive
         ? extendedColors.primaryMain
@@ -347,15 +375,14 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     // График — огноо тус бүрийн нийт хөрөнгө.
     // X тэнхлэг: 1 өдөр = 1 нэгж (эхний огнооноос хойших хоног)
-    final firstDate = dates.isEmpty ? null : parseStockDate(dates.first);
+    final firstDate = points.isEmpty ? null : points.first.date;
     final spots = <FlSpot>[
-      for (var i = 0; i < dates.length; i++)
+      for (final p in points)
         FlSpot(
           firstDate == null
-              ? i.toDouble()
-              : (parseStockDate(dates[i])?.difference(firstDate).inDays ?? i)
-                    .toDouble(),
-          _totalOf(dates[i]),
+              ? 0.0
+              : p.date.difference(firstDate).inDays.toDouble(),
+          p.value,
         ),
     ];
 
@@ -458,40 +485,37 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
                           '${isPositive ? '+' : ''}${_money(diff)}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: changeColor,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w400,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 1,
-                        height: 12,
-                        color: theme.dividerColor,
-                      ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       CustomSvgIcon(
-                        isPositive
-                            ? 'button-up'
-                            : 'button-down',
-                        color: changeColor,
+                        'divider-icon',
+                        size: 15,
+                        color: extendedColors.primaryMain,
+                      ),
+                      const SizedBox(width: 4),
+                      CustomSvgIcon(
+                        isPositive ? 'button-up' : 'button-down',
                         size: 6,
+                        color: changeColor,
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${pct.abs().toStringAsFixed(2)}%',
+                        '${pct.abs().toStringAsFixed(2)}% ',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: changeColor,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
-                      const SizedBox(width: 8),
                       Text(
-                        '(${l10n.selectedPeriod})',
+                        '(${_periodLabel(l10n, _period)})',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w300,
+                          fontWeight: FontWeight.w400,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -499,7 +523,11 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  FinanceChart(spots: spots, startDate: firstDate),
+                  FinanceChart(
+                    spots: spots.isEmpty ? null : spots,
+                    height: 150,
+                    startDate: firstDate,
+                  ),
                   const SizedBox(height: 16),
                   _buildTimeFilters(l10n, theme, extendedColors),
                   const SizedBox(height: 32),
@@ -511,24 +539,6 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
                 ],
               ),
             ),
-          // Дата байхгүй үед татах товч харуулахгүй
-          /*if (!_report.isEmpty) ...[
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 24,
-              child: Container(
-                decoration: BoxDecoration(
-                    color: extendedColors.bgBase
-                ),
-                child: CustomButton(
-                  label: l10n.downloadReport,
-                  onPressed: _showDownloadSheet,
-                  variant: CustomButtonVariant.primary,
-                ),
-              ),
-            ),
-          ]*/
           // Шүүлтүүр солиход хуучин дата дэлгэцэн дээр үлддэг тул
           // дахин татаж байгааг индикатораар мэдэгдэнэ
           if (_isLoading && !_report.isEmpty)
@@ -615,17 +625,13 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         final isSelected = f.$1 == _period;
         return GestureDetector(
           onTap: () => _onPeriodSelected(f.$1),
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Text(
-              f.$2,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isSelected
-                    ? theme.colorScheme.onSurface
-                    : extendedColors.neutral300,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
+          child: Text(
+            f.$2,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w400,
+              color: isSelected
+                  ? extendedColors.neutral100
+                  : extendedColors.neutral300,
             ),
           ),
         );
@@ -655,7 +661,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.2),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -703,26 +709,6 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     return Column(
       children: [
-        // SummaryTableRow(
-        //   label: l10n.incomeExpense,
-        //   val1: l10n.selectedPeriod,
-        //   isOdd: true,
-        // ),
-        // SummaryTableRow(
-        //   label: l10n.incomeSalary,
-        //   val1: _money(_txnAmount('cash')),
-        //   isOdd: false,
-        // ),
-        // SummaryTableRow(
-        //   label: l10n.stockProfit,
-        //   val1: _money(_txnAmount('stock')),
-        //   isOdd: true,
-        // ),
-        // SummaryTableRow(
-        //   label: l10n.bondPrincipal,
-        //   val1: _money(_txnAmount('bond')),
-        //   isOdd: true,
-        // ),
         SummaryTableRow(
           label: '',
           val1: '$start - $end',

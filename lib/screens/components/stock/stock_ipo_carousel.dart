@@ -202,7 +202,7 @@ class _IpoCarouselState extends State<IpoCarousel> {
                         ),
                       ),
                       Text(
-                        '${(progress * 100).toInt()}%',
+                        '${(progress * 100).toDouble()}%',
                         style: theme.textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 10,

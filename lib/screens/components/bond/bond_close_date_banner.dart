@@ -19,13 +19,13 @@ class BondCloseDateBanner extends StatelessWidget {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: extendedColors.orange100,
+        color: extendedColors.orange200,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomSvgIcon(
             'annotation-info',
@@ -39,17 +39,16 @@ class BondCloseDateBanner extends StatelessWidget {
               children: [
                 Text(
                   l10n.bondClosePlannedDate,
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.neutral100,
                     fontWeight: AppTextStyles.regular,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   formatStockDate(date).replaceAll('/', '.'),
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.neutral100,
-                    fontWeight: AppTextStyles.regular,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
