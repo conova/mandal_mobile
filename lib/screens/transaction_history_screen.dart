@@ -207,8 +207,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     return TransactionItem(
       title: title,
       date: _formatRegDate(row['REGDATE']),
-      amount: formatStockAmount(amount, isForeign: isUsd),
-      isPositive: amount > 0,
+      amount: formatStockAmount(amount.abs(), isForeign: isUsd),
+      isPositive: tagRow == FilterTag.cashIncome || tagRow == FilterTag.stockSold ||tagRow == FilterTag.bondReturn || tagRow == FilterTag.bondSold,
       tag:tagRow,
       currencyCode: curCode,
     );

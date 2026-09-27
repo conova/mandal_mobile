@@ -3945,6 +3945,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No search result found'**
   String get noSearchResultFound;
+
+  /// No description provided for @noPaymentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No scheduled payments yet'**
+  String get noPaymentsYet;
 }
 
 class _AppLocalizationsDelegate

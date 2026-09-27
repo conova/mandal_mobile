@@ -31,19 +31,13 @@ class BondSchedule {
 
   /// Хүү төлөх давтамжийн бичвэрээс сарын тоо гаргана.
   /// Танигдахгүй бол null — хуваарийг огт харуулахгүй.
-  ///
-  /// "Хагас жил" нь "жил" гэсэн үг агуулдаг тул шалгах дараалал чухал.
   static int? monthsOf(String period) {
-    final p = period.toLowerCase().trim();
+    final p = period.toUpperCase().trim();
     if (p.isEmpty) return null;
-    if (p.contains('сар') || p.contains('month')) return 1;
-    if (p.contains('улирал') || p.contains('quarter')) return 3;
-    if (p.contains('хагас') || p.contains('semi') || p.contains('half')) {
-      return 6;
-    }
-    if (p.contains('жил') || p.contains('year') || p.contains('annual')) {
-      return 12;
-    }
+    if (p == 'YYYY/MM') return 1;
+    if (p == 'YYYY/Q') return 3;
+    if (p == 'YYYY/2') return 6;
+    if (p == 'YYYY') return 12;
     return null;
   }
 

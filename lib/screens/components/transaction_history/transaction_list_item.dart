@@ -39,6 +39,8 @@ class TransactionListItem extends StatelessWidget {
 
   const TransactionListItem({super.key, required this.transaction});
 
+  bool get isPositive => transaction.isPositive;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -73,7 +75,7 @@ class TransactionListItem extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            transaction.amount,
+            isPositive ? transaction.amount : '-${transaction.amount}',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: transaction.isPositive
                   ? extendedColors.primaryMain

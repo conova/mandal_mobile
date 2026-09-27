@@ -516,7 +516,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
                   : '$txnType - $curCode'
           : _pickLang(row, 'TXNNAME', 'TXNNAME2', isEn);
 
-      final isPositive = amountNum > 0;
+      final isPositive = tag == FilterTag.cashIncome || tag == FilterTag.stockSold ||tag == FilterTag.bondReturn || tag == FilterTag.bondSold;
       
       // Use TransactionListItem style but as a simple Row to match screen's current padding/feel
       return Padding(
@@ -548,7 +548,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              formatStockAmount(amountNum, isForeign: isUsd),
+              isPositive ? formatStockAmount(amountNum.abs(), isForeign: isUsd) : '-${formatStockAmount(amountNum.abs(), isForeign: isUsd)}',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: isPositive
                     ? extendedColors.primaryMain

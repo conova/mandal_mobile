@@ -2082,4 +2082,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSearchResultFound => 'No search result found';
+
+  @override
+  String get noPaymentsYet => 'No scheduled payments yet';
 }
