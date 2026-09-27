@@ -26,6 +26,7 @@ class MarketInstrument {
   /// Хүү төлөх давтамж (монгол / англи)
   final String payPeriod;
   final String payPeriod2;
+  final String payType;
 
   final double? intRate;
   final double? amt;
@@ -129,6 +130,7 @@ class MarketInstrument {
     required this.payday,
     required this.payPeriod,
     required this.payPeriod2,
+    required this.payType,
     required this.intRate,
     required this.amt,
     required this.orderedAmt,
@@ -204,6 +206,7 @@ class MarketInstrument {
       payday: str('PAYDAY'),
       payPeriod: str('PAYPERIOD'),
       payPeriod2: str('PAYPERIOD2'),
+      payType: str('PAYTYPE'),
       intRate: num_('INTRATE'),
       amt: num_('AMT'),
       orderedAmt: num_('ORDEREDAMT'),

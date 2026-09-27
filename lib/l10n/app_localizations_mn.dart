@@ -2042,4 +2042,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get invalidNumber => 'Дугаар буруу байна';
+
+  @override
+  String get noSearchResultFound => 'Гүйлгээний түүх олдсонгүй';
+
+  @override
+  String get noPaymentsYet => 'Хуваарьт төлбөр одоогоор байхгүй байна';
 }

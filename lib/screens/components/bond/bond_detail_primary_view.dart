@@ -93,7 +93,7 @@ class BondDetailPrimaryView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: EdgeInsetsGeometry.only(top: 30),
+              padding: EdgeInsetsGeometry.only(top: 50),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

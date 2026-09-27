@@ -40,7 +40,7 @@ class BondCircularProgress extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '${(value * 100).round()}%',
+                  '${(value * 100).toStringAsFixed(2)}%',
                   style: AppTextStyles.display.copyWith(
                     fontWeight: AppTextStyles.semiBold,
                     color: extendedColors.neutral100,

@@ -54,16 +54,10 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       double? usdRate;
       for (final item in breakdown) {
         usdRate = (item['usdRate'] as num?)?.toDouble();
-        // debugPrint('usdRate: $usdRate');
-        // debugPrint('item: $item');
         final type = item['type']?.toString() ?? '';
         if (type == 'bond' || type == 'bonds') {
           bondTotal = (item['amountMnt'] as num?)?.toDouble();
-        } //else if (type == 'usd' || type == 'dollar') {
-          // final usd = (item['amount'] as num?)?.toDouble() ?? 0;
-          // final mnt = (item['amountMnt'] as num?)?.toDouble() ?? 0;
-          // if (usd > 0 && mnt > 0) usdRate = mnt / usd;
-        //}
+        }
       }
 
       setState(() {
@@ -78,20 +72,6 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       CustomSnackbar.showError(context, e);
     }
   }
-
-/*/// Жагсаалт дээр зүүн тийш swipe — дараагийн, баруун тийш — өмнөх filter
-  void _onListSwipe(DragEndDetails details) {
-    final velocity = details.primaryVelocity ?? 0;
-    // Санамсаргүй жижиг хөдөлгөөнийг тоохгүй
-    if (velocity.abs() < 100) return;
-    setState(() {
-      if (velocity < 0 && _selectedFilter < 2) {
-        _selectedFilter++;
-      } else if (velocity > 0 && _selectedFilter > 0) {
-        _selectedFilter--;
-      }
-    });
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -495,10 +475,10 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     final schedule = BondSchedule.build(
       start: parseStockDate(bond.startDate),
       end: parseStockDate(bond.endDate),
-      payPeriod: bond.payPeriod,
-      nextPayday: parseStockDate(bond.payday),
+      payPeriod: bond.payType,
+      nextPayday: parseStockDate(bond.startDate),
     );
-    final months = BondSchedule.monthsOf(bond.payPeriod);
+    final months = BondSchedule.monthsOf(bond.payType);
     if (schedule == null || months == null || months == 0) {
       return const <({DateTime date, double amount, bool paid})>[];
     }
@@ -618,8 +598,29 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
               ),
             ),
           ),
-          if (isExpanded && payments.isNotEmpty)
+          if (isExpanded && payments.isNotEmpty) ...[
             _buildScheduleBlock(payments, theme, extendedColors, l10n),
+          ]
+          else if(isExpanded)...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      l10n.noPaymentsYet,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w300,
+                        color: extendedColors.neutral200,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
           // Дэлгэрүүлэх/хураах сум — мөрийн доод талд голлоно
           GestureDetector(
             behavior: HitTestBehavior.opaque,

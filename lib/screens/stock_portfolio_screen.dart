@@ -594,6 +594,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
               }
             }),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   stock.symbol,
@@ -606,7 +607,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                 Expanded(
                   child: Text(
                     stock.name,
-                    maxLines: 1,
+                    maxLines: isExpanded ? 3 : 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w300,

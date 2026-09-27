@@ -9,6 +9,7 @@ import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_info_popup_bottom_sheet.dart';
 import '../widgets/release_locked_amount_sheet.dart';
+import 'components/transaction_history/transaction_list_item.dart';
 
 enum CurrencyType { mnt, usd }
 
@@ -23,6 +24,8 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
   double _availableCash = 0;
   double _lockedAmount = 0;
   bool _isLoading = true;
+  List<Map<String, dynamic>> _historyRows = [];
+  bool _isHistoryLoading = true;
 
   @override
   void initState() {
@@ -31,12 +34,20 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
   }
 
   Future<void> _fetchData() async {
+    if (!mounted) return;
     final args = ModalRoute.of(context)?.settings.arguments;
     final typeArg = args is Map ? args['type']?.toString() : args as String?;
     final isMnt = typeArg != 'usd' && typeArg != 'dollar';
 
+    setState(() {
+      _isLoading = true;
+      _isHistoryLoading = true;
+    });
+
     try {
       final auth = context.read<AuthService>();
+      
+      // Fetch Balance Data
       if (isMnt) {
         final summary = await auth.getPortfolioSummary();
         if (mounted) {
@@ -61,10 +72,75 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
           });
         }
       }
+
+      // Fetch Transaction History (Last 1 year)
+      final now = DateTime.now();
+      final start = DateTime(now.year - 1, now.month, now.day);
+      String fmt(DateTime d) =>
+          '${d.year.toString().padLeft(4, '0')}/'
+          '${d.month.toString().padLeft(2, '0')}/'
+          '${d.day.toString().padLeft(2, '0')}';
+
+      final rows = await auth.getAccountStatement(
+        curCode: isMnt ? 'MNT' : 'USD',
+        start: fmt(start),
+        end: fmt(now),
+      );
+
+      if (mounted) {
+        rows.sort((a, b) {
+          final dateA = a['REGDATE']?.toString() ?? '';
+          final dateB = b['REGDATE']?.toString() ?? '';
+          return dateB.compareTo(dateA);
+        });
+
+        setState(() {
+          _historyRows = rows;
+          _isHistoryLoading = false;
+        });
+      }
     } catch (e) {
       debugPrint('Error fetching currency data: $e');
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _isHistoryLoading = false;
+        });
+      }
     }
+  }
+
+  String _pickLang(Map<String, dynamic> row, String mn, String en, bool isEn) {
+    final first = (isEn ? row[en] : row[mn])?.toString() ?? '';
+    if (first.isNotEmpty) return first;
+    return (isEn ? row[mn] : row[en])?.toString() ?? '';
+  }
+
+  String _formatRegDate(dynamic raw) {
+    final s = raw?.toString() ?? '';
+    if (s.isEmpty) return '';
+    final normalized = s.replaceAll('/', '.').replaceAll('-', '.');
+    return normalized.length >= 16 ? normalized.substring(0, 16) : normalized;
+  }
+
+  FilterTag _tagOf(Map<String, dynamic> row) {
+    final t = '${row['TXNTYPE'] ?? ''} ${row['TXNTYPE2'] ?? ''}'.toLowerCase();
+    if (t.contains('ногдол') || t.contains('dividend')) {
+      return FilterTag.stockDividend;
+    }
+    if (t.contains('өгөөж') || t.contains('coupon')) return FilterTag.bondReturn;
+    if (t.contains('орлого') || t.contains('income') || t.contains('deposit')) {
+      return FilterTag.cashIncome;
+    }
+    if (t.contains('зарлага') ||
+        t.contains('expense') ||
+        t.contains('withdraw')) {
+      return FilterTag.cashExpense;
+    }
+    if (t.contains('зар') || t.contains('sell') || t.contains('sold')) {
+      return FilterTag.stockSold;
+    }
+    return FilterTag.stockBought;
   }
 
   @override
@@ -205,8 +281,6 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
             ..._buildTransactionHistory(
               theme: theme,
               extendedColors: extendedColors,
-              currencyType: currencyType,
-              currencySymbol: currencySymbol,
             ),
             const SizedBox(height: 40),
           ],
@@ -394,102 +468,89 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
   List<Widget> _buildTransactionHistory({
     required ThemeData theme,
     required ExtendedColors extendedColors,
-    required CurrencyType currencyType,
-    required String currencySymbol,
   }) {
-    final isMnt = currencyType == CurrencyType.mnt;
-    final currencyLabel = isMnt ? 'MNT' : 'USD';
+    if (_isHistoryLoading) {
+      return [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: Center(child: CircularProgressIndicator()),
+        )
+      ];
+    }
 
-    final transactions = isMnt
-        ? [
-            _TransactionData(
-              type: 'Зарлага',
-              currency: currencyLabel,
-              date: '2025.08.20 18:23',
-              amount: '-410,000.00₮',
-              isIncome: false,
+    if (_historyRows.isEmpty) {
+      return [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          child: Center(
+            child: Text(
+              '-',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: extendedColors.neutral300,
+              ),
             ),
-            _TransactionData(
-              type: 'Зарлага',
-              currency: currencyLabel,
-              date: '2025.08.20 18:23',
-              amount: '-10,000,000.00₮',
-              isIncome: false,
-            ),
-            _TransactionData(
-              type: 'Орлого',
-              currency: currencyLabel,
-              date: '2025.08.20 18:23',
-              amount: '50,000,000.00₮',
-              isIncome: true,
-            ),
-          ]
-        : [
-            _TransactionData(
-              type: 'Зарлага',
-              currency: currencyLabel,
-              date: '2025.08.20 18:23',
-              amount: '-100.00\$',
-              isIncome: false,
-            ),
-            _TransactionData(
-              type: 'Орлого',
-              currency: currencyLabel,
-              date: '2025.08.20 18:23',
-              amount: '250.00\$',
-              isIncome: true,
-            ),
-          ];
+          ),
+        )
+      ];
+    }
 
-    return transactions.map((tx) {
+    final isEn = Localizations.localeOf(context).languageCode == 'en';
+
+    return _historyRows.map((row) {
+      final curCode = row['CURCODE']?.toString() ?? 'MNT';
+      final isUsd = curCode == 'USD';
+      final amountNum = num.tryParse(
+            row['AMOUNT']?.toString().replaceAll(',', '') ?? '',
+          ) ??
+          0;
+      final txnType = _pickLang(row, 'TXNTYPE', 'TXNTYPE2', isEn);
+      final compName = _pickLang(row, 'COMPNAME', 'COMPNAME2', isEn);
+      final stockSymbol = row['SYMBOL']?.toString() ?? '';
+      final tag = _tagOf(row);
+
+      final title = txnType.isNotEmpty
+          ? (tag == FilterTag.stockDividend || tag == FilterTag.stockBought || tag == FilterTag.stockSold)
+              ? '$stockSymbol $txnType'
+              : (tag == FilterTag.bondBought || tag == FilterTag.bondSold || tag == FilterTag.bondReturn)
+                  ? '$compName $txnType'
+                  : '$txnType - $curCode'
+          : _pickLang(row, 'TXNNAME', 'TXNNAME2', isEn);
+
+      final isPositive = tag == FilterTag.cashIncome || tag == FilterTag.stockSold ||tag == FilterTag.bondReturn || tag == FilterTag.bondSold;
+      
+      // Use TransactionListItem style but as a simple Row to match screen's current padding/feel
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: tx.isIncome
-                    ? extendedColors.primary100
-                    : extendedColors.bgSecondary,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: CustomSvgIcon(
-                  isMnt ? 'tugrug-01' : 'currency-dollar',
-                  color: tx.isIncome ? extendedColors.primaryMain : extendedColors.neutral200,
-                ),
-              ),
-            ),
+            _buildHistoryIcon(tag, isPositive, curCode, extendedColors),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${tx.type} - ${tx.currency}',
+                    title,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w300,
                       color: extendedColors.neutral100,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
                   Text(
-                    tx.date,
+                    _formatRegDate(row['REGDATE']),
                     style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w300,
                       color: extendedColors.neutral200,
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 12),
             Text(
-              tx.amount,
+              isPositive ? formatStockAmount(amountNum.abs(), isForeign: isUsd) : '-${formatStockAmount(amountNum.abs(), isForeign: isUsd)}',
               style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w300,
-                color: tx.isIncome
+                color: isPositive
                     ? extendedColors.primaryMain
                     : extendedColors.neutral100,
               ),
@@ -499,20 +560,42 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
       );
     }).toList();
   }
-}
 
-class _TransactionData {
-  final String type;
-  final String currency;
-  final String date;
-  final String amount;
-  final bool isIncome;
+  Widget _buildHistoryIcon(FilterTag tag, bool isPositive, String curCode, ExtendedColors extendedColors) {
+    final isCash = tag == FilterTag.cashIncome || tag == FilterTag.cashExpense;
+    final isBond = tag == FilterTag.bondBought || tag == FilterTag.bondSold || tag == FilterTag.bondReturn;
 
-  _TransactionData({
-    required this.type,
-    required this.currency,
-    required this.date,
-    required this.amount,
-    required this.isIncome,
-  });
+    Color bgColor = isPositive ? extendedColors.primary100 : extendedColors.bgSecondary;
+
+    Widget iconContent;
+    if (isCash) {
+      iconContent = CustomSvgIcon(
+        (curCode == 'USD') ? 'currency-dollar' : 'tugrug-01',
+        color: isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
+        size: 22,
+      );
+    } else if (isBond) {
+      iconContent = CustomSvgIcon(
+        'bank-note-01',
+        color: isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
+        size: 22,
+      );
+    } else {
+      iconContent = CustomSvgIcon(
+        'coins-swap-02',
+        color: isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
+        size: 22,
+      );
+    }
+
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Center(child: iconContent),
+    );
+  }
 }
