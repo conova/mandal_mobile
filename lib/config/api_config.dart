@@ -81,7 +81,7 @@ class ApiConfig {
 
   /// POST /user/add_email → и-мэйл нэмэх/солих
   ///   Body: { data: { email } }
-  static const String userAddEmail = '/bdc/api/user/add_email';
+  static const String userAddEmail = '/bdc/api/register/add_email';
 
   /// GET /user/acnts → харилцагчийн орлого авах дансууд
   ///   Response data row: { TXNACNTNO, TXNACNTNAME, TXNBANKNO, BANKNAME,

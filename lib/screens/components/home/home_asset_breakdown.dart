@@ -192,7 +192,11 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
         // 3) API хариу ирсэн, дата бий → жинхэнэ item-уудыг харуулна
         ..._renderItems().map((item) {
             final type = item['type']?.toString();
-            final name = item['name']?.toString() ?? _defaultName(type, l10n);
+            final name = type == 'mnt' || type == 'tugrik' ? l10n.tugrik
+                : type == 'usd' || type == 'dollar' ? l10n.dollar
+                : type == 'bond' ? l10n.bonds
+                : type == 'stock' ? l10n.stocks
+                : _defaultName(type, l10n);
             final amount = (item['amount'] as num?) ?? 0;
             // Бонд/хувьцааны тоог mybonds/mystocks-ийн бодит тоймоор
             // солино (ирээгүй бол breakdown-ийн count хэвээр)
