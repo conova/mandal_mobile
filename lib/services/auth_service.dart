@@ -127,7 +127,7 @@ class AuthService with ChangeNotifier {
   /// (хариу нь refresh_token-тэй ижил бүтэцтэй). [child] null бол
   /// өөрийн данс руу буцна. Өөрийн info кэшийг (нэр, subAcnts) хөндөхгүй.
   Future<void> switchProfile(SubAccount? child) async {
-    final custId = child?.custId ?? _uid;
+    final custId = child?.custId ?? mainCustId;
     if (custId == null || custId.isEmpty) {
       throw Exception('cust_id олдсонгүй');
     }
@@ -161,6 +161,8 @@ class AuthService with ChangeNotifier {
     if (raw is! List) return const [];
     return SubAccount.listFromJson(raw);
   }
+
+  String? get mainCustId => _userInfo?['custId'] as String?;
 
   /// Үнэт цаасны гэрээ зурсан эсэх
   bool get hasAgreement => _parseBool(_kyc?['agreement']);
@@ -1045,8 +1047,7 @@ class AuthService with ChangeNotifier {
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return apiMessage(body) ??
-            'Дансны мэдээлэл амжилттай хадгалагдлаа';
+        return apiMessage(body) ?? 'Дансны мэдээлэл амжилттай хадгалагдлаа';
       }
       throw Exception(apiMessage(body) ?? 'Данс холбоход алдаа гарлаа');
     } on DioException catch (e) {
@@ -1060,9 +1061,7 @@ class AuthService with ChangeNotifier {
   }) async {
     final dio = isAuthenticated ? _authedDio : _dio;
     try {
-      final Map<String, dynamic> bodyData = {
-        'acntNo': iban,
-      };
+      final Map<String, dynamic> bodyData = {'acntNo': iban};
       if (!isAuthenticated) {
         if (sessionId == null || sessionId.isEmpty) {
           throw Exception(
@@ -1079,8 +1078,7 @@ class AuthService with ChangeNotifier {
 
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        return apiMessage(body) ??
-            'Дансны мэдээлэл амжилттай устгагдлаа';
+        return apiMessage(body) ?? 'Дансны мэдээлэл амжилттай устгагдлаа';
       }
       throw Exception(apiMessage(body) ?? 'Данс устгахад алдаа гарлаа');
     } on DioException catch (e) {
@@ -1097,6 +1095,7 @@ class AuthService with ChangeNotifier {
   Future<String?> uploadKycDocument({
     required String type,
     required String image,
+
     /// Хүүхдийн бичиг баримт (`id_child`) үед иргэний бүртгэлийн дугаар
     String? civilId,
     void Function(int sent, int total)? onSendProgress,
@@ -1287,7 +1286,7 @@ class AuthService with ChangeNotifier {
   }
 
   // Inside AuthService class
-  int _activeOrderCount =0;
+  int _activeOrderCount = 0;
   int get activeOrderCount => _activeOrderCount;
 
   bool _hasPrimaryBond = false;
@@ -1376,11 +1375,7 @@ class AuthService with ChangeNotifier {
       final response = await _authedDio.post(
         ApiConfig.withdrawalRequest,
         data: {
-          'data': {
-            'acntNo': acntNo,
-            'amount': amount,
-            'type': type,
-          },
+          'data': {'acntNo': acntNo, 'amount': amount, 'type': type},
         },
       );
       final body = response.data as Map<String, dynamic>;
@@ -1711,7 +1706,9 @@ class AuthService with ChangeNotifier {
         data: {'api': 'summary_report'},
       );
       final body = response.data;
-      if (body is Map && body['code']?.toString() == '0' && body['data'] is Map) {
+      if (body is Map &&
+          body['code']?.toString() == '0' &&
+          body['data'] is Map) {
         return Map<String, dynamic>.from(body['data'] as Map);
       }
       return null;
@@ -1760,7 +1757,9 @@ class AuthService with ChangeNotifier {
         },
       );
       final body = response.data;
-      if (body is Map && body['code']?.toString() == '0' && body['data'] is List) {
+      if (body is Map &&
+          body['code']?.toString() == '0' &&
+          body['data'] is List) {
         return (body['data'] as List)
             .whereType<Map>()
             .map((d) => Map<String, dynamic>.from(d))
@@ -1820,7 +1819,8 @@ class AuthService with ChangeNotifier {
             .map((d) => Map<String, dynamic>.from(d as Map))
             .toList();
       }*/
-      if (body['code']?.toString() == '0' && body['data'] is Map<String, dynamic>) {
+      if (body['code']?.toString() == '0' &&
+          body['data'] is Map<String, dynamic>) {
         final data = body['data'] as Map<String, dynamic>;
 
         // 2. Extract and parse the nested 'points' array
@@ -1861,9 +1861,7 @@ class AuthService with ChangeNotifier {
       final response = await _authedDio.get(ApiConfig.portfolioSummary);
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() != '0') {
-        throw Exception(
-          apiMessage(body) ?? 'Portfolio summary алдаа',
-        );
+        throw Exception(apiMessage(body) ?? 'Portfolio summary алдаа');
       }
       final data = (body['data'] as Map?) ?? const {};
       double toDouble(dynamic v) => v == null
