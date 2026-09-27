@@ -719,5 +719,6 @@
     "completeRegistrationPrompt": "Та бүртгэлээ дуусгана уу",
     "mandalCapitalMarkets": "Мандал Капитал Маркетс ҮЦК",
     "registeredNumberHint": "E-Mongolia → Төрсний гэрчилгээний лавлагаа → Хүүхэд → Иргэний бүртгэлийн дугаар",
-    "invalidNumber": "Дугаар буруу байна"
+    "invalidNumber": "Дугаар буруу байна",
+    "noSearchResultFound": "Гүйлгээний түүх олдсонгүй"
 }

@@ -129,7 +129,7 @@ class _BondPrimaryCarouselState extends State<BondPrimaryCarousel> {
                                   ),
                                 ),
                                 Text(
-                                  '${(progress * 100).toInt()}%',
+                                  '${(progress * 100).toStringAsFixed(2)}%',
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 10,

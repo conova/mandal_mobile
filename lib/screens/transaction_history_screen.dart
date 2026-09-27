@@ -406,6 +406,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
 
   Widget _buildTransactionList(String? currencyFilter) {
     final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
+    final l10n = AppLocalizations.of(context)!;
 
     if (_isLoading) {
       return Center(
@@ -424,11 +425,19 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
 
     if (transactions.isEmpty) {
       return Center(
-        child: Text(
-          '-',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral300,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 120,),
+            Image.asset('assets/images/searching.png', height: 180, width: 180,),
+            const SizedBox(height: 10),
+            Text(
+              l10n.noSearchResultFound,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral100,
               ),
+            ),
+          ],
         ),
       );
     }

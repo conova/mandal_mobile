@@ -2079,4 +2079,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidNumber => 'Incorrect number';
+
+  @override
+  String get noSearchResultFound => 'No search result found';
 }

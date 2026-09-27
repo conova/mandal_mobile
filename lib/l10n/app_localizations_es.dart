@@ -2080,4 +2080,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get invalidNumber => 'Número incorrecto';
+
+  @override
+  String get noSearchResultFound => 'No search result found';
 }

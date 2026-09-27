@@ -3939,6 +3939,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Incorrect number'**
   String get invalidNumber;
+
+  /// No description provided for @noSearchResultFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No search result found'**
+  String get noSearchResultFound;
 }
 
 class _AppLocalizationsDelegate
