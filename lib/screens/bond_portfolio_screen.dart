@@ -472,35 +472,50 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   List<({DateTime date, double amount, bool paid})> _paymentsOf(
     MarketInstrument bond,
   ) {
-    final schedule = BondSchedule.build(
-      start: parseStockDate(bond.startDate),
-      end: parseStockDate(bond.endDate),
-      payPeriod: bond.payType,
-      nextPayday: parseStockDate(bond.startDate),
-    );
+    final start = parseStockDate(bond.startDate);
+    final end = parseStockDate(bond.endDate);
     final months = BondSchedule.monthsOf(bond.payType);
+
+    final schedule = BondSchedule.build(
+      start: start,
+      end: end,
+      payPeriod: bond.payType,
+      nextPayday: start,
+    );
+
     if (schedule == null || months == null || months == 0) {
       return const <({DateTime date, double amount, bool paid})>[];
     }
 
-    // Үндсэн дүн = ширхэг × үнэ; купон = үндсэн × жилийн хүү ÷ давтамж
+    // Үндсэн дүн = ширхэг × үнэ; хүүг хоногийн зөрүүгээр тооцно
     final principal = (bond.currentBal ?? 0) * (bond.stockPrice ?? 0);
-    final periodsPerYear = 12 / months;
-    final coupon = principal * ((bond.intRate ?? 0) / 100) / periodsPerYear;
+    final annualRate = (bond.intRate ?? 0) / 100;
 
-    return [
-      for (var i = 1; i <= schedule.total; i++)
-        (
-          date: DateTime(
-            schedule.start.year,
-            schedule.start.month + months * i,
-            schedule.start.day,
-          ),
-          // Сүүлийн төлбөрт үндсэн төлбөр нэмж олгогдоно
-          amount: i == schedule.total ? coupon + principal : coupon,
-          paid: i <= schedule.paid,
-        ),
-    ];
+    final List<({DateTime date, double amount, bool paid})> results = [];
+    DateTime periodStart = schedule.start;
+
+    for (var i = 1; i <= schedule.total; i++) {
+      final periodEnd = DateTime(
+        schedule.start.year,
+        schedule.start.month + months * i,
+        schedule.start.day,
+      );
+
+      final daysInPeriod = periodEnd.difference(periodStart).inDays;
+      final coupon = principal * annualRate * (daysInPeriod / 365) * (1 - ((bond.stockFee ?? 0) > 1 ? 1 : (bond.stockFee ?? 0)));
+
+      results.add((
+        date: periodEnd,
+        // Сүүлийн төлбөрт үндсэн төлбөр нэмж олгогдоно
+        //amount: i == schedule.total ? coupon + principal : coupon,
+        amount: coupon,
+        paid: i <= schedule.paid,
+      ));
+
+      periodStart = periodEnd;
+    }
+
+    return results;
   }
 
   /// Бондын нэг мөр — дарахад хүүгийн төлбөрийн хуваарь дэлгэрнэ
