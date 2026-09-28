@@ -21,11 +21,13 @@ class BondPortfolioScreen extends StatefulWidget {
 class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   bool _isLoading = true;
   List<MarketInstrument> _holdings = const [];
+  final ScrollController _scrollController = ScrollController();
+  bool _showStickyHeader = false;
 
   /// Төлбөрийн хуваарийг дэлгэрүүлж харуулсан бондууд (symbol)
   final Set<String> _expandedSymbols = {};
 
-    /// Бондын нийт дүн (₮) — home-ийн хөрөнгийн задаргаа API-аас
+  /// Бондын нийт дүн (₮) — home-ийн хөрөнгийн задаргаа API-аас
   double? _bondTotal;
 
   /// USD ханш (amountMnt/amount) — ойролцоо $ дүн тооцоход
@@ -34,7 +36,23 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     Future.microtask(_fetch);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    if (offset > 50 && !_showStickyHeader) {
+      setState(() => _showStickyHeader = true);
+    } else if (offset <= 50 && _showStickyHeader) {
+      setState(() => _showStickyHeader = false);
+    }
   }
 
   Future<void> _fetch() async {
@@ -78,179 +96,151 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final topPadding = MediaQuery.paddingOf(context).top;
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            _buildHeader(context, theme, extendedColors, l10n),
-            const SizedBox(height: 20),
-            // Өгөөжийн хураангуй — дэлгэрэнгүйг статистик дэлгэц дээр үзнэ
-            _buildYieldSummaryCard(theme, extendedColors, l10n),
-            const SizedBox(height: 28),
-            // My Bond section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                l10n.myBond,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                _buildHeader(context, theme, extendedColors, l10n),
+                const SizedBox(height: 20),
+                // Өгөөжийн хураангуй — дэлгэрэнгүйг статистик дэлгэц дээр үзнэ
+                _buildYieldSummaryCard(theme, extendedColors, l10n),
+                const SizedBox(height: 28),
+                // My Bond section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    l10n.myBond,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-            /*// Filter chips
-            SizedBox(
-              height: 32,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: filterLabels.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final isSelected = _selectedFilter == index;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedFilter = index),
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? extendedColors.purple
-                            : extendedColors.bgSecondary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        filterLabels[index],
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w300,
-                          color: isSelected
-                              ? extendedColors.bgBase
-                              : extendedColors.neutral100,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),*/
-
-            // Table header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.bondName,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
-                  ),
-                  Text(
-                    l10n.amountPieces,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral200,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Bond rows
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_holdings.isEmpty)
-              Center(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Image.asset(
-                      'assets/images/safe_box.png',
-                      height: 101,
-                      errorBuilder: (_, _, _) => const SizedBox(height: 80),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.noBondsYet,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        l10n.startInvestingPrompt,
-                        textAlign: TextAlign.center,
+                // Table header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.bondName,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w200
+                          color: extendedColors.neutral200,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: 130,
-                      child: CustomButton(
-                        variant: CustomButtonVariant.purple,
-                        onPressed: () {
-                          // Home (main) руу буцаж бондын tab-ийг нээнэ
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/main',
-                            (route) => false,
-                            arguments: {'tab': 1},
-                          );
-                        },
-                        label: l10n.buyBond,
-                        size: CustomButtonSize.small,
+                      Text(
+                        l10n.amountPieces,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral200,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Bond rows
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (_holdings.isEmpty)
+                  Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        Image.asset(
+                          'assets/images/safe_box.png',
+                          height: 101,
+                          errorBuilder: (_, _, _) => const SizedBox(height: 80),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noBondsYet,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w400,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            l10n.startInvestingPrompt,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral100,
+                              fontWeight: FontWeight.w200
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: 130,
+                          child: CustomButton(
+                            variant: CustomButtonVariant.purple,
+                            onPressed: () {
+                              // Home (main) руу буцаж бондын tab-ийг нээнэ
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/main',
+                                (route) => false,
+                                arguments: {'tab': 1},
+                              );
+                            },
+                            label: l10n.buyBond,
+                            size: CustomButtonSize.small,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              )
-            else
-              Column(
-                children: _holdings
-                    .map(
-                      (bond) =>
-                      _buildBondRow(bond, theme, extendedColors, l10n),
-                )
-                    .toList(),
-              ),
-              /*// Жагсаалт дээр баруун/зүүн swipe хийж filter шилжүүлнэ
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onHorizontalDragEnd: _onListSwipe,
-                child: Column(
-                  children: _holdings
-                      .map(
-                        (bond) =>
-                            _buildBondRow(bond, theme, extendedColors, l10n),
-                      )
-                      .toList(),
-                ),
-              ),*/
-            const SizedBox(height: 24),
-            /*// Time filter
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: _buildTimeFilter(theme, extendedColors),
+                  )
+                else
+                  Column(
+                    children: _holdings
+                        .map(
+                          (bond) =>
+                          _buildBondRow(bond, theme, extendedColors, l10n),
+                    )
+                        .toList(),
+                  ),
+                const SizedBox(height: 24),
+              ],
             ),
-            const SizedBox(height: 40),*/
-          ],
-        ),
+          ),
+          Positioned(
+            top: topPadding + 20,
+            left: 20,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: _showStickyHeader
+                    ? [
+                        BoxShadow(
+                          color: extendedColors.neutral100.withValues(alpha: 0.1),
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [],
+              ),
+              child: const CircleBackButton(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -276,30 +266,23 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(20),
-              // Back товч зүүн талд, icon мөрийн голд
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleBackButton(),
+              // Icon мөрийн голд (Back товч Positioned-оор Stack-д байгаа)
+              child: Center(
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: extendedColors.purple,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: extendedColors.purple,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: CustomSvgIcon(
-                        'bank-note-01',
-                        size: 22,
-                        color: Colors.white,
-                      ),
+                  child: const Center(
+                    child: CustomSvgIcon(
+                      'bank-note-01',
+                      size: 22,
+                      color: Colors.white,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 6),
@@ -408,7 +391,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
           _buildYieldRow(
             label: l10n.futureReturn,
             amount:
-                '+${formatStockAmount(sumOf((b) => b.expYield), decimals: 0)}',
+                formatStockAmount(sumOf((b) => b.expYield), decimals: 0),
             valueColor: extendedColors.purple,
             theme: theme,
             extendedColors: extendedColors,
@@ -765,21 +748,4 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       ],
     );
   }
-
-  /*Widget _buildTimeFilter(ThemeData theme, ExtendedColors extendedColors) {
-    final filters = ['7Х', '1С', '3С', '1Ж', 'Бүгд'];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: filters.map((label) {
-        final isLast = label == 'Бүгд';
-        return Text(
-          label,
-          style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.normal,
-            color: isLast ? extendedColors.neutral100 : extendedColors.neutral300,
-          ),
-        );
-      }).toList(),
-    );
-  }*/
 }

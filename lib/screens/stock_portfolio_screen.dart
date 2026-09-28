@@ -20,6 +20,8 @@ class StockPortfolioScreen extends StatefulWidget {
 class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
   bool _isLoading = true;
   List<MarketInstrument> _holdings = const [];
+  final ScrollController _scrollController = ScrollController();
+  bool _showStickyHeader = false;
 
   /// Түүхийн хэсэгт дэлгэрүүлж харуулсан хувьцаанууд (symbol)
   final Set<String> _expandedSymbols = {};
@@ -27,7 +29,23 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     Future.microtask(_fetchMyStocks);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    if (offset > 50 && !_showStickyHeader) {
+      setState(() => _showStickyHeader = true);
+    } else if (offset <= 50 && _showStickyHeader) {
+      setState(() => _showStickyHeader = false);
+    }
   }
 
   Future<void> _fetchMyStocks() async {
@@ -54,6 +72,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final topPadding = MediaQuery.paddingOf(context).top;
 
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map) {
@@ -62,149 +81,175 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            _buildHeader(context, theme, extendedColors, l10n),
-            const SizedBox(height: 24),
-            // My Stocks section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                l10n.myStocks,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: extendedColors.neutral100,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                _buildHeader(context, theme, extendedColors, l10n),
+                const SizedBox(height: 24),
+                // My Stocks section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    l10n.myStocks,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Table header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      l10n.stocks,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral200,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      l10n.amountPieces,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral200,
-                        fontWeight: FontWeight.w300,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      l10n.profitPlusMinus,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral200,
-                        fontWeight: FontWeight.w300,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Stock rows
-            if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_holdings.isEmpty)
-              Center(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Image.asset(
-                      'assets/images/add_folder.png',
-                      height: 101,
-                      errorBuilder: (_, _, _) => const SizedBox(height: 80),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.noStocksYet,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: extendedColors.neutral100,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        l10n.startInvestingPrompt,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w200,
+                const SizedBox(height: 16),
+                // Table header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          l10n.stocks,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral200,
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: 130,
-                      child: CustomButton(
-                        variant: CustomButtonVariant.orange,
-                        onPressed: () async {
-                          await Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false, arguments: {'tab': 2});
-                        },
-                        label: l10n.buyStock,
-                        size: CustomButtonSize.small,
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          l10n.amountPieces,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral200,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              )
-            else
-              ..._holdings.map(
-                (stock) => _buildStockRow(stock, theme, extendedColors),
-              ),
-            const SizedBox(height: 16),
-            Divider(height: 1, color: extendedColors.neutral500),
-            // Түүхэн ашиг/алдагдал — нийлбэр товчоо, дараа нь хувьцаа
-            // тус бүрийн задаргаа (дэлгэрүүлж үзнэ)
-            if (_holdings.isNotEmpty) ...[
-              const SizedBox(height: 28),
-              _buildHistorySummary(theme, extendedColors, l10n),
-              const SizedBox(height: 24),
-              ..._holdings.map(
-                (stock) =>
-                    _buildHistoryCard(stock, theme, extendedColors, l10n),
-              ),
-            ],
-            // Хэрэгжээгүй ашгийн тайлбар — шимтгэл, татвар ороогүй
-            if (_holdings.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
-                child: Text(
-                  textAlign: TextAlign.center,
-                  l10n.unrealizedProfitNote,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: extendedColors.neutral300,
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          l10n.profitPlusMinus,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral200,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                const SizedBox(height: 12),
+                // Stock rows
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (_holdings.isEmpty)
+                  Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        Image.asset(
+                          'assets/images/add_folder.png',
+                          height: 101,
+                          errorBuilder: (_, _, _) => const SizedBox(height: 80),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noStocksYet,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w400,
+                            color: extendedColors.neutral100,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            l10n.startInvestingPrompt,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: extendedColors.neutral100,
+                              fontWeight: FontWeight.w200,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: 130,
+                          child: CustomButton(
+                            variant: CustomButtonVariant.orange,
+                            onPressed: () async {
+                              await Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false, arguments: {'tab': 2});
+                            },
+                            label: l10n.buyStock,
+                            size: CustomButtonSize.small,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  )
+                else
+                  ..._holdings.map(
+                        (stock) => _buildStockRow(stock, theme, extendedColors),
+                  ),
+                const SizedBox(height: 16),
+                Divider(height: 1, color: extendedColors.neutral500),
+                // Түүхэн ашиг/алдагдал — нийлбэр товчоо, дараа нь хувьцаа
+                // тус бүрийн задаргаа (дэлгэрүүлж үзнэ)
+                if (_holdings.isNotEmpty) ...[
+                  const SizedBox(height: 28),
+                  _buildHistorySummary(theme, extendedColors, l10n),
+                  const SizedBox(height: 24),
+                  ..._holdings.map(
+                        (stock) =>
+                        _buildHistoryCard(stock, theme, extendedColors, l10n),
+                  ),
+                ],
+                // Хэрэгжээгүй ашгийн тайлбар — шимтгэл, татвар ороогүй
+                if (_holdings.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      l10n.unrealizedProfitNote,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: extendedColors.neutral300,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: topPadding + 20,
+            left: 20,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: _showStickyHeader
+                    ? [
+                        BoxShadow(
+                          color: extendedColors.neutral100.withValues(alpha: 0.1),
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [],
               ),
-          ],
-        ),
+              child: const CircleBackButton(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -230,30 +275,23 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(20),
-              // Back товч зүүн талд, icon мөрийн голд
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleBackButton(),
+              // Icon мөрийн голд (Back товч Positioned-оор Stack-д байгаа)
+              child: Center(
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: extendedColors.orange,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: extendedColors.orange,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: CustomSvgIcon(
-                        'coins-swap-02',
-                        color: Colors.white,
-                        size: 22,
-                      ),
+                  child: const Center(
+                    child: CustomSvgIcon(
+                      'coins-swap-02',
+                      color: Colors.white,
+                      size: 22,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 6),
