@@ -2048,4 +2048,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get noPaymentsYet => 'Хуваарьт төлбөр одоогоор байхгүй байна';
+
+  @override
+  String get cancelled => 'Цуцлагдсан';
+
+  @override
+  String get waiting => 'Хүлээгдэж байна';
 }

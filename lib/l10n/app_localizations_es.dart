@@ -2086,4 +2086,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noPaymentsYet => 'No scheduled payments yet';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get waiting => 'Waiting';
 }
