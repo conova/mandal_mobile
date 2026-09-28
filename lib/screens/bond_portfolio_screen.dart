@@ -502,7 +502,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
       );
 
       final daysInPeriod = periodEnd.difference(periodStart).inDays;
-      final coupon = principal * annualRate * (daysInPeriod / 365) * (1 - ((bond.stockFee ?? 0) > 1 ? 1 : (bond.stockFee ?? 0)));
+      final coupon = principal * annualRate * (daysInPeriod / 365) * (1 - ((bond.stockFee ?? 0) > 100 ? 100 : (bond.stockFee ?? 0))/100);
 
       results.add((
         date: periodEnd,
