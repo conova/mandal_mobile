@@ -2091,4 +2091,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waiting => 'Waiting';
+
+  @override
+  String get noCashStatementYet => 'No cash statement yet.';
 }

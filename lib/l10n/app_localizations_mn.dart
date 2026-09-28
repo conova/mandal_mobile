@@ -2054,4 +2054,8 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get waiting => 'Хүлээгдэж байна';
+
+  @override
+  String get noCashStatementYet =>
+      'Одоогоор бэлэн мөнгөний хуулга байхгүй байна.';
 }

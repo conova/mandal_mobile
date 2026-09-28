@@ -101,6 +101,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
 
       final rows = await auth.getAccountStatement(
         curCode: isMnt ? 'MNT' : 'USD',
+        cashType: '0,1',
         start: fmt(start),
         end: fmt(now),
       );
@@ -521,12 +522,13 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
     if (_historyRows.isEmpty) {
       return [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40),
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
           child: Center(
             child: Text(
-              '-',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral300,
+              textAlign: TextAlign.center,
+              l10n.noCashStatementYet,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral100,
               ),
             ),
           ),
