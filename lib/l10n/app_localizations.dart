@@ -3951,6 +3951,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No scheduled payments yet'**
   String get noPaymentsYet;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @waiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get waiting;
 }
 
 class _AppLocalizationsDelegate

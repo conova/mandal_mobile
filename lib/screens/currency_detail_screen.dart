@@ -281,6 +281,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
             ..._buildTransactionHistory(
               theme: theme,
               extendedColors: extendedColors,
+              l10n: l10n,
             ),
             const SizedBox(height: 40),
           ],
@@ -468,6 +469,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
   List<Widget> _buildTransactionHistory({
     required ThemeData theme,
     required ExtendedColors extendedColors,
+    required AppLocalizations l10n,
   }) {
     if (_isHistoryLoading) {
       return [
@@ -517,13 +519,18 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
           : _pickLang(row, 'TXNNAME', 'TXNNAME2', isEn);
 
       final isPositive = tag == FilterTag.cashIncome || tag == FilterTag.stockSold ||tag == FilterTag.bondReturn || tag == FilterTag.bondSold;
+      final statusCode = row['STATUS']?.toString() ?? '';
+      // status code == 0 "Cancelled cash"
+      // status code == 2 "Waiting cash"
+      // status code == 1 "Completed cash"
+      // status code == 3 "Unsuccessful cash"
       
       // Use TransactionListItem style but as a simple Row to match screen's current padding/feel
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Row(
           children: [
-            _buildHistoryIcon(tag, isPositive, curCode, extendedColors),
+            _buildHistoryIcon(tag, row['STATUS']?.toString() ?? '', isPositive, curCode, extendedColors),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -547,13 +554,28 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
               ),
             ),
             const SizedBox(width: 12),
-            Text(
-              isPositive ? formatStockAmount(amountNum.abs(), isForeign: isUsd) : '-${formatStockAmount(amountNum.abs(), isForeign: isUsd)}',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: isPositive
-                    ? extendedColors.primaryMain
-                    : extendedColors.neutral100,
-              ),
+            Column(
+              children: [
+                Text(
+                  isPositive ? formatStockAmount(amountNum.abs(), isForeign: isUsd) : '-${formatStockAmount(amountNum.abs(), isForeign: isUsd)}',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: statusCode == '0' || statusCode == '3'
+                        ? extendedColors.red
+                        : statusCode == '2'
+                        ? extendedColors.yellow
+                        : isPositive ? extendedColors.primaryMain : extendedColors.neutral100,
+                  ),
+                ),
+                if(statusCode == '0' || statusCode == '3' || statusCode == '2')
+                  Text(
+                    statusCode == '0' || statusCode == '3' ? l10n.cancelled : l10n.waiting,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: statusCode == '0' || statusCode == '3'
+                          ? extendedColors.red
+                          : extendedColors.yellow
+                    ),
+                  )
+              ],
             ),
           ],
         ),
@@ -561,29 +583,45 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
     }).toList();
   }
 
-  Widget _buildHistoryIcon(FilterTag tag, bool isPositive, String curCode, ExtendedColors extendedColors) {
+  Widget _buildHistoryIcon(FilterTag tag, String statusCode, bool isPositive, String curCode, ExtendedColors extendedColors) {
     final isCash = tag == FilterTag.cashIncome || tag == FilterTag.cashExpense;
     final isBond = tag == FilterTag.bondBought || tag == FilterTag.bondSold || tag == FilterTag.bondReturn;
 
-    Color bgColor = isPositive ? extendedColors.primary100 : extendedColors.bgSecondary;
+    Color bgColor = statusCode == '0' || statusCode == '3'
+        ? extendedColors.red200
+        : statusCode == '2'
+            ? extendedColors.yellow200
+            : isPositive ? extendedColors.primary100 : extendedColors.bgSecondary;
 
     Widget iconContent;
     if (isCash) {
       iconContent = CustomSvgIcon(
         (curCode == 'USD') ? 'currency-dollar' : 'tugrug-01',
-        color: isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
+        color: statusCode == '0' || statusCode == '3'
+            ? extendedColors.red
+            : statusCode == '2'
+            ? extendedColors.yellow
+            : isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
         size: 22,
       );
     } else if (isBond) {
       iconContent = CustomSvgIcon(
         'bank-note-01',
-        color: isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
+        color: statusCode == '0' || statusCode == '3'
+            ? extendedColors.red
+            : statusCode == '2'
+            ? extendedColors.yellow
+            : isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
         size: 22,
       );
     } else {
       iconContent = CustomSvgIcon(
         'coins-swap-02',
-        color: isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
+        color: statusCode == '0' || statusCode == '3'
+            ? extendedColors.red
+            : statusCode == '2'
+            ? extendedColors.yellow
+            : isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
         size: 22,
       );
     }
