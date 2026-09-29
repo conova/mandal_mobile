@@ -11,6 +11,7 @@ import '../widgets/custom_svg_icon.dart';
 import '../widgets/empty_state.dart';
 import 'components/stock/stock_ipo_carousel.dart';
 import 'components/stock/stock_skeleton_loader.dart';
+import 'components/stock/stock_ipo_skeleton_loader.dart';
 
 /// Хувьцааны жагсаалтын дэлгэц:
 ///   • IPO карусель (олон нийтэд анх удаа зарагдаж буй хувьцаанууд)
@@ -658,91 +659,146 @@ class _StockScreenState extends State<StockScreen> {
 
   List<Widget> _buildMainSkeletonSlivers(ExtendedColors extendedColors) {
     return [
-      // IPO Carousel Placeholder
+      // IPO Header
       SliverToBoxAdapter(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-          child: Container(
-            height: 154,
-            decoration: BoxDecoration(
-              color: extendedColors.bgSecondary,
-              borderRadius: BorderRadius.circular(24),
+          padding: const EdgeInsets.only(top: 16),
+          child: _PulsingPlaceholder(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(color: extendedColors.bgSecondary, borderRadius: BorderRadius.circular(8)),
+                        child: Container(width: 8, height: 8, decoration: BoxDecoration(color: extendedColors.bgBase, shape: BoxShape.circle)),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(width: 100, height: 20, decoration: BoxDecoration(color: extendedColors.bgSecondary, borderRadius: BorderRadius.circular(4))),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Padding(
+                  padding: const EdgeInsets.only(left: 41),
+                  child: Container(width: 200, height: 14, decoration: BoxDecoration(color: extendedColors.bgSecondary, borderRadius: BorderRadius.circular(4))),
+                ),
+              ],
             ),
           ),
         ),
       ),
-      // Top Movers Placeholder
+      // IPO Carousel
+      const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.only(top: 12, bottom: 12),
+          child: _PulsingPlaceholder(
+            child: StockIpoSkeletonLoader(),
+          ),
+        ),
+      ),
+      // Top Movers
       SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 94,
-                  decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Container(
-                  height: 94,
-                  decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      // Class Section Header Placeholder
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
-          child: Container(
-            width: 140,
-            height: 24,
-            decoration: BoxDecoration(
-              color: extendedColors.bgSecondary,
-              borderRadius: BorderRadius.circular(4),
+          child: _PulsingPlaceholder(
+            child: Row(
+              children: [
+                Expanded(child: _buildTopMoverSkeletonCard(extendedColors)),
+                const SizedBox(width: 12),
+                Expanded(child: _buildTopMoverSkeletonCard(extendedColors)),
+              ],
             ),
           ),
         ),
       ),
-      // Main Stock Grid Loader Placeholder
-      const SliverPadding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        sliver: SliverToBoxAdapter(
-          child: StockSkeletonLoader(itemCount: 10),
-        ),
-      ),
-      // Class Section Header Placeholder
+      // First Class Section
       SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
-          child: Container(
-            width: 140,
-            height: 24,
-            decoration: BoxDecoration(
-              color: extendedColors.bgSecondary,
-              borderRadius: BorderRadius.circular(4),
+          child: _PulsingPlaceholder(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(width: 140, height: 24, decoration: BoxDecoration(color: extendedColors.bgSecondary, borderRadius: BorderRadius.circular(4))),
+                const SizedBox(height: 8),
+                Container(width: 220, height: 14, decoration: BoxDecoration(color: extendedColors.bgSecondary, borderRadius: BorderRadius.circular(4))),
+              ],
             ),
           ),
         ),
       ),
-      // Main Stock Grid Loader Placeholder
       const SliverPadding(
         padding: EdgeInsets.symmetric(horizontal: 16),
-        sliver: SliverToBoxAdapter(
-          child: StockSkeletonLoader(itemCount: 10),
+        sliver: SliverToBoxAdapter(child: StockSkeletonLoader(itemCount: 6)),
+      ),
+      // Second Class Section
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
+          child: _PulsingPlaceholder(
+            child: Container(width: 120, height: 24, decoration: BoxDecoration(color: extendedColors.bgSecondary, borderRadius: BorderRadius.circular(4))),
+          ),
         ),
+      ),
+      const SliverPadding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverToBoxAdapter(child: StockSkeletonLoader(itemCount: 3)),
       ),
       const SliverToBoxAdapter(child: SizedBox(height: 100)),
     ];
   }
+
+  Widget _buildTopMoverSkeletonCard(ExtendedColors extendedColors) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      height: 94,
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(width: 60, height: 14, decoration: BoxDecoration(color: extendedColors.bgBase, borderRadius: BorderRadius.circular(4))),
+          const SizedBox(height: 10),
+          Container(width: 80, height: 20, decoration: BoxDecoration(color: extendedColors.bgBase, borderRadius: BorderRadius.circular(4))),
+          const SizedBox(height: 4),
+          Container(width: 40, height: 12, decoration: BoxDecoration(color: extendedColors.bgBase, borderRadius: BorderRadius.circular(4))),
+        ],
+      ),
+    );
+  }
+}
+
+class _PulsingPlaceholder extends StatefulWidget {
+  final Widget child;
+  const _PulsingPlaceholder({required this.child});
+
+  @override
+  State<_PulsingPlaceholder> createState() => _PulsingPlaceholderState();
+}
+
+class _PulsingPlaceholderState extends State<_PulsingPlaceholder> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.4, end: 0.8).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(animation: _animation, builder: (context, child) => Opacity(opacity: _animation.value, child: widget.child));
 }
