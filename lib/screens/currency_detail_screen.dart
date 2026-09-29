@@ -259,7 +259,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
                   extendedColors: extendedColors,
                   icon: 'coins-hand',
                   label: l10n.availableCash,
-                  amount: '${formatStockAmount(_availableCash, isForeign: !isMnt)}$currencySymbol',
+                  amount: formatStockAmount(_availableCash, isForeign: !isMnt),
                   l10n: l10n,
                   descTitle: l10n.cash,
                   descText: l10n.cashDesc
@@ -271,7 +271,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
                   extendedColors: extendedColors,
                   icon: 'file-check-02',
                   label: l10n.lockedAmountLabel,
-                  amount: '${formatStockAmount(_lockedAmount, isForeign: !isMnt)}$currencySymbol',
+                  amount: formatStockAmount(_lockedAmount, isForeign: !isMnt),
                   trailing: isMnt
                       ? CustomButton(
                           label: l10n.release,

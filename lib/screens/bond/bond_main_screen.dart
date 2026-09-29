@@ -465,11 +465,12 @@ class _BondMainScreenState extends State<BondMainScreen>
                 : (num.tryParse(bond.term) != null
                     ? '${bond.term} ${l10n.monthLabel}'
                     : bond.term));
-    final compName = (locale.languageCode == 'mn') ? bond.companyName : bond.companyName2;
+    //final compName = (locale.languageCode == 'mn') ? bond.companyName : bond.companyName2;
+    final stockName = bond.name;
 
     return BondMarketCardCompact(
       bond.raw,
-      title: compName,
+      title: stockName,
       tenure: tenure,
       yield: formatIntRate(bond.intRate),
       payday: bond.payday,
@@ -640,7 +641,7 @@ class _BondMainScreenState extends State<BondMainScreen>
         : bond.term));
 
     return MyBondCard(
-      title: bond.companyName,
+      title: bond.name,
       ownedAmount: bond.currentBal ?? 0,
       tenure: tenure,
       interestRate: formatIntRate(bond.intRate),
