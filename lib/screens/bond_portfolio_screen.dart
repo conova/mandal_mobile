@@ -10,6 +10,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/bond/bond_payment_schedule.dart';
+import 'components/bond/bond_portfolio_skeleton_loader.dart';
 
 class BondPortfolioScreen extends StatefulWidget {
   const BondPortfolioScreen({super.key});
@@ -150,10 +151,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 const SizedBox(height: 16),
                 // Bond rows
                 if (_isLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
+                  const BondPortfolioSkeletonLoader()
                 else if (_holdings.isEmpty)
                   Center(
                     child: Column(

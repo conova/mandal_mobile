@@ -9,6 +9,7 @@ import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
+import 'components/stock/stock_portfolio_skeleton_loader.dart';
 
 class StockPortfolioScreen extends StatefulWidget {
   const StockPortfolioScreen({super.key});
@@ -146,10 +147,7 @@ class _StockPortfolioScreenState extends State<StockPortfolioScreen> {
                 const SizedBox(height: 12),
                 // Stock rows
                 if (_isLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
+                  const StockPortfolioSkeletonLoader()
                 else if (_holdings.isEmpty)
                   Center(
                     child: Column(
