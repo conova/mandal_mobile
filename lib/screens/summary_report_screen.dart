@@ -716,7 +716,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         ),
         SummaryTableRow(
           label: l10n.exchangeRateGain,
-          val1: _money(_txnAmount('rateincome')),
+          val1: _money(_txnAmount('stock')),
           isOdd: false,
         ),
         SummaryTableRow(
