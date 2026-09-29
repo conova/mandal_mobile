@@ -56,13 +56,16 @@ class TransactionListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  transaction.title,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: extendedColors.neutral100,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    transaction.title,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: extendedColors.neutral100,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   transaction.date,

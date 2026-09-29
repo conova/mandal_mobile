@@ -125,6 +125,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
                 ),
                 const SizedBox(height: 16),
                 Text(
+                  textAlign: TextAlign.center,
                   l10n.askingWatchlist,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
