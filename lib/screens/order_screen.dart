@@ -9,6 +9,7 @@ import '../services/auth_service.dart';
 import '../widgets/custom_bottom_sheet.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/order/order_history_tab.dart';
+import 'components/order/order_skeleton_loader.dart';
 import '../widgets/filter_chip_bar.dart';
 import '../widgets/order_card.dart';
 
@@ -308,10 +309,7 @@ class _OrderScreenState extends State<OrderScreen>
             ),
             const SizedBox(height: 8),
             if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 48),
-                child: Center(child: CircularProgressIndicator()),
-              )
+              const OrderSkeletonLoader()
             else if (orders.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 48),

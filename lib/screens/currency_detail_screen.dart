@@ -10,6 +10,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_info_popup_bottom_sheet.dart';
 import '../widgets/release_locked_amount_sheet.dart';
 import 'components/transaction_history/transaction_list_item.dart';
+import 'components/transaction_history/transaction_skeleton_loader.dart';
 
 enum CurrencyType { mnt, usd }
 
@@ -512,10 +513,10 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
   }) {
     if (_isHistoryLoading) {
       return [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 40),
-          child: Center(child: CircularProgressIndicator()),
-        )
+        const TransactionSkeletonLoader(
+          itemCount: 3,
+          shrinkWrap: true,
+        ),
       ];
     }
 
