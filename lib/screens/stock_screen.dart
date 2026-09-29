@@ -10,6 +10,7 @@ import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 import '../widgets/empty_state.dart';
 import 'components/stock/stock_ipo_carousel.dart';
+import 'components/stock/stock_skeleton_loader.dart';
 
 /// Хувьцааны жагсаалтын дэлгэц:
 ///   • IPO карусель (олон нийтэд анх удаа зарагдаж буй хувьцаанууд)
@@ -235,10 +236,7 @@ class _StockScreenState extends State<StockScreen> {
               if (_searchQuery.isNotEmpty)
                 ..._buildSearchSlivers(l10n, theme, extendedColors)
               else if (_isLoading)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(child: CircularProgressIndicator()),
-                )
+                ..._buildMainSkeletonSlivers(extendedColors)
               else if (_error != null)
                 SliverFillRemaining(
                   hasScrollBody: false,
@@ -595,9 +593,11 @@ class _StockScreenState extends State<StockScreen> {
   ) {
     if (_isSearching) {
       return const [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(child: CircularProgressIndicator()),
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+          sliver: SliverToBoxAdapter(
+            child: StockSkeletonLoader(itemCount: 10),
+          ),
         ),
       ];
     }
@@ -651,6 +651,98 @@ class _StockScreenState extends State<StockScreen> {
           ),
         ),
       ),
+    ];
+  }
+
+  // ─── Үндсэн Скелетон Хуудас (Slivers) ───
+
+  List<Widget> _buildMainSkeletonSlivers(ExtendedColors extendedColors) {
+    return [
+      // IPO Carousel Placeholder
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+          child: Container(
+            height: 154,
+            decoration: BoxDecoration(
+              color: extendedColors.bgSecondary,
+              borderRadius: BorderRadius.circular(24),
+            ),
+          ),
+        ),
+      ),
+      // Top Movers Placeholder
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 94,
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Container(
+                  height: 94,
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      // Class Section Header Placeholder
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
+          child: Container(
+            width: 140,
+            height: 24,
+            decoration: BoxDecoration(
+              color: extendedColors.bgSecondary,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+      ),
+      // Main Stock Grid Loader Placeholder
+      const SliverPadding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverToBoxAdapter(
+          child: StockSkeletonLoader(itemCount: 10),
+        ),
+      ),
+      // Class Section Header Placeholder
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 32, 16, 12),
+          child: Container(
+            width: 140,
+            height: 24,
+            decoration: BoxDecoration(
+              color: extendedColors.bgSecondary,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+      ),
+      // Main Stock Grid Loader Placeholder
+      const SliverPadding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverToBoxAdapter(
+          child: StockSkeletonLoader(itemCount: 10),
+        ),
+      ),
+      const SliverToBoxAdapter(child: SizedBox(height: 100)),
     ];
   }
 }

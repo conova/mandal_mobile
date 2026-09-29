@@ -2092,4 +2092,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get waiting => 'Waiting';
+
+  @override
+  String get noCashStatementYet => 'No cash statement yet.';
 }

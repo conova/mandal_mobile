@@ -10,6 +10,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_info_popup_bottom_sheet.dart';
 import '../widgets/release_locked_amount_sheet.dart';
 import 'components/transaction_history/transaction_list_item.dart';
+import 'components/transaction_history/transaction_skeleton_loader.dart';
 
 enum CurrencyType { mnt, usd }
 
@@ -26,11 +27,29 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _historyRows = [];
   bool _isHistoryLoading = true;
+  final ScrollController _scrollController = ScrollController();
+  bool _showStickyHeader = false;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     Future.microtask(_fetchData);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    if (offset > 50 && !_showStickyHeader) {
+      setState(() => _showStickyHeader = true);
+    } else if (offset <= 50 && _showStickyHeader) {
+      setState(() => _showStickyHeader = false);
+    }
   }
 
   Future<void> _fetchData() async {
@@ -83,6 +102,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
 
       final rows = await auth.getAccountStatement(
         curCode: isMnt ? 'MNT' : 'USD',
+        cashType: '0,1',
         start: fmt(start),
         end: fmt(now),
       );
@@ -148,6 +168,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final topPadding = MediaQuery.paddingOf(context).top;
     final args = ModalRoute.of(context)?.settings.arguments;
     // Хуучин String args болон шинэ {'type', 'amount'} Map хоёуланг дэмжинэ
     final typeArg = args is Map ? args['type']?.toString() : args as String?;
@@ -169,123 +190,149 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with gradient
-            _buildHeader(
-              context: context,
-              theme: theme,
-              extendedColors: extendedColors,
-              accentColor: accentColor,
-              title: title,
-              amount: formatStockAmount(displayTotal, isForeign: !isMnt),
-              currencySymbol: currencySymbol,
-              isMnt: isMnt,
-            ),
-            const SizedBox(height: 24),
-            // Action buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      label: l10n.income,
-                      size: CustomButtonSize.small,
-                      icon: CustomSvgIcon('plus'),
-                      variant: isMnt ? CustomButtonVariant.primary : CustomButtonVariant.neutral,
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/income_method'),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with gradient
+                _buildHeader(
+                  context: context,
+                  theme: theme,
+                  extendedColors: extendedColors,
+                  accentColor: accentColor,
+                  title: title,
+                  amount: formatStockAmount(displayTotal, isForeign: !isMnt),
+                  currencySymbol: currencySymbol,
+                  isMnt: isMnt,
+                ),
+                const SizedBox(height: 24),
+                // Action buttons
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 60),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          label: l10n.income,
+                          size: CustomButtonSize.small,
+                          icon: CustomSvgIcon('plus'),
+                          variant: isMnt ? CustomButtonVariant.primary : CustomButtonVariant.neutral,
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/income_method'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: CustomButton(
+                          label: l10n.expense,
+                          size: CustomButtonSize.small,
+                          icon: CustomSvgIcon('reverse-right'),
+                          variant: CustomButtonVariant.tertiary,
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/withdraw_method'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Divider(height: 1, color: extendedColors.neutral500),
+                const SizedBox(height: 16),
+                // General Info section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    l10n.generalInfo,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: extendedColors.neutral100,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: CustomButton(
-                      label: l10n.expense,
-                      size: CustomButtonSize.small,
-                      icon: CustomSvgIcon('reverse-right'),
-                      variant: CustomButtonVariant.tertiary,
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/withdraw_method'),
+                ),
+                const SizedBox(height: 20),
+                _buildInfoRow(
+                  context: context,
+                  theme: theme,
+                  extendedColors: extendedColors,
+                  icon: 'coins-hand',
+                  label: l10n.availableCash,
+                  amount: '${formatStockAmount(_availableCash, isForeign: !isMnt)}$currencySymbol',
+                  l10n: l10n,
+                  descTitle: l10n.cash,
+                  descText: l10n.cashDesc
+                ),
+                const SizedBox(height: 20),
+                _buildInfoRow(
+                  context: context,
+                  theme: theme,
+                  extendedColors: extendedColors,
+                  icon: 'file-check-02',
+                  label: l10n.lockedAmountLabel,
+                  amount: '${formatStockAmount(_lockedAmount, isForeign: !isMnt)}$currencySymbol',
+                  trailing: isMnt
+                      ? CustomButton(
+                          label: l10n.release,
+                          size: CustomButtonSize.small,
+                          minWidth: 78,
+                          variant: CustomButtonVariant.tertiary,
+                          onPressed: () async {
+                            await ReleaseLockedAmountSheet.show(context);
+                            _fetchData();
+                          },
+                        )
+                      : null,
+                  l10n: l10n,
+                  descTitle: l10n.holdAmount,
+                  descText: l10n.holdAmountDesc
+                ),
+                const SizedBox(height: 24),
+                Divider(height: 1, color: extendedColors.neutral500),
+                const SizedBox(height: 24),
+                // History section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    l10n.history,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: extendedColors.neutral100,
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Divider(height: 1, color: extendedColors.neutral500),
-            const SizedBox(height: 16),
-            // General Info section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                l10n.generalInfo,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w400,
-                  color: extendedColors.neutral100,
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            _buildInfoRow(
-              context: context,
-              theme: theme,
-              extendedColors: extendedColors,
-              icon: 'coins-hand',
-              label: l10n.availableCash,
-              amount: '${formatStockAmount(_availableCash, isForeign: !isMnt)}$currencySymbol',
-              l10n: l10n,
-              descTitle: l10n.cash,
-              descText: l10n.cashDesc
-            ),
-            const SizedBox(height: 20),
-            _buildInfoRow(
-              context: context,
-              theme: theme,
-              extendedColors: extendedColors,
-              icon: 'file-check-02',
-              label: l10n.lockedAmountLabel,
-              amount: '${formatStockAmount(_lockedAmount, isForeign: !isMnt)}$currencySymbol',
-              trailing: isMnt
-                  ? CustomButton(
-                      label: l10n.release,
-                      size: CustomButtonSize.small,
-                      minWidth: 78,
-                      variant: CustomButtonVariant.tertiary,
-                      onPressed: () async {
-                        await ReleaseLockedAmountSheet.show(context);
-                        _fetchData();
-                      },
-                    )
-                  : null,
-              l10n: l10n,
-              descTitle: l10n.holdAmount,
-              descText: l10n.holdAmountDesc
-            ),
-            const SizedBox(height: 24),
-            Divider(height: 1, color: extendedColors.neutral500),
-            const SizedBox(height: 24),
-            // History section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                l10n.history,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w400,
-                  color: extendedColors.neutral100,
+                ..._buildTransactionHistory(
+                  theme: theme,
+                  extendedColors: extendedColors,
+                  l10n: l10n,
                 ),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+          Positioned(
+            top: topPadding + 20,
+            left: 20,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: _showStickyHeader
+                    ? [
+                        BoxShadow(
+                          color: extendedColors.neutral100.withValues(alpha: 0.1),
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [],
               ),
+              child: const CircleBackButton(),
             ),
-            ..._buildTransactionHistory(
-              theme: theme,
-              extendedColors: extendedColors,
-              l10n: l10n,
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -319,30 +366,23 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(20),
-              // Back товч зүүн талд, валютын icon мөрийн голд
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleBackButton(),
+              // Icon мөрийн голд (Back товч Positioned-оор Stack-д байгаа)
+              child: Center(
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: accentColor,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: accentColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: CustomSvgIcon(
-                        isMnt ? 'tugrug-01' : 'currency-dollar',
-                        size: 22,
-                        color: extendedColors.bgBase,
-                      ),
+                  child: Center(
+                    child: CustomSvgIcon(
+                      isMnt ? 'tugrug-01' : 'currency-dollar',
+                      size: 22,
+                      color: extendedColors.bgBase,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 6),
@@ -473,22 +513,23 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
   }) {
     if (_isHistoryLoading) {
       return [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 40),
-          child: Center(child: CircularProgressIndicator()),
-        )
+        const TransactionSkeletonLoader(
+          itemCount: 3,
+          shrinkWrap: true,
+        ),
       ];
     }
 
     if (_historyRows.isEmpty) {
       return [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40),
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
           child: Center(
             child: Text(
-              '-',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral300,
+              textAlign: TextAlign.center,
+              l10n.noCashStatementYet,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: extendedColors.neutral100,
               ),
             ),
           ),

@@ -202,7 +202,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                         ),
                         const SizedBox(height: 28),
                         SizedBox(
-                          width: 190,
+                          width: 130,
                           child: CustomButton(
                             onPressed: () {
                               // Home (main) руу буцаж бондын tab-ийг нээнэ
@@ -214,6 +214,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                               );
                             },
                             label: l10n.buyBond,
+                            size: CustomButtonSize.medium,
                           ),
                         ),
                         const SizedBox(height: 20),

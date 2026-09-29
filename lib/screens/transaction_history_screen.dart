@@ -10,6 +10,7 @@ import '../widgets/custom_snackbar.dart';
 import 'components/transaction_history/transaction_list_item.dart';
 import 'components/transaction_history/transaction_filter_sheet.dart';
 import 'components/transaction_history/transaction_period_sheet.dart';
+import 'components/transaction_history/transaction_skeleton_loader.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -409,15 +410,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     final l10n = AppLocalizations.of(context)!;
 
     if (_isLoading) {
-      return Center(
-        child: SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: extendedColors.primaryMain,
-          ),
-        ),
+      return const TransactionSkeletonLoader(
+        itemCount: 20,
       );
     }
 

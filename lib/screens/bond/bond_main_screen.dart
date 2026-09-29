@@ -3,6 +3,8 @@ import 'package:mandal_capital/screens/components/bond/bond_market_card_compact.
 import 'package:mandal_capital/screens/components/bond/bond_primary_carousel.dart';
 import 'package:mandal_capital/theme/app_colors.dart';
 import 'package:provider/provider.dart';
+import '../components/bond/bond_buy_skeleton_loader.dart';
+import '../components/bond/bond_sell_skeleton_loader.dart';
 import '../components/bond/my_bond_card.dart';
 import '../../common/stock_row_format.dart';
 import '../../models/market_instrument.dart';
@@ -203,6 +205,10 @@ class _BondMainScreenState extends State<BondMainScreen>
     ExtendedColors extendedColors,
     ThemeData theme,
   ) {
+    if (_bondListLoading) {
+      return const BondBuySkeletonLoader();
+    }
+
     // /stocks/bondlist-ийг зах зээлээр нь анхдагч/хоёрдогч гэж хуваана
     final primary = _bondList.where((b) => b.isPrimaryMarket).toList();
     var secondary = _bondList.where((b) => !b.isPrimaryMarket).toList();
@@ -233,12 +239,7 @@ class _BondMainScreenState extends State<BondMainScreen>
         padding: const EdgeInsets.only(bottom: 60),
         children: [
           const SizedBox(height: 24),
-          if (_bondListLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 48, horizontal: 16),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_bondList.isEmpty)
+          if (_bondList.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
               child: Center(
@@ -475,40 +476,6 @@ class _BondMainScreenState extends State<BondMainScreen>
       market: bond.market,
       context: context,
     );
-
-    // return BondMarketCard(
-    //   bond.raw,
-    //   title: bond.name,
-    //   subtitle: bond.subtitle,
-    //   status: bond.isForeign
-    //       ? l10n.foreign
-    //       : (bond.isOpen ? l10n.open : l10n.closed),
-    //   tenure: tenureStr,
-    //   yield: formatIntRate(bond.intRate),
-    //   totalAmount: formatCompactAmount(
-    //     bond.amt,
-    //     languageCode: Localizations.localeOf(context).languageCode,
-    //   ),
-    //   progress: progress,
-    //   payday: bond.payday,
-    //   market: bond.market,
-    //   progressLabel: progress == null
-    //       ? ''
-    //       : formatStockAmount(
-    //     bond.orderedAmt,
-    //     isForeign: bond.isForeign,
-    //     decimals: 0,
-    //   ),
-    //   progressLabel2: progress == null
-    //       ? ''
-    //       : formatStockAmount(bond.amt, isForeign: bond.isForeign, decimals: 0),
-    //   onInfoTap: () => BondStatusInfoSheet.showForBond(
-    //     context,
-    //     isOpen: bond.isOpen,
-    //     isForeign: bond.isForeign,
-    //   ),
-    //   context: context,
-    // );
   }
 
   Widget _buildSellTab(
@@ -516,18 +483,16 @@ class _BondMainScreenState extends State<BondMainScreen>
     ExtendedColors extendedColors,
     ThemeData theme,
   ) {
+    if (_myBondsLoading) {
+      return const BondSellSkeletonLoader();
+    }
     return RefreshIndicator(
       onRefresh: _handleRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 16),
         children: [
-          if (_myBondsLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_myBonds.isEmpty)
+          if (_myBonds.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 160),
               child: Center(

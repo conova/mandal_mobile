@@ -3963,6 +3963,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Waiting'**
   String get waiting;
+
+  /// No description provided for @noCashStatementYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No cash statement yet.'**
+  String get noCashStatementYet;
 }
 
 class _AppLocalizationsDelegate

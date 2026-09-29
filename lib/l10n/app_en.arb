@@ -794,5 +794,6 @@
     "noSearchResultFound": "No search result found",
     "noPaymentsYet": "No scheduled payments yet",
     "cancelled": "Cancelled",
-    "waiting": "Waiting"
+    "waiting": "Waiting",
+    "noCashStatementYet": "No cash statement yet."
 }

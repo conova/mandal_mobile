@@ -86,7 +86,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
 
   /// Нэгж үнэ — бондын мөрийн боломжит талбаруудаас
   double get _unitPrice =>
-      _num(['UNITPRICE', 'CLOSEPRICE', 'STOCKPRICE', 'PRICE']);
+      _num(['STOCKPRICE', 'CLOSEPRICE']);
 
   double get _intRate => _num(['INTRATE']);
 

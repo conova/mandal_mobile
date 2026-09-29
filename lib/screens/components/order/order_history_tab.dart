@@ -9,6 +9,7 @@ import '../../../widgets/custom_snackbar.dart';
 import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/order_card.dart';
 import '../transaction_history/transaction_period_sheet.dart';
+import 'order_skeleton_loader.dart';
 
 /// Захиалгын түүх tab — orders/history API-аас шүүлтүүр (төрөл, төлөв)
 /// болон хугацааны интервалаар татаж харуулна.
@@ -179,10 +180,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
             ),
             const SizedBox(height: 16),
             if (_isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 48),
-                child: Center(child: CircularProgressIndicator()),
-              )
+              const OrderSkeletonLoader()
             else if (_orders.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 48),
