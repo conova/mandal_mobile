@@ -260,8 +260,8 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                   dailyVolume: _info?.dayTrade == null
                       ? '-'
                       : '₮${formatCompactAmount(_info!.dayTrade, languageCode: languageCode)}',
-                  peRatio: _info?.peRatio?.toString() ?? '-',
-                  pbRatio: _info?.pbRatio?.toString() ?? '-',
+                  peRatio: formatNumbers(_info?.peRatio, decimals: 2),
+                  pbRatio: formatNumbers(_info?.pbRatio, decimals: 2),
                   dividendYield:
                       _info?.divYield == null ? '-' : '${_info!.divYield}%',
                 ),
