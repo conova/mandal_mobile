@@ -9,6 +9,7 @@ import '../services/auth_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/empty_state.dart';
+import 'components/watchlist/add_watchlist_skeleton_loader.dart';
 
 class _AvailableStock {
   final String symbol;
@@ -238,7 +239,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
             // Stock list
             Expanded(
               child: _isLoadingStocks
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const AddWatchlistSkeletonLoader()
                   : _allStocks.isEmpty
                   ? Center(
                 child: EmptyState(

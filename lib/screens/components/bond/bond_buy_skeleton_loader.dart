@@ -52,11 +52,18 @@ class _BondBuySkeletonLoaderState extends State<BondBuySkeletonLoader>
                 child: Row(
                   children: [
                     Container(
-                      width: 8,
-                      height: 8,
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: extendedColors.bgSecondary,
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: extendedColors.bgBase,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -73,16 +80,10 @@ class _BondBuySkeletonLoaderState extends State<BondBuySkeletonLoader>
               ),
               const SizedBox(height: 12),
 
-              // Primary Market Carousel Placeholder
+              // Primary Market Carousel Placeholder (Detailed card)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  height: 180,
-                  decoration: BoxDecoration(
-                    color: extendedColors.bgSecondary,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
+                child: _buildPrimaryCardPlaceholder(extendedColors),
               ),
               const SizedBox(height: 32),
 
@@ -155,6 +156,94 @@ class _BondBuySkeletonLoaderState extends State<BondBuySkeletonLoader>
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPrimaryCardPlaceholder(ExtendedColors extendedColors) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: extendedColors.bgSecondary,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: extendedColors.bgBase,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: 140,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: extendedColors.bgBase,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgBase,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.only(left: 6),
+            child: Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgBase,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: 24),
+                Container(
+                  width: 80,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgBase,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            height: 44,
+            decoration: BoxDecoration(
+              color: extendedColors.bgBase,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

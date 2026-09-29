@@ -10,6 +10,7 @@ import '../widgets/custom_bottom_sheet.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/empty_state.dart';
+import 'components/watchlist/watchlist_skeleton_loader.dart';
 
 /// API row — stock list-тэй ижил бүтэцтэй:
 /// { STOCKCODE, SYMBOL, STOCKNAME, COMPNAME, CLOSEPRICE, OPENPRICE,
@@ -212,7 +213,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
               child: RefreshIndicator(
                 onRefresh: _fetchWatchlist,
                 child: _isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const WatchlistSkeletonLoader()
                     : _error != null
                         ? _buildErrorState(theme, extendedColors)
                         : _buildContent(theme, extendedColors),
