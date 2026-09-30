@@ -26,6 +26,20 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
   @override
   void initState() {
     super.initState();
+    // Бүртгэлийн хураамж төлөөгүй бол цэнэглэх боломжгүй — home руу буцаана
+    if (context.read<AuthService>().isRegistrationFeeUnpaid) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
+        CustomSnackbar.show(
+          context,
+          message: l10n.registrationFeeUnpaidDesc,
+          type: CustomSnackbarType.info,
+        );
+        Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
+      });
+      return;
+    }
     Future.microtask(_fetchBalances);
   }
 

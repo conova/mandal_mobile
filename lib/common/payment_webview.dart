@@ -28,7 +28,8 @@ Future<String?> openPaymentWebview(
   String title = 'Төлбөр төлөх',
   String homeRoute = '/main',
 }) async {
-  final custid = context.read<AuthService>().uid ?? '';
+  // Идэвхтэй профайлын (хүүхдийн эсвэл өөрийн) token-оос uid авна
+  final custid = context.read<AuthService>().activeUid ?? '';
   final url = await context.read<PaymentService>().getPaymentLink(
         custid: custid,
         amount: amount,

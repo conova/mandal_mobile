@@ -811,4 +811,9 @@
             }
         }
     }
+    "returnToLogin": "Return to Login",
+    "registrationFeeUnpaidTitle": "Registration fee unpaid",
+    "registrationFeeUnpaidDesc": "Pay the registration fee to activate your account.",
+    "activate": "Activate",
+    "paymentFailed": "Payment failed"
 }

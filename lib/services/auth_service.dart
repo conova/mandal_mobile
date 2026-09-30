@@ -91,6 +91,15 @@ class AuthService with ChangeNotifier {
   bool get hasSavedUser => _lastUserId != null;
   bool get isBiometricEnabled => _isBiometricEnabled;
   String? get uid => _uid;
+
+  /// Одоогийн access token-оос задалсан uid. Профайл солиход token
+  /// солигддог тул хүүхдийн профайл дээр хүүхдийн uid буцна
+  /// ([uid] нь нэвтрэх үеийнх хэвээр үлддэг). Задрахгүй бол [uid].
+  String? get activeUid {
+    final token = _accessToken;
+    final payload = token == null ? null : _decodeJwtPayload(token);
+    return payload?['uid']?.toString() ?? _uid;
+  }
   String? get custName => _custName;
   Map<String, String> get roles => _roles;
   String? get deviceId => _deviceId;
@@ -123,6 +132,10 @@ class AuthService with ChangeNotifier {
   SubAccount? _activeSubAccount;
   SubAccount? get activeSubAccount => _activeSubAccount;
 
+  /// Идэвхтэй хүүхдийн `/user/info` (зөвхөн санах ойд, кэшлэхгүй).
+  /// Өөрийн данс дээр null.
+  Map<String, dynamic>? _activeSubInfo;
+
   /// Профайл солих — auth/switch_profile API дуудаж шинэ token авна
   /// (хариу нь refresh_token-тэй ижил бүтэцтэй). [child] null бол
   /// өөрийн данс руу буцна. Өөрийн info кэшийг (нэр, subAcnts) хөндөхгүй.
@@ -149,6 +162,25 @@ class AuthService with ChangeNotifier {
         refreshToken: data['refreshToken'] ?? _refreshToken ?? '',
       );
       _activeSubAccount = child;
+      // Хүүхдийн профайл руу шилжсэн бол түүний info-г (payment_status
+      // шалгахад) шинэ token-оор татна. Алдаа гарвал null — хэрэглэгчийг хаахгүй.
+      _activeSubInfo = null;
+      if (child != null) {
+        try {
+          _activeSubInfo = await getUserInfo();
+        } catch (e) {
+          debugPrint('Error fetching sub account info: $e');
+        }
+      }
+      // Order tab-ийн badge шинэ профайлын идэвхтэй захиалгын тоог харуулна.
+      // notifyListeners-ийг нэг л удаа дуудахын тулд refreshActiveOrders()
+      // ашиглахгүй (OrderScreen notify бүрт дахин fetch хийдэг).
+      try {
+        _activeOrderCount = (await getActiveOrders(scope: 'all')).length;
+      } catch (e) {
+        _activeOrderCount = 0;
+        debugPrint('Error refreshing order count: $e');
+      }
       notifyListeners();
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
@@ -225,6 +257,17 @@ class AuthService with ChangeNotifier {
   /// 3 баримтын аль аль нь илгээгдсэн эсэх
   bool get areAllDocumentsUploaded =>
       isIdFrontUploaded && isIdBackUploaded && isSelfieUploaded;
+
+  /// Бүртгэлийн хураамж төлөөгүй эсэх — идэвхтэй профайлын (өөрийн эсвэл
+  /// хүүхдийн) `kyc.payment_status`-ийг сервэр false гэж буцаасан үед true
+  /// (талбар ирээгүй бол хэрэглэгчийг хаахгүй).
+  bool get isRegistrationFeeUnpaid {
+    final kyc = _activeSubAccount != null
+        ? _asMap(_activeSubInfo?['kyc'])
+        : _kyc;
+    final status = kyc?['payment_status'];
+    return status != null && !_parseBool(status);
+  }
 
   /// Утас баталгаажуулсан эсэх
   bool get isPhoneVerified => _parseBool(_userInfo?['phoneVerified']);
@@ -667,10 +710,19 @@ class AuthService with ChangeNotifier {
   /// эс бөгөөс өөрийн info (custId, subAcnts) хүүхдийнхээр дарагдана.
   Future<Map<String, dynamic>?> refreshUserInfo() async {
     final startedAsChild = _activeSubAccount != null;
+    final startedCustId = _activeSubAccount?.custId;
     try {
       final info = await getUserInfo();
       // Хүсэлт явж байхад профайл солигдсон байж болзошгүй тул дахин шалгана
-      if (startedAsChild || _activeSubAccount != null) return info;
+      if (startedAsChild || _activeSubAccount != null) {
+        // Хүүхдийн info-г санах ойд шинэчилнэ (жишээ нь төлбөрийн дараа
+        // payment_status шинэчлэгдэж banner нуугдана)
+        if (startedAsChild && _activeSubAccount?.custId == startedCustId) {
+          _activeSubInfo = info;
+          notifyListeners();
+        }
+        return info;
+      }
       _userInfo = info;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userInfoKey, jsonEncode(info));
@@ -2187,6 +2239,9 @@ class AuthService with ChangeNotifier {
     _roles = {};
     _userInfo = null;
     _hasPrimaryBond = false;
+    _activeSubAccount = null;
+    _activeSubInfo = null;
+    _activeOrderCount = 0;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_accessTokenKey);

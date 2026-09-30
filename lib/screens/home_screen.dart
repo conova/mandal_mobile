@@ -13,6 +13,7 @@ import 'components/home/home_watchlist_section.dart';
 import 'components/home/home_recommendation_section.dart';
 import 'components/home/home_stock_recommendation_section.dart';
 import 'components/home/registration_progress_banner.dart';
+import 'components/home/registration_fee_banner.dart';
 import 'components/shared/onboarding_steps_sheet.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/custom_snackbar.dart';
@@ -203,8 +204,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final auth = context.watch<AuthService>();
-    // KYC бүрэн дууссан үед registration banner-ыг харуулахгүй
-    final showRegistrationBanner = !auth.isKycComplete && auth.userInfo != null;
+    // KYC бүрэн дууссан үед болон хүүхдийн профайл дээр registration
+    // banner-ыг харуулахгүй (kyc нь өөрийн дансных)
+    final showRegistrationBanner = !auth.isKycComplete &&
+        auth.userInfo != null &&
+        auth.activeSubAccount == null;
     final progress = auth.kycProgress;
     // Гүйцээгээгүй эхний алхам: 1 — ХУР, 2 — гэрээ, 3 — бичиг баримт
     final currentStep = !auth.isDanVerified
@@ -253,12 +257,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     currentStep: currentStep,
                     onStartPressed: _showOnboardingSheet,
                   ),
+                if (auth.isRegistrationFeeUnpaid) const RegistrationFeeBanner(),
                 const SizedBox(height: 8),
                 HomeAssetSummary(periodInfo: _equityPeriodInfo),
                 SizedBox(height: 20),
                 HomeEquityChart(infoNotifier: _equityPeriodInfo),
                 SizedBox(height: 16),
-                HomeQuickActions(),
+                HomeQuickActions(enabled: !auth.isRegistrationFeeUnpaid),
                 SizedBox(height: 40),
                 HomeAssetBreakdown(),
                 SizedBox(height: 32),

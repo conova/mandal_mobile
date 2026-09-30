@@ -59,5 +59,9 @@
     "completeRegistrationPrompt": "Complete su registro",
     "mandalCapitalMarkets": "Mandal Capital Markets SC",
     "registeredNumberHint": "E-Mongolia → Certificado de nacimiento → Hijo → Número de registro civil",
-    "invalidNumber": "Número incorrecto"
+    "invalidNumber": "Número incorrecto",
+    "registrationFeeUnpaidTitle": "Cuota de registro pendiente",
+    "registrationFeeUnpaidDesc": "Pague la cuota de registro para activar su cuenta.",
+    "activate": "Activar",
+    "paymentFailed": "El pago falló"
 }

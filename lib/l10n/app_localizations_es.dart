@@ -2110,6 +2110,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get returnToLogin => 'Return to Login';
 
   @override
+  String get registrationFeeUnpaidTitle => 'Cuota de registro pendiente';
+
+  @override
+  String get registrationFeeUnpaidDesc =>
+      'Pague la cuota de registro para activar su cuenta.';
+
+  @override
+  String get activate => 'Activar';
+
+  @override
+  String get paymentFailed => 'El pago falló';
+
+  @override
   String get sentOtpAgain => 'Sent OTP again';
 
   @override

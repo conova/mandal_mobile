@@ -182,6 +182,8 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
     final accentColor = isMnt ? extendedColors.primaryMain : extendedColors.neutral100;
     final currencySymbol = isMnt ? '₮' : '\$';
     final title = isMnt ? l10n.tugrik : l10n.dollar;
+    // Бүртгэлийн хураамж төлөөгүй бол орлого/зарлагын товч идэвхгүй
+    final feeUnpaid = context.watch<AuthService>().isRegistrationFeeUnpaid;
 
     // Нийт дүн
     final displayTotal = _isLoading && headerAmount != null && _availableCash == 0
@@ -220,8 +222,10 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
                           size: CustomButtonSize.small,
                           icon: CustomSvgIcon('plus'),
                           variant: isMnt ? CustomButtonVariant.primary : CustomButtonVariant.neutral,
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/income_method'),
+                          onPressed: feeUnpaid
+                              ? null
+                              : () => Navigator.pushNamed(
+                                    context, '/income_method'),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -231,8 +235,10 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
                           size: CustomButtonSize.small,
                           icon: CustomSvgIcon('reverse-right'),
                           variant: CustomButtonVariant.tertiary,
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/withdraw_method'),
+                          onPressed: feeUnpaid
+                              ? null
+                              : () => Navigator.pushNamed(
+                                    context, '/withdraw_method'),
                         ),
                       ),
                     ],

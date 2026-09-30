@@ -2122,4 +2122,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String youHaveNTryLeft(int cnt) {
     return 'Incorrect code. You have $cnt attempt(s) remaining.';
   }
+
+  @override
+  String get registrationFeeUnpaidTitle => 'Registration fee unpaid';
+
+  @override
+  String get registrationFeeUnpaidDesc =>
+      'Pay the registration fee to activate your account.';
+
+  @override
+  String get activate => 'Activate';
+
+  @override
+  String get paymentFailed => 'Payment failed';
 }

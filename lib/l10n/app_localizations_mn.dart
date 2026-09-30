@@ -2086,4 +2086,17 @@ class AppLocalizationsMn extends AppLocalizations {
   String youHaveNTryLeft(int cnt) {
     return 'Буруу код байна. Танд $cnt оролдлого үлдлээ.';
   }
+
+  @override
+  String get registrationFeeUnpaidTitle => 'Бүртгэлийн хураамж төлөгдөөгүй';
+
+  @override
+  String get registrationFeeUnpaidDesc =>
+      'Бүртгэлийн хураамжаа төлж дансаа идэвхжүүлнэ үү.';
+
+  @override
+  String get activate => 'Идэвхжүүлэх';
+
+  @override
+  String get paymentFailed => 'Төлбөр амжилтгүй боллоо';
 }

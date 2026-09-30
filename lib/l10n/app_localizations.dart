@@ -3994,6 +3994,30 @@ abstract class AppLocalizations {
   /// **'Return to Login'**
   String get returnToLogin;
 
+  /// No description provided for @registrationFeeUnpaidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration fee unpaid'**
+  String get registrationFeeUnpaidTitle;
+
+  /// No description provided for @registrationFeeUnpaidDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay the registration fee to activate your account.'**
+  String get registrationFeeUnpaidDesc;
+
+  /// No description provided for @activate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get activate;
+
+  /// No description provided for @paymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed'**
+  String get paymentFailed;
+
   /// No description provided for @sentOtpAgain.
   ///
   /// In en, this message translates to:

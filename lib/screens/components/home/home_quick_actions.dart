@@ -4,7 +4,10 @@ import '../../../widgets/custom_button.dart';
 import '../../../l10n/app_localizations.dart';
 
 class HomeQuickActions extends StatelessWidget {
-  const HomeQuickActions({super.key});
+  /// false үед (бүртгэлийн хураамж төлөөгүй) бүх товч идэвхгүй
+  final bool enabled;
+
+  const HomeQuickActions({super.key, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,9 @@ class HomeQuickActions extends StatelessWidget {
               variant: CustomButtonVariant.primary,
               size: CustomButtonSize.small,
               icon: const CustomSvgIcon('plus', size: 20,),
-              onPressed: () => Navigator.pushNamed(context, '/income_method'),
+              onPressed: enabled
+                  ? () => Navigator.pushNamed(context, '/income_method')
+                  : null,
             ),
           ),
         ),
@@ -33,7 +38,9 @@ class HomeQuickActions extends StatelessWidget {
               variant: CustomButtonVariant.tertiary,
               size: CustomButtonSize.small,
               icon: const CustomSvgIcon('reverse-right', size: 20,),
-              onPressed: () => Navigator.pushNamed(context, '/withdraw_method'),
+              onPressed: enabled
+                  ? () => Navigator.pushNamed(context, '/withdraw_method')
+                  : null,
             ),
           ),
         ),
@@ -45,7 +52,9 @@ class HomeQuickActions extends StatelessWidget {
               variant: CustomButtonVariant.tertiary,
               size: CustomButtonSize.small,
               icon: const CustomSvgIcon('clock-fast-forward', size: 20,),
-              onPressed: () => Navigator.pushNamed(context, '/transaction_history'),
+              onPressed: enabled
+                  ? () => Navigator.pushNamed(context, '/transaction_history')
+                  : null,
             ),
           ),
         ),
