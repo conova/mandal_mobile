@@ -795,5 +795,9 @@
     "noPaymentsYet": "No scheduled payments yet",
     "cancelled": "Cancelled",
     "waiting": "Waiting",
-    "noCashStatementYet": "No cash statement yet."
+    "noCashStatementYet": "No cash statement yet.",
+    "youAreBlocked": "You are blocked",
+    "blockedReason": "Your login access has been blocked due to entering incorrect credentials 5 times or for other reasons.",
+    "releaseBlock": "Release Block",
+    "returnToLogin": "Return to Login"
 }

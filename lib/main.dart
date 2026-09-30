@@ -92,6 +92,7 @@ import 'screens/education_guide_list_screen.dart';
 import 'screens/education_screen.dart';
 import 'screens/onboarding_success_screen.dart';
 import 'screens/payment_result_screen.dart';
+import 'screens/blocked_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'services/notification_api_service.dart';
@@ -126,6 +127,7 @@ const Set<String> _publicRoutes = {
   '/register_income_account',
   '/webview',
   '/register_success',
+  '/blocked',
 };
 
 void main() async {
@@ -589,7 +591,8 @@ class MyApp extends StatelessWidget {
               '/watchlist_detail': (context) => const WatchlistDetailScreen(),
               '/add_watchlist': (context) => const AddWatchlistScreen(),
               '/webview': (context) => const WebViewScreen(),
-              '/bond_portfolio_statistic': (context) => const BondPortfolioStatisticScreen()
+              '/bond_portfolio_statistic': (context) => const BondPortfolioStatisticScreen(),
+              '/blocked': (context) => const BlockedScreen(),
             };
 
             final routeName = settings.name;

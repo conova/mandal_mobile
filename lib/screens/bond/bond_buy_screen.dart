@@ -6,6 +6,7 @@ import '../../widgets/circle_back_button.dart';
 import '../../widgets/custom_svg_icon.dart';
 import '../../widgets/release_locked_amount_sheet.dart';
 import '../components/bond/bond_payment_details_bottom_sheet.dart';
+import '../components/bond/bond_payment_schedule.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_payment_details.dart';
 import '../../l10n/app_localizations.dart';
@@ -146,6 +147,24 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
     final name = _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']);
     final subtitle = (locale.languageCode == 'mn') ? _str(['COMPNAME', 'TYPENAME']) : _str(['COMPNAME2', 'TYPENAME']);
 
+    final settleDayRaw = _bond['SETTLEDAY'];
+    final settleDayVal = num.tryParse(settleDayRaw?.toString() ?? '0')?.toInt() ?? 0;
+
+    final startDt = parseStockDate(_bond['STARTDATE']);
+    final endDt = parseStockDate(_bond['ENDDATE']);
+    final schedule = BondSchedule.build(
+      start: startDt,
+      end: endDt,
+      payPeriod: _bond['PAYTYPE'],
+    );
+
+    final lastPaidDate = schedule?.lastPaid ?? startDt;
+    final lastPaidToNow = lastPaidDate != null
+        ? DateTime.now().difference(lastPaidDate).inDays.clamp(0, 9999)
+        : 0;
+
+    final expectedReturn = _unitPrice * _intRate / 100 * (lastPaidToNow + settleDayVal) / 365;
+
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
@@ -241,7 +260,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   builder: (context) => BondPaymentDetailsBottomSheet(
                     quantity: _quantity,
                     piecePrice: _unitPrice,
-                    accruedInterest: 0,
+                    accruedInterest: expectedReturn,
                     commissionRate: _feePct / 100,
                   ),
                 );

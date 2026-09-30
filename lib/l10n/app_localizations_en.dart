@@ -2094,4 +2094,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCashStatementYet => 'No cash statement yet.';
+
+  @override
+  String get youAreBlocked => 'You are blocked';
+
+  @override
+  String get blockedReason =>
+      'Your login access has been blocked due to entering incorrect credentials 5 times or for other reasons.';
+
+  @override
+  String get releaseBlock => 'Release Block';
+
+  @override
+  String get returnToLogin => 'Return to Login';
 }
