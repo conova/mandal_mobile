@@ -143,7 +143,7 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
         // дүүргэгдэх — UI шууд харагдана.
         FinanceChart(
           spots: spots.isEmpty ? null : spots,
-          height: 150,
+          height: 180,
           startDate:
               _chart.points.isEmpty ? null : _chart.points.first.date,
         ),
