@@ -11,6 +11,7 @@ import '../theme/extended_colors.dart';
 import '../widgets/account_card.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_svg_icon.dart';
+import 'components/income_account/income_account_skeleton_loader.dart';
 
 class IncomeAccountScreen extends StatefulWidget {
   const IncomeAccountScreen({super.key});
@@ -106,7 +107,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(top: 10),
           child: Text(
             l10n.incomeAccount,
             style: theme.textTheme.headlineSmall?.copyWith(
@@ -129,7 +130,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.only(top: 10),
             child: IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: extendedColors.primaryMain,
@@ -156,10 +157,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: _isLoading && _accounts.isEmpty
-              ? const Padding(
-                padding: EdgeInsets.only(top: 120),
-                child: Center(child: CircularProgressIndicator()),
-              )
+              ? const IncomeAccountSkeletonLoader()
               : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

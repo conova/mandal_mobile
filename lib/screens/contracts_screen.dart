@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/content_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
+import 'components/contracts/contracts_skeleton_loader.dart';
 
 /// Гэрээний загвар — /api/mobile/contracts-оос уншина
 /// (сүлжээгүй үед assets/data/contracts.json)
@@ -104,7 +105,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
             const SizedBox(height: 16),
             if (_isLoading)
               const Expanded(
-                child: Center(child: CircularProgressIndicator()),
+                child: ContractsSkeletonLoader(),
               )
             else
               Expanded(

@@ -9,6 +9,7 @@ import '../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_snackbar.dart';
 import '../../watchlist_detail_screen.dart' show WatchlistStock;
+import 'home_watchlist_skeleton_loader.dart';
 
 /// Home-ийн доорх watchlist хэсэг — API-аас бодит datasource татна.
 /// Минут тутамд автомат refresh хийнэ.
@@ -100,12 +101,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
         ),
         const SizedBox(height: 25),
         if (_isLoading && _items.isEmpty)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 32),
-              child: CircularProgressIndicator(),
-            ),
-          )
+          const HomeWatchlistSkeletonLoader(itemCount: 5)
         else if (_items.isEmpty)
           Center(
             child: Column(

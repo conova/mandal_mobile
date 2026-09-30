@@ -21,7 +21,7 @@ class TransactionItem {
   final String date;
   final String amount;
   final bool isPositive;
-  final FilterTag tag;
+  final String group;
   final String currencyCode; // "MNT" or "USD"
 
   const TransactionItem({
@@ -29,7 +29,7 @@ class TransactionItem {
     required this.date,
     required this.amount,
     required this.isPositive,
-    required this.tag,
+    required this.group,
     required this.currencyCode,
   });
 }
@@ -91,12 +91,6 @@ class TransactionListItem extends StatelessWidget {
   }
 
   Widget _buildIcon(ExtendedColors extendedColors) {
-    final isCash = transaction.tag == FilterTag.cashIncome ||
-        transaction.tag == FilterTag.cashExpense;
-    final isBond = transaction.tag == FilterTag.bondBought ||
-        transaction.tag == FilterTag.bondSold ||
-        transaction.tag == FilterTag.bondReturn;
-
     Color bgColor;
     if (transaction.isPositive) {
       bgColor = extendedColors.primary100;
@@ -105,7 +99,7 @@ class TransactionListItem extends StatelessWidget {
     }
 
     Widget iconContent;
-    if (isCash) {
+    if (transaction.group == 'mnt' || transaction.group == 'usd') {
       iconContent = CustomSvgIcon(
         (transaction.currencyCode == 'USD') ? 'currency-dollar' : 'tugrug-01',
         color: transaction.isPositive
@@ -113,7 +107,7 @@ class TransactionListItem extends StatelessWidget {
             : extendedColors.neutral300,
         size: 22,
       );
-    } else if (isBond) {
+    } else if (transaction.group == 'bond') {
       iconContent = CustomSvgIcon(
         'bank-note-01',
         color: transaction.isPositive

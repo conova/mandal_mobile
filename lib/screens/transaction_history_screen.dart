@@ -194,16 +194,16 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
         ) ??
         0;
     final txnType = _pickLang(row, 'TXNTYPE', 'TXNTYPE2', isEn);
-    final compName = _pickLang(row, 'COMPNAME', 'COMPNAME2', isEn);
+    final name =  row['STOCKNAME']?.toString() ?? ''; //_pickLang(row, 'COMPNAME', 'COMPNAME2', isEn);
     final group = row['STOCKGRP']?.toString() ?? '';
-    final stockSymbol = row['STOCKNAME']?.toString() ?? '';
+    final stockSymbol = row['SYMBOL']?.toString() ?? '';
     final tagRow = _tagOf(row);
     final title = txnType.isNotEmpty
         ? (group == 'stock')
           ? '$stockSymbol - $txnType'
           : (group == 'mnt' || group == 'usd')
             ? '$txnType - ${row['CURCODE']}'
-            : '$compName $txnType'
+            : '$name - $txnType'
         : _pickLang(row, 'TXNNAME', 'TXNNAME2', isEn);
 
     return TransactionItem(
@@ -211,7 +211,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
       date: _formatRegDate(row['REGDATE']),
       amount: formatStockAmount(amount.abs(), isForeign: isUsd),
       isPositive: tagRow == FilterTag.cashIncome || tagRow == FilterTag.stockSold ||tagRow == FilterTag.bondReturn || tagRow == FilterTag.bondSold,
-      tag:tagRow,
+      group: group,
       currencyCode: curCode,
     );
   }

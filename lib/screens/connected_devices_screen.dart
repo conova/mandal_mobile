@@ -8,6 +8,7 @@ import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 
 import 'components/connected_devices/device_item.dart';
+import 'components/connected_devices/connected_devices_skeleton_loader.dart';
 
 class ConnectedDevicesScreen extends StatefulWidget {
   const ConnectedDevicesScreen({super.key});
@@ -108,7 +109,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
         ),
         centerTitle: true,
         title: Padding(
-          padding: EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(top: 10),
           child: Text(
             l10n.connectedDevices,
             style: theme.textTheme.headlineSmall?.copyWith(
@@ -118,7 +119,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const ConnectedDevicesSkeletonLoader()
           : Column(
         children: [
           Expanded(
@@ -185,7 +186,7 @@ class _ConnectedDevicesScreenState extends State<ConnectedDevicesScreen> {
               top: false,
               child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: extendedColors.bgBase,
                   border: BorderDirectional(top: BorderSide(color: extendedColors.neutral500)),

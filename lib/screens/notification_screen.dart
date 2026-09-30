@@ -13,6 +13,7 @@ import '../widgets/custom_svg_icon.dart';
 import '../widgets/mark_read_bottom_sheet.dart';
 import '../widgets/notification_filter_chip_bar.dart';
 import '../widgets/notification_item.dart';
+import 'components/notification/notification_skeleton_loader.dart';
 import 'notification_detail_screen.dart' show notificationIconForType;
 
 class NotificationScreen extends StatefulWidget {
@@ -400,7 +401,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             child: RefreshIndicator(
               onRefresh: _fetch,
               child: _isLoading && _items.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const NotificationSkeletonLoader()
                   : _error != null && _items.isEmpty
                       ? _buildErrorState(theme, extendedColors)
                       : _buildList(l10n, extendedColors, theme),
