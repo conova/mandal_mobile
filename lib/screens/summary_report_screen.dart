@@ -9,7 +9,6 @@ import '../common/stock_row_format.dart';
 import '../models/summary_report_data.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
-import '../theme/app_colors.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';

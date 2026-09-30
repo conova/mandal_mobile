@@ -4,7 +4,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../theme/extended_colors.dart';
-import '../../../widgets/circle_back_button.dart';
 import 'bond_circular_progress.dart';
 import 'bond_close_date_banner.dart';
 import 'bond_fact_card.dart';

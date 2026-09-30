@@ -46,7 +46,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     if (available.isNotEmpty && !auth.isBiometricEnabled) {
       Navigator.pushReplacementNamed(context, '/biometric_enrollment');
     } else {
-      Navigator.pushReplacementNamed(context, '/main');
+      Navigator.pushNamedAndRemoveUntil(context, '/main', (Route<dynamic> route) => false);
     }
   }
 
