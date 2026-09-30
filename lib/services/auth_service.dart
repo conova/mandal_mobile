@@ -515,59 +515,6 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  // ┌──────────────────────────────────────────────────────┐
-  // │  MOCK MODE — туршилтын mock response                │
-  // │  Бодит API холбоход энийг false болго               │
-  // └──────────────────────────────────────────────────────┘
-  static const bool _useMock = false;
-
-  /// Login дуудлагын mock хувилбар.
-  ///   - true  → server: code "2" (deviceId бүртгэлгүй → "Шинэ төхөөрөмж"
-  ///                                 screen + OTP flow)
-  ///   - false → server: code "0" (шууд success, token буцаасан мэт)
-  /// `_useMock = true` үед л үйлчилнэ.
-  static const bool _mockNewDevice = false;
-
-  /// Login flow-н mock-д ашиглах хуурамч хэрэглэгч.
-  static const String _mockUid = 'mock-uid-001';
-  static const String _mockCustName = 'Тэст Хэрэглэгч';
-
-  /// Mock login (deviceId бүртгэлтэй → success). registerDevice болон
-  /// biometricLogin-ийн хооронд хуваалцаж ашиглана.
-  Future<LoginResult> _mockLoginSuccess() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    await saveTokens(
-      accessToken: 'mock-access-token-${DateTime.now().millisecondsSinceEpoch}',
-      refreshToken: 'mock-refresh-token',
-    );
-    _uid = _mockUid;
-    _custName = _mockCustName;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_uidKey, _uid!);
-    await prefs.setString(_custNameKey, _custName!);
-    await saveLastUser(_custName!, _uid!);
-    // Default mock userInfo (KYC аль хэдийн дууссан хувилбар)
-    _userInfo = {
-      'uid': _mockUid,
-      'lastName': 'Тэст',
-      'firstName': 'Хэрэглэгч',
-      'registerNumber': 'РД 0000000',
-      'email': 'test@mock.mn',
-      'emailVerified': true,
-      'phone': '99000000',
-      'phoneVerified': true,
-      'address': null,
-      'statusName': 'Идэвхтэй',
-      'passDate': '2025-10-20',
-      'deviceCount': 2,
-      'kyc': {'agreement': 'true', 'dan': 'true', 'ispep': 'true'},
-      'document': {'idFront': 'true', 'idBack': 'true', 'selfie': 'true'},
-    };
-    await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
-    notifyListeners();
-    return const LoginResult(success: true);
-  }
-
   /// DioException-с алдааны мессеж задлах (data нь String эсвэл Map байж болно)
   String _extractErrorMessage(DioException e) {
     final data = e.response?.data;
@@ -731,30 +678,6 @@ class AuthService with ChangeNotifier {
   /// deviceId бүртгэлтэй → шууд token буцаана (success: true)
   /// deviceId бүртгэлгүй → OTP шаардана (requiresOtp: true, sessionId)
   Future<LoginResult> login(String userName, String password) async {
-    // ── MOCK ──
-    if (_useMock) {
-      await Future.delayed(const Duration(milliseconds: 600));
-      // 1) Хоосон оролттой бол алдаа
-      if (userName.trim().isEmpty || password.isEmpty) {
-        return const LoginResult(message: 'Утас/нууц үг хоосон байна');
-      }
-      // 2) "wrong" нууц үг өгсөн бол алдаа (UX тестлэхэд хэрэгтэй)
-      if (password == 'wrong') {
-        return const LoginResult(message: 'Нэвтрэх нэр эсвэл нууц үг буруу');
-      }
-      // 3) Default scenario
-      if (_mockNewDevice) {
-        // code "2" — "Шинэ төхөөрөмж" intro + OTP flow
-        return LoginResult(
-          requiresOtp: true,
-          sessionId: 'mock-session-${DateTime.now().millisecondsSinceEpoch}',
-        );
-      }
-      // code "0" — шууд амжилттай
-      return _mockLoginSuccess();
-    }
-    // ── END MOCK ──
-
     try {
       final response = await _dio.post(
         ApiConfig.login,
@@ -831,14 +754,6 @@ class AuthService with ChangeNotifier {
       return const LoginResult(message: 'No saved user');
     }
 
-    // ── MOCK ──
-    // Биометрик нэвтрэлт нь deviceId бүртгэлтэй хэрэглэгчид зориулагдсан тул
-    // mock үед үргэлж success ажиллана ("Шинэ төхөөрөмж" flow орохгүй).
-    if (_useMock) {
-      return _mockLoginSuccess();
-    }
-    // ── END MOCK ──
-
     try {
       final response = await _dio.post(
         ApiConfig.login,
@@ -877,13 +792,6 @@ class AuthService with ChangeNotifier {
   /// OTP баталгаажсны дараа deviceId бүртгэх.
   /// sessionId нь login-с буцсан sessionId.
   Future<LoginResult> registerDevice(String sessionId) async {
-    // ── MOCK ──
-    // OTP амжилттай → token буцаагдсан мэтээр хадгална.
-    if (_useMock) {
-      return _mockLoginSuccess();
-    }
-    // ── END MOCK ──
-
     try {
       final response = await _dio.post(
         ApiConfig.login,
@@ -1221,14 +1129,6 @@ class AuthService with ChangeNotifier {
   /// Нэвтэрсэн хэрэглэгчийн дэлгэрэнгүй мэдээлэл (uid, нэр, имэйл, утас, ...).
   /// `Authorization: Bearer <token>` шаардана.
   Future<Map<String, dynamic>> getUserInfo() async {
-    // ── MOCK ──
-    // Login mock-ийн дараа `_userInfo` хадгалагдсан байна — түүгээр буцаана.
-    if (_useMock) {
-      await Future.delayed(const Duration(milliseconds: 200));
-      return _userInfo ?? const {};
-    }
-    // ── END MOCK ──
-
     try {
       final response = await _authedDio.get(ApiConfig.userInfo);
       final body = response.data as Map<String, dynamic>;
@@ -2136,16 +2036,6 @@ class AuthService with ChangeNotifier {
   Future<List<Map<String, dynamic>>> getVerificationChannels(
     String sessionId,
   ) async {
-    // ── MOCK ──
-    if (_useMock) {
-      await Future.delayed(const Duration(milliseconds: 300));
-      return const [
-        {'type': 'sms', 'value': '*****0000'},
-        {'type': 'email', 'value': 't***@mock.mn'},
-      ];
-    }
-    // ── END MOCK ──
-
     try {
       final response = await _dio.get(
         ApiConfig.verificationChannels,
@@ -2178,14 +2068,6 @@ class AuthService with ChangeNotifier {
     String channel, {
     String? sessionId,
   }) async {
-    // ── MOCK ──
-    if (_useMock) {
-      await Future.delayed(const Duration(milliseconds: 400));
-      // Mock дээр OTP код "1234" (UI testing-д бичих кодыг хялбарчлав)
-      return {'sessionId': sessionId ?? 'mock-session', 'otp': '1234'};
-    }
-    // ── END MOCK ──
-
     try {
       final dio = isAuthenticated ? _authedDio : _dio;
       final Map<String, dynamic> bodyData = {'channel': channel};
@@ -2223,19 +2105,6 @@ class AuthService with ChangeNotifier {
     String sessionId,
     String otpCode,
   ) async {
-    // ── MOCK ──
-    if (_useMock) {
-      await Future.delayed(const Duration(milliseconds: 400));
-      // "1234" → OK, бусад код → буруу
-      if (otpCode != '1234') {
-        throw Exception('OTP код буруу байна');
-      }
-      // Forgot password flow-д token буцаах шаардлагагүй — calling code өөрөө
-      // дараагийн алхамд `registerDevice`-г дуудна.
-      return {'sessionId': sessionId};
-    }
-    // ── END MOCK ──
-
     try {
       final response = await _dio.post(
         ApiConfig.verifyOtp,
