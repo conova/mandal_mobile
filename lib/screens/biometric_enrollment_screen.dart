@@ -77,7 +77,7 @@ class _BiometricEnrollmentScreenState extends State<BiometricEnrollmentScreen> {
   }
 
   void _goHome() {
-    Navigator.pushReplacementNamed(context, '/main');
+    Navigator.pushNamedAndRemoveUntil(context, '/main', (Route<dynamic> route) => false);
   }
 
   @override

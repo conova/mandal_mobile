@@ -9,7 +9,6 @@ import '../components/bond/bond_payment_details_bottom_sheet.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_payment_details.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_text_styles.dart';
 import '../../theme/extended_colors.dart';
 import '../../widgets/custom_button.dart';
 

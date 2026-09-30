@@ -124,7 +124,6 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spots = _toSpots(_chart.points);
-    final screenWidth = MediaQuery.of(context).size.width;
     final l10n = AppLocalizations.of(context)!;
 
     /// Map localized labels to API period codes
@@ -143,7 +142,7 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
         // дүүргэгдэх — UI шууд харагдана.
         FinanceChart(
           spots: spots.isEmpty ? null : spots,
-          height: 150,
+          height: 180,
           startDate:
               _chart.points.isEmpty ? null : _chart.points.first.date,
         ),

@@ -33,9 +33,17 @@ class FinanceChart extends StatefulWidget {
 class _FinanceChartState extends State<FinanceChart> {
   static const double _maxScale = 20;
 
+  /// Шугамын зузаан
+  static const double _lineWidth = 1.5;
+
+  /// Шугамын доорх дүүргэлтийн alpha — дээрээс доош аажмаар бүдгэрнэ.
+  /// (1.0 → 0.9 шиг өндөр утга өгвөл дүүргэлт бараг тодорхой болно)
+  static const double _fillAlphaTop = 0.6;
+  static const double _fillAlphaBottom = 0.15;
+
   /// График + доод хуваарь хоёулаа нэг transformation хуваалцана
   final TransformationController _transformationController =
-      TransformationController();
+  TransformationController();
 
   @override
   void didUpdateWidget(FinanceChart oldWidget) {
@@ -68,8 +76,8 @@ class _FinanceChartState extends State<FinanceChart> {
 
   static String _fmtDate(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}/'
-      '${d.month.toString().padLeft(2, '0')}/'
-      '${d.day.toString().padLeft(2, '0')}';
+          '${d.month.toString().padLeft(2, '0')}/'
+          '${d.day.toString().padLeft(2, '0')}';
 
   /// Хуваарь дээр tap — тухайн цэг дээр төвлөж 2 дахин томруулна,
   /// дээд хязгаарт хүрсэн байвал анхны байдалд буцаана.
@@ -144,9 +152,12 @@ class _FinanceChartState extends State<FinanceChart> {
                 maxY: maxY,
                 // Tap хийсэн цэгийг сонгож утгыг нь tooltip-оор харуулна
                 lineTouchData: LineTouchData(
+                  // Нимгэн шугамыг барихад хялбар болгоно
+                  touchSpotThreshold: 30,
                   touchTooltipData: LineTouchTooltipData(
                     getTooltipColor: (_) =>
                         theme.colorScheme.inverseSurface.withValues(alpha: 0.9),
+                    tooltipBorderRadius: BorderRadius.circular(8),
                     getTooltipItems: (touchedSpots) => touchedSpots.map((s) {
                       // x = эхний огнооноос хойших хоног → тухайн өдрийн огноо
                       final date = widget.startDate?.add(
@@ -175,14 +186,22 @@ class _FinanceChartState extends State<FinanceChart> {
                   getTouchedSpotIndicator: (barData, indexes) => indexes
                       .map(
                         (i) => TouchedSpotIndicatorData(
-                          FlLine(
-                            color: theme.primaryColor,
-                            strokeWidth: 1,
-                            dashArray: [4, 4],
-                          ),
-                          const FlDotData(show: true),
-                        ),
-                      )
+                      FlLine(
+                        color: theme.primaryColor.withValues(alpha: 0.5),
+                        strokeWidth: 1,
+                        dashArray: [4, 4],
+                      ),
+                      // Дотор нь тод цэг, гадуур нь хагас тунгалаг halo
+                      FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, bar, index) =>
+                            _HaloDotPainter(
+                              color: theme.primaryColor,
+                              ringColor: theme.colorScheme.surface,
+                            ),
+                      ),
+                    ),
+                  )
                       .toList(),
                 ),
                 lineBarsData: [
@@ -194,12 +213,21 @@ class _FinanceChartState extends State<FinanceChart> {
                     preventCurveOverShooting: true,
                     curveSmoothness: 0.2,
                     color: theme.primaryColor,
-                    barWidth: 2,
+                    barWidth: _lineWidth,
                     isStrokeCapRound: true,
                     dotData: const FlDotData(show: false),
+                    // Шугамын доорх дүүргэлт: дээрээс доош аажмаар бүдгэрнэ
                     belowBarData: BarAreaData(
                       show: true,
-                      color: theme.primaryColor.withValues(alpha: 0.2),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          theme.primaryColor.withValues(alpha: _fillAlphaTop),
+                          theme.primaryColor
+                              .withValues(alpha: _fillAlphaBottom),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -243,6 +271,48 @@ class _FinanceChartState extends State<FinanceChart> {
   }
 }
 
+/// Touch хийсэн цэг: гаднах хагас тунгалаг halo + тод төв цэг (surface өнгийн
+/// хүрээтэй).
+class _HaloDotPainter extends FlDotPainter {
+  final Color color;
+  final Color ringColor;
+  final double radius;
+  final double haloRadius;
+
+  const _HaloDotPainter({
+    required this.color,
+    required this.ringColor,
+    this.radius = 4,
+    this.haloRadius = 10,
+  });
+
+  @override
+  void draw(Canvas canvas, FlSpot spot, Offset center) {
+    // Гаднах хагас тунгалаг давхарга
+    canvas.drawCircle(
+      center,
+      haloRadius,
+      Paint()..color = color.withValues(alpha: 0.2),
+    );
+    // Төв цэгийг halo-оос ялгах хүрээ
+    canvas.drawCircle(center, radius + 1.5, Paint()..color = ringColor);
+    // Төв цэг
+    canvas.drawCircle(center, radius, Paint()..color = color);
+  }
+
+  @override
+  Size getSize(FlSpot spot) => Size.square(haloRadius * 2);
+
+  @override
+  Color get mainColor => color;
+
+  @override
+  FlDotPainter lerp(FlDotPainter a, FlDotPainter b, double t) => b;
+
+  @override
+  List<Object?> get props => [color, ringColor, radius, haloRadius];
+}
+
 /// Графикийн доорх өдрийн хуваарийн зураасууд.
 /// X тэнхлэг өдрийн нэгжтэй тул зураас бүр 1 өдрийг илтгэнэ;
 /// хэт нягтрахаар бол (өдөр бүрд 4px ч хүрэхгүй) алхмыг автоматаар томсгоно.
@@ -269,7 +339,7 @@ class _DayTicksPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 2
+      ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 
     // Харагдаж буй өдрийн тоогоор нягтралыг тохируулна — zoom хийх тусам
@@ -289,8 +359,8 @@ class _DayTicksPainter extends CustomPainter {
   @override
   bool shouldRepaint(_DayTicksPainter oldDelegate) =>
       oldDelegate.minX != minX ||
-      oldDelegate.maxX != maxX ||
-      oldDelegate.scale != scale ||
-      oldDelegate.translationX != translationX ||
-      oldDelegate.color != color;
+          oldDelegate.maxX != maxX ||
+          oldDelegate.scale != scale ||
+          oldDelegate.translationX != translationX ||
+          oldDelegate.color != color;
 }
