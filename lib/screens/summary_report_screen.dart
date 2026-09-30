@@ -16,6 +16,7 @@ import '../widgets/custom_snackbar.dart';
 import '../widgets/finance_chart.dart';
 import '../widgets/summary_table_row.dart';
 import '../widgets/custom_button.dart';
+import 'components/summary_report/summary_report_skeleton_loader.dart';
 
 /// Хугацааны шүүлтүүрүүд — сонголт бүр өөр start огноотой
 enum _Period { oneMonth, threeMonths, sixMonths, oneYear, all }
@@ -390,7 +391,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(top: 10),
           child: Text(
             l10n.summaryReport,
             style: theme.textTheme.headlineSmall?.copyWith(
@@ -416,7 +417,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       body: Stack(
         children: [
           if (_isLoading && _report.isEmpty)
-            const Center(child: CircularProgressIndicator())
+            const SummaryReportSkeletonLoader()
           // Portfolio дата хоосон — "тайлан үүсээгүй" төлөв.
           // Шүүлтүүрийг энд ч харуулна; эс тэгвэл дататай хугацаа руу
           // буцаж шилжих боломжгүй болно.
@@ -554,7 +555,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       ),
       bottomNavigationBar: !_report.isEmpty
         ? Container(
-            padding: EdgeInsets.only(bottom: 24, left: 20, right: 20, top: 10),
+            padding: const EdgeInsets.only(bottom: 24, left: 20, right: 20, top: 10),
             decoration: BoxDecoration(
                 color: extendedColors.bgBase,
                 border: BorderDirectional(top: BorderSide(color: extendedColors.neutral500, width: 1)),

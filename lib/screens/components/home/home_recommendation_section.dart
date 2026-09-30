@@ -9,6 +9,7 @@ import '../../../services/auth_service.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_snackbar.dart';
+import 'home_recommendation_skeleton_loader.dart';
 
 class HomeRecommendationSection extends StatefulWidget {
   const HomeRecommendationSection({super.key});
@@ -65,6 +66,10 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+
+    if (_isLoading && _recommendations.isEmpty) {
+      return const HomeRecommendationSkeletonLoader();
+    }
 
     // Мэдээлэл байхгүй бол хэсгийг бүхэлд нь нууна
     if (!_isLoading && _recommendations.isEmpty) {
@@ -136,28 +141,26 @@ class _HomeRecommendationSectionState extends State<HomeRecommendationSection> {
             // PageView carousel
             SizedBox(
               height: 112,
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : PageView.builder(
-                      controller: _pageController,
-                      itemCount: _recommendations.length,
-                      allowImplicitScrolling: true,
-                      onPageChanged: (index) {
-                        setState(() => _currentPage = index);
-                      },
-                      itemBuilder: (context, index) {
-                        final item = _recommendations[index];
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 4, 4, 22),
-                          child: _buildRecommendationCard(
-                            context: context,
-                            data: item,
-                            extendedColors: extendedColors,
-                            l10n: l10n,
-                          ),
-                        );
-                      },
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: _recommendations.length,
+                allowImplicitScrolling: true,
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
+                itemBuilder: (context, index) {
+                  final item = _recommendations[index];
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 4, 4, 22),
+                    child: _buildRecommendationCard(
+                      context: context,
+                      data: item,
+                      extendedColors: extendedColors,
+                      l10n: l10n,
                     ),
+                  );
+                },
+              ),
             ),
             // Page indicator dots
             if (_recommendations.isNotEmpty && _recommendations.length != 1) ...[

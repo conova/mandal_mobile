@@ -9,6 +9,7 @@ import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_snackbar.dart';
 import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/stock_price_row.dart';
+import 'home_stock_recommendation_skeleton_loader.dart';
 
 /// Home дэлгэцийн "Санал болгох хувьцаа" хэсэг —
 /// /stocks/nbo-ийн STOCKGRP == 'stock' мөрүүдийг carousel-аар харуулна.
@@ -68,7 +69,11 @@ class _HomeStockRecommendationSectionState
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    // Мэдээлэл байхгүй бол хэсгийг бүхэлд нь нуана
+    if (_isLoading && _stocks.isEmpty) {
+      return const HomeStockRecommendationSkeletonLoader();
+    }
+
+    // Мэдээлэл байхгүй бол хэсгийг бүхэлд нь нууна
     if (!_isLoading && _stocks.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -138,23 +143,21 @@ class _HomeStockRecommendationSectionState
             // PageView carousel
             SizedBox(
               height: 112,
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : PageView.builder(
-                      controller: _pageController,
-                      itemCount: _stocks.length,
-                      allowImplicitScrolling: true,
-                      onPageChanged: (index) {
-                        setState(() => _currentPage = index);
-                      },
-                      itemBuilder: (context, index) {
-                        final item = _stocks[index];
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 4, 4, 22),
-                          child: _buildStockCard(item, extendedColors),
-                        );
-                      },
-                    ),
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: _stocks.length,
+                allowImplicitScrolling: true,
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
+                itemBuilder: (context, index) {
+                  final item = _stocks[index];
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 4, 4, 22),
+                    child: _buildStockCard(item, extendedColors),
+                  );
+                },
+              ),
             ),
             // Page indicator dots
             if (_stocks.isNotEmpty && _stocks.length != 1) ...[
