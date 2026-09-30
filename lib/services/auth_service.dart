@@ -697,7 +697,8 @@ class AuthService with ChangeNotifier {
       );
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
-        if (_userInfo != null) {
+        // Хүүхдийн профайл дээр өөрийн кэшийг хөндөхгүй
+        if (_userInfo != null && _activeSubAccount == null) {
           _userInfo!['email'] = email;
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString(_userInfoKey, jsonEncode(_userInfo));
@@ -714,9 +715,15 @@ class AuthService with ChangeNotifier {
   /// `/user/info` API-аас хэрэглэгчийн мэдээлэл татаж кэш + persistence
   /// шинэчилнэ. Алдаа гарвал чимээгүй (хуучин cache үлддэг).
   /// Login + my_info screen-аас дуудаж болно.
+  ///
+  /// Хүүхдийн профайл идэвхтэй үед хариуг буцаана, гэхдээ кэшид бичихгүй —
+  /// эс бөгөөс өөрийн info (custId, subAcnts) хүүхдийнхээр дарагдана.
   Future<Map<String, dynamic>?> refreshUserInfo() async {
+    final startedAsChild = _activeSubAccount != null;
     try {
       final info = await getUserInfo();
+      // Хүсэлт явж байхад профайл солигдсон байж болзошгүй тул дахин шалгана
+      if (startedAsChild || _activeSubAccount != null) return info;
       _userInfo = info;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userInfoKey, jsonEncode(info));
@@ -1120,7 +1127,8 @@ class AuthService with ChangeNotifier {
 
         // Кэшэлсэн userInfo дотрох kyc төлөв + kycDocs URL-ийг шинэчлэх
         // (type нь id_front | id_back | selfie — kyc-ийн түлхүүртэй ижил)
-        if (_userInfo != null) {
+        // Хүүхдийн профайл дээр өөрийн кэшийг хөндөхгүй
+        if (_userInfo != null && _activeSubAccount == null) {
           final kyc = _asMap(_userInfo!['kyc']) ?? <String, dynamic>{};
           kyc[type] = 'true';
           _userInfo!['kyc'] = kyc;
@@ -1154,7 +1162,8 @@ class AuthService with ChangeNotifier {
       final body = response.data as Map<String, dynamic>;
       if (body['code']?.toString() == '0') {
         // Кэшэлсэн userInfo дотрох kyc.agreement шинэчлэх
-        if (_userInfo != null) {
+        // Хүүхдийн профайл дээр өөрийн кэшийг хөндөхгүй
+        if (_userInfo != null && _activeSubAccount == null) {
           final kyc = Map<String, dynamic>.from(
             (_userInfo!['kyc'] as Map?) ?? const {},
           );

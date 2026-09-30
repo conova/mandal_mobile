@@ -126,7 +126,9 @@
       "Bash(sed -i '' 's|    - assets/images/safe_box.png|    - assets/images/safe_box.png\\\\n    - assets/images/dots.png|' pubspec.yaml)",
       "Bash(curl -sk -o jspdf.js \"https://bds.techfi.mn/plugins/libs/jspdf.umd.min.js\")",
       "Bash(grep -v \"^--$\")",
-      "Bash(perl -0pi -e 's/\\\\n\\\\n\\\\}\\\\n\\\\n\\\\/\\\\/\\\\/ Баруун дээд/\\\\n}\\\\n\\\\n\\\\/\\\\/\\\\/ Баруун дээд/' lib/screens/child_account/child_account_register_screen.dart)"
+      "Bash(perl -0pi -e 's/\\\\n\\\\n\\\\}\\\\n\\\\n\\\\/\\\\/\\\\/ Баруун дээд/\\\\n}\\\\n\\\\n\\\\/\\\\/\\\\/ Баруун дээд/' lib/screens/child_account/child_account_register_screen.dart)",
+      "Bash(security find-generic-password *)",
+      "Bash(xcrun notarytool *)"
     ]
   }
 }

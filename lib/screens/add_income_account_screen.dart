@@ -67,14 +67,19 @@ class _AddIncomeAccountScreenState extends State<AddIncomeAccountScreen> {
   }
 
   /// Хүлээн авагчийн нэрийг хэрэглэгчийн info-оос шууд бөглөнө
-  /// (гараар засах эрхгүй)
+  /// (гараар засах эрхгүй). Хүүхдийн профайл идэвхтэй бол хүүхдийн нэрийг авна.
   Future<void> _fillReceiverFromInfo() async {
     final auth = context.read<AuthService>();
-    Map<String, dynamic>? info = auth.userInfo;
-    info ??= await auth.refreshUserInfo();
-    if (!mounted || info == null) return;
-    final name =
-        '${info['lastName'] ?? ''} ${info['firstName'] ?? ''}'.trim();
+    final String name;
+    final child = auth.activeSubAccount;
+    if (child != null) {
+      name = '${child.lastName} ${child.firstName}'.trim();
+    } else {
+      Map<String, dynamic>? info = auth.userInfo;
+      info ??= await auth.refreshUserInfo();
+      if (!mounted || info == null) return;
+      name = '${info['lastName'] ?? ''} ${info['firstName'] ?? ''}'.trim();
+    }
     if (name.isNotEmpty) {
       _receiverController.text = name;
       _checkFields();
