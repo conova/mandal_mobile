@@ -27,7 +27,9 @@ class AddWatchlistScreen extends StatefulWidget {
 
 class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   String _searchQuery = '';
+  bool _isScrolled = false;
 
   // API-аас татна (initState-д). Анхны state хоосон.
   List<_AvailableStock> _allStocks = const [];
@@ -46,6 +48,13 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
       setState(() {
         _searchQuery = _searchController.text.toLowerCase();
       });
+    });
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 0 && !_isScrolled) {
+        setState(() => _isScrolled = true);
+      } else if (_scrollController.offset <= 0 && _isScrolled) {
+        setState(() => _isScrolled = false);
+      }
     });
     _loadAll();
   }
@@ -93,6 +102,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -186,53 +196,65 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
         child: Column(
           children: [
             // Search bar header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  CircleBackButton(),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: extendedColors.bgSecondary,
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 14),
-                          CustomSvgIcon(
-                            'search-icon',
-                            color: extendedColors.neutral300,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                fontWeight: AppTextStyles.light,
-                                color: extendedColors.neutral100,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: l10n.searchByKeyword,
-                                hintStyle: theme.textTheme.bodyLarge?.copyWith(
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: _isScrolled
+                        ? extendedColors.neutral500
+                        : Colors.transparent,
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    CircleBackButton(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: extendedColors.bgSecondary,
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 14),
+                            CustomSvgIcon(
+                              'search-icon',
+                              color: extendedColors.neutral300,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   fontWeight: AppTextStyles.light,
-                                  color: extendedColors.neutral300,
+                                  color: extendedColors.neutral100,
                                 ),
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding:
-                                const EdgeInsets.symmetric(vertical: 8),
+                                decoration: InputDecoration(
+                                  hintText: l10n.searchByKeyword,
+                                  hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                                    fontWeight: AppTextStyles.light,
+                                    color: extendedColors.neutral300,
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 8),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 
@@ -258,6 +280,7 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
                 ),
               )
                   : ListView.separated(
+                controller: _scrollController,
                 padding: const EdgeInsets.only(bottom: 80),
                 itemCount: filteredIndices.length,
                 separatorBuilder: (context, index) => Divider(
@@ -349,7 +372,15 @@ class _AddWatchlistScreenState extends State<AddWatchlistScreen> {
 
             // Bottom save button
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              decoration: BoxDecoration(
+                border: BorderDirectional(
+                  top: BorderSide(
+                    color: extendedColors.neutral500,
+                    width: 1,
+                  ),
+                )
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
               child: SizedBox(
                 width: double.infinity,
                 height: 52,
