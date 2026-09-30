@@ -424,10 +424,6 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
             Column(
               children: [
                 const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _buildTimeFilters(l10n, theme, extendedColors),
-                ),
                 Expanded(
                   child: Center(
                     child: Column(
