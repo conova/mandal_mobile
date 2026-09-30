@@ -52,6 +52,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
 
   Future<void> _handleResend() async {
     if (_sessionId == null) return;
+    final l10n = AppLocalizations.of(context)!;
     try {
       final channelType =
           (_channel?.toLowerCase() == 'email') ? 'email' : 'sms';
@@ -69,14 +70,14 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
       if (context.mounted) {
         CustomSnackbar.show(
           context,
-          message: 'OTP код дахин илгээлээ',
+          message: l10n.sentOtpAgain,
         );
       }
     } catch (e) {
       if (context.mounted) {
         CustomSnackbar.show(
           context,
-          message: 'OTP илгээхэд алдаа: ${e.toString().replaceFirst("Exception: ", "")}',
+          message: '${l10n.errorOnOtpSending}${e.toString().replaceFirst("Exception: ", "")}',
           type: CustomSnackbarType.error,
         );
       }

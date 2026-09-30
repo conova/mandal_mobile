@@ -2071,4 +2071,19 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get returnToLogin => 'Нэвтрэх хуудас руу буцах';
+
+  @override
+  String get sentOtpAgain => 'OTP код дахин илгээлээ';
+
+  @override
+  String get errorOnOtpSending => 'OTP код илгээхэд алдаа: ';
+
+  @override
+  String get yourAccessBlocked =>
+      'Таны эрх түр хаагдлаа. 30 минутын дараа дахин оролдоно уу.';
+
+  @override
+  String youHaveNTryLeft(int cnt) {
+    return 'Буруу код байна. Танд $cnt оролдлого үлдлээ.';
+  }
 }
