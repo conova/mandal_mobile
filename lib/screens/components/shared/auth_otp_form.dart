@@ -81,6 +81,7 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
     if (_isBlocked || _isVerifying) return;
 
     final enteredCode = _controllers.map((c) => c.text).join();
+    final l10n = AppLocalizations.of(context)!;
 
     // sessionId байвал API-р шалгана
     if (widget.sessionId != null) {
@@ -103,10 +104,9 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
             if (_attemptCount >= 5) {
               _isBlocked = true;
               _errorMessage =
-                  'Таны эрх түр хаагдлаа. 30 минутын дараа дахин оролдоно уу.';
+                  l10n.yourAccessBlocked;
             } else {
-              _errorMessage =
-                  'Код буруу байна. Танд ${5 - _attemptCount} удаагийн эрх үлдлээ.';
+              _errorMessage = l10n.youHaveNTryLeft(5 - _attemptCount);
             }
 
             for (var controller in _controllers) {
@@ -115,29 +115,6 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
             _focusNodes[0].requestFocus();
           });
         }
-      }
-    } else {
-      // sessionId байхгүй бол mock validation (legacy)
-      if (enteredCode == "1234" || enteredCode == "123456") {
-        widget.onSuccess();
-      } else {
-        setState(() {
-          _attemptCount++;
-
-          if (_attemptCount >= 5) {
-            _isBlocked = true;
-            _errorMessage =
-                'Таны эрх түр хаагдлаа. 30 минутын дараа дахин оролдоно уу.';
-          } else {
-            _errorMessage =
-                'Код буруу байна. Танд ${5 - _attemptCount} удаагийн эрх үлдлээ.';
-          }
-
-          for (var controller in _controllers) {
-            controller.clear();
-          }
-          _focusNodes[0].requestFocus();
-        });
       }
     }
   }

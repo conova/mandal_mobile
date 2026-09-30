@@ -3993,6 +3993,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Return to Login'**
   String get returnToLogin;
+
+  /// No description provided for @sentOtpAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent OTP again'**
+  String get sentOtpAgain;
+
+  /// No description provided for @errorOnOtpSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Error on OTP sending: '**
+  String get errorOnOtpSending;
+
+  /// No description provided for @yourAccessBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Your access has been temporarily suspended. Please try again in 30 minutes.'**
+  String get yourAccessBlocked;
+
+  /// No description provided for @youHaveNTryLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect code. You have {cnt} attempt(s) remaining.'**
+  String youHaveNTryLeft(int cnt);
 }
 
 class _AppLocalizationsDelegate

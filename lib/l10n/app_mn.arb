@@ -728,5 +728,17 @@
     "youAreBlocked": "Блок хийгдсэн байна",
     "blockedReason": "Нэвтрэх мэдээлэл 5 удаа буруу оруулсан эсвэл бусад шалтгааны улмаас нэвтрэх эрх блок хийгдсэн байна.",
     "releaseBlock": "Блок гаргах",
-    "returnToLogin": "Нэвтрэх хуудас руу буцах"
+    "returnToLogin": "Нэвтрэх хуудас руу буцах",
+    "sentOtpAgain": "OTP код дахин илгээлээ",
+    "sentOtpAgain": "OTP код дахин илгээлээ",
+    "errorOnOtpSending": "OTP код илгээхэд алдаа: ",
+    "yourAccessBlocked": "Таны эрх түр хаагдлаа. 30 минутын дараа дахин оролдоно уу.",
+    "youHaveNTryLeft": "Буруу код байна. Танд {cnt} оролдлого үлдлээ.",
+    "@youHaveNTryLeft": {
+        "placeholders": {
+            "cnt": {
+                "type": "int"
+            }
+        }
+    }
 }

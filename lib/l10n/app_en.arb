@@ -799,5 +799,16 @@
     "youAreBlocked": "You are blocked",
     "blockedReason": "Your login access has been blocked due to entering incorrect credentials 5 times or for other reasons.",
     "releaseBlock": "Release Block",
-    "returnToLogin": "Return to Login"
+    "returnToLogin": "Return to Login",
+    "sentOtpAgain": "Sent OTP again",
+    "errorOnOtpSending": "Error on OTP sending: ",
+    "yourAccessBlocked": "Your access has been temporarily suspended. Please try again in 30 minutes.",
+    "youHaveNTryLeft": "Incorrect code. You have {cnt} attempt(s) remaining.",
+    "@youHaveNTryLeft": {
+        "placeholders": {
+            "cnt": {
+                "type": "int"
+            }
+        }
+    }
 }

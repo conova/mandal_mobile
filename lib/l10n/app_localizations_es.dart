@@ -2108,4 +2108,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get returnToLogin => 'Return to Login';
+
+  @override
+  String get sentOtpAgain => 'Sent OTP again';
+
+  @override
+  String get errorOnOtpSending => 'Error on OTP sending: ';
+
+  @override
+  String get yourAccessBlocked =>
+      'Your access has been temporarily suspended. Please try again in 30 minutes.';
+
+  @override
+  String youHaveNTryLeft(int cnt) {
+    return 'Incorrect code. You have $cnt attempt(s) remaining.';
+  }
 }
