@@ -88,12 +88,29 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     setState(() {});
   }
 
+  /// Хувьцааны шимтгэлийн хувь (1 = 1%) — эхлээд /user/fees (STOCKTYPE 1),
+  /// тэнд ирээгүй бол /stocks/info-ийн STOCKFEE
+  double? _userFeePct;
+  double get _feePct => _userFeePct ?? _stockInfo?.stockFee ?? 0;
+
+  Future<double> _loadFeePct() async {
+    final pct = await context.read<AuthService>().getFeePercent(
+          stockType: '1',
+          fallback: _stockInfo?.stockFee ?? 0,
+        );
+    if (mounted) setState(() => _userFeePct = pct);
+    return pct;
+  }
+
+  /// Авах: үнэ × тоо + шимтгэл, зарах: үнэ × тоо − шимтгэл
   double get _totalPayment {
     final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
     final price = double.tryParse(priceStr) ?? 0;
     final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
     final qty = int.tryParse(qtyStr) ?? 0;
-    return price * qty;
+    final amount = price * qty;
+    final fee = amount * _feePct / 100;
+    return _args['side'] == 'sell' ? amount - fee : amount + fee;
   }
 
   bool get _isOrderValid {
@@ -102,7 +119,33 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
     final qty = int.tryParse(qtyStr) ?? 0;
 
-    return price > 0 && qty > 0 && (price * qty) <= _availableCash;
+    if (price <= 0 || qty <= 0) return false;
+    // Зарах: эзэмшиж буй тоо ширхгээс хэтрэхгүй (тоо тодорхойгүй бол
+    // сервэр шалгана). Авах: шимтгэл орсон нийт дүн бэлэн мөнгөнөөс хэтрэхгүй.
+    if (_args['side'] == 'sell') {
+      final owned = _ownedQty;
+      return owned == null || qty <= owned;
+    }
+    return _totalPayment <= _availableCash;
+  }
+
+  /// Зарах үед эзэмшиж буй тоо ширхэг — /stocks/mystocks-ийн CURRENTBAL
+  /// (ачаалагдаагүй / олдоогүй бол null)
+  int? _ownedQty;
+
+  Future<void> _fetchOwnedQty() async {
+    final stockcode = _args['stockcode']?.toString() ?? '';
+    if (stockcode.isEmpty) return;
+    try {
+      final rows = await context.read<AuthService>().getMyStocks();
+      if (!mounted) return;
+      final held = MarketInstrument.listFromJson(rows)
+          .where((s) => s.stockcode == stockcode)
+          .fold<double>(0, (sum, s) => sum + (s.currentBal ?? 0));
+      setState(() => _ownedQty = held.floor());
+    } catch (e) {
+      debugPrint('Error fetching owned quantity: $e');
+    }
   }
 
   void _handlePercentageSelected(String percentage) {
@@ -110,10 +153,16 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final priceStr = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
     final price = double.tryParse(priceStr) ?? 0;
 
-    if (price <= 0) return;
-
-    final targetAmount = _availableCash * (percent / 100);
-    final calculatedQty = (targetAmount / price).floor();
+    // Зарах: эзэмшиж буй тооны хувь, авах: бэлэн мөнгөний хувь
+    final owned = _ownedQty;
+    final int calculatedQty;
+    if (_args['side'] == 'sell' && owned != null) {
+      calculatedQty = (owned * percent / 100).floor();
+    } else {
+      if (price <= 0) return;
+      final targetAmount = _availableCash * (percent / 100);
+      calculatedQty = (targetAmount / price).floor();
+    }
 
     if (calculatedQty > 0) {
       _quantityController.text = CurrencySuffixFormatter.format(
@@ -146,6 +195,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     }
 
     _fetchOrderBook();
+    _loadFeePct();
+    if (_args['side'] == 'sell') _fetchOwnedQty();
 
     // 5 секунд тутамд чимээгүй шинэчилнэ (dispose дээр зогсоно)
     if ((_args['stockcode']?.toString() ?? '').isNotEmpty) {
@@ -459,10 +510,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final qtyStr = _quantityController.text.replaceAll(RegExp(r'[^0-9]'), '');
     final cnt = int.tryParse(qtyStr) ?? 0;
 
-    // Шимтгэлийн хувь — /user/fees (хувьцаа = STOCKTYPE 1)
-    final feePct = await context
-        .read<AuthService>()
-        .getFeePercent(stockType: '1');
+    // Шимтгэлийн хувь — /user/fees, ирээгүй бол STOCKFEE
+    final feePct = _userFeePct ?? await _loadFeePct();
     if (!mounted) return;
     final fee = price * cnt * feePct / 100;
 
@@ -479,7 +528,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         // Шимтгэл, нийт дүн — /user/fees-ийн хувиар тооцсон
         'fee': fee,
         'feePct': feePct,
-        'total': price * cnt + fee,
+        // Авах: үнэ × тоо + шимтгэл, зарах: үнэ × тоо − шимтгэл
+        'total': isSell ? price * cnt - fee : price * cnt + fee,
         'order': {
           'STOCKCODE': _args['stockcode']?.toString() ?? '',
           'CNT': cnt.toString(),

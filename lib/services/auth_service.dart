@@ -1529,9 +1529,13 @@ class AuthService with ChangeNotifier {
   /// Тухайн үнэт цаасны төрлийн шимтгэлийн ХУВЬ (1 = 1%).
   /// [ipo] — анхдагч арилжаа бол FEEIPO, бусад нь FEE.
   /// Олдохгүй/алдаа гарвал 0 буцаана (шимтгэлгүй гэж үзнэ).
+  ///
+  /// [fallback] — /user/fees-д тухайн STOCKTYPE-ийн хувь ирээгүй (эсвэл API
+  /// алдаа өгсөн) үед буцаах утга (жишээ нь хувьцааны STOCKFEE).
   Future<double> getFeePercent({
     required String stockType,
     bool ipo = false,
+    double fallback = 0,
   }) async {
     try {
       final fees = await getUserFees();
@@ -1540,9 +1544,9 @@ class AuthService with ChangeNotifier {
         orElse: () => const {},
       );
       final raw = (ipo ? row['FEEIPO'] : row['FEE'])?.toString() ?? '';
-      return double.tryParse(raw) ?? 0;
+      return double.tryParse(raw) ?? fallback;
     } catch (_) {
-      return 0;
+      return fallback;
     }
   }
 

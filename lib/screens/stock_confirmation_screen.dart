@@ -449,7 +449,9 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
     // Шимтгэл — /user/fees-ийн хувиар урьдчилан тооцсон дүн args-аар ирнэ
     final f = (args['fee'] as num?)?.toDouble() ?? 0;
     final feePct = (args['feePct'] as num?)?.toDouble() ?? 0;
-    final total = (args['total'] as num?)?.toDouble() ?? ((q * p) + f);
+    final isSell = order['TXNTYPE']?.toString() == '1';
+    final total = (args['total'] as num?)?.toDouble() ??
+        (isSell ? (q * p) - f : (q * p) + f);
     final fee = f.toStringAsFixed(2);
     final feeLabel = feePct > 0
         ? '${l10n.commissionLabel} ($feePct%)'
@@ -505,7 +507,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
           children: [
             Flexible(
               child: Text(
-                l10n.totalPaymentLabel,
+                isSell ? l10n.totalReceivableLabel : l10n.totalPaymentLabel,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: extendedColors.neutral200,
                 ),

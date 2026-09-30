@@ -36,7 +36,11 @@ class _MainContainerState extends State<MainContainer> {
     // бүрэн ачаалж дуусмагц notification_detail руу шилжинэ
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<AuthService>().refreshActiveOrders();
+      final auth = context.read<AuthService>();
+      auth.refreshActiveOrders();
+      // Төлбөрийн урсгалаас (register_success → /main) буцаж ирэхэд
+      // payment_status шинэчлэгдсэн эсэхийг info-оос дахин шалгана
+      if (auth.isRegistrationFeeUnpaid) auth.refreshUserInfo();
       NotificationService? service;
       try {
         service = context.read<NotificationService>();

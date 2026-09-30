@@ -50,7 +50,8 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
     final currencyFormat = NumberFormat('#,##0.00');
 
     final unitPrice = piecePrice + accruedInterest;
-    final commission = quantity * unitPrice * commissionRate;
+    // Шимтгэл = нэгж үнэ × тоо × шимтгэл% (хуримтлагдсан хүүд шимтгэл бодохгүй)
+    final commission = quantity * piecePrice * commissionRate;
     final totalPayment = (isSell ?? false) ? (quantity * unitPrice) - commission : (quantity * unitPrice) + commission;
 
     return Container(

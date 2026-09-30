@@ -22,6 +22,9 @@ class _RegistrationFeeBannerState extends State<RegistrationFeeBanner> {
 
   Future<void> _activate() async {
     final l10n = AppLocalizations.of(context)!;
+    // Webview-ээс home/register_success руу шилжвэл энэ widget устах тул
+    // AuthService-ийг урьдчилж авна
+    final auth = context.read<AuthService>();
     setState(() => _isLoading = true);
     try {
       final result = await openPaymentWebview(
@@ -29,11 +32,11 @@ class _RegistrationFeeBannerState extends State<RegistrationFeeBanner> {
         amount: 5000,
         homeRoute: '/register_success',
       );
+      // Үр дүнгээс үл хамааран info-г шинэчилнэ — payment_status true болсон
+      // бол banner нуугдаж, товчнууд идэвхжинэ
+      await auth.refreshUserInfo();
       if (!mounted) return;
-      if (result == 'success') {
-        // payment_status шинэчлэгдэж banner нуугдана
-        await context.read<AuthService>().refreshUserInfo();
-      } else if (result != null) {
+      if (result != null && result != 'success') {
         CustomSnackbar.show(
           context,
           message: l10n.paymentFailed,

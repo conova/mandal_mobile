@@ -5,8 +5,8 @@ import 'package:mandal_capital/screens/components/bond/bond_trading_quantity_sel
 import 'package:mandal_capital/screens/components/stock_trading/stock_trading_order_board.dart';
 import 'package:mandal_capital/widgets/currency_suffix_formatter.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
-import 'package:mandal_capital/widgets/percent_suffix_formatter.dart';
 import 'package:provider/provider.dart';
+import '../../../common/bond_accrued_interest.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../services/auth_service.dart';
 import '../../../l10n/app_localizations.dart';
@@ -183,7 +183,6 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     final quantity = _currentQuantity;
     final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
     final rate = widget.bond.intRate ?? 0.0;
-    final settleDay = widget.bond.settleDay;
     
     final startDt = parseStockDate(widget.bond.startDate);
     final endDt = parseStockDate(widget.bond.endDate);
@@ -193,13 +192,18 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
       payPeriod: widget.bond.payType,
     );
     
-    final lastPaidDate = schedule?.lastPaid ?? startDt;
-    final lastPaidToNow = lastPaidDate != null 
-        ? DateTime.now().difference(lastPaidDate).inDays.clamp(0, 9999) 
-        : 0;
-
-    final settleDayVal = num.tryParse(settleDay.toString())?.toInt() ?? 0;
-    final expectedReturn = (price * quantity).toDouble() * rate / 100 * (lastPaidToNow + settleDayVal) / 365;
+    // Нэг ширхэгийн хуримтлагдсан хүү (нээлттэй бонд: захиалгын өдөр + 2,
+    // Actual/365, татвар = STOCKFEE). Нэрлэсэн үнэ = STOCKPRICE — хэрэглэгчийн
+    // оруулсан үнэ биш. Sheet нэгж үнэ дээр нэмж тоогоор үржүүлнэ.
+    final accruedInterest = bondAccruedInterest(
+      type: widget.bond.isForeign
+          ? BondAccrualType.usd
+          : BondAccrualType.open,
+      nominal: widget.bond.stockPrice ?? 0,
+      intRate: rate,
+      taxPct: widget.bond.stockFee ?? 0,
+      lastPaid: schedule?.lastPaid ?? startDt,
+    );
 
     //final expectedReturn = total * rate / 100;
 
@@ -276,13 +280,17 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
               const SizedBox(height: 24),
               BondPaymentDetails(
                 totalPayment: formatStockAmount(total, decimals: 2),
-                yieldValue: PercentSuffixFormatter.format(rate),
+                // Өгөөж /YTM/ — сервэрийн EXPYEILD (₮ дүн)
+                yieldValue: formatStockAmount(
+                  widget.bond.expYield ?? 0,
+                  decimals: 0,
+                ),
                 onDetailsPressed: () {
                   showBondPaymentDetailsSheet(
                     context: context,
                     quantity: quantity,
                     piecePrice: _currentPrice.toDouble(),
-                    accruedInterest: expectedReturn,
+                    accruedInterest: accruedInterest,
                     commissionRate: commissionRate,
                   );
                 },

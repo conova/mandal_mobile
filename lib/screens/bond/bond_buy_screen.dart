@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../common/bond_accrued_interest.dart';
 import '../../common/stock_row_format.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/circle_back_button.dart';
@@ -99,8 +100,8 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
   double get _fee => _total * _feePct / 100;
   double get _totalPayment => _total + _fee;
 
-  /// Жилийн хүүгээр тооцсон хүлээгдэж буй өгөөж
-  double get _expectedReturn => _total * _intRate / 100;
+  /// Өгөөж /YTM/ — сервэрийн EXPYEILD (₮ дүн)
+  double get _ytm => _num(['EXPYEILD']);
 
   void _placeOrder() {
     final l10n = AppLocalizations.of(context)!;
@@ -147,9 +148,6 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
     final name = _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']);
     final subtitle = (locale.languageCode == 'mn') ? _str(['COMPNAME', 'TYPENAME']) : _str(['COMPNAME2', 'TYPENAME']);
 
-    final settleDayRaw = _bond['SETTLEDAY'];
-    final settleDayVal = num.tryParse(settleDayRaw?.toString() ?? '0')?.toInt() ?? 0;
-
     final startDt = parseStockDate(_bond['STARTDATE']);
     final endDt = parseStockDate(_bond['ENDDATE']);
     final schedule = BondSchedule.build(
@@ -158,12 +156,19 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
       payPeriod: _bond['PAYTYPE'],
     );
 
-    final lastPaidDate = schedule?.lastPaid ?? startDt;
-    final lastPaidToNow = lastPaidDate != null
-        ? DateTime.now().difference(lastPaidDate).inDays.clamp(0, 9999)
-        : 0;
-
-    final expectedReturn = _unitPrice * _intRate / 100 * (lastPaidToNow + settleDayVal) / 365;
+    // Нэг ширхэгийн хуримтлагдсан хүү — бондын төрлөөр (анхдагч / хаалттай /
+    // нээлттэй / USD). Нэрлэсэн үнэ = STOCKPRICE, татвар = STOCKFEE.
+    final accruedInterest = bondAccruedInterest(
+      type: bondAccrualTypeOf(
+        isPrimary: _bond['MARKET']?.toString().toLowerCase() == 'primary',
+        isForeign: _isForeign,
+        isOpen: _bond['ISOPEN']?.toString() == '1',
+      ),
+      nominal: _num(['STOCKPRICE']),
+      intRate: _intRate,
+      taxPct: _num(['STOCKFEE']),
+      lastPaid: schedule?.lastPaid ?? startDt,
+    );
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -246,9 +251,8 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 isForeign: _isForeign,
                 decimals: 0,
               ),
-              // Авах өгөөжийг хувиар биш, тооцоолсон дүнгээр харуулна
               yieldValue: formatStockAmount(
-                _expectedReturn,
+                _ytm,
                 isForeign: _isForeign,
                 decimals: 0,
               ),
@@ -260,7 +264,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   builder: (context) => BondPaymentDetailsBottomSheet(
                     quantity: _quantity,
                     piecePrice: _unitPrice,
-                    accruedInterest: expectedReturn,
+                    accruedInterest: accruedInterest,
                     commissionRate: _feePct / 100,
                   ),
                 );
