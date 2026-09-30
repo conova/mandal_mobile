@@ -2058,4 +2058,17 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get noCashStatementYet =>
       'Одоогоор бэлэн мөнгөний хуулга байхгүй байна.';
+
+  @override
+  String get youAreBlocked => 'Блок хийгдсэн байна';
+
+  @override
+  String get blockedReason =>
+      'Нэвтрэх мэдээлэл 5 удаа буруу оруулсан эсвэл бусад шалтгааны улмаас нэвтрэх эрх блок хийгдсэн байна.';
+
+  @override
+  String get releaseBlock => 'Блок гаргах';
+
+  @override
+  String get returnToLogin => 'Нэвтрэх хуудас руу буцах';
 }

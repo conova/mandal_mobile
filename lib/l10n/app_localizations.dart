@@ -3969,6 +3969,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No cash statement yet.'**
   String get noCashStatementYet;
+
+  /// No description provided for @youAreBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'You are blocked'**
+  String get youAreBlocked;
+
+  /// No description provided for @blockedReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Your login access has been blocked due to entering incorrect credentials 5 times or for other reasons.'**
+  String get blockedReason;
+
+  /// No description provided for @releaseBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Block'**
+  String get releaseBlock;
+
+  /// No description provided for @returnToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to Login'**
+  String get returnToLogin;
 }
 
 class _AppLocalizationsDelegate

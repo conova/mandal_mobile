@@ -18,6 +18,7 @@ import '../../../widgets/custom_svg_icon.dart';
 import '../../../widgets/release_locked_amount_sheet.dart';
 import 'bond_payment_details.dart';
 import 'bond_payment_details_bottom_sheet.dart';
+import 'bond_payment_schedule.dart';
 
 /// Хоёрдогч + НЭЭЛТТЭЙ бондын арилжааны дизайн: авах ханш, ширхэг
 /// сонгогч, төлбөрийн задаргаа, захиалгын самбар.
@@ -182,7 +183,25 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     final quantity = _currentQuantity;
     final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
     final rate = widget.bond.intRate ?? 0.0;
-    final expectedReturn = total * rate / 100;
+    final settleDay = widget.bond.settleDay;
+    
+    final startDt = parseStockDate(widget.bond.startDate);
+    final endDt = parseStockDate(widget.bond.endDate);
+    final schedule = BondSchedule.build(
+      start: startDt,
+      end: endDt,
+      payPeriod: widget.bond.payType,
+    );
+    
+    final lastPaidDate = schedule?.lastPaid ?? startDt;
+    final lastPaidToNow = lastPaidDate != null 
+        ? DateTime.now().difference(lastPaidDate).inDays.clamp(0, 9999) 
+        : 0;
+
+    final settleDayVal = num.tryParse(settleDay.toString())?.toInt() ?? 0;
+    final expectedReturn = (price * quantity).toDouble() * rate / 100 * (lastPaidToNow + settleDayVal) / 365;
+
+    //final expectedReturn = total * rate / 100;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
