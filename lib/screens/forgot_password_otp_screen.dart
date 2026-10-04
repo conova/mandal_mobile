@@ -65,6 +65,19 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
     }
   }
 
+  void _handleSuccess() {
+    // Блок гаргах урсгал → блок гарсан тул login руу шилжинэ (stack цэвэрлэнэ)
+    if (_args['flow'] == 'unblock') {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      return;
+    }
+    Navigator.pushNamed(
+      context,
+      '/forgot_password_new',
+      arguments: {..._args, 'sessionId': _sessionId},
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -98,11 +111,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
             AuthOtpForm(
               key: ValueKey(_sessionId ?? 'no-session'),
               sessionId: _sessionId,
-              onSuccess: () => Navigator.pushNamed(
-                context,
-                '/forgot_password_new',
-                arguments: {..._args, 'sessionId': _sessionId},
-              ),
+              onSuccess: _handleSuccess,
               onResend: _handleResend,
             ),
           ],

@@ -212,6 +212,7 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
         arguments: {
           'channel': channelLabel,
           'value': maskedValue,
+          'channelType': normalizedChannel,
           'sessionId': newSessionId,
           ...?widget.extraArgs,
         },

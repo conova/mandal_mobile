@@ -794,7 +794,12 @@ class AuthService with ChangeNotifier {
   /// attempt — зөвшөөрөгдөх дээд оролдлогын тоо
   LoginResult _loginErrorFromBody(dynamic body) {
     if (body is Map) {
+      // Блоклогдсон үед блок гаргах OTP урсгалд sessionId ирж болно
+      final data = body['data'];
+      final sessionId =
+          (data is Map ? data['sessionId'] : null) ?? body['sessionId'];
       return LoginResult(
+        sessionId: sessionId?.toString(),
         message: apiMessage(body) ?? 'Login failed',
         counter: int.tryParse(body['counter']?.toString() ?? ''),
         attempt: int.tryParse(body['attempt']?.toString() ?? ''),

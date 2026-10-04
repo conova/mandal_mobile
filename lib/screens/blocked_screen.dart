@@ -12,6 +12,9 @@ class BlockedScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final sessionId = args?['sessionId'] as String?;
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -68,7 +71,15 @@ class BlockedScreen extends StatelessWidget {
                 width: double.infinity,
                 child: CustomButton(
                   label: l10n.releaseBlock,
-                  onPressed: () => Navigator.of(context).pop(),
+                  // sessionId бий → шууд OTP суваг сонгох (амжилттай бол /login),
+                  // үгүй бол энгийн нууц үг сэргээх урсгал руу.
+                  onPressed: () => sessionId != null
+                      ? Navigator.pushNamed(
+                          context,
+                          '/unblock_verification',
+                          arguments: {'sessionId': sessionId},
+                        )
+                      : Navigator.pushNamed(context, '/forgot_password'),
                   variant: CustomButtonVariant.primary,
                 ),
               ),

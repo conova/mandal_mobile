@@ -73,7 +73,11 @@ class _LoginFormState extends State<LoginForm>
           arguments: {'sessionId': result.sessionId},
         );
       } else if ((result.counter ?? 0) == 5) {
-        Navigator.pushNamed(context, '/blocked');
+        Navigator.pushNamed(
+          context,
+          '/blocked',
+          arguments: {'sessionId': result.sessionId},
+        );
       } else {
         // Алдаа (буруу нууц үг гэх мэт) — alert dialog-оор мессежийг харуулна
 

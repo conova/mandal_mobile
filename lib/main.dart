@@ -93,6 +93,7 @@ import 'screens/education_screen.dart';
 import 'screens/onboarding_success_screen.dart';
 import 'screens/payment_result_screen.dart';
 import 'screens/blocked_screen.dart';
+import 'screens/unblock_verification_screen.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
 import 'services/notification_api_service.dart';
@@ -128,6 +129,7 @@ const Set<String> _publicRoutes = {
   '/webview',
   '/register_success',
   '/blocked',
+  '/unblock_verification',
 };
 
 void main() async {
@@ -593,6 +595,8 @@ class MyApp extends StatelessWidget {
               '/webview': (context) => const WebViewScreen(),
               '/bond_portfolio_statistic': (context) => const BondPortfolioStatisticScreen(),
               '/blocked': (context) => const BlockedScreen(),
+              '/unblock_verification': (context) =>
+                  const UnblockVerificationScreen(),
             };
 
             final routeName = settings.name;

@@ -8,7 +8,7 @@ import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 
-/// Цэнэглэх данс сонгох — Хувьцаа/Бонд (₮) болон Доллар данснууд.
+/// Цэнэглэх данс сонгох — Төгрөг (₮) болон Доллар данс.
 class IncomeMethodScreen extends StatefulWidget {
   const IncomeMethodScreen({super.key});
 
@@ -18,7 +18,6 @@ class IncomeMethodScreen extends StatefulWidget {
 
 class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
   /// Боломжит үлдэгдэл — /portfolio/breakdown-ийн mnt/usd мөрөөс.
-  /// TODO: хувьцаа/бондын дансны тусдаа үлдэгдлийн API холбогдмогц салгана
   double _mntBalance = 0;
   double _usdBalance = 0;
   bool _isLoading = true;
@@ -126,18 +125,7 @@ class _IncomeMethodScreenState extends State<IncomeMethodScreen> {
                 icon: 'tugrug-01',
                 iconBg: extendedColors.primary100,
                 iconColor: extendedColors.primaryMain,
-                title: l10n.buyStock,
-                balanceLabel: l10n.availableBalanceLabel,
-                balance: formatStockAmount(_mntBalance, decimals: 0),
-                isLoading: _isLoading,
-                onTap: () => Navigator.pushNamed(context, '/deposit_info'),
-              ),
-              Divider(height: 1, color: extendedColors.neutral500),
-              AccountTypeRow(
-                icon: 'tugrug-01',
-                iconBg: extendedColors.primaryMain,
-                iconColor: Colors.white,
-                title: l10n.buyBond,
+                title: l10n.tugrik,
                 balanceLabel: l10n.availableBalanceLabel,
                 balance: formatStockAmount(_mntBalance, decimals: 0),
                 isLoading: _isLoading,
