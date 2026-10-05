@@ -33,6 +33,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
   SummaryReportData _report = SummaryReportData.empty;
   EquityChart _chart = EquityChart.empty;
+  PortfolioSummary _summary = PortfolioSummary.empty;
 
   @override
   void initState() {
@@ -73,6 +74,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       final results = await Future.wait([
         auth.getSummaryReport(start: startStr, end: endStr),
         auth.getEquityChart(start: startStr, end: endStr),
+        auth.getPortfolioSummary(),
       ]);
 
       if (!mounted) return;
@@ -83,6 +85,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
           _report = SummaryReportData.empty;
         }
         _chart = results[1] as EquityChart;
+        _summary = results[2] as PortfolioSummary;
         _isLoading = false;
       });
     } catch (e) {
@@ -123,83 +126,107 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       (_Period.all, l10n.allTimeReport),
     ];
 
+    // Builder-ээс гадна зарлав: sheet rebuild хийгдсэн ч сонголт алдагдахгүй.
+    var current = _period;
+
     final selected = await showModalBottomSheet<_Period>(
       context: context,
       backgroundColor: extendedColors.bgBase,
+      isScrollControlled: true,
+      useSafeArea: true,
       builder: (sheetContext) {
-        var current = _period;
         return StatefulBuilder(
-          builder: (sheetContext, setSheetState) => SafeArea(
-            // Намхан дэлгэцэд багтахгүй бол scroll хийгдэнэ (overflow-гүй)
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 12),
-                  // Чирэх бариул
-                  Container(
-                    width: 44,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: extendedColors.neutral300,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+          builder: (ctx, setSheetState) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                // Чирэх бариул
+                Container(
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: extendedColors.neutral300,
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        l10n.reportPeriodTitle,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: extendedColors.neutral100,
-                        ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      l10n.reportPeriodTitle,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: extendedColors.neutral100,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  for (final option in options)
-                    InkWell(
-                      onTap: () => setSheetState(() => current = option.$1),
-                      child: Container(
-                        color: current == option.$1
-                            ? extendedColors.primary100
-                            : Colors.transparent,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 18,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                option.$2,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: extendedColors.neutral100,
+                ),
+                const SizedBox(height: 16),
+                // Flexible нь жагсаалтыг боломжит өндрөөр хязгаарлаж,
+                // багтахгүй бол жинхэнэ scroll хийгдэнэ.
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (final option in options)
+                          Semantics(
+                            button: true,
+                            selected: current == option.$1,
+                            inMutuallyExclusiveGroup: true,
+                            child: Material(
+                              color: current == option.$1
+                                  ? extendedColors.primary100
+                                  : Colors.transparent,
+                              child: InkWell(
+                                onTap: () =>
+                                    setSheetState(() => current = option.$1),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 18,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          option.$2,
+                                          style: theme.textTheme.bodyLarge
+                                              ?.copyWith(
+                                            color: extendedColors.neutral100,
+                                          ),
+                                        ),
+                                      ),
+                                      _buildRadio(
+                                        current == option.$1,
+                                        extendedColors,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                            _buildRadio(current == option.$1, extendedColors),
-                          ],
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: CustomButton(
-                        label: l10n.downloadReport,
-                        onPressed: () => Navigator.pop(sheetContext, current),
-                      ),
+                          ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-              ),
+                ),
+                Divider(height: 1, color: extendedColors.neutral500,),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      label: l10n.downloadReport,
+                      onPressed: () => Navigator.pop(sheetContext, current),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
           ),
         );
@@ -386,6 +413,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         ),
     ];
 
+    final usdTotal = _summary.usdRate > 0 ? latestTotal / _summary.usdRate : 0.0;
+    final usdTotalStr = formatNumbers(usdTotal, decimals: 2);
+
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: AppBar(
@@ -464,12 +494,24 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.totalAssets,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: extendedColors.neutral100,
-                      fontWeight: FontWeight.w200,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.totalAssets,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral100,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                      const SizedBox(width: 4,),
+                      Text(
+                        '≈ $usdTotalStr\$',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: changeColor,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   _buildTotalAmount(latestTotal, theme, extendedColors),

@@ -153,7 +153,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
     final schedule = BondSchedule.build(
       start: startDt,
       end: endDt,
-      payPeriod: _bond['PAYTYPE'],
+      payPeriod: _bond['PAYTYPE']?.toString() ?? '',
     );
 
     // Нэг ширхэгийн хуримтлагдсан хүү — бондын төрлөөр (анхдагч / хаалттай /

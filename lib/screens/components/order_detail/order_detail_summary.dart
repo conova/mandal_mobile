@@ -15,6 +15,21 @@ class OrderDetailSummary extends StatelessWidget {
     return raw.split(' ').first.replaceAll('/', '.');
   }
 
+  String _getSettleDate(Order order) {
+    final datePart = order.orderDate.split(' ').first;
+    final dt = parseStockDate(datePart);
+    if (dt == null) return _dateOnly(order.orderDate);
+
+    // Хаалттай бонд (дотоод) бол захиалсан өдрөөрөө (T+0).
+    // Бусад тохиолдолд (хувьцаа, гадаад арилжаа, нээлттэй бонд) +2 хоног (T+2).
+    if (order.isBond && !order.isOpen && !order.isForeignCurrency) {
+      return _dateOnly(order.orderDate);
+    }
+
+    final settleDate = dt.add(const Duration(days: 2));
+    return formatStockDate(settleDate).replaceAll('/', '.');
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -81,7 +96,7 @@ class OrderDetailSummary extends StatelessWidget {
               Expanded(
                 child: OrderDetailSummaryItem(
                   label: l10n.settlementDate,
-                  value: _dateOnly(order.settleDate),
+                  value: _getSettleDate(order), //_dateOnly(order.settleDate),
                 ),
               ),
             ],

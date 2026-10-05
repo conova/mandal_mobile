@@ -7,6 +7,7 @@ import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_svg_icon.dart';
+import 'components/education/education_skeleton_loader.dart';
 
 /// Боловсролын дэлгэц — санхүүгийн хичээлүүд + апп ашиглах заавар.
 /// Бүх агуулга `assets/data/education_guide.json`-оос уншигдана.
@@ -48,7 +49,7 @@ class _EducationScreenState extends State<EducationScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: data == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const EducationSkeletonLoader()
           : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,27 +163,6 @@ class _EducationHeader extends StatelessWidget {
                   )
                 ],
               ),
-              /*Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Text(
-                      l10n.educationTitle,
-                      style: theme.textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: extendedColors.neutral100,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Толгойн чимэглэл зураг (байхгүй бол юу ч харуулахгүй)
-                  Image.asset(
-                    'assets/images/edu_intro.png',
-                    height: 149,
-                    errorBuilder: (_, _, _) => const SizedBox(height: 80),
-                  ),
-                ],
-              ),*/
               const SizedBox(height: 8),
               Text(
                 l10n.educationSubtitle,

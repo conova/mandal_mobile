@@ -117,6 +117,10 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     final (whole, decimal) = _splitAmount(totalAssets);
     final changeStr = _formatChange(totalChange);
     final percentStr = '${changePercent.abs().toStringAsFixed(2)}%';
+    final usdTotalStr = (_summary.totalAssets / _summary.usdRate).toStringAsFixed(2).replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]},',
+    );
     final isUp = totalChange >= 0;
     final changeColor =
         isUp ? extendedColors.primaryMain : extendedColors.red;
@@ -124,12 +128,25 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.totalAssets,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: AppTextStyles.light,
-            color: extendedColors.neutral100,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.totalAssets,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: AppTextStyles.light,
+                color: extendedColors.neutral100,
+              ),
+            ),
+            const SizedBox(width: 4,),
+            Text(
+              '≈ $usdTotalStr\$',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: changeColor,
+                fontWeight: AppTextStyles.light,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
         Row(
@@ -156,7 +173,7 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 4,),
         Row(
           children: [
             Text(
