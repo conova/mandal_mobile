@@ -8,6 +8,8 @@ import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_snackbar.dart';
+import 'components/bond/bond_payment_schedule.dart';
+import 'components/bond/bond_statistic_skeleton_loader.dart';
 
 class BondPortfolioStatisticScreen extends StatefulWidget {
   const BondPortfolioStatisticScreen({super.key});
@@ -63,6 +65,53 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     }
   }
 
+  /// Бондын хүүгийн төлбөрийн хуваарь — огноо, дүн, төлөгдсөн эсэх.
+  List<({DateTime date, double amount, bool paid})> _paymentsOf(
+      MarketInstrument bond,
+      ) {
+    final start = parseStockDate(bond.startDate);
+    final end = parseStockDate(bond.endDate);
+    final months = BondSchedule.monthsOf(bond.payType);
+
+    final schedule = BondSchedule.build(
+      start: start,
+      end: end,
+      payPeriod: bond.payType,
+      nextPayday: start,
+    );
+
+    if (schedule == null || months == null || months == 0) {
+      return const <({DateTime date, double amount, bool paid})>[];
+    }
+
+    final principal = (bond.currentBal ?? 0) * (bond.stockPrice ?? 0);
+    final annualRate = (bond.intRate ?? 0) / 100;
+
+    final List<({DateTime date, double amount, bool paid})> results = [];
+    DateTime periodStart = schedule.start;
+
+    for (var i = 1; i <= schedule.total; i++) {
+      final periodEnd = DateTime(
+        schedule.start.year,
+        schedule.start.month + months * i,
+        schedule.start.day,
+      );
+
+      final daysInPeriod = periodEnd.difference(periodStart).inDays;
+      final coupon = principal * annualRate * (daysInPeriod / 365) * (1 - ((bond.stockFee ?? 0) > 100 ? 100 : (bond.stockFee ?? 0))/100);
+
+      results.add((
+      date: periodEnd,
+      amount: coupon,
+      paid: i <= schedule.paid,
+      ));
+
+      periodStart = periodEnd;
+    }
+
+    return results;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -70,12 +119,17 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     // Сонгосон таб-ын дагуу нийлбэр дүн
-    final totalValue = _holdings.fold<double>(
-      0.0,
-      (sum, item) =>
-          sum +
-          ((_selectedFilter == 2 ? item.expYield : item.rcvYield) ?? 0.0),
-    );
+    double totalValue = 0;
+    for (final bond in _holdings) {
+      final payments = _paymentsOf(bond);
+      for (final p in payments) {
+        if (_selectedFilter == 1) {
+          if (p.paid) totalValue += p.amount;
+        } else {
+          if (!p.paid) totalValue += p.amount;
+        }
+      }
+    }
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -136,39 +190,9 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                   ),
                 ),
               const SizedBox(height: 8,),
-              /*// Table header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.bondName,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral200,
-                      ),
-                    ),
-                    Text(
-                      // Баруун баганын нэр сонгосон filter-ээ дагана
-                      switch (_selectedFilter) {
-                        1 => l10n.totalReturnReceived,
-                        2 => l10n.futureReturn,
-                        _ => l10n.amountPieces,
-                      },
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: extendedColors.neutral200,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),*/
               // Bond rows
               if (_isLoading)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: CircularProgressIndicator()),
-                )
+                const BondStatisticSkeletonLoader(itemCount: 5)
               else if (_holdings.isEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
@@ -231,8 +255,6 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                   )
                       .toList(),
                 ),
-              //const SizedBox(height: 8),
-              //Divider(height: 1, color: extendedColors.neutral500),
               const SizedBox(height: 24),
             ],
           ),
@@ -295,8 +317,9 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
-    final cnt = bond.divCnt ?? 0;
-    final total = bond.divTotal ?? 0;
+    final payments = _paymentsOf(bond);
+    final cnt = payments.where((p) => p.paid).length;
+    final total = payments.length;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -359,10 +382,30 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     AppLocalizations l10n,
   ) {
     final isForeign = bond.curCode != 'MNT';
-    final amount = _selectedFilter == 2
-        ? (bond.expYield ?? 0)
-        : (bond.rcvYield ?? 0);
-    final date = _selectedFilter == 2 ? bond.term : bond.payday;
+
+    final payments = _paymentsOf(bond);
+    double amount = 0;
+    DateTime? displayDate;
+
+    for (final p in payments) {
+      if (_selectedFilter == 1) {
+        // Нийт авсан — хамгийн сүүлд авсан огноог харуулна
+        if (p.paid) {
+          amount += p.amount;
+          displayDate = p.date;
+        }
+      } else {
+        // Ирээдүйд авах — дараагийн авах огноог харуулна
+        if (!p.paid) {
+          amount += p.amount;
+          displayDate ??= p.date;
+        }
+      }
+    }
+
+    final dateStr = displayDate != null
+        ? formatStockDate(displayDate)
+        : (_selectedFilter == 2 ? bond.term : bond.payday);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -377,7 +420,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
         ),
         const SizedBox(height: 6),
         Text(
-          date.isEmpty ? '-' : date.replaceAll('/', '.'),
+          dateStr.isEmpty ? '-' : dateStr.replaceAll('/', '.'),
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w300,
             color: extendedColors.neutral200,

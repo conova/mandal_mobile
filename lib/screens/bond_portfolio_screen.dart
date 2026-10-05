@@ -362,12 +362,23 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
-    double sumOf(double? Function(MarketInstrument b) pick) =>
-        _holdings.fold(0.0, (sum, b) => sum + (pick(b) ?? 0));
+    double totalReceived = 0;
+    double totalFuture = 0;
+
+    for (final bond in _holdings) {
+      final payments = _paymentsOf(bond);
+      for (final p in payments) {
+        if (p.paid) {
+          totalReceived += p.amount;
+        } else {
+          totalFuture += p.amount;
+        }
+      }
+    }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal:16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: extendedColors.bgSecondary,
         borderRadius: BorderRadius.circular(16),
@@ -376,7 +387,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
         children: [
           _buildYieldRow(
             label: l10n.totalReturnReceived,
-            amount: formatStockAmount(sumOf((b) => b.rcvYield), decimals: 0),
+            amount: formatStockAmount(totalReceived, decimals: 0),
             valueColor: extendedColors.neutral100,
             theme: theme,
             extendedColors: extendedColors,
@@ -388,8 +399,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
           ),
           _buildYieldRow(
             label: l10n.futureReturn,
-            amount:
-                formatStockAmount(sumOf((b) => b.expYield), decimals: 0),
+            amount: formatStockAmount(totalFuture, decimals: 0),
             valueColor: extendedColors.purple,
             theme: theme,
             extendedColors: extendedColors,
