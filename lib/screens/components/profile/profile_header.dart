@@ -26,17 +26,17 @@ class ProfileHeader extends StatelessWidget {
   void _showFullImage(BuildContext context, ExtendedColors extendedColors) {
     if (photoUrl == null || photoUrl!.isEmpty) return;
 
+    double dragY = 0;
+    bool dragging = false;
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Scaffold(
           backgroundColor: extendedColors.bgBase,
+          extendBodyBehindAppBar: true, // image slides under the back button
           appBar: AppBar(
             backgroundColor: extendedColors.bgBase,
             elevation: 0,
-            // M3 default-аар scroll болоход AppBar нь surfaceTint өнгөөр өнгөрсөн
-            // tint авдаг — энэ нь bgBase-тай ялгаатай харагдана. Бид tint-ийг
-            // унтрааж, scrolledUnderElevation-ыг 0 болгож scroll-ын явцад
-            // background bgBase-аараа үлдэхийг баталгаажуулна.
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             toolbarHeight: 70,
@@ -46,15 +46,40 @@ class ProfileHeader extends StatelessWidget {
               child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
             ),
           ),
-          body: Center(
-            child: Hero(
-              tag: 'profile_avatar_hero',
-              child: InteractiveViewer(
-                child: Image.network(
-                  photoUrl!,
-                  fit: BoxFit.contain,
-                  width: double.infinity,
-                  height: double.infinity,
+          body: StatefulBuilder(
+            builder: (context, setState) => GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onVerticalDragStart: (_) => setState(() => dragging = true),
+              onVerticalDragUpdate: (d) => setState(() {
+                // Only upward movement is allowed (negative values)
+                dragY = (dragY + d.delta.dy).clamp(-1000.0, 0.0).toDouble();
+              }),
+              onVerticalDragEnd: (d) {
+                if (dragY < -120 || (d.primaryVelocity ?? 0) < -700) {
+                  Navigator.of(context).maybePop(); // Hero animates back
+                } else {
+                  setState(() {
+                    dragging = false;
+                    dragY = 0; // snap back
+                  });
+                }
+              },
+              child: AnimatedContainer(
+                duration:
+                dragging ? Duration.zero : const Duration(milliseconds: 200),
+                transform: Matrix4.translationValues(0, dragY, 0),
+                child: Center(
+                  child: Hero(
+                    tag: 'profile_avatar_hero',
+                    child: InteractiveViewer(
+                      child: Image.network(
+                        photoUrl!,
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

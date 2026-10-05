@@ -45,9 +45,13 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   final GlobalKey _tintedHeaderKey = GlobalKey();
   double _headerHeight = 180.0;
 
+  final ScrollController _scrollController = ScrollController();
+  bool _isScrolled = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _authService = context.read<AuthService>();
@@ -55,6 +59,17 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
       _fetch();
       _measureHeader();
     });
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients) {
+      final bool scrolled = _scrollController.offset > 0;
+      if (scrolled != _isScrolled) {
+        setState(() {
+          _isScrolled = scrolled;
+        });
+      }
+    }
   }
 
   void _measureHeader() {
@@ -73,6 +88,8 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _authService?.removeListener(_onAuthNotify);
     super.dispose();
   }
@@ -157,6 +174,12 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
           padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
           child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled ? extendedColors.neutral500 : Colors.transparent,
+            width: 1,
+          ),
+        ),
       ) : null,
       backgroundColor: extendedColors.bgBase,
       body: Stack(
@@ -164,6 +187,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
           RefreshIndicator(
             onRefresh: _fetch,
             child: SingleChildScrollView(
+              controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
