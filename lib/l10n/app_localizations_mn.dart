@@ -1160,7 +1160,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get depositSelectSubtitle =>
-      'Та хувьцаа эсвэл бонд алийг нь авахаас хамаарч тохирох дансаа сонгоно уу';
+      'ҮЦТХТ дахь төгрөгийн эсвэл долларын дансаа цэнэглэнэ үү';
 
   @override
   String get mntAccounts => 'Төгрөгийн данс';
@@ -1409,7 +1409,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get withdrawMethod => 'Зарлагын хэлбэр';
 
   @override
-  String get withdrawMethodDesc => 'Татан авалт хийх данс сонгоно уу';
+  String get withdrawMethodDesc =>
+      'ҮЦТХТ дахь төгрөгийн эсвэл долларын данснаасаа зарлага гаргана уу';
 
   @override
   String get makeWithdraw => 'Зарлага гаргах';

@@ -1163,7 +1163,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get depositSelectSubtitle =>
-      'Choose the account depending on whether you are buying stocks or bonds';
+      'Top up your MNT or USD account at the MCSD';
 
   @override
   String get mntAccounts => 'MNT accounts';
@@ -1412,7 +1412,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get withdrawMethod => 'Withdraw Method';
 
   @override
-  String get withdrawMethodDesc => 'Select an account to withdraw from';
+  String get withdrawMethodDesc =>
+      'Withdraw from your MNT or USD account at the MCSD';
 
   @override
   String get makeWithdraw => 'Withdraw';

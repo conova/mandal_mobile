@@ -2287,7 +2287,7 @@ abstract class AppLocalizations {
   /// No description provided for @depositSelectSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Choose the account depending on whether you are buying stocks or bonds'**
+  /// **'Top up your MNT or USD account at the MCSD'**
   String get depositSelectSubtitle;
 
   /// No description provided for @mntAccounts.
@@ -2767,7 +2767,7 @@ abstract class AppLocalizations {
   /// No description provided for @withdrawMethodDesc.
   ///
   /// In en, this message translates to:
-  /// **'Select an account to withdraw from'**
+  /// **'Withdraw from your MNT or USD account at the MCSD'**
   String get withdrawMethodDesc;
 
   /// No description provided for @makeWithdraw.

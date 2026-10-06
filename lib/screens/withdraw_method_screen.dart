@@ -132,7 +132,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
               ),
             ),
             const SizedBox(height: 28),
-            // ₮ данснууд — Хувьцаа, Бонд
+            // ₮ данс
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
@@ -148,22 +148,12 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
               icon: 'tugrug-01',
               iconBg: extendedColors.primary100,
               iconColor: extendedColors.primaryMain,
-              title: l10n.stockMoney,
+              title: l10n.tugrik,
               balanceLabel: l10n.availableBalanceLabel,
               balance: formatStockAmount(_mntBalance, decimals: 0),
               isLoading: _isLoading,
-              onTap: () => _onOptionTap(isMnt: true, account: 'stock'),
-            ),
-            Divider(height: 1, color: extendedColors.neutral500),
-            AccountTypeRow(
-              icon: 'tugrug-01',
-              iconBg: extendedColors.primaryMain,
-              iconColor: Colors.white,
-              title: l10n.bondMoney,
-              balanceLabel: l10n.availableBalanceLabel,
-              balance: formatStockAmount(_mntBalance, decimals: 0),
-              isLoading: _isLoading,
-              onTap: () => _onOptionTap(isMnt: true, account: 'bond'),
+              // 'stock' → серверт type: 'mnt' (ерөнхий төгрөгийн данс)
+              onTap: () => _onOptionTap(isMnt: true),
             ),
             Divider(height: 1, color: extendedColors.neutral500),
             const SizedBox(height: 28),
