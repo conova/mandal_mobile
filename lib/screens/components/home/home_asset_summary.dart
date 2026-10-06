@@ -117,10 +117,14 @@ class _HomeAssetSummaryState extends State<HomeAssetSummary> {
     final (whole, decimal) = _splitAmount(totalAssets);
     final changeStr = _formatChange(totalChange);
     final percentStr = '${changePercent.abs().toStringAsFixed(2)}%';
-    final usdTotalStr = (_summary.totalAssets / _summary.usdRate).toStringAsFixed(2).replaceAllMapped(
+    
+    // usdRate 0 үед NaN гарахаас сэргийлнэ
+    final usdValue = _summary.usdRate > 0 ? (totalAssets / _summary.usdRate) : 0.0;
+    final usdTotalStr = usdValue.toStringAsFixed(2).replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (m) => '${m[1]},',
     );
+
     final isUp = totalChange >= 0;
     final changeColor =
         isUp ? extendedColors.primaryMain : extendedColors.red;

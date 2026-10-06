@@ -23,7 +23,7 @@ class UsdDepositInfoScreen extends StatefulWidget {
 class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
   /// Мандал Капитал Маркетс ҮЦК-ийн хүлээн авах дансууд
   static const String _tdbAccountNo = 'MN83000400404208038';
-  static const String _golomtAccountNo = 'MN25001500 2025142552 У';
+  static const String _golomtAccountNo = 'MN250015002025142552';
 
   /// Худалдаа хөгжлийн банк — 04, Голомт банк — 15 (лого server-ээс)
   static const String _tdbCode = '04';
@@ -55,7 +55,7 @@ class _UsdDepositInfoScreenState extends State<UsdDepositInfoScreen> {
     final auth = context.read<AuthService>();
     // Гүйлгээний утга — uid болон регистрийн дугаарын нийлбэр
     final memo =
-        '${info?['registerNumber']?.toString() ?? ''}, ${auth.uid ?? ''}';
+        '${info?['registerNumber']?.toString().toUpperCase() ?? ''}, ${auth.uid ?? ''}';
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,

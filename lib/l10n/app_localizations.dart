@@ -4041,6 +4041,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment failed'**
   String get paymentFailed;
+
+  /// No description provided for @tugrugDepositInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit to Tugrug account'**
+  String get tugrugDepositInfo;
 }
 
 class _AppLocalizationsDelegate
