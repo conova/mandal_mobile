@@ -215,9 +215,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   InfoCard(
                     label: l10n.phoneNumber,
                     value: phone ?? '-',
-                    trailing: child != null
-                        ? null
-                        : const CustomSvgIcon('edit-03', size: 20, color: AppColors.primaryMain,),
                   ),
                   InfoCard(
                     label: l10n.address,

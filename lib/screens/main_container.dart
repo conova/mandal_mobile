@@ -104,7 +104,7 @@ class _MainContainerState extends State<MainContainer> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             type: BottomNavigationBarType.fixed,
-            backgroundColor: footerColor.withOpacity(0.7),
+            backgroundColor: footerColor.withValues(alpha: 0.7),
             elevation: 0,
             selectedItemColor: theme.primaryColor,
             unselectedItemColor: theme.disabledColor,

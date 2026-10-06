@@ -103,7 +103,7 @@ class OnboardingStepsSheet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          l10n.registrationProgress(percent.toString()),
+                          l10n.registrationProgressText,
                           style: AppTextStyles.body2.copyWith(
                             color: extendedColors.neutral200,
                             fontWeight: AppTextStyles.light,
