@@ -2100,4 +2100,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get paymentFailed => 'Төлбөр амжилтгүй боллоо';
+
+  @override
+  String get tugrugDepositInfo => 'Төгрөгийн данс цэнэглэх';
 }

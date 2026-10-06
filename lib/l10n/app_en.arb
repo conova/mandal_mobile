@@ -815,5 +815,6 @@
     "registrationFeeUnpaidTitle": "Registration fee unpaid",
     "registrationFeeUnpaidDesc": "Pay the registration fee to activate your account.",
     "activate": "Activate",
-    "paymentFailed": "Payment failed"
+    "paymentFailed": "Payment failed",
+    "tugrugDepositInfo": "Deposit to Tugrug account"
 }

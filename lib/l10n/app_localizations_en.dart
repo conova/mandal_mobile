@@ -2136,4 +2136,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentFailed => 'Payment failed';
+
+  @override
+  String get tugrugDepositInfo => 'Deposit to Tugrug account';
 }

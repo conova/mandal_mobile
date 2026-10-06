@@ -144,7 +144,7 @@ class _DepositInfoScreenState extends State<DepositInfoScreen> {
                     const SizedBox(height: 8),
                     Center(
                       child: Text(
-                        l10n.bondDepositTitle,
+                        l10n.tugrugDepositInfo,
                         style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: extendedColors.neutral100,
