@@ -73,6 +73,10 @@ class _CameraOverlayScreenState extends State<CameraOverlayScreen> {
         debugPrint("Camera error: $e");
       }
     } else {
+      // Өмнө нь татгалзсан бол iOS дахин асуухгүй — тохиргоо руу илгээнэ
+      if (status.isPermanentlyDenied || status.isRestricted) {
+        await openAppSettings();
+      }
       if (mounted) {
         Navigator.pop(context); // Go back if denied
       }
