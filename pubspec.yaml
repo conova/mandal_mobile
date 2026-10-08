@@ -127,6 +127,7 @@ flutter:
     - assets/images/Notification.png
     - assets/images/searching.png
     - assets/images/key.png
+    - assets/images/logo-for-center.jpg
     # SVG icon-ууд — хавтсаар нь бүртгэсэн тул шинэ icon нэмэхэд
     # pubspec засах шаардлагагүй (CustomSvgIcon-оор нэрээр нь дуудна)
     - assets/images/icons/

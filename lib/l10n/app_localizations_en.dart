@@ -1160,8 +1160,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get depositSelectTitle => 'Select account to deposit';
 
   @override
-  String get depositSelectSubtitle =>
-      'Top up your MNT or USD account at the MCSD';
+  String get depositSelectSubtitle => 'Top up your MNT or USD account';
 
   @override
   String get mntAccounts => 'MNT accounts';
@@ -1410,8 +1409,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withdrawMethod => 'Withdraw Method';
 
   @override
-  String get withdrawMethodDesc =>
-      'Withdraw from your MNT or USD account at the MCSD';
+  String get withdrawMethodDesc => 'Withdraw from your MNT or USD account';
 
   @override
   String get makeWithdraw => 'Withdraw';
@@ -1426,11 +1424,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withdrawAmountTitle => 'Withdrawal amount';
 
   @override
-  String get withdrawSuccess => 'Withdrawal completed';
+  String get withdrawRequestSuccess => 'Sent the request';
 
   @override
-  String get withdrawSuccessDesc =>
-      'Transactions are consolidated from multiple accounts, so please wait a moment.';
+  String get withdrawRequestSuccessDesc => 'Withdrawal is pending.';
 
   @override
   String get bankTransfer => 'Bank Transfer';
@@ -2076,7 +2073,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registeredNumberHint =>
-      'E-Mongolia → Birth certificate reference → Child → Civil registration number';
+      'E-Mongolia → Reference of Birth Certificate → Child → Civil registration number';
 
   @override
   String get invalidNumber => 'Incorrect number';

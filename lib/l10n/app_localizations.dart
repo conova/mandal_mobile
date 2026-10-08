@@ -2287,7 +2287,7 @@ abstract class AppLocalizations {
   /// No description provided for @depositSelectSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Top up your MNT or USD account at the MCSD'**
+  /// **'Top up your MNT or USD account'**
   String get depositSelectSubtitle;
 
   /// No description provided for @mntAccounts.
@@ -2767,7 +2767,7 @@ abstract class AppLocalizations {
   /// No description provided for @withdrawMethodDesc.
   ///
   /// In en, this message translates to:
-  /// **'Withdraw from your MNT or USD account at the MCSD'**
+  /// **'Withdraw from your MNT or USD account'**
   String get withdrawMethodDesc;
 
   /// No description provided for @makeWithdraw.
@@ -2794,17 +2794,17 @@ abstract class AppLocalizations {
   /// **'Withdrawal amount'**
   String get withdrawAmountTitle;
 
-  /// No description provided for @withdrawSuccess.
+  /// No description provided for @withdrawRequestSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Withdrawal completed'**
-  String get withdrawSuccess;
+  /// **'Sent the request'**
+  String get withdrawRequestSuccess;
 
-  /// No description provided for @withdrawSuccessDesc.
+  /// No description provided for @withdrawRequestSuccessDesc.
   ///
   /// In en, this message translates to:
-  /// **'Transactions are consolidated from multiple accounts, so please wait a moment.'**
-  String get withdrawSuccessDesc;
+  /// **'Withdrawal is pending.'**
+  String get withdrawRequestSuccessDesc;
 
   /// No description provided for @bankTransfer.
   ///
@@ -3931,7 +3931,7 @@ abstract class AppLocalizations {
   /// No description provided for @registeredNumberHint.
   ///
   /// In en, this message translates to:
-  /// **'E-Mongolia → Birth certificate reference → Child → Civil registration number'**
+  /// **'E-Mongolia → Reference of Birth Certificate → Child → Civil registration number'**
   String get registeredNumberHint;
 
   /// No description provided for @invalidNumber.

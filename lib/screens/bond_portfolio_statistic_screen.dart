@@ -318,8 +318,10 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     AppLocalizations l10n,
   ) {
     final payments = _paymentsOf(bond);
-    final cnt = payments.where((p) => p.paid).length;
     final total = payments.length;
+    final cnt = _selectedFilter == 1
+        ? payments.where((p) => p.paid).length
+        : payments.where((p) => !p.paid).length;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

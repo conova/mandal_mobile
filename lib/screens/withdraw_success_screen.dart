@@ -41,7 +41,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
                 Text(
-                  l10n.withdrawSuccess,
+                  l10n.withdrawRequestSuccess,
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: extendedColors.neutral100,
@@ -50,7 +50,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   textAlign: TextAlign.center,
-                  l10n.withdrawSuccessDesc,
+                  l10n.withdrawRequestSuccessDesc,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w300,
                     color: extendedColors.neutral100,

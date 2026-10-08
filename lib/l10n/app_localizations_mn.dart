@@ -1160,7 +1160,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get depositSelectSubtitle =>
-      'ҮЦТХТ дахь төгрөгийн эсвэл долларын дансаа цэнэглэнэ үү';
+      'Төгрөгийн эсвэл долларын дансаа цэнэглэнэ үү';
 
   @override
   String get mntAccounts => 'Төгрөгийн данс';
@@ -1410,7 +1410,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get withdrawMethodDesc =>
-      'ҮЦТХТ дахь төгрөгийн эсвэл долларын данснаасаа зарлага гаргана уу';
+      'Төгрөгийн эсвэл долларын данснаасаа зарлага гаргана уу';
 
   @override
   String get makeWithdraw => 'Зарлага гаргах';
@@ -1425,11 +1425,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get withdrawAmountTitle => 'Зарлага гаргах дүн';
 
   @override
-  String get withdrawSuccess => 'Зарлага хийгдлээ';
+  String get withdrawRequestSuccess => 'Хүсэлт илгээгдлээ';
 
   @override
-  String get withdrawSuccessDesc =>
-      'Олон өөр данснаас нэгтгэж гүйлгээ хийгддэг учраас та түр хүлээж байгаарай.';
+  String get withdrawRequestSuccessDesc =>
+      'Зарлага хийгдэхээр хүлээгдэж байна.';
 
   @override
   String get bankTransfer => 'Банкны шилжүүлэг';
@@ -2039,7 +2039,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get registeredNumberHint =>
-      'E-Mongolia → Төрсний гэрчилгээний лавлагаа → Хүүхэд → Иргэний бүртгэлийн дугаар';
+      'E-Mongolia → Төрсний бүртгэлийн лавлагаа → Хүүхэд → Иргэний бүртгэлийн дугаар';
 
   @override
   String get invalidNumber => 'Дугаар буруу байна';

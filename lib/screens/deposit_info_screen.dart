@@ -191,11 +191,16 @@ class _DepositInfoScreenState extends State<DepositInfoScreen> {
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit.contain,
-                                  errorBuilder: (_, _, _) => Icon(
-                                    Icons.account_balance,
-                                    size: 32,
-                                    color: extendedColors.neutral200,
-                                  ),
+                                  errorBuilder: account?.bankCode == '95'
+                                    ? (_, _, _) => Image.asset(
+                                      'assets/images/logo-for-center.jpg',
+                                      height: 32,
+                                    )
+                                    : (_, _, _) => Icon(
+                                      Icons.account_balance,
+                                      size: 32,
+                                      color: extendedColors.neutral200,
+                                    ),
                                 ),
                               ),
                             ),
