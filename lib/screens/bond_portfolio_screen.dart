@@ -99,6 +99,17 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final topPadding = MediaQuery.paddingOf(context).top;
 
+    final sysDt = _holdings.isNotEmpty ? parseStockDate(_holdings.first.sysDate) : null;
+    final today = sysDt != null
+        ? DateTime(sysDt.year, sysDt.month, sysDt.day)
+        : DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+    final visibleHoldings = _holdings.where((bond) {
+      final endDt = parseStockDate(bond.endDate);
+      if (endDt == null) return true;
+      return !endDt.isBefore(today);
+    }).toList();
+
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: Stack(
@@ -152,7 +163,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                 // Bond rows
                 if (_isLoading)
                   const BondPortfolioSkeletonLoader()
-                else if (_holdings.isEmpty)
+                else if (visibleHoldings.isEmpty)
                   Center(
                     child: Column(
                       children: [
@@ -206,7 +217,7 @@ class _BondPortfolioScreenState extends State<BondPortfolioScreen> {
                   )
                 else
                   Column(
-                    children: _holdings
+                    children: visibleHoldings
                         .map(
                           (bond) =>
                           _buildBondRow(bond, theme, extendedColors, l10n),

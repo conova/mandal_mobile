@@ -745,5 +745,6 @@
     "registrationFeeUnpaidDesc": "Бүртгэлийн хураамжаа төлж дансаа идэвхжүүлнэ үү.",
     "activate": "Идэвхжүүлэх",
     "paymentFailed": "Төлбөр амжилтгүй боллоо",
-    "tugrugDepositInfo": "Төгрөгийн данс цэнэглэх"
+    "tugrugDepositInfo": "Төгрөгийн данс цэнэглэх",
+    "couponPayment": "Купоны төлбөр"
 }

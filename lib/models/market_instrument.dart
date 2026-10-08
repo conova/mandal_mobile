@@ -113,6 +113,8 @@ class MarketInstrument {
 
   final int? classOrder;
 
+  final String? sysDate;
+
 
   /// API-ийн анхны мөр — route arguments-аар цааш дамжуулахад ашиглана
   final Map<String, dynamic> raw;
@@ -179,6 +181,7 @@ class MarketInstrument {
     this.className,
     this.className2,
     this.classOrder,
+    this.sysDate,
   });
 
   factory MarketInstrument.fromJson(Map<String, dynamic> json) {
@@ -255,6 +258,8 @@ class MarketInstrument {
       className: str('CLASSNAME'),
       className2: str('CLASSNAME2'),
       classOrder: int.tryParse(str('CLASSORDER')),
+      sysDate: str('SYS_DATE'),
+
     );
   }
 

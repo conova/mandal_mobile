@@ -25,10 +25,28 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
   bool _isLoading = true;
   List<MarketInstrument> _holdings = const [];
 
+  late final ScrollController _scrollController;
+  bool _isScrolled = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
     Future.microtask(_fetch);
+  }
+
+  void _onScroll() {
+    if (_scrollController.offset > 0 && !_isScrolled) {
+      setState(() => _isScrolled = true);
+    } else if (_scrollController.offset <= 0 && _isScrolled) {
+      setState(() => _isScrolled = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,8 +85,8 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
 
   /// Бондын хүүгийн төлбөрийн хуваарь — огноо, дүн, төлөгдсөн эсэх.
   List<({DateTime date, double amount, bool paid})> _paymentsOf(
-      MarketInstrument bond,
-      ) {
+    MarketInstrument bond,
+  ) {
     final start = parseStockDate(bond.startDate);
     final end = parseStockDate(bond.endDate);
     final months = BondSchedule.monthsOf(bond.payType);
@@ -98,15 +116,63 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
       );
 
       final daysInPeriod = periodEnd.difference(periodStart).inDays;
-      final coupon = principal * annualRate * (daysInPeriod / 365) * (1 - ((bond.stockFee ?? 0) > 100 ? 100 : (bond.stockFee ?? 0))/100);
+      final coupon = principal *
+          annualRate *
+          (daysInPeriod / 365) *
+          (1 - ((bond.stockFee ?? 0) > 100 ? 100 : (bond.stockFee ?? 0)) / 100);
 
       results.add((
-      date: periodEnd,
-      amount: coupon,
-      paid: i <= schedule.paid,
+        date: periodEnd,
+        amount: coupon,
+        paid: i <= schedule.paid,
       ));
 
       periodStart = periodEnd;
+    }
+
+    return results;
+  }
+
+  List<
+      ({
+        MarketInstrument bond,
+        DateTime date,
+        double amount,
+        int index,
+        int total,
+      })> _getFilteredPayments() {
+    final List<
+        ({
+          MarketInstrument bond,
+          DateTime date,
+          double amount,
+          int index,
+          int total,
+        })> results = [];
+
+    for (final bond in _holdings) {
+      final payments = _paymentsOf(bond);
+      for (int i = 0; i < payments.length; i++) {
+        final p = payments[i];
+        final isMatch = _selectedFilter == 1 ? p.paid : !p.paid;
+        if (isMatch) {
+          results.add((
+            bond: bond,
+            date: p.date,
+            amount: p.amount,
+            index: i + 1,
+            total: payments.length,
+          ));
+        }
+      }
+    }
+
+    if (_selectedFilter == 1) {
+      // Received: Newest first
+      results.sort((a, b) => b.date.compareTo(a.date));
+    } else {
+      // Future: Soonest first
+      results.sort((a, b) => a.date.compareTo(b.date));
     }
 
     return results;
@@ -118,17 +184,11 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
 
-    // Сонгосон таб-ын дагуу нийлбэр дүн
+    final filteredPayments = _getFilteredPayments();
+
     double totalValue = 0;
-    for (final bond in _holdings) {
-      final payments = _paymentsOf(bond);
-      for (final p in payments) {
-        if (_selectedFilter == 1) {
-          if (p.paid) totalValue += p.amount;
-        } else {
-          if (!p.paid) totalValue += p.amount;
-        }
-      }
+    for (final p in filteredPayments) {
+      totalValue += p.amount;
     }
 
     return Scaffold(
@@ -137,6 +197,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
         toolbarHeight: 70,
+        scrolledUnderElevation: 0.0,
         leadingWidth: 60,
         leading: Padding(
           padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
@@ -146,118 +207,138 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onHorizontalDragEnd: _onHorizontalDragEnd,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              _buildSegmentedTabs(theme, extendedColors, l10n),
-              const SizedBox(height: 16),
-              // Хураангуй дүн — зөвхөн жагсаалт хоосон биш үед
-              if (!_isLoading && _holdings.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: extendedColors.bgSecondary,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _selectedFilter == 2
-                                ? '${l10n.futureReturn}:'
-                                : '${l10n.totalReturnReceived}:',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w300,
-                              color: extendedColors.neutral200,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          formatStockAmount(totalValue),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: extendedColors.neutral100,
-                          ),
-                        ),
-                      ],
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: _isScrolled ? extendedColors.neutral500 : Colors.transparent,
+                    width: 0.5,
                   ),
                 ),
-              const SizedBox(height: 8,),
-              // Bond rows
-              if (_isLoading)
-                const BondStatisticSkeletonLoader(itemCount: 5)
-              else if (_holdings.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/safe_box.png',
-                          height: 180,
-                          errorBuilder: (_, _, _) => const SizedBox(height: 140),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 4),
+                  _buildSegmentedTabs(theme, extendedColors, l10n),
+                  const SizedBox(height: 16),
+                  if (!_isLoading && _holdings.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: extendedColors.bgSecondary,
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        const SizedBox(height: 24),
-                        Text(
-                          l10n.nothingYet,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: extendedColors.neutral100,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            l10n.growAssetsPrompt,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: extendedColors.neutral200,
-                              fontWeight: FontWeight.w300,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _selectedFilter == 2
+                                    ? '${l10n.futureReturn}:'
+                                    : '${l10n.totalReturnReceived}:',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w300,
+                                  color: extendedColors.neutral200,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Text(
+                              formatStockAmount(totalValue),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                                color: extendedColors.neutral100,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 28),
-                        SizedBox(
-                          width: 130,
-                          child: CustomButton(
-                            onPressed: () {
-                              // Home (main) руу буцаж бондын tab-ийг нээнэ
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                '/main',
-                                (route) => false,
-                                arguments: {'tab': 1},
-                              );
-                            },
-                            label: l10n.buyBond,
-                            size: CustomButtonSize.medium,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
+                      ),
                     ),
-                  ),
-                )
-              else
-                Column(
-                  children: _holdings
-                      .map(
-                        (bond) =>
-                        _buildBondRow(bond, theme, extendedColors, l10n),
-                  )
-                      .toList(),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Bond rows
+                    if (_isLoading)
+                      const BondStatisticSkeletonLoader(itemCount: 5)
+                    else if (_holdings.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 40),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'assets/images/safe_box.png',
+                                height: 180,
+                                errorBuilder: (_, _, _) => const SizedBox(height: 140),
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                l10n.nothingYet,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: extendedColors.neutral100,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  l10n.growAssetsPrompt,
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: extendedColors.neutral200,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 28),
+                              SizedBox(
+                                width: 130,
+                                child: CustomButton(
+                                  onPressed: () {
+                                    // Home (main) руу буцаж бондын tab-ийг нээнэ
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      '/main',
+                                      (route) => false,
+                                      arguments: {'tab': 1},
+                                    );
+                                  },
+                                  label: l10n.buyBond,
+                                  size: CustomButtonSize.medium,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Column(
+                        children: filteredPayments
+                            .map(
+                              (p) => _buildPaymentRow(p, theme, extendedColors, l10n),
+                            )
+                            .toList(),
+                      ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
-              const SizedBox(height: 24),
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -311,18 +392,18 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     );
   }
 
-  Widget _buildBondRow(
-    MarketInstrument bond,
+  Widget _buildPaymentRow(
+    ({
+      MarketInstrument bond,
+      DateTime date,
+      double amount,
+      int index,
+      int total,
+    }) item,
     ThemeData theme,
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
-    final payments = _paymentsOf(bond);
-    final total = payments.length;
-    final cnt = _selectedFilter == 1
-        ? payments.where((p) => p.paid).length
-        : payments.where((p) => !p.paid).length;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
@@ -336,7 +417,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                   children: [
                     Flexible(
                       child: Text(
-                        bond.name,
+                        item.bond.name,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: extendedColors.neutral100,
                         ),
@@ -347,7 +428,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        bond.subtitle,
+                        item.bond.subtitle,
                         style: theme.textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.w300,
                           color: extendedColors.neutral200,
@@ -360,7 +441,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '${l10n.yieldCount} $cnt/$total',
+                  '${l10n.couponPayment} ${item.index}/${item.total}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w300,
                     color: extendedColors.neutral200,
@@ -370,50 +451,32 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
             ),
           ),
           const SizedBox(width: 8),
-          _buildRowValue(bond, theme, extendedColors, l10n),
+          _buildPaymentValue(item, theme, extendedColors, l10n),
         ],
       ),
     );
   }
 
-  /// Мөрийн баруун багана — өгөөжийн дүн, доор нь огноо
-  Widget _buildRowValue(
-    MarketInstrument bond,
+  Widget _buildPaymentValue(
+    ({
+      MarketInstrument bond,
+      DateTime date,
+      double amount,
+      int index,
+      int total,
+    }) item,
     ThemeData theme,
     ExtendedColors extendedColors,
     AppLocalizations l10n,
   ) {
-    final isForeign = bond.curCode != 'MNT';
-
-    final payments = _paymentsOf(bond);
-    double amount = 0;
-    DateTime? displayDate;
-
-    for (final p in payments) {
-      if (_selectedFilter == 1) {
-        // Нийт авсан — хамгийн сүүлд авсан огноог харуулна
-        if (p.paid) {
-          amount += p.amount;
-          displayDate = p.date;
-        }
-      } else {
-        // Ирээдүйд авах — дараагийн авах огноог харуулна
-        if (!p.paid) {
-          amount += p.amount;
-          displayDate ??= p.date;
-        }
-      }
-    }
-
-    final dateStr = displayDate != null
-        ? formatStockDate(displayDate)
-        : (_selectedFilter == 2 ? bond.term : bond.payday);
+    final isForeign = item.bond.curCode != 'MNT';
+    final dateStr = formatStockDate(item.date);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          formatStockAmount(amount, isForeign: isForeign),
+          formatStockAmount(item.amount, isForeign: isForeign),
           style: theme.textTheme.bodyLarge?.copyWith(
             color: extendedColors.neutral100,
           ),
@@ -422,7 +485,7 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
         ),
         const SizedBox(height: 6),
         Text(
-          dateStr.isEmpty ? '-' : dateStr.replaceAll('/', '.'),
+          dateStr.replaceAll('/', '.'),
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w300,
             color: extendedColors.neutral200,
