@@ -169,7 +169,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
                           _error!,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: extendedColors.neutral500,
+                            color: extendedColors.neutral200,
                       ),
                     ),
                   ),
