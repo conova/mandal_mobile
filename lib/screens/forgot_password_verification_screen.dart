@@ -59,13 +59,28 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                   value: _maskValue(type, value),
                   onTap: () async {
                     final sessionId = args?['sessionId'] as String?;
+                    String? currentSessionId = sessionId;
                     // Сонгосон сувгаар OTP илгээх (sms эсвэл email)
                     if (sessionId != null) {
                       try {
-                        await context.read<AuthService>().sendOtp(
+                        final data = await context.read<AuthService>().sendOtp(
                               isSms ? 'sms' : 'email',
                               sessionId: sessionId,
                             );
+
+                        final newSessionId = data['sessionId'] as String?;
+                        if (newSessionId != null && newSessionId.isNotEmpty) {
+                          currentSessionId = newSessionId;
+                        }
+
+                        final otp = data['otp']?.toString();
+                        if (context.mounted && otp != null) {
+                          CustomSnackbar.show(
+                            context,
+                            message: 'OTP код: $otp',
+                            type: CustomSnackbarType.info,
+                          );
+                        }
                       } catch (e) {
                         if (context.mounted) {
                           CustomSnackbar.show(
@@ -89,7 +104,7 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                         'channelValue': value,
                         'regNo': args?['regNo'],
                         'phone': args?['phone'],
-                        'sessionId': sessionId,
+                        'sessionId': currentSessionId,
                       },
                     );
                   },

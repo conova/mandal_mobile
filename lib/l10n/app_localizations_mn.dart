@@ -2103,4 +2103,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get tugrugDepositInfo => 'Төгрөгийн данс цэнэглэх';
+
+  @override
+  String get couponPayment => 'Купоны төлбөр';
 }

@@ -4047,6 +4047,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deposit to Tugrug account'**
   String get tugrugDepositInfo;
+
+  /// No description provided for @couponPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon payment'**
+  String get couponPayment;
 }
 
 class _AppLocalizationsDelegate

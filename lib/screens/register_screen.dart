@@ -62,13 +62,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       final sessionId = data['sessionId']?.toString();
       final custId = data['custId']?.toString();
+      String? currentSessionId = sessionId;
 
-      // TEST: OTP код харуулах (бодит сервер илгээхгүй болгоно)
-      final otp = data['otp']?.toString();
-      if (otp != null) {
+      final otp = await authService.sendOtp(
+        'sms',
+        sessionId: sessionId,
+      );
+
+      final newSessionId = otp['sessionId'] as String?;
+      if (newSessionId != null && newSessionId.isNotEmpty) {
+        currentSessionId = newSessionId;
+      }
+
+      final otpCode = otp['otp']?.toString();
+      if (otpCode != null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('OTP код: $otp')));
+        ).showSnackBar(SnackBar(content: Text('OTP код: $otpCode')));
       }
 
       Navigator.pushNamed(
@@ -79,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'regNo': regNo,
           'lastName': lastName,
           'firstName': firstName,
-          'sessionId': sessionId,
+          'sessionId': currentSessionId,
           'custId': custId,
         },
       );
