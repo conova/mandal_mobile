@@ -362,7 +362,12 @@ class _WithdrawAccountScreenState extends State<WithdrawAccountScreen> {
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => InitialAvatar(
+                errorBuilder: account.bankCode == '95'
+                  ? (_, _, _) => Image.asset(
+                    'assets/images/logo-for-center.jpg',
+                    height: 40,
+                  )
+                  : (_, _, _) => InitialAvatar(
                   initial:
                       bankName.isNotEmpty ? bankName[0].toUpperCase() : '?',
                   color: avatarColor,
