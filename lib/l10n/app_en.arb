@@ -817,5 +817,8 @@
     "activate": "Activate",
     "paymentFailed": "Payment failed",
     "tugrugDepositInfo": "Deposit to Tugrug account",
-    "couponPayment": "Coupon payment"
+    "couponPayment": "Coupon payment",
+    "cashTugrik": "Cash (₮)",
+    "cashDollar": "Cash ($)",
+    "stockOrderPlacedDesc": "You can view your order details from the orders section."
 }

@@ -2140,4 +2140,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get couponPayment => 'Coupon payment';
+
+  @override
+  String get cashTugrik => 'Cash (₮)';
+
+  @override
+  String get cashDollar => 'Cash (\$)';
+
+  @override
+  String get stockOrderPlacedDesc =>
+      'You can view your order details from the orders section.';
 }

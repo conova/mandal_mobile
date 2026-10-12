@@ -165,7 +165,13 @@ class Order {
   String nameOf(String lang) => _pick(name, name2, lang);
   String txnNameOf(String lang) => _pick(txnName, txnName2, lang);
   String statusNameOf(String lang) => _pick(statusName, statusName2, lang);
-  String orderNameOf(String lang) => _pick(orderName, orderName2, lang);
+
+  String orderNameOf(String lang) {
+    final res = _pick(orderName, orderName2, lang);
+    if (res.isEmpty) return res;
+    return res[0].toUpperCase() + res.substring(1).toLowerCase();
+  }
+
   String condNameOf(String lang) => _pick(condName, condName2, lang);
 
   bool get isBuy => txnName2.toLowerCase() == 'buy' || txnName == 'Авах';

@@ -181,7 +181,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
     final price = _currentPrice;
     final quantity = _currentQuantity;
-    final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
+    //final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
     final rate = widget.bond.intRate ?? 0.0;
     
     final startDt = parseStockDate(widget.bond.startDate);
@@ -204,6 +204,10 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
       taxPct: widget.bond.stockFee ?? 0,
       lastPaid: schedule?.lastPaid ?? startDt,
     );
+
+    final unitPrice = price + accruedInterest;
+    final commission = quantity * unitPrice * commissionRate;
+    final totalPayment = (quantity * unitPrice) - commission;
 
     //final expectedReturn = total * rate / 100;
 
@@ -279,12 +283,13 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
               ),
               const SizedBox(height: 24),
               BondPaymentDetails(
-                totalPayment: formatStockAmount(total, decimals: 2),
+                totalPayment: formatStockAmount(totalPayment, decimals: 2),
                 // Өгөөж /YTM/ — сервэрийн EXPYEILD (₮ дүн)
-                yieldValue: formatStockAmount(
+                yieldValue: formatIntRate(widget.bond.intRate),
+                /*formatStockAmount(
                   widget.bond.expYield ?? 0,
                   decimals: 0,
-                ),
+                ),*/
                 onDetailsPressed: () {
                   showBondPaymentDetailsSheet(
                     context: context,

@@ -2106,4 +2106,14 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get couponPayment => 'Купоны төлбөр';
+
+  @override
+  String get cashTugrik => 'Бэлэн мөнгө (₮)';
+
+  @override
+  String get cashDollar => 'Бэлэн мөнгө (\$)';
+
+  @override
+  String get stockOrderPlacedDesc =>
+      'Та захиалга хэсгээс өөрийн захиалгийн дэлгэрэнгүйг харах боломжтой.';
 }

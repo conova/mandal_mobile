@@ -620,7 +620,7 @@ class _StockConfirmationScreenState extends State<StockConfirmationScreen>
               child: SlideTransition(
                 position: _descSlideAnimation,
                 child: Text(
-                  l10n.orderPlacedDesc,
+                  l10n.stockOrderPlacedDesc,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: extendedColors.bgBase,
