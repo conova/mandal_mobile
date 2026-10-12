@@ -26,25 +26,33 @@ class AuthOtpForm extends StatefulWidget {
 
 class _AuthOtpFormState extends State<AuthOtpForm> {
   static const int _otpLength = 4;
-  final TextEditingController _controller = TextEditingController();
+
+  /// Hidden TextField үргэлж энэ тэмдэгтийг агуулна. Ингэснээр хоосон байхад ч
+  /// backspace дарсныг мэдэж болно (текст богино болбол backspace).
+  static const String _sentinel = '\u200B';
+
+  final TextEditingController _controller =
+  TextEditingController(text: _sentinel);
   final FocusNode _focusNode = FocusNode();
+
+  /// Код нь үргэлж 4 нүдтэй. Хоосон нүд = ''
+  final List<String> _digits = List.filled(_otpLength, '');
+  int _activeIndex = 0;
 
   int _attemptCount = 0;
   bool _isBlocked = false;
   bool _isVerifying = false;
-  bool _isClearing = false; // Flag to prevent listener from clearing error on programmatic clear
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(_handleControllerChange);
     _focusNode.addListener(_onFocusChange);
+    _resetHiddenField();
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_handleControllerChange);
     _focusNode.removeListener(_onFocusChange);
     _controller.dispose();
     _focusNode.dispose();
@@ -55,22 +63,84 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
     if (mounted) setState(() {});
   }
 
-  void _handleControllerChange() {
-    if (_isBlocked || _isVerifying || _isClearing) return;
+  bool get _enabled => !_isBlocked && !_isVerifying;
+
+  bool get _isComplete => _digits.every((d) => d.isNotEmpty);
+
+  int get _firstEmptyIndex {
+    final i = _digits.indexWhere((d) => d.isEmpty);
+    return i == -1 ? _otpLength - 1 : i;
+  }
+
+  void _resetHiddenField() {
+    _controller.value = const TextEditingValue(
+      text: _sentinel,
+      selection: TextSelection.collapsed(offset: _sentinel.length),
+    );
+  }
+
+  /// Нүд дээр дарахад тэр нүдийг идэвхжүүлнэ.
+  /// Бөглөгдсөн нүдийг дарвал дараагийн бичсэн тоо түүнийг солино.
+  /// Хоосон нүдүүдийг алгасаж болохгүй тул эхний хоосон нүд рүү шилжинэ.
+  void _onBoxTap(int index) {
+    if (!_enabled) return;
 
     setState(() {
+      _activeIndex = index.clamp(0, _firstEmptyIndex);
+    });
+    _focusNode.requestFocus();
+  }
+
+  void _onInputChanged(String value) {
+    if (!_enabled) {
+      _resetHiddenField();
+      return;
+    }
+
+    if (value.length < _sentinel.length) {
+      _handleBackspace();
+    } else {
+      final typed = value.replaceAll(_sentinel, '');
+      final newDigits = typed.replaceAll(RegExp(r'[^0-9]'), '');
+      if (newDigits.isNotEmpty) {
+        _handleDigits(newDigits);
+      }
+    }
+
+    _resetHiddenField();
+  }
+
+  /// Тоо бичихэд идэвхтэй нүдийг СОЛИНО (урт өөрчлөгдөхгүй), дараа нь дараагийн нүд рүү шилжинэ.
+  void _handleDigits(String input) {
+    setState(() {
       _errorMessage = null;
+      for (final ch in input.split('')) {
+        _digits[_activeIndex] = ch;
+        if (_activeIndex < _otpLength - 1) _activeIndex++;
+      }
     });
 
-    if (_controller.text.length == _otpLength) {
-      _verifyOtp();
-    }
+    if (_isComplete) _verifyOtp();
+  }
+
+  /// Backspace: идэвхтэй нүд бөглөгдсөн бол зөвхөн түүнийг арилгана.
+  /// Хоосон бол өмнөх нүд рүү очиж түүнийг арилгана.
+  void _handleBackspace() {
+    setState(() {
+      _errorMessage = null;
+      if (_digits[_activeIndex].isNotEmpty) {
+        _digits[_activeIndex] = '';
+      } else if (_activeIndex > 0) {
+        _activeIndex--;
+        _digits[_activeIndex] = '';
+      }
+    });
   }
 
   Future<void> _verifyOtp() async {
     if (_isBlocked || _isVerifying) return;
 
-    final enteredCode = _controller.text;
+    final enteredCode = _digits.join();
     final l10n = AppLocalizations.of(context)!;
 
     // sessionId байвал API-р шалгана
@@ -98,13 +168,14 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
               _errorMessage = l10n.youHaveNTryLeft(5 - _attemptCount);
             }
 
-            // Temporarily flag clearing so listener doesn't wipe out _errorMessage
-            _isClearing = true;
-            _controller.clear();
-            _isClearing = false;
-
-            _focusNode.requestFocus();
+            for (var i = 0; i < _otpLength; i++) {
+              _digits[i] = '';
+            }
+            _activeIndex = 0;
           });
+
+          _resetHiddenField();
+          _focusNode.requestFocus();
         }
       }
     }
@@ -116,14 +187,13 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
-    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Stack(
           children: [
-            // Hidden TextField to capture input
+            // Hidden TextField to capture keyboard input
             Opacity(
               opacity: 0,
               child: SizedBox(
@@ -131,15 +201,14 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
                 child: TextField(
                   controller: _controller,
                   focusNode: _focusNode,
-                  enabled: !_isBlocked && !_isVerifying,
+                  enabled: _enabled,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(_otpLength),
-                  ],
-                  autofocus: true,
+                  onChanged: _onInputChanged,
+                  autofocus: false,
                   showCursor: false,
                   enableInteractiveSelection: false,
+                  enableSuggestions: false,
+                  autocorrect: false,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                   ),
@@ -147,49 +216,43 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
               ),
             ),
             // Visual representation
-            GestureDetector(
-              onTap: () {
-                if (!_focusNode.hasFocus) {
-                  _focusNode.requestFocus();
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(
-                  _otpLength,
-                      (index) {
-                    final char = _controller.text.length > index
-                        ? _controller.text[index]
-                        : '';
-                    final isFocused = isKeyboardVisible &&
-                        _focusNode.hasFocus &&
-                        (_controller.text.length == index ||
-                            (_controller.text.length == _otpLength && index == _otpLength - 1));
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: List.generate(
+                _otpLength,
+                    (index) {
+                  final isFocused =
+                      _focusNode.hasFocus && index == _activeIndex;
 
-                    return Row(
-                      children: [
-                        OtpInputField(
-                          value: char,
+                  return Row(
+                    children: [
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _onBoxTap(index),
+                        child: OtpInputField(
+                          value: _digits[index],
                           isFocused: isFocused,
                           isError: _errorMessage != null && !_isBlocked,
-                          enabled: !_isBlocked && !_isVerifying,
+                          enabled: _enabled,
                         ),
-                        if (index < _otpLength - 1) const SizedBox(width: 8),
-                      ],
-                    );
-                  },
-                ),
+                      ),
+                      if (index < _otpLength - 1) const SizedBox(width: 8),
+                    ],
+                  );
+                },
               ),
             ),
           ],
         ),
         if (_isVerifying) ...[
           const SizedBox(height: 16),
-          const Center(child: SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )),
+          const Center(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
         ],
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),
