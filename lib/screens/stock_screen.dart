@@ -71,6 +71,7 @@ class _StockScreenState extends State<StockScreen> {
 
   /// Үндсэн дата — жагсаалт, IPO, өсөлт/бууралтыг зэрэг татна
   Future<void> _fetchAll() async {
+    final bool isInitialLoad = _stocks.isEmpty;
     setState(() {
       _isLoading = true;
       _error = null;
@@ -104,6 +105,18 @@ class _StockScreenState extends State<StockScreen> {
         // _topGainer = gainers.isNotEmpty ? gainers.first : null;
         // _topLoser = losers.isNotEmpty ? losers.first : null;
         _isLoading = false;
+
+        // Анх удаа ачаалж байгаа бол 3-р ангилал болон түүнээс дээш ангиллыг хаана
+        if (isInitialLoad) {
+          for (final s in _stocks) {
+            if (s.classOrder != null && s.classOrder! == 3) {
+              final key = (s.className ?? '').trim().isNotEmpty
+                  ? s.className!.trim()
+                  : 'Бусад';
+              _collapsedGroups.add(key);
+            }
+          }
+        }
       });
     } catch (e) {
       if (!mounted) return;

@@ -93,6 +93,8 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(stepText: '2/2'),
+      // Fix: Disable automatic resizing to avoid the screen jumping on iOS when the keyboard appears.
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(

@@ -60,6 +60,7 @@ class CustomSnackbar {
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
       padding: EdgeInsets.zero,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       content: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(

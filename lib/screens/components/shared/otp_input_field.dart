@@ -1,49 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
-class OtpInputField extends StatefulWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
+class OtpInputField extends StatelessWidget {
+  final String value;
+  final bool isFocused;
   final bool isError;
   final bool enabled;
-  final ValueChanged<String> onChanged;
 
   const OtpInputField({
     super.key,
-    required this.controller,
-    required this.focusNode,
+    required this.value,
+    this.isFocused = false,
     this.isError = false,
     this.enabled = true,
-    required this.onChanged,
   });
-
-  @override
-  State<OtpInputField> createState() => _OtpInputFieldState();
-}
-
-class _OtpInputFieldState extends State<OtpInputField> {
-  bool _isFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(_handleFocusChange);
-    _isFocused = widget.focusNode.hasFocus;
-  }
-
-  void _handleFocusChange() {
-    if (mounted) {
-      setState(() {
-        _isFocused = widget.focusNode.hasFocus;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(_handleFocusChange);
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +22,9 @@ class _OtpInputFieldState extends State<OtpInputField> {
     final extendedColors = theme.extension<ExtendedColors>()!;
 
     Color borderColor;
-    if (widget.isError) {
+    if (isError) {
       borderColor = colorScheme.error;
-    } else if (_isFocused) {
+    } else if (isFocused) {
       borderColor = colorScheme.primary;
     } else {
       borderColor = extendedColors.neutral500;
@@ -66,26 +36,15 @@ class _OtpInputFieldState extends State<OtpInputField> {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor, width: _isFocused ? 2 : 1),
+        border: Border.all(color: borderColor, width: isFocused ? 2 : 1),
       ),
       child: Center(
-        child: TextField(
-          controller: widget.controller,
-          focusNode: widget.focusNode,
-          enabled: widget.enabled,
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
-          maxLength: 1,
+        child: Text(
+          value.isEmpty ? '-' : value,
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface,
+            color: enabled ? colorScheme.onSurface : colorScheme.onSurface.withOpacity(0.5),
           ),
-          decoration: const InputDecoration(
-            counterText: '',
-            border: InputBorder.none,
-            hintText: '-',
-          ),
-          onChanged: widget.onChanged,
         ),
       ),
     );

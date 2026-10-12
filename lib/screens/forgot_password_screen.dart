@@ -87,35 +87,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       appBar: const AuthStepAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            Text(
-              l10n.forgotPasswordTitle,
-              style: theme.textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: extendedColors.neutral100,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+              Text(
+                l10n.forgotPasswordTitle,
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: extendedColors.neutral100,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              l10n.forgotPasswordSubtitle,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: extendedColors.neutral200,
+              const SizedBox(height: 12),
+              Text(
+                l10n.forgotPasswordSubtitle,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: extendedColors.neutral200,
+                ),
               ),
-            ),
-            const SizedBox(height: 48),
-            ForgotPasswordForm(
-              onContinue: _handleContinue,
-              regNoController: _regNoController,
-              phoneController: _phoneController,
-              isLoading: _isLoading,
-            ),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 48),
+              ForgotPasswordForm(
+                onContinue: _handleContinue,
+                regNoController: _regNoController,
+                phoneController: _phoneController,
+                isLoading: _isLoading,
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );

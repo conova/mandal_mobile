@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../services/auth_service.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../widgets/custom_snackbar.dart';
 import 'auth_channel_selector.dart';
 
 class AuthChannelSelectionForm extends StatefulWidget {
@@ -201,8 +202,10 @@ class _AuthChannelSelectionFormState extends State<AuthChannelSelectionForm> {
       // TEST: OTP код харуулах (бодит горимд устгах)
       final otp = otpData['otp']?.toString();
       if (otp != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('OTP код: $otp')),
+        CustomSnackbar.show(
+          context,
+          message: 'OTP код: $otp',
+          type: CustomSnackbarType.info,
         );
       }
 
