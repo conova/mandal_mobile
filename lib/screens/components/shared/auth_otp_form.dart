@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../theme/extended_colors.dart';
@@ -25,54 +26,43 @@ class AuthOtpForm extends StatefulWidget {
 
 class _AuthOtpFormState extends State<AuthOtpForm> {
   static const int _otpLength = 4;
-  final List<TextEditingController> _controllers = List.generate(
-    _otpLength,
-    (_) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes =
-      List.generate(_otpLength, (_) => FocusNode());
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
   int _attemptCount = 0;
   bool _isBlocked = false;
   bool _isVerifying = false;
+  bool _isClearing = false; // Flag to prevent listener from clearing error on programmatic clear
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    for (var node in _focusNodes) {
-      node.addListener(() {
-        setState(() {});
-      });
-    }
+    _controller.addListener(_handleControllerChange);
+    _focusNode.addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
+    _controller.removeListener(_handleControllerChange);
+    _focusNode.removeListener(_onFocusChange);
+    _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  void _onChanged(String value, int index) {
-    if (_isBlocked || _isVerifying) return;
+  void _onFocusChange() {
+    if (mounted) setState(() {});
+  }
+
+  void _handleControllerChange() {
+    if (_isBlocked || _isVerifying || _isClearing) return;
 
     setState(() {
       _errorMessage = null;
     });
 
-    if (value.length == 1 && index < _otpLength - 1) {
-      _focusNodes[index + 1].requestFocus();
-    }
-    if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
-    }
-
-    // Бүх талбар бөглөгдсөн үед шалгах
-    if (_controllers.every((c) => c.text.isNotEmpty)) {
+    if (_controller.text.length == _otpLength) {
       _verifyOtp();
     }
   }
@@ -80,7 +70,7 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
   Future<void> _verifyOtp() async {
     if (_isBlocked || _isVerifying) return;
 
-    final enteredCode = _controllers.map((c) => c.text).join();
+    final enteredCode = _controller.text;
     final l10n = AppLocalizations.of(context)!;
 
     // sessionId байвал API-р шалгана
@@ -103,16 +93,17 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
 
             if (_attemptCount >= 5) {
               _isBlocked = true;
-              _errorMessage =
-                  l10n.yourAccessBlocked;
+              _errorMessage = l10n.yourAccessBlocked;
             } else {
               _errorMessage = l10n.youHaveNTryLeft(5 - _attemptCount);
             }
 
-            for (var controller in _controllers) {
-              controller.clear();
-            }
-            _focusNodes[0].requestFocus();
+            // Temporarily flag clearing so listener doesn't wipe out _errorMessage
+            _isClearing = true;
+            _controller.clear();
+            _isClearing = false;
+
+            _focusNode.requestFocus();
           });
         }
       }
@@ -125,21 +116,72 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: List.generate(
-            _otpLength,
-            (index) => Row(
-              children: [
-                _buildCodeField(index, theme, extendedColors),
-                if (index < _otpLength - 1) const SizedBox(width: 8),
-              ],
+        Stack(
+          children: [
+            // Hidden TextField to capture input
+            Opacity(
+              opacity: 0,
+              child: SizedBox(
+                height: 56,
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  enabled: !_isBlocked && !_isVerifying,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(_otpLength),
+                  ],
+                  autofocus: true,
+                  showCursor: false,
+                  enableInteractiveSelection: false,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
             ),
-          ),
+            // Visual representation
+            GestureDetector(
+              onTap: () {
+                if (!_focusNode.hasFocus) {
+                  _focusNode.requestFocus();
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: List.generate(
+                  _otpLength,
+                      (index) {
+                    final char = _controller.text.length > index
+                        ? _controller.text[index]
+                        : '';
+                    final isFocused = isKeyboardVisible &&
+                        _focusNode.hasFocus &&
+                        (_controller.text.length == index ||
+                            (_controller.text.length == _otpLength && index == _otpLength - 1));
+
+                    return Row(
+                      children: [
+                        OtpInputField(
+                          value: char,
+                          isFocused: isFocused,
+                          isError: _errorMessage != null && !_isBlocked,
+                          enabled: !_isBlocked && !_isVerifying,
+                        ),
+                        if (index < _otpLength - 1) const SizedBox(width: 8),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
         if (_isVerifying) ...[
           const SizedBox(height: 16),
@@ -186,20 +228,6 @@ class _AuthOtpFormState extends State<AuthOtpForm> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildCodeField(
-    int index,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
-    return OtpInputField(
-      controller: _controllers[index],
-      focusNode: _focusNodes[index],
-      isError: _errorMessage != null && !_isBlocked,
-      enabled: !_isBlocked && !_isVerifying,
-      onChanged: (value) => _onChanged(value, index),
     );
   }
 }
