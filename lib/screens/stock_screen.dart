@@ -44,6 +44,8 @@ class _StockScreenState extends State<StockScreen> {
 
   bool _isScrolled = false;
 
+  final Set<String> _collapsedGroups = {};
+
   @override
   void initState() {
     super.initState();
@@ -99,8 +101,8 @@ class _StockScreenState extends State<StockScreen> {
         // Backend IPO дататай болмогц энэ branch ажиллахгүй.
         //_ipoStocks = ipo.isNotEmpty ? ipo : _mockIpoStocks();
         _ipoStocks = ipo;
-        _topGainer = gainers.isNotEmpty ? gainers.first : null;
-        _topLoser = losers.isNotEmpty ? losers.first : null;
+        // _topGainer = gainers.isNotEmpty ? gainers.first : null;
+        // _topLoser = losers.isNotEmpty ? losers.first : null;
         _isLoading = false;
       });
     } catch (e) {
@@ -262,10 +264,6 @@ class _StockScreenState extends State<StockScreen> {
                       onStockTap: _openDetail,
                     ),
                   ),
-                if (_topGainer != null || _topLoser != null)
-                  SliverToBoxAdapter(
-                    child: _buildTopMovers(l10n, theme, extendedColors),
-                  ),
                 ..._buildGroupSlivers(theme, extendedColors, l10n),
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
@@ -322,73 +320,6 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  // ─── ТОП өсөлт / бууралт ───
-
-  Widget _buildTopMovers(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
-    Widget card(String label, MarketInstrument? row, bool isGain) {
-      if (row == null) return const SizedBox.shrink();
-      final pct = row.priceChange ?? 0;
-      final color = isGain ? extendedColors.primaryMain : extendedColors.red;
-      return Expanded(
-        child: GestureDetector(
-          onTap: () => _openDetail(row),
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isGain
-                  ? extendedColors.primary100
-                  : extendedColors.red100,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral100,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  row.symbol,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
-                  ),
-                ),
-                Text(
-                  '${pct >= 0 ? '+' : ''}${pct.toStringAsFixed(2)}%',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: color,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Row(
-        children: [
-          card(l10n.topGainer, _topGainer, true),
-          const SizedBox(width: 12),
-          card(l10n.topLoser, _topLoser, false),
-        ],
-      ),
-    );
-  }
-
   // ─── Ангиллын grid ───
 
   List<Widget> _buildGroupSlivers(
@@ -428,7 +359,7 @@ class _StockScreenState extends State<StockScreen> {
           displayDesc = l10n.secondClassDesc;
           break;
         case 3:
-          displayDesc = l10n.thirdClassDesc;
+          displayDesc = '';//l10n.thirdClassDesc;
           break;
         case 4:
           displayDesc = '';
@@ -440,49 +371,117 @@ class _StockScreenState extends State<StockScreen> {
           displayDesc = '';
       }
 
+      final isCollapsed = _collapsedGroups.contains(title);
+
       slivers.add(
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 32, 16, 6),
-            child: Text(
-              displayTitle,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: extendedColors.neutral100,
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    displayTitle,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (isCollapsed) {
+                        _collapsedGroups.remove(title);
+                      } else {
+                        _collapsedGroups.add(title);
+                      }
+                    });
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: extendedColors.bgSecondary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: AnimatedRotation(
+                        duration: const Duration(milliseconds: 200),
+                        turns: isCollapsed ? 0 : 0.5,
+                        child: CustomSvgIcon(
+                          'chevron-down',
+                          size: 20,
+                          color: extendedColors.neutral100,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       );
+
       slivers.add(
         SliverToBoxAdapter(
-          child: (displayDesc.isNotEmpty)
-              ? Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                child: Text(
-                  displayDesc,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: extendedColors.neutral200,
-                    fontWeight: FontWeight.w200,
+          child: AnimatedCrossFade(
+            duration: const Duration(milliseconds: 350),
+            crossFadeState: isCollapsed ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            firstChild: const SizedBox(width: double.infinity, height: 0),
+            secondChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (displayDesc.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    child: Text(
+                      displayDesc,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: extendedColors.neutral200,
+                        fontWeight: FontWeight.w200,
+                      ),
+                    ),
+                  )
+                else
+                  const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: 1,
+                    ),
+                    itemCount: rows.length,
+                    itemBuilder: (context, i) {
+                      if (i > 12) return _buildStockTile(rows[i], theme, extendedColors);
+                      return TweenAnimationBuilder<double>(
+                        duration: Duration(milliseconds: 300 + (i * 30)),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
+                            child: Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: _buildStockTile(rows[i], theme, extendedColors),
+                      );
+                    },
                   ),
                 ),
-              )
-              : const SizedBox.shrink(),
-        )
-      );
-      slivers.add(
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: 1,
-            ),
-            delegate: SliverChildBuilderDelegate(
-              (context, i) => _buildStockTile(rows[i], theme, extendedColors),
-              childCount: rows.length,
+                const SizedBox(height: 16),
+              ],
             ),
           ),
         ),
@@ -700,21 +699,6 @@ class _StockScreenState extends State<StockScreen> {
           ),
         ),
       ),
-      // Top Movers
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: _PulsingPlaceholder(
-            child: Row(
-              children: [
-                Expanded(child: _buildTopMoverSkeletonCard(extendedColors)),
-                const SizedBox(width: 12),
-                Expanded(child: _buildTopMoverSkeletonCard(extendedColors)),
-              ],
-            ),
-          ),
-        ),
-      ),
       // First Class Section
       SliverToBoxAdapter(
         child: Padding(
@@ -750,27 +734,6 @@ class _StockScreenState extends State<StockScreen> {
       ),
       const SliverToBoxAdapter(child: SizedBox(height: 100)),
     ];
-  }
-
-  Widget _buildTopMoverSkeletonCard(ExtendedColors extendedColors) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      height: 94,
-      decoration: BoxDecoration(
-        color: extendedColors.bgSecondary,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(width: 60, height: 14, decoration: BoxDecoration(color: extendedColors.bgBase, borderRadius: BorderRadius.circular(4))),
-          const SizedBox(height: 10),
-          Container(width: 80, height: 20, decoration: BoxDecoration(color: extendedColors.bgBase, borderRadius: BorderRadius.circular(4))),
-          const SizedBox(height: 4),
-          Container(width: 40, height: 12, decoration: BoxDecoration(color: extendedColors.bgBase, borderRadius: BorderRadius.circular(4))),
-        ],
-      ),
-    );
   }
 }
 

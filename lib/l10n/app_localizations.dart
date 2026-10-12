@@ -4053,6 +4053,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Coupon payment'**
   String get couponPayment;
+
+  /// No description provided for @cashTugrik.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash (₮)'**
+  String get cashTugrik;
+
+  /// No description provided for @cashDollar.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash (\$)'**
+  String get cashDollar;
+
+  /// No description provided for @stockOrderPlacedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You can view your order details from the orders section.'**
+  String get stockOrderPlacedDesc;
 }
 
 class _AppLocalizationsDelegate

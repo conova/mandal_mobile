@@ -746,5 +746,8 @@
     "activate": "Идэвхжүүлэх",
     "paymentFailed": "Төлбөр амжилтгүй боллоо",
     "tugrugDepositInfo": "Төгрөгийн данс цэнэглэх",
-    "couponPayment": "Купоны төлбөр"
+    "couponPayment": "Купоны төлбөр",
+    "cashTugrik": "Бэлэн мөнгө (₮)",
+    "cashDollar": "Бэлэн мөнгө ($)",
+    "stockOrderPlacedDesc": "Та захиалга хэсгээс өөрийн захиалгийн дэлгэрэнгүйг харах боломжтой."
 }
