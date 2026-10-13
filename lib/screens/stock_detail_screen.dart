@@ -336,8 +336,6 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     StockDetailHeader(
-                      symbol: symbol,
-                      name: name,
                       price: price,
                       change: change,
                       isGrowing: isGrowing,

@@ -34,10 +34,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int? _deviceCount; // Холбогдсон төхөөрөмжийн тоо
   bool _biometricBusy = false;
 
+  final ScrollController _scrollController = ScrollController();
+  bool _isScrolled = false;
+
   @override
   void initState() {
     super.initState();
     _loadUserInfo();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients) {
+      final bool scrolled = _scrollController.offset > 0;
+      if (scrolled != _isScrolled) {
+        setState(() {
+          _isScrolled = scrolled;
+        });
+      }
+    }
   }
 
   Future<void> _handleBiometricToggle(bool requested) async {
@@ -189,8 +211,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
         centerTitle: true,
+        shape: Border(
+          bottom: BorderSide(
+            color: _isScrolled ? extendedColors.neutral500 : Colors.transparent,
+            width: 1,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
             const SizedBox(height: 20),
