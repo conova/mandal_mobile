@@ -2,9 +2,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../common/stock_row_format.dart';
+import '../theme/extended_colors.dart';
 
 /// График — `spots` өгөгдсөн бол түүгээр зурна, үгүй бол default sample.
 /// minY/maxY автоматаар [spots]-ийн дотроос тооцоологдоно (padding 5% нэмж).
+///
+/// Графикийн өнгө эхний ба сүүлийн үлдэгдлийг харьцуулж тодорхойлогдоно:
+/// өссөн бол primary, тэнцүү бол саарал, буурсан бол улаан.
 ///
 /// Хэвтээ тэнхлэгээр pinch zoom + pan хийж болно. Доод өдрийн хуваарь
 /// zoom-ийг дагаж хөдөлдөг ба хуваарь дээр tap хийхэд тухайн цэг дээр
@@ -79,6 +83,20 @@ class _FinanceChartState extends State<FinanceChart> {
           '${d.month.toString().padLeft(2, '0')}/'
           '${d.day.toString().padLeft(2, '0')}';
 
+  /// Эхний ба сүүлийн үлдэгдлийг харьцуулж графикийн өнгийг сонгоно:
+  /// өссөн → primary, тэнцүү → саарал, буурсан → улаан.
+  static Color _trendColor(
+      List<FlSpot> spots,
+      ThemeData theme,
+      ExtendedColors extendedColors,
+      ) {
+    final first = spots.first.y;
+    final last = spots.last.y;
+    if (last > first) return theme.primaryColor;
+    if (last < first) return extendedColors.red;
+    return extendedColors.neutral300;
+  }
+
   /// Хуваарь дээр tap — тухайн цэг дээр төвлөж 2 дахин томруулна,
   /// дээд хязгаарт хүрсэн байвал анхны байдалд буцаана.
   void _zoomAt(double localX, double width) {
@@ -104,9 +122,13 @@ class _FinanceChartState extends State<FinanceChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extendedColors = theme.extension<ExtendedColors>()!;
     final useSpots = (widget.spots != null && widget.spots!.isNotEmpty)
         ? widget.spots!
         : _sampleSpots;
+
+    // Эхний/сүүлийн үлдэгдлээс хамаарсан график өнгө
+    final lineColor = _trendColor(useSpots, theme, extendedColors);
 
     // Y тэнхлэгийн хязгаар — point-уудаас тооцоолно
     double minY = useSpots.first.y;
@@ -187,7 +209,7 @@ class _FinanceChartState extends State<FinanceChart> {
                       .map(
                         (i) => TouchedSpotIndicatorData(
                       FlLine(
-                        color: theme.primaryColor.withValues(alpha: 0.5),
+                        color: lineColor.withValues(alpha: 0.5),
                         strokeWidth: 1,
                         dashArray: [4, 4],
                       ),
@@ -196,7 +218,7 @@ class _FinanceChartState extends State<FinanceChart> {
                         show: true,
                         getDotPainter: (spot, percent, bar, index) =>
                             _HaloDotPainter(
-                              color: theme.primaryColor,
+                              color: lineColor,
                               ringColor: theme.colorScheme.surface,
                             ),
                       ),
@@ -212,7 +234,7 @@ class _FinanceChartState extends State<FinanceChart> {
                     // "мурилзахаас" сэргийлнэ
                     preventCurveOverShooting: true,
                     curveSmoothness: 0.2,
-                    color: theme.primaryColor,
+                    color: lineColor,
                     barWidth: _lineWidth,
                     isStrokeCapRound: true,
                     dotData: const FlDotData(show: false),
@@ -223,9 +245,8 @@ class _FinanceChartState extends State<FinanceChart> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          theme.primaryColor.withValues(alpha: _fillAlphaTop),
-                          theme.primaryColor
-                              .withValues(alpha: _fillAlphaBottom),
+                          lineColor.withValues(alpha: _fillAlphaTop),
+                          lineColor.withValues(alpha: _fillAlphaBottom),
                         ],
                       ),
                     ),

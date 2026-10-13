@@ -4,8 +4,6 @@ import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 
 class StockDetailHeader extends StatelessWidget {
-  final String symbol;
-  final String name;
   final String price;
   final String change;
   final bool? isGrowing;
@@ -13,8 +11,6 @@ class StockDetailHeader extends StatelessWidget {
 
   const StockDetailHeader({
     super.key,
-    this.symbol = '',
-    this.name = '',
     this.price = '-',
     this.change = '-',
     this.isGrowing,
@@ -37,20 +33,6 @@ class StockDetailHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            symbol,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: extendedColors.neutral100,
-            ),
-          ),
-          Text(
-            name,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.neutral200,
-            ),
-          ),
-          const SizedBox(height: 16),
           Text(
             price,
             style: theme.textTheme.headlineLarge?.copyWith(

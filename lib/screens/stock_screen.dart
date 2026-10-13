@@ -180,6 +180,23 @@ class _StockScreenState extends State<StockScreen> {
             : formatStockAmount(row.stockPrice, decimals: 2)
         : formatStockAmount(row.closePrice, decimals: 2);
     final pct = row.priceChange;
+
+    if (row.isPrimaryMarket) {
+      Navigator.pushNamed(
+        context,
+        '/stock_trading',
+        arguments: {
+          'symbol': row.symbol,
+          'name': row.name,
+          'price': row.closePrice ?? row.stockPrice ?? 0,
+          'stockcode': row.stockcode,
+          'info': row.raw,
+          'side': 'buy',
+        },
+      );
+      return;
+    }
+
     Navigator.pushNamed(
       context,
       '/stock_detail',
@@ -190,6 +207,7 @@ class _StockScreenState extends State<StockScreen> {
         'change': pct != null ? '${pct.abs().toStringAsFixed(2)}%' : '-',
         'isGrowing': pct == null ? null : pct >= 0,
         'stockcode': row.stockcode,
+        'isPrimary': row.isPrimaryMarket,
       },
     );
   }

@@ -218,18 +218,36 @@ class _HomeStockRecommendationSectionState
         price: price,
         change: changeStr,
         isGrowing: isGrowing,
-        onTap: () => Navigator.pushNamed(
-          context,
-          '/stock_detail',
-          arguments: {
-            'symbol': data.symbol,
-            'name': data.name,
-            'price': price,
-            'change': changeStr,
-            'isGrowing': isGrowing,
-            'stockcode': data.stockcode,
-          },
-        ),
+        onTap: () {
+          if (data.isPrimaryMarket) {
+            Navigator.pushNamed(
+              context,
+              '/stock_trading',
+              arguments: {
+                'symbol': data.symbol,
+                'name': data.name,
+                'price': data.closePrice ?? data.stockPrice ?? 0,
+                'stockcode': data.stockcode,
+                'info': data.raw,
+                'side': 'buy',
+              },
+            );
+          } else {
+            Navigator.pushNamed(
+              context,
+              '/stock_detail',
+              arguments: {
+                'symbol': data.symbol,
+                'name': data.name,
+                'price': price,
+                'change': changeStr,
+                'isGrowing': isGrowing,
+                'stockcode': data.stockcode,
+                'isPrimary': data.isPrimaryMarket,
+              },
+            );
+          }
+        },
       ),
     );
   }

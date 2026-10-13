@@ -201,18 +201,38 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
   ) {
     final theme = Theme.of(context);
     return InkWell(
-      onTap: () => Navigator.pushNamed(
-        context,
-        '/stock_detail',
-        arguments: {
-          'symbol': s.symbol,
-          'name': s.name,
-          'price': s.price,
-          'change': s.change,
-          'isGrowing': s.isPositive,
-          'stockcode': s.stockcode,
-        },
-      ),
+      onTap: () async {
+        if (s.isPrimary) {
+          final numericPrice = double.tryParse(s.raw['CLOSEPRICE']?.toString() ?? '0') ?? 0;
+          await Navigator.pushNamed(
+            context,
+            '/stock_trading',
+            arguments: {
+              'symbol': s.symbol,
+              'name': s.name,
+              'price': numericPrice,
+              'stockcode': s.stockcode,
+              'info': s.raw,
+              'side': 'buy',
+            },
+          );
+        } else {
+          await Navigator.pushNamed(
+            context,
+            '/stock_detail',
+            arguments: {
+              'symbol': s.symbol,
+              'name': s.name,
+              'price': s.price,
+              'change': s.change,
+              'isGrowing': s.isPositive,
+              'stockcode': s.stockcode,
+              'isPrimary': s.isPrimary,
+            },
+          );
+        }
+        _fetch(); // Refresh after returning
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0,),
         child: Row(

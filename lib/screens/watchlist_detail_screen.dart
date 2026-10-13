@@ -25,6 +25,9 @@ class WatchlistStock {
   /// /stocks/info дуудахад хэрэглэгдэнэ (STOCKCODE)
   final String stockcode;
 
+  final bool isPrimary;
+  final Map<String, dynamic> raw;
+
   const WatchlistStock({
     required this.symbol,
     required this.name,
@@ -32,12 +35,15 @@ class WatchlistStock {
     required this.change,
     this.isPositive,
     this.stockcode = '',
+    this.isPrimary = false,
+    required this.raw,
   });
 
   factory WatchlistStock.fromApi(Map<String, dynamic> row) {
     final closePrice = row['CLOSEPRICE'];
     final priceChange = row['PRICECHANGE'];
     final isForeign = row['ISFOREIGN']?.toString() == '1';
+    final market = row['MARKET']?.toString() ?? '';
 
     final priceStr = closePrice == null
         ? '-'
@@ -64,6 +70,8 @@ class WatchlistStock {
       price: priceStr,
       change: changeStr,
       isPositive: positive,
+      isPrimary: market.toLowerCase() == 'primary',
+      raw: row,
     );
   }
 
@@ -385,19 +393,36 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
       color: extendedColors.bgBase,
       child: InkWell(
         onTap: () async {
-          await Navigator.pushNamed(
-            context,
-            '/stock_detail',
-            arguments: {
-              'symbol': item.symbol,
-              'name': item.name,
-              'price': item.price,
-              'change': item.change,
-              'isGrowing': item.isPositive,
-              'stockcode': item.stockcode,
-            },
-          );
-          // Detail дээр одоор нэмж/хассан байж болзошгүй тул шинэчилнэ
+          if (item.isPrimary) {
+            final numericPrice = double.tryParse(item.raw['CLOSEPRICE']?.toString() ?? '0') ?? 0;
+            await Navigator.pushNamed(
+              context,
+              '/stock_trading',
+              arguments: {
+                'symbol': item.symbol,
+                'name': item.name,
+                'price': numericPrice,
+                'stockcode': item.stockcode,
+                'info': item.raw,
+                'side': 'buy',
+              },
+            );
+          } else {
+            await Navigator.pushNamed(
+              context,
+              '/stock_detail',
+              arguments: {
+                'symbol': item.symbol,
+                'name': item.name,
+                'price': item.price,
+                'change': item.change,
+                'isGrowing': item.isPositive,
+                'stockcode': item.stockcode,
+                'isPrimary': item.isPrimary,
+              },
+            );
+          }
+          // Detail/Trading дээр одоор нэмж/хассан байж болзошгүй тул шинэчилнэ
           if (mounted) _fetchWatchlist();
         },
         child: Padding(
