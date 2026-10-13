@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
@@ -184,98 +186,205 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
-      appBar: AppBar(
-        toolbarHeight: 70,
-        leadingWidth: 60,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: CircleBackButton(),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20,),
-            child: IconButton(
-              onPressed: _watchlistBusy ? null : _toggleWatchlist,
-              style: IconButton.styleFrom(
-                backgroundColor: extendedColors.bgSecondary,
-                minimumSize: const Size(40, 40),
-                padding: EdgeInsets.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: const CircleBorder(),
-              ),
-              icon: CustomSvgIcon(
-                _inWatchlist ? 'filled-star' : 'unfilled-star',
-                color: _inWatchlist
-                    ? extendedColors.primaryMain
-                    : theme.colorScheme.onSurface,
-                size: 24,
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-        ],
-        backgroundColor: extendedColors.bgBase,
-        elevation: 0,
-      ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                StockDetailHeader(
-                  symbol: symbol,
-                  name: name,
-                  price: price,
-                  change: change,
-                  isGrowing: isGrowing,
-                  periodLabel: _selectedPeriodLabel,
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                expandedHeight: 140,
+                toolbarHeight: 70,
+                backgroundColor: extendedColors.bgBase,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                leadingWidth: 60,
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircleBackButton(),
+                  ),
                 ),
-                const SizedBox(height: 32),
-                StockDetailChart(
-                  symbol: symbol,
-                  onPeriodChanged: (period) {
-                    setState(() {
-                      _selectedPeriodLabel = switch (period) {
-                        StockPeriod.d1 => l10n.today,
-                        StockPeriod.d7 => l10n.last7Days,
-                        StockPeriod.m1 => l10n.last1Month,
-                        StockPeriod.m3 => l10n.last3Months,
-                        StockPeriod.y1 => l10n.last1Year,
-                        StockPeriod.all => l10n.all,
-                      };
-                    });
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: IconButton(
+                      onPressed: _watchlistBusy ? null : _toggleWatchlist,
+                      style: IconButton.styleFrom(
+                        backgroundColor: extendedColors.bgSecondary,
+                        minimumSize: const Size(40, 40),
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: const CircleBorder(),
+                      ),
+                      icon: CustomSvgIcon(
+                        _inWatchlist ? 'filled-star' : 'unfilled-star',
+                        color: _inWatchlist
+                            ? extendedColors.primaryMain
+                            : theme.colorScheme.onSurface,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                ],
+                flexibleSpace: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final top = constraints.biggest.height;
+                    final statusBarHeight = MediaQuery.of(context).padding.top;
+                    final expandedHeight = 140.0 + statusBarHeight;
+                    final collapsedHeight = 70.0 + statusBarHeight;
+                    final t = ((expandedHeight - top) /
+                            (expandedHeight - collapsedHeight))
+                        .clamp(0.0, 1.0);
+
+                    final titleStyle = TextStyle.lerp(
+                      theme.textTheme.headlineSmall,
+                      theme.textTheme.titleMedium,
+                      t,
+                    )?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extendedColors.neutral100,
+                    );
+
+                    final subtitleStyle = TextStyle.lerp(
+                      theme.textTheme.bodyMedium,
+                      theme.textTheme.labelSmall,
+                      t,
+                    )?.copyWith(
+                      color: extendedColors.neutral200,
+                    );
+
+                    final horizontalPadding = lerpDouble(24, 72, t)!;
+
+                    return Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: statusBarHeight + 10),
+                            child: Align(
+                              alignment: Alignment.lerp(
+                                Alignment.bottomLeft,
+                                Alignment.center,
+                                t,
+                              )!,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  left: horizontalPadding,
+                                  right: horizontalPadding,
+                                  bottom: 16 * (1 - t),
+                                ),
+                                child: Stack(
+                                  alignment: t > 0.5 ? Alignment.center : Alignment.centerLeft,
+                                  children: [
+                                    Opacity(
+                                      opacity: (1 - t * 2).clamp(0.0, 1.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(symbol, style: titleStyle),
+                                          Text(
+                                            name,
+                                            style: subtitleStyle,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Opacity(
+                                      opacity: (t * 2 - 1).clamp(0.0, 1.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(symbol, style: titleStyle, textAlign: TextAlign.center),
+                                          Text(
+                                            name,
+                                            style: subtitleStyle,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 0.5,
+                            color: extendedColors.neutral500.withValues(alpha: t.clamp(0.0, 0.2)),
+                          ),
+                        ),
+                      ],
+                    );
                   },
                 ),
-                const SizedBox(height: 32),
-                // Эхний мөрийн мэдээллээр ерөнхий мэдээллийг бөглөнө
-                StockDetailGeneralInfo(
-                  marketCap: _info?.marketValue == null
-                      ? '-'
-                      : '₮${formatCompactAmount(_info!.marketValue, languageCode: languageCode)}',
-                  avgVolume: _info?.avgTrade == null
-                      ? '-'
-                      : '₮${formatCompactAmount(_info!.avgTrade, languageCode: languageCode)}',
-                  dailyVolume: _info?.dayTrade == null
-                      ? '-'
-                      : '₮${formatCompactAmount(_info!.dayTrade, languageCode: languageCode)}',
-                  peRatio: formatNumbers(_info?.peRatio, decimals: 2),
-                  pbRatio: formatNumbers(_info?.pbRatio, decimals: 2),
-                  dividendYield:
-                      _info?.divYield == null ? '-' : '${_info!.divYield}%',
+              ),
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    StockDetailHeader(
+                      symbol: symbol,
+                      name: name,
+                      price: price,
+                      change: change,
+                      isGrowing: isGrowing,
+                      periodLabel: _selectedPeriodLabel,
+                    ),
+                    if (!_isPrimary) ...[
+                      const SizedBox(height: 32),
+                      StockDetailChart(
+                        symbol: symbol,
+                        onPeriodChanged: (period) {
+                          setState(() {
+                            _selectedPeriodLabel = switch (period) {
+                              StockPeriod.d1 => l10n.today,
+                              StockPeriod.d7 => l10n.last7Days,
+                              StockPeriod.m1 => l10n.last1Month,
+                              StockPeriod.m3 => l10n.last3Months,
+                              StockPeriod.y1 => l10n.last1Year,
+                              StockPeriod.all => l10n.all,
+                            };
+                          });
+                        },
+                      ),
+                    ],
+                    const SizedBox(height: 32),
+                    StockDetailGeneralInfo(
+                      marketCap: _info?.marketValue == null
+                          ? '-'
+                          : '₮${formatCompactAmount(_info!.marketValue, languageCode: languageCode)}',
+                      avgVolume: _info?.avgTrade == null
+                          ? '-'
+                          : '₮${formatCompactAmount(_info!.avgTrade, languageCode: languageCode)}',
+                      dailyVolume: _info?.dayTrade == null
+                          ? '-'
+                          : '₮${formatCompactAmount(_info!.dayTrade, languageCode: languageCode)}',
+                      peRatio: formatNumbers(_info?.peRatio, decimals: 2),
+                      pbRatio: formatNumbers(_info?.pbRatio, decimals: 2),
+                      dividendYield:
+                          _info?.divYield == null ? '-' : '${_info!.divYield}%',
+                    ),
+                    const SizedBox(height: 48),
+                    StockDetailDividendHistory(items: _dividendHistory),
+                    const SizedBox(height: 32 + 80),
+                  ],
                 ),
-                const SizedBox(height: 48),
-                // Бүх мөрийн DIVAMOUNT/DIVDATE = өнгөрсөн ногдол ашгууд
-                StockDetailDividendHistory(items: _dividendHistory),
-                const SizedBox(height: 32),
-              ],
-            ),
+              ),
+            ],
           ),
-          // Арилжааны цэс нээлттэй үед: бүдгэрүүлэлт + Авах/Зарах товчнууд
           if (_tradeMenuOpen) ...[
             Positioned.fill(
               child: GestureDetector(

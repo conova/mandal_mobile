@@ -38,20 +38,6 @@ class StockDetailHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            symbol,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: extendedColors.neutral100,
-            ),
-          ),
-          Text(
-            name,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: extendedColors.neutral200,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
             price,
             style: theme.textTheme.headlineLarge?.copyWith(
               fontWeight: FontWeight.bold,

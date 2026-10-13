@@ -20,6 +20,13 @@ class EquityPeriodInfo {
   });
 }
 
+/// Daily running balance (one entry per calendar day)
+class _DailyBalance {
+  final DateTime date;
+  final double balance;
+  const _DailyBalance(this.date, this.balance);
+}
+
 class HomeEquityChart extends StatefulWidget {
   /// Period солигдож дата ирэх бүрд интервалын өөрчлөлтийг нийтэлнэ
   final ValueNotifier<EquityPeriodInfo?>? infoNotifier;
@@ -34,6 +41,9 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
   /// Internal state tracks the API period code instead of localized label
   String _selectedPeriod = '1M';
   EquityChart _chart = EquityChart.empty;
+
+  /// Continuous daily balances derived from _chart.points
+  List<_DailyBalance> _daily = const [];
 
   @override
   void initState() {
@@ -58,33 +68,73 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
 
   String _fmt(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}/'
-      '${d.month.toString().padLeft(2, '0')}/'
-      '${d.day.toString().padLeft(2, '0')}';
+          '${d.month.toString().padLeft(2, '0')}/'
+          '${d.day.toString().padLeft(2, '0')}';
 
   Future<void> _fetch() async {
     if (!mounted) return;
     try {
       final auth = context.read<AuthService>();
+      final end = DateTime.now();
       // period код биш — start/end огноогоор дуудна
       final chart = await auth.getEquityChart(
         start: _fmt(_startDate()),
-        end: _fmt(DateTime.now()),
+        end: _fmt(end),
       );
       if (!mounted) return;
-      setState(() => _chart = chart);
+      setState(() {
+        _chart = chart;
+        _daily = _buildDailyBalances(chart.points, end);
+      });
       _publishPeriodInfo();
     } catch (e) {
       debugPrint('[HomeEquityChart] алдаа: $e');
     }
   }
 
-  /// Интервалын эхний/сүүлийн цэгээс өөрчлөлтийг тооцож дээрх
+  /// points: first item = beginning balance, the rest = change on that date.
+  /// Returns one balance per day from the first date to [end]; days with no
+  /// change keep the previous balance.
+  List<_DailyBalance> _buildDailyBalances(
+      List<EquityPoint> points,
+      DateTime end,
+      ) {
+    if (points.isEmpty) return const [];
+
+    DateTime dayOnly(DateTime d) => DateTime(d.year, d.month, d.day);
+
+    // Sum changes per day (handles several entries on the same date)
+    final changes = <DateTime, double>{};
+    for (final p in points) {
+      final d = dayOnly(p.date);
+      changes[d] = (changes[d] ?? 0) + p.value;
+    }
+
+    final start = dayOnly(points.first.date);
+    var last = dayOnly(end);
+    // Make sure we never cut off data later than "end"
+    final lastPointDay = dayOnly(points.last.date);
+    if (lastPointDay.isAfter(last)) last = lastPointDay;
+
+    final totalDays = last.difference(start).inDays;
+    final result = <_DailyBalance>[];
+    var balance = 0.0;
+
+    for (var i = 0; i <= totalDays; i++) {
+      // Constructing from y/m/d avoids DST issues of adding Durations
+      final d = DateTime(start.year, start.month, start.day + i);
+      balance += changes[d] ?? 0; // day 0 = beginning balance
+      result.add(_DailyBalance(d, balance));
+    }
+    return result;
+  }
+
+  /// Интервалын эхний/сүүлийн өдрийн үлдэгдлээс өөрчлөлтийг тооцож дээрх
   /// нийт хөрөнгийн хэсэгт мэдэгдэнэ
   void _publishPeriodInfo() {
     final notifier = widget.infoNotifier;
     if (notifier == null) return;
-    final points = _chart.points;
-    if (points.length < 2) {
+    if (_daily.length < 2) {
       notifier.value = EquityPeriodInfo(
         periodCode: _selectedPeriod,
         change: 0,
@@ -92,8 +142,8 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
       );
       return;
     }
-    final first = points.first.value;
-    final last = points.last.value;
+    final first = _daily.first.balance;
+    final last = _daily.last.balance;
     final change = last - first;
     notifier.value = EquityPeriodInfo(
       periodCode: _selectedPeriod,
@@ -108,22 +158,19 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
     _fetch();
   }
 
-  /// EquityPoint жагсаалт → FlSpot жагсаалт.
-  /// X тэнхлэг: 1 өдөр = 1 нэгж (эхний цэгийн огнооноос хойших хоног) —
-  /// огнооны завсар алгассан ч цэгүүд бодит зайгаараа байрлана.
-  List<FlSpot> _toSpots(List<EquityPoint> points) {
-    if (points.isEmpty) return const [];
-    final first = points.first.date;
+  /// Daily balances → FlSpot list.
+  /// X axis: index of day since the first date (1 day = 1 unit)
+  List<FlSpot> _toSpots() {
     return [
-      for (final p in points)
-        FlSpot(p.date.difference(first).inDays.toDouble(), p.value),
+      for (var i = 0; i < _daily.length; i++)
+        FlSpot(i.toDouble(), _daily[i].balance),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final spots = _toSpots(_chart.points);
+    final spots = _toSpots();
     final l10n = AppLocalizations.of(context)!;
 
     /// Map localized labels to API period codes
@@ -143,8 +190,7 @@ class _HomeEquityChartState extends State<HomeEquityChart> {
         FinanceChart(
           spots: spots.isEmpty ? null : spots,
           height: 180,
-          startDate:
-              _chart.points.isEmpty ? null : _chart.points.first.date,
+          startDate: _daily.isEmpty ? null : _daily.first.date,
         ),
         const SizedBox(height: 10),
         Row(
