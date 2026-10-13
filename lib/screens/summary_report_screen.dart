@@ -20,6 +20,13 @@ import 'components/summary_report/summary_report_skeleton_loader.dart';
 /// Хугацааны шүүлтүүрүүд — сонголт бүр өөр start огноотой
 enum _Period { oneMonth, threeMonths, sixMonths, oneYear, all }
 
+/// Daily running balance (one entry per calendar day)
+class _DailyBalance {
+  final DateTime date;
+  final double balance;
+  const _DailyBalance(this.date, this.balance);
+}
+
 class SummaryReportScreen extends StatefulWidget {
   const SummaryReportScreen({super.key});
 
@@ -34,6 +41,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   SummaryReportData _report = SummaryReportData.empty;
   EquityChart _chart = EquityChart.empty;
   PortfolioSummary _summary = PortfolioSummary.empty;
+
+  /// Continuous daily balances derived from _chart.points
+  List<_DailyBalance> _daily = const [];
 
   @override
   void initState() {
@@ -68,8 +78,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     setState(() => _isLoading = true);
     try {
       final auth = context.read<AuthService>();
+      final end = DateTime.now();
       final startStr = _formatQueryDate(_startDate());
-      final endStr = _formatQueryDate(DateTime.now());
+      final endStr = _formatQueryDate(end);
 
       final results = await Future.wait([
         auth.getSummaryReport(start: startStr, end: endStr),
@@ -85,6 +96,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
           _report = SummaryReportData.empty;
         }
         _chart = results[1] as EquityChart;
+        _daily = _buildDailyBalances(_chart.points, end);
         _summary = results[2] as PortfolioSummary;
         _isLoading = false;
       });
@@ -95,6 +107,43 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
     }
   }
 
+  /// points: first item = beginning balance, the rest = change on that date.
+  /// Returns one balance per day from the first date to [end]; days with no
+  /// change keep the previous balance.
+  List<_DailyBalance> _buildDailyBalances(
+      List<EquityPoint> points,
+      DateTime end,
+      ) {
+    if (points.isEmpty) return const [];
+
+    DateTime dayOnly(DateTime d) => DateTime(d.year, d.month, d.day);
+
+    // Sum changes per day (handles several entries on the same date)
+    final changes = <DateTime, double>{};
+    for (final p in points) {
+      final d = dayOnly(p.date);
+      changes[d] = (changes[d] ?? 0) + p.value;
+    }
+
+    final start = dayOnly(points.first.date);
+    var last = dayOnly(end);
+    // Make sure we never cut off data later than "end"
+    final lastPointDay = dayOnly(points.last.date);
+    if (lastPointDay.isAfter(last)) last = lastPointDay;
+
+    final totalDays = last.difference(start).inDays;
+    final result = <_DailyBalance>[];
+    var balance = 0.0;
+
+    for (var i = 0; i <= totalDays; i++) {
+      // Constructing from y/m/d avoids DST issues of adding Durations
+      final d = DateTime(start.year, start.month, start.day + i);
+      balance += changes[d] ?? 0; // day 0 = beginning balance
+      result.add(_DailyBalance(d, balance));
+    }
+    return result;
+  }
+
   void _onPeriodSelected(_Period period) {
     if (period == _period) return;
     setState(() => _period = period);
@@ -102,12 +151,12 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   }
 
   String _periodLabel(AppLocalizations l10n, _Period period) => switch (period) {
-        _Period.oneMonth => l10n.last1Month,
-        _Period.threeMonths => l10n.last3Months,
-        _Period.sixMonths => l10n.last6Months,
-        _Period.oneYear => l10n.last1Year,
-        _Period.all => l10n.all,
-      };
+    _Period.oneMonth => l10n.last1Month,
+    _Period.threeMonths => l10n.last3Months,
+    _Period.sixMonths => l10n.last6Months,
+    _Period.oneYear => l10n.last1Year,
+    _Period.all => l10n.all,
+  };
 
   // ── Тайлан татах ───────────────────────────────────────────────────────
 
@@ -384,13 +433,13 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     final dates = _dates;
     final latestTotal = dates.isEmpty ? 0.0 : _totalOf(dates.last);
-    
-    final points = _chart.points;
+
+    // Interval change from the first/last daily balance
     double diff = 0.0;
     double pct = 0.0;
-    if (points.length >= 2) {
-      final first = points.first.value;
-      final last = points.last.value;
+    if (_daily.length >= 2) {
+      final first = _daily.first.balance;
+      final last = _daily.last.balance;
       diff = last - first;
       pct = first != 0 ? diff / first * 100 : 0.0;
     }
@@ -400,219 +449,214 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         ? extendedColors.primaryMain
         : extendedColors.red;
 
-    // График — огноо тус бүрийн нийт хөрөнгө.
+    // График — өдөр бүрийн үлдэгдэл.
     // X тэнхлэг: 1 өдөр = 1 нэгж (эхний огнооноос хойших хоног)
-    final firstDate = points.isEmpty ? null : points.first.date;
+    final firstDate = _daily.isEmpty ? null : _daily.first.date;
     final spots = <FlSpot>[
-      for (final p in points)
-        FlSpot(
-          firstDate == null
-              ? 0.0
-              : p.date.difference(firstDate).inDays.toDouble(),
-          p.value,
-        ),
+      for (var i = 0; i < _daily.length; i++)
+        FlSpot(i.toDouble(), _daily[i].balance),
     ];
 
     final usdTotal = _summary.usdRate > 0 ? latestTotal / _summary.usdRate : 0.0;
     final usdTotalStr = formatNumbers(usdTotal, decimals: 2);
 
     return Scaffold(
-      backgroundColor: extendedColors.bgBase,
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Text(
-            l10n.summaryReport,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: extendedColors.neutral100,
-              fontWeight: FontWeight.w400,
+        backgroundColor: extendedColors.bgBase,
+        appBar: AppBar(
+          title: Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              l10n.summaryReport,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                color: extendedColors.neutral100,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          centerTitle: true,
+          backgroundColor: extendedColors.bgBase,
+          elevation: 0,
+          toolbarHeight: 70,
+          leadingWidth: 60,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: CircleBackButton(),
             ),
           ),
         ),
-        centerTitle: true,
-        backgroundColor: extendedColors.bgBase,
-        elevation: 0,
-        toolbarHeight: 70,
-        leadingWidth: 60,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 10),
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: CircleBackButton(),
-          ),
-        ),
-      ),
-      body: Stack(
-        children: [
-          if (_isLoading && _report.isEmpty)
-            const SummaryReportSkeletonLoader()
-          // Portfolio дата хоосон — "тайлан үүсээгүй" төлөв.
-          // Шүүлтүүрийг энд ч харуулна; эс тэгвэл дататай хугацаа руу
-          // буцаж шилжих боломжгүй болно.
-          else if (_report.isEmpty)
-            Column(
-              children: [
-                const SizedBox(height: 16),
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/images/box.png',
-                          width: 180,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => Icon(
-                            Icons.folder_open_outlined,
-                            size: 96,
-                            color: extendedColors.neutral400,
+        body: Stack(
+          children: [
+            if (_isLoading && _report.isEmpty)
+              const SummaryReportSkeletonLoader()
+            // Portfolio дата хоосон — "тайлан үүсээгүй" төлөв.
+            // Шүүлтүүрийг энд ч харуулна; эс тэгвэл дататай хугацаа руу
+            // буцаж шилжих боломжгүй болно.
+            else if (_report.isEmpty)
+              Column(
+                children: [
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'assets/images/box.png',
+                            width: 180,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => Icon(
+                              Icons.folder_open_outlined,
+                              size: 96,
+                              color: extendedColors.neutral400,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          l10n.noReportYet,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: extendedColors.neutral100,
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.noReportYet,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: extendedColors.neutral100,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 120),
-                      ],
+                          const SizedBox(height: 120),
+                        ],
+                      ),
                     ),
                   ),
+                ],
+              )
+            else
+              SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 16,
+                  bottom: 100,
                 ),
-              ],
-            )
-          else
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 16,
-                bottom: 100,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.totalAssets,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w200,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.totalAssets,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral100,
+                            fontWeight: FontWeight.w200,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4,),
-                      Text(
-                        '≈ $usdTotalStr\$',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: changeColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  _buildTotalAmount(latestTotal, theme, extendedColors),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '${isPositive ? '+' : ''}${_money(diff)}',
+                        const SizedBox(width: 4,),
+                        Text(
+                          '≈ $usdTotalStr\$',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: changeColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    _buildTotalAmount(latestTotal, theme, extendedColors),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '${isPositive ? '+' : ''}${_money(diff)}',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: changeColor,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        CustomSvgIcon(
+                          'divider-icon',
+                          size: 15,
+                          color: extendedColors.primaryMain,
+                        ),
+                        const SizedBox(width: 4),
+                        CustomSvgIcon(
+                          isPositive ? 'button-up' : 'button-down',
+                          size: 6,
+                          color: changeColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${pct.abs().toStringAsFixed(2)}% ',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: changeColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        Text(
+                          '(${_periodLabel(l10n, _period)})',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: extendedColors.neutral100,
                             fontWeight: FontWeight.w400,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      CustomSvgIcon(
-                        'divider-icon',
-                        size: 15,
-                        color: extendedColors.primaryMain,
-                      ),
-                      const SizedBox(width: 4),
-                      CustomSvgIcon(
-                        isPositive ? 'button-up' : 'button-down',
-                        size: 6,
-                        color: changeColor,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${pct.abs().toStringAsFixed(2)}% ',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: changeColor,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      Text(
-                        '(${_periodLabel(l10n, _period)})',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: extendedColors.neutral100,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  FinanceChart(
-                    spots: spots.isEmpty ? null : spots,
-                    height: 150,
-                    startDate: firstDate,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTimeFilters(l10n, theme, extendedColors),
-                  const SizedBox(height: 32),
-                  _buildAssetTable(l10n, theme, dates),
-                  const SizedBox(height: 36),
-                  Divider(height: 1, color: extendedColors.neutral500,),
-                  const SizedBox(height: 36),
-                  _buildCashFlowSection(l10n, theme),
-                ],
-              ),
-            ),
-          // Шүүлтүүр солиход хуучин дата дэлгэцэн дээр үлддэг тул
-          // дахин татаж байгааг индикатораар мэдэгдэнэ
-          if (_isLoading && !_report.isEmpty)
-            Positioned.fill(
-              child: IgnorePointer(
-                child: ColoredBox(
-                  color: extendedColors.bgBase.withValues(alpha: 0.6),
-                  child: const Center(child: CircularProgressIndicator()),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    FinanceChart(
+                      spots: spots.isEmpty ? null : spots,
+                      height: 180,
+                      startDate: firstDate,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTimeFilters(l10n, theme, extendedColors),
+                    const SizedBox(height: 32),
+                    _buildAssetTable(l10n, theme, dates),
+                    const SizedBox(height: 36),
+                    Divider(height: 1, color: extendedColors.neutral500,),
+                    const SizedBox(height: 36),
+                    _buildCashFlowSection(l10n, theme),
+                  ],
                 ),
               ),
-            ),
-        ],
-      ),
-      bottomNavigationBar: !_report.isEmpty
-        ? Container(
-            padding: const EdgeInsets.only(bottom: 24, left: 20, right: 20, top: 10),
-            decoration: BoxDecoration(
-                color: extendedColors.bgBase,
-                border: BorderDirectional(top: BorderSide(color: extendedColors.neutral500, width: 1)),
-            ),
-            child: CustomButton(
-              label: l10n.downloadReport,
-              onPressed: _showDownloadSheet,
-              variant: CustomButtonVariant.primary,
-            ),
-          )
-        : Container(height: 0,)
+            // Шүүлтүүр солиход хуучин дата дэлгэцэн дээр үлддэг тул
+            // дахин татаж байгааг индикатораар мэдэгдэнэ
+            if (_isLoading && !_report.isEmpty)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: ColoredBox(
+                    color: extendedColors.bgBase.withValues(alpha: 0.6),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        bottomNavigationBar: !_report.isEmpty
+            ? Container(
+          padding: const EdgeInsets.only(bottom: 24, left: 20, right: 20, top: 10),
+          decoration: BoxDecoration(
+            color: extendedColors.bgBase,
+            border: BorderDirectional(top: BorderSide(color: extendedColors.neutral500, width: 1)),
+          ),
+          child: CustomButton(
+            label: l10n.downloadReport,
+            onPressed: _showDownloadSheet,
+            variant: CustomButtonVariant.primary,
+          ),
+        )
+            : Container(height: 0,)
     );
   }
 
   /// Нийт хөрөнгө — бүхэл хэсэг том, бутархай нь бүдэг
   Widget _buildTotalAmount(
-    double total,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
+      double total,
+      ThemeData theme,
+      ExtendedColors extendedColors,
+      ) {
     final formatted = formatStockAmount(total, decimals: 2);
     final dotIdx = formatted.indexOf('.');
     final whole = dotIdx == -1 ? formatted : formatted.substring(0, dotIdx);
@@ -646,10 +690,10 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   }
 
   Widget _buildTimeFilters(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ExtendedColors extendedColors,
-  ) {
+      AppLocalizations l10n,
+      ThemeData theme,
+      ExtendedColors extendedColors,
+      ) {
     final filters = <(_Period, String)>[
       (_Period.oneMonth, l10n.m1),
       (_Period.threeMonths, l10n.m3),
@@ -680,10 +724,10 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
   /// Хөрөнгийн хүснэгт — эхний ба сүүлийн огнооны багануудтай.
   /// Нэг л огноотой бол ганц баганаар харуулна.
   Widget _buildAssetTable(
-    AppLocalizations l10n,
-    ThemeData theme,
-    List<String> dates,
-  ) {
+      AppLocalizations l10n,
+      ThemeData theme,
+      List<String> dates,
+      ) {
     if (dates.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -693,8 +737,8 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     String col2(String type) => hasTwo
         ? (type == 'total'
-              ? _money(_totalOf(last))
-              : _money(_typeOf(last, type)))
+        ? _money(_totalOf(last))
+        : _money(_typeOf(last, type)))
         : '';
 
     return Container(
