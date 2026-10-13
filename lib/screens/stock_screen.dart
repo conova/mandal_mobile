@@ -190,6 +190,7 @@ class _StockScreenState extends State<StockScreen> {
         'change': pct != null ? '${pct.abs().toStringAsFixed(2)}%' : '-',
         'isGrowing': pct == null ? null : pct >= 0,
         'stockcode': row.stockcode,
+        'isPrimary': row.isPrimaryMarket,
       },
     );
   }

@@ -211,6 +211,7 @@ class _HomeWatchlistSectionState extends State<HomeWatchlistSection> {
           'change': s.change,
           'isGrowing': s.isPositive,
           'stockcode': s.stockcode,
+          'isPrimary': s.isPrimary,
         },
       ),
       child: Padding(

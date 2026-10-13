@@ -228,6 +228,7 @@ class _HomeStockRecommendationSectionState
             'change': changeStr,
             'isGrowing': isGrowing,
             'stockcode': data.stockcode,
+            'isPrimary': data.isPrimaryMarket,
           },
         ),
       ),

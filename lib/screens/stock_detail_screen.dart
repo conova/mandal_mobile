@@ -16,7 +16,7 @@ import 'components/stock_detail/stock_detail_bottom_bar.dart';
 
 /// Route args:
 ///   { symbol: String, name: String, price: String, change: String,
-///     isGrowing: bool?, stockcode: String? }
+///     isGrowing: bool?, stockcode: String?, isPrimary: bool? }
 ///
 /// Дэлгэц нээгдэхэд /stocks/info API-г stockcode-оор дуудаж дэлгэрэнгүй
 /// мэдээллийг татна.
@@ -64,6 +64,9 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
   }
 
   String get _symbol => (_args['symbol'] as String?) ?? _info?.symbol ?? '';
+
+  /// Анхдагч зах зээлийнх эсэх (Зарах товчийг нуухад ашиглана)
+  bool get _isPrimary => _args['isPrimary'] as bool? ?? false;
 
   Future<void> _fetchPortfolioSummary() async {
     try {
@@ -291,12 +294,14 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                     color: extendedColors.primaryMain,
                     onPressed: () => _openTrading('buy'),
                   ),
-                  const SizedBox(height: 16),
-                  _buildTradeMenuButton(
-                    label: AppLocalizations.of(context)!.sell,
-                    color: extendedColors.red,
-                    onPressed: () => _openTrading('sell'),
-                  ),
+                  if (!_isPrimary) ...[
+                    const SizedBox(height: 16),
+                    _buildTradeMenuButton(
+                      label: AppLocalizations.of(context)!.sell,
+                      color: extendedColors.red,
+                      onPressed: () => _openTrading('sell'),
+                    ),
+                  ],
                 ],
               ),
             ),

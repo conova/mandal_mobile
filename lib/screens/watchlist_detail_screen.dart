@@ -25,6 +25,8 @@ class WatchlistStock {
   /// /stocks/info дуудахад хэрэглэгдэнэ (STOCKCODE)
   final String stockcode;
 
+  final bool isPrimary;
+
   const WatchlistStock({
     required this.symbol,
     required this.name,
@@ -32,12 +34,14 @@ class WatchlistStock {
     required this.change,
     this.isPositive,
     this.stockcode = '',
+    this.isPrimary = false,
   });
 
   factory WatchlistStock.fromApi(Map<String, dynamic> row) {
     final closePrice = row['CLOSEPRICE'];
     final priceChange = row['PRICECHANGE'];
     final isForeign = row['ISFOREIGN']?.toString() == '1';
+    final market = row['MARKET']?.toString() ?? '';
 
     final priceStr = closePrice == null
         ? '-'
@@ -64,6 +68,7 @@ class WatchlistStock {
       price: priceStr,
       change: changeStr,
       isPositive: positive,
+      isPrimary: market.toLowerCase() == 'primary',
     );
   }
 
@@ -395,6 +400,7 @@ class _WatchlistDetailScreenState extends State<WatchlistDetailScreen> {
               'change': item.change,
               'isGrowing': item.isPositive,
               'stockcode': item.stockcode,
+              'isPrimary': item.isPrimary,
             },
           );
           // Detail дээр одоор нэмж/хассан байж болзошгүй тул шинэчилнэ
