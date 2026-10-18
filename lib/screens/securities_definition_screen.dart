@@ -154,6 +154,20 @@ class _SecuritiesDefinitionScreenState
 
   String get _purpose => _args['purpose']?.toString() ?? '';
 
+  /// URL-ийн ард нэмэх бусад параметр (position тайлан — start, end)
+  Map<String, String> get _params {
+    final raw = _args['params'];
+    if (raw is! Map) return const {};
+    return raw.map((k, v) => MapEntry(k.toString(), v?.toString() ?? ''));
+  }
+
+  /// Хадгалах файлын нэр (өргөтгөлгүй)
+  String get _fileBase => switch (_doc) {
+        'agreement' => 'geree',
+        'position' => 'tailan',
+        _ => 'todorhoilolt',
+      };
+
   Future<void> _fetch() async {
     setState(() {
       _isLoading = true;
@@ -166,6 +180,7 @@ class _SecuritiesDefinitionScreenState
         lang: _lang,
         doc: _doc,
         purpose: _purpose,
+        params: _params,
       );
       if (!mounted) return;
 
@@ -275,7 +290,7 @@ class _SecuritiesDefinitionScreenState
       final path = await FilePicker.saveFile(
         dialogTitle: 'Тодорхойлолт хадгалах',
         fileName: (name == null || name.isEmpty)
-            ? '${_doc == 'agreement' ? 'geree' : 'todorhoilolt'}_$_lang.pdf'
+            ? '${_fileBase}_$_lang.pdf'
             : name,
         type: FileType.custom,
         allowedExtensions: const ['pdf'],
@@ -406,7 +421,7 @@ class _SecuritiesDefinitionScreenState
       final bytes = Uint8List.fromList(utf8.encode(_htmlForPdf()));
       final path = await FilePicker.saveFile(
         dialogTitle: 'Тодорхойлолт хадгалах',
-        fileName: '${_doc == 'agreement' ? 'geree' : 'todorhoilolt'}_$_lang.html',
+        fileName: '${_fileBase}_$_lang.html',
         type: FileType.custom,
         allowedExtensions: ['html'],
         bytes: bytes,
@@ -440,7 +455,11 @@ class _SecuritiesDefinitionScreenState
         title: Padding(
           padding: const EdgeInsets.only(top: 10),
           child: Text(
-            _doc == 'agreement' ? l10n.agreementLabel : l10n.securitiesStatement,
+            switch (_doc) {
+              'agreement' => l10n.agreementLabel,
+              'position' => l10n.summaryReport,
+              _ => l10n.securitiesStatement,
+            },
           ),
         ),
         leading: Padding(

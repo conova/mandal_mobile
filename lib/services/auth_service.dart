@@ -1468,10 +1468,14 @@ class AuthService with ChangeNotifier {
 
   /// Үнэт цаасны тодорхойлолт — HTML хэлбэрээр (?lang=mn|en).
   /// Хариу нь шууд HTML эсвэл {code, data} JSON байж болно.
+  ///
+  /// [params] — URL-ийн ард нэмэх бусад параметр (жишээ: position тайлангийн
+  /// start, end)
   Future<String> getDefinitionHtml({
     String lang = 'mn',
     String doc = 'definition',
     String? purpose,
+    Map<String, String> params = const {},
   }) async {
     try {
       final response = await _authedDio.get(
@@ -1479,6 +1483,7 @@ class AuthService with ChangeNotifier {
         queryParameters: {
           'lang': lang,
           if (purpose != null && purpose.isNotEmpty) 'purpose': purpose,
+          ...params,
         },
         options: Options(responseType: ResponseType.plain),
       );

@@ -1,9 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import '../common/stock_row_format.dart';
 import '../models/summary_report_data.dart';
@@ -58,9 +55,9 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
       '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}';
 
   /// Сонгосон шүүлтүүрийн эхлэх огноо
-  DateTime _startDate() {
+  DateTime _startDate([_Period? period]) {
     final now = DateTime.now();
-    switch (_period) {
+    switch (period ?? _period) {
       case _Period.oneMonth:
         return DateTime(now.year, now.month - 1, now.day);
       case _Period.threeMonths:
@@ -284,13 +281,22 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
 
     if (selected == null || !mounted) return;
 
-    // Сонгосон хугацаа өөр бол эхлээд датаг шинэчилнэ
-    if (selected != _period) {
-      setState(() => _period = selected);
-      await _fetch();
-      if (!mounted) return;
-    }
-    await _downloadPdf();
+    // Тайланг backend-ээс (/user/docs/position?start=&end=) HTML-ээр татаж
+    // тодорхойлолттой ижил дэлгэцээр харуулж PDF болгон хадгална
+    Navigator.pushNamed(
+      context,
+      '/securities_definition',
+      arguments: {
+        'doc': 'position',
+        'lang': Localizations.localeOf(context).languageCode == 'mn'
+            ? 'mn'
+            : 'en',
+        'params': {
+          'start': _formatQueryDate(_startDate(selected)),
+          'end': _formatQueryDate(DateTime.now()),
+        },
+      },
+    );
   }
 
   Widget _buildRadio(bool selected, ExtendedColors extendedColors) {
@@ -308,112 +314,6 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
         color: extendedColors.bgBase,
       ),
     );
-  }
-
-  /// Дэлгэцийн мэдээллийг PDF болгож share/татах цонх нээнэ
-  Future<void> _downloadPdf() async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      // Кирилл дэмждэг фонт (Roboto)
-      final font = await PdfGoogleFonts.robotoRegular();
-      final fontBold = await PdfGoogleFonts.robotoBold();
-
-      final dates = _dates;
-      final latestTotal = dates.isEmpty ? 0.0 : _totalOf(dates.last);
-      final start = _formatQueryDate(_startDate());
-      final end = _formatQueryDate(DateTime.now());
-
-      final doc = pw.Document();
-      doc.addPage(
-        pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          theme: pw.ThemeData.withFont(base: font, bold: fontBold),
-          build: (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                l10n.summaryReport,
-                style: pw.TextStyle(
-                  fontSize: 22,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(height: 4),
-              pw.Text(
-                '$start - $end',
-                style: const pw.TextStyle(
-                  fontSize: 11,
-                  color: PdfColors.grey600,
-                ),
-              ),
-              pw.SizedBox(height: 20),
-              pw.Text(
-                '${l10n.totalAssets}: ${_money(latestTotal)}',
-                style: pw.TextStyle(
-                  fontSize: 14,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(height: 20),
-              if (dates.isNotEmpty)
-                pw.TableHelper.fromTextArray(
-                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  headers: [
-                    l10n.type,
-                    dates.first,
-                    if (dates.length > 1) dates.last,
-                  ],
-                  data: [
-                    [
-                      l10n.totalAssets,
-                      _money(_totalOf(dates.first)),
-                      if (dates.length > 1) _money(_totalOf(dates.last)),
-                    ],
-                    [
-                      l10n.cash,
-                      _money(_typeOf(dates.first, 'cash')),
-                      if (dates.length > 1) _money(_typeOf(dates.last, 'cash')),
-                    ],
-                    [
-                      l10n.stocks,
-                      _money(_typeOf(dates.first, 'stock')),
-                      if (dates.length > 1)
-                        _money(_typeOf(dates.last, 'stock')),
-                    ],
-                    [
-                      l10n.bonds,
-                      _money(_typeOf(dates.first, 'bond')),
-                      if (dates.length > 1) _money(_typeOf(dates.last, 'bond')),
-                    ],
-                  ],
-                ),
-              pw.SizedBox(height: 20),
-              pw.TableHelper.fromTextArray(
-                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                headers: [l10n.incomeExpense, l10n.selectedPeriod],
-                data: [
-                  [l10n.incomeSalary, _money(_txnAmount('cash'))],
-                  [l10n.stockProfit, _money(_txnAmount('stock'))],
-                  [l10n.interestIncome, _money(_txnAmount('rateincome'))],
-                  [l10n.bondPrincipal, _money(_txnAmount('bond'))],
-                  [l10n.dividendProfit, _money(_txnAmount('dividend'))],
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-
-      final bytes = await doc.save();
-      await Printing.sharePdf(bytes: bytes, filename: 'summary_report.pdf');
-    } catch (e) {
-      if (!mounted) return;
-      CustomSnackbar.show(
-        context,
-        message: e.toString().replaceFirst('Exception: ', ''),
-        type: CustomSnackbarType.error,
-      );
-    }
   }
 
   // ── Model руу дамжуулсан богино нэрс ──────────────────────────────────
