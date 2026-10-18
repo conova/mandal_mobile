@@ -63,5 +63,6 @@
     "registrationFeeUnpaidTitle": "Cuota de registro pendiente",
     "registrationFeeUnpaidDesc": "Pague la cuota de registro para activar su cuenta.",
     "activate": "Activar",
-    "paymentFailed": "El pago falló"
+    "paymentFailed": "El pago falló",
+    "termsNotFound": "Los términos del servicio aún no están disponibles."
 }

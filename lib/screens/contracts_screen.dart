@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import '../common/html_content.dart';
 import '../services/content_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
@@ -294,12 +296,23 @@ class _ContractSectionScreenState extends State<ContractSectionScreen> {
                         const SizedBox(height: 16),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Text(
-                            section.content.isNotEmpty ? section.content : '—',
-                            style: theme.textTheme.bodyLarge?.copyWith(
+                          // Агуулга HTML tag-тай ирж болно (<p>, <b>, <ul>,
+                          // <a> г.м.) — энгийн текст ч мөн адил харагдана
+                          child: HtmlWidget(
+                            prepareHtmlContent(section.content),
+                            textStyle: theme.textTheme.bodyLarge?.copyWith(
                               color: extendedColors.neutral200,
                               height: 1.6,
                             ),
+                            // Холбоосыг app доторх webview-ээр нээнэ
+                            onTapUrl: (url) {
+                              Navigator.pushNamed(
+                                context,
+                                '/webview',
+                                arguments: {'url': url, 'title': section.title},
+                              );
+                              return true;
+                            },
                           ),
                         ),
                         const SizedBox(height: 40),

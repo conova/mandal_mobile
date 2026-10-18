@@ -2116,4 +2116,7 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get stockOrderPlacedDesc =>
       'Та захиалга хэсгээс өөрийн захиалгийн дэлгэрэнгүйг харах боломжтой.';
+
+  @override
+  String get termsNotFound => 'Үйлчилгээний нөхцөл одоогоор байхгүй байна.';
 }

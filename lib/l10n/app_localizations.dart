@@ -4071,6 +4071,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can view your order details from the orders section.'**
   String get stockOrderPlacedDesc;
+
+  /// No description provided for @termsNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service are not available yet.'**
+  String get termsNotFound;
 }
 
 class _AppLocalizationsDelegate
