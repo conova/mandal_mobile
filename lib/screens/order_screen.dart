@@ -352,11 +352,12 @@ class _OrderScreenState extends State<OrderScreen>
             else
               ...orders.map(
                 (order) => OrderCard(
-                  companyName: order.symbol.isNotEmpty &&
-                          order.symbol != order.name
-                      ? order.symbol
+                  companyName: order.isBond
+                      ? order.stockName
+                      : order.symbol,
+                  subtitle: order.isBond
+                      ? order.compNameOf(lang)
                       : order.nameOf(lang),
-                  subtitle: order.nameOf(lang),
                   amount: formatStockAmount(
                     order.totalWithFee,
                     isForeign: order.isForeignCurrency,

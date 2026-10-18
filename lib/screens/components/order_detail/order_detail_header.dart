@@ -15,10 +15,12 @@ class OrderDetailHeader extends StatelessWidget {
     final lang = Localizations.localeOf(context).languageCode;
 
     // Гарчиг: symbol (нэрээс ялгаатай бол), дэд гарчиг: нэр
-    final title = order.symbol.isNotEmpty && order.symbol != order.name
-        ? order.symbol
+    final title = order.isBond
+        ? order.stockName
+        : order.symbol;
+    final subtitle = order.isBond
+        ? order.compNameOf(lang)
         : order.nameOf(lang);
-    final subtitle = order.nameOf(lang);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),

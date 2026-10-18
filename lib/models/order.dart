@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import '../common/stock_row_format.dart';
 
 /// /orders/active, /orders/activebonds, /orders/activestocks API-ийн
@@ -64,6 +66,9 @@ class Order {
   final String payPeriod2;
   final String descr;
   final String srcName;
+  final String compName;
+  final String compName2;
+  final String stockName;
 
   /// API-ийн анхны мөр — дэлгэрэнгүй дэлгэц рүү дамжуулахад
   final Map<String, dynamic> raw;
@@ -102,6 +107,9 @@ class Order {
     required this.descr,
     required this.srcName,
     required this.raw,
+    this.compName = '',
+    this.compName2 = '',
+    this.stockName = '',
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -150,6 +158,9 @@ class Order {
       descr: str('DESCR'),
       srcName: str('SRCNAME'),
       raw: json,
+      compName: str('COMPNAME'),
+      compName2: str('COMPNAME2'),
+      stockName: str('STOCKNAME'),
     );
   }
 
@@ -206,6 +217,8 @@ class Order {
     return '${formatStockAmount(done, decimals: 0).replaceAll('₮', '')}/'
         '${formatStockAmount(total, decimals: 0).replaceAll('₮', '')} ($pct%)';
   }
+
+  String compNameOf(String lang) => _pick(compName, compName2, lang);
 
   /// "2025/04/28 20:53:03" → "2025.04.28 20:53"
   String get orderDateLabel {
