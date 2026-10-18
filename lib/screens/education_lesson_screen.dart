@@ -9,6 +9,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_svg_icon.dart';
+import '../common/navigation.dart';
 
 /// Хичээлийн сэдвийн агуулга — слайдуудаар үзээд төгсгөлд нь
 /// мэдлэг шалгах тест бөглөнө. Зөв хариулбал сэдэв дуусгасанд
@@ -120,7 +121,7 @@ class _EducationLessonScreenState extends State<EducationLessonScreen> {
                   alignment: Alignment.centerRight,
                   child: _CircleIconButton(
                     icon: 'x-icon',
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => safePop(context),
                   ),
                 ),
               ),

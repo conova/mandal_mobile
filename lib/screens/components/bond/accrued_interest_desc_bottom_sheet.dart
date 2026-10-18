@@ -3,6 +3,7 @@ import 'package:mandal_capital/widgets/custom_button.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
+import '../../../common/navigation.dart';
 
 class AccruedInterestDescBottomSheet extends StatelessWidget {
   final CustomButtonVariant? buttonVariant;
@@ -101,7 +102,7 @@ class AccruedInterestDescBottomSheet extends StatelessWidget {
           Center(
             child: CustomButton(
               label: l10n.returnBack,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => safePop(context),
               variant: buttonVariant ?? CustomButtonVariant.tertiary,
             ),
           ),

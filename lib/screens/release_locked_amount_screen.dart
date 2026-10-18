@@ -7,6 +7,7 @@ import '../theme/extended_colors.dart';
 import 'components/release_locked_amount/release_locked_amount_header.dart';
 import 'components/release_locked_amount/release_locked_amount_list.dart';
 import 'components/release_locked_amount/release_locked_amount_bottom_bar.dart';
+import '../common/navigation.dart';
 
 //Obsolete_screen
 
@@ -124,7 +125,7 @@ class _ReleaseLockedAmountScreenState extends State<ReleaseLockedAmountScreen> {
           ),
           ReleaseLockedAmountBottomBar(
             projectedCashText: projectedCashText,
-            onBack: () => Navigator.pop(context),
+            onBack: () => safePop(context),
             isCancelEnabled: _selectedIndices.isNotEmpty,
             onCancel: () {
               Navigator.pop(context);

@@ -11,6 +11,7 @@ import '../theme/extended_colors.dart';
 import 'custom_snackbar.dart';
 import '../l10n/app_localizations.dart';
 import 'custom_svg_icon.dart';
+import '../common/navigation.dart';
 
 /// Түгжигдсэн дүн суллах — bottom sheet хувилбар (тусдаа дэлгэц рүү
 /// шилжихгүй, арилжааны дэлгэцийн дээр нээгдэнэ).
@@ -272,7 +273,7 @@ class _ReleaseLockedAmountSheetState extends State<ReleaseLockedAmountSheet> {
             ),
             ReleaseLockedAmountBottomBar(
               projectedCashText: projectedCashText,
-              onBack: () => Navigator.pop(context),
+              onBack: () => safePop(context),
               isCancelEnabled: _selectedIndices.isNotEmpty && !_isCancelling,
               onCancel: _cancelSelected,
             ),

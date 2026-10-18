@@ -3,6 +3,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_svg_icon.dart';
+import '../../../common/navigation.dart';
 
 // Obsolete bottom sheet
 
@@ -133,7 +134,7 @@ class BondStatusInfoSheet extends StatelessWidget {
             child: CustomButton(
               label: l10n.close,
               variant: CustomButtonVariant.tertiary,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => safePop(context),
             ),
           ),
         ],

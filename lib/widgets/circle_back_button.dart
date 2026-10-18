@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import '../theme/extended_colors.dart';
+import '../common/navigation.dart';
 
 /// Саарал дугуй дэвсгэртэй back товч — AppBar-ийн leading болон
 /// custom толгойнуудад давтагддаг хэв маяг.
@@ -15,7 +16,7 @@ class CircleBackButton extends StatelessWidget {
     final extendedColors = Theme.of(context).extension<ExtendedColors>()!;
 
     return IconButton(
-      onPressed: onPressed ?? () => Navigator.pop(context),
+      onPressed: onPressed ?? () => safePop(context),
       style: IconButton.styleFrom(
         backgroundColor: extendedColors.bgSecondary,
         foregroundColor: extendedColors.neutral100,

@@ -6,6 +6,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../main.dart' show navigatorKey;
 import '../theme/extended_colors.dart';
 import '../widgets/custom_snackbar.dart';
+import '../common/navigation.dart';
 import '../common/url_opener_stub.dart'
     if (dart.library.html) '../common/url_opener_web.dart';
 
@@ -318,7 +319,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         title: Text(title),
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => safePop(context),
         ),
       ),
       body: Stack(

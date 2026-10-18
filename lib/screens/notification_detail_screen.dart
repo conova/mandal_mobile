@@ -5,6 +5,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
+import '../common/navigation.dart';
 
 /// Notification дэлгэрэнгүй харах дэлгэц.
 ///
@@ -152,7 +153,7 @@ class NotificationDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
               child: CustomButton(
                 label: l10n.back,
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => safePop(context),
                 variant: CustomButtonVariant.tertiary,
               ),
             ),

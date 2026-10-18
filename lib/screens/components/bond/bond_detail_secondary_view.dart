@@ -56,8 +56,6 @@ class BondDetailSecondaryView extends StatelessWidget {
     final schedule = BondSchedule.build(
       start: parseStockDate(bond?.startDate),
       end: parseStockDate(bond?.endDate),
-      payPeriod: bond?.payType ?? '',
-      nextPayday: parseStockDate(bond?.payday),
       // Давтамж — PAYTYPE (YYYY/Q г.м.), PAYPERIOD нь зөвхөн нэр
       payPeriod: bond?.payType ?? '',
     );

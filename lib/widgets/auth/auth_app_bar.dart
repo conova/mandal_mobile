@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/extended_colors.dart';
 import '../language_switcher.dart';
 import '../logo.dart';
+import '../../common/navigation.dart';
 
 class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showLogo;
@@ -44,7 +45,7 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
-                  onTap: onClose ?? () => Navigator.of(context).pop(),
+                  onTap: onClose ?? () => safePop(context),
                   borderRadius: BorderRadius.circular(16), // Half of 32 for a circle
                   child: SizedBox(
                     width: 32,

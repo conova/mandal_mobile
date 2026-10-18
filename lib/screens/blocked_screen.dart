@@ -3,6 +3,7 @@ import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../common/navigation.dart';
 
 class BlockedScreen extends StatelessWidget {
   const BlockedScreen({super.key});
@@ -88,7 +89,7 @@ class BlockedScreen extends StatelessWidget {
                 width: double.infinity,
                 child: CustomButton(
                   label: l10n.returnToLogin,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => safePop(context),
                   variant: CustomButtonVariant.secondary,
                 ),
               ),

@@ -5,6 +5,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_svg_icon.dart';
+import '../../../common/navigation.dart';
 
 Future<void> showBondPaymentDetailsSheet({
   required BuildContext context,
@@ -177,7 +178,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: CustomButton(
                   label: l10n.close,
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => safePop(context),
                   variant: CustomButtonVariant.tertiary,
                 ),
               ),

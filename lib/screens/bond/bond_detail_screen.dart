@@ -16,6 +16,7 @@ import '../components/bond/bond_detail_header.dart';
 import '../components/bond/bond_detail_primary_view.dart';
 import '../components/bond/bond_detail_secondary_view.dart';
 import '../../l10n/app_localizations.dart';
+import '../../common/navigation.dart';
 
 /// Бондын дэлгэрэнгүй — зах зээл/төлвөөс хамаарч вариант бүр тусдаа
 /// component (screens/components/bond/):
@@ -272,7 +273,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
                                 width: 40,
                                 height: 40,
                                 child: IconButton(
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: () => safePop(context),
                                   style: IconButton.styleFrom(
                                     backgroundColor: extendedColors.bgBase,
                                     foregroundColor: extendedColors.neutral100,

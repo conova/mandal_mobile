@@ -3,6 +3,7 @@ import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/extended_colors.dart';
+import '../common/navigation.dart';
 
 /// "Шинэ төхөөрөмж" introductory screen — login deviceId бүртгэлгүй үед
 /// харагдана. Хэрэглэгч баталгаажуулах товчийг дарвал
@@ -49,7 +50,7 @@ class NewDeviceScreen extends StatelessWidget {
                   '/login_verification',
                   arguments: {'sessionId': sessionId},
                 ),
-                onBack: () => Navigator.pop(context),
+                onBack: () => safePop(context),
               ),
               const Spacer(flex: 3),
             ],
