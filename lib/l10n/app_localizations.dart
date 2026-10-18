@@ -4083,6 +4083,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order amount'**
   String get orderAmount;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @errorLoadingPDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading PDF file'**
+  String get errorLoadingPDF;
 }
 
 class _AppLocalizationsDelegate

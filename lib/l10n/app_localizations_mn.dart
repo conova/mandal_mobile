@@ -2122,4 +2122,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get orderAmount => 'Захиалгын дүн';
+
+  @override
+  String get retry => 'Дахин оролдох';
+
+  @override
+  String get errorLoadingPDF => 'PDF файлыг ачаалахад алдаа гарлаа.';
 }

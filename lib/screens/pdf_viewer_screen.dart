@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 import 'package:flutter/foundation.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
+import '../widgets/custom_svg_icon.dart';
 
 class PdfViewerScreen extends StatefulWidget {
   final String url;
@@ -41,6 +43,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -53,6 +56,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           ),
         ),
         centerTitle: true,
+        scrolledUnderElevation: 0.0,
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
         leadingWidth: 60,
@@ -61,32 +65,37 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           child: CircleBackButton(),
         ),
       ),
-      body: PdfPreview(
-        build: (format) => _fetchPdf(),
-        useActions: true,
-        canChangePageFormat: false,
-        canChangeOrientation: false,
-        canDebug: false,
-        loadingWidget: const Center(child: CircularProgressIndicator()),
-        onError: (context, error) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 48, color: extendedColors.red),
-                const SizedBox(height: 16),
-                Text(
-                  'PDF-ийг ачаалахад алдаа гарлаа',
-                  style: TextStyle(color: extendedColors.neutral100),
-                ),
-                TextButton(
-                  onPressed: () => setState(() {}),
-                  child: const Text('Дахин оролдох'),
-                ),
-              ],
-            ),
-          );
-        },
+      body: InteractiveViewer(
+        panEnabled: true, // Allows dragging/panning
+        minScale: 0.5,
+        maxScale: 4.0, // Allows zooming up to 4x
+        child: PdfPreview(
+          build: (format) => _fetchPdf(),
+          useActions: true,
+          canChangePageFormat: false,
+          canChangeOrientation: false,
+          canDebug: false,
+          loadingWidget: const Center(child: CircularProgressIndicator()),
+          onError: (context, error) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomSvgIcon('info-circle', size: 48, color: extendedColors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.errorLoadingPDF,
+                    style: TextStyle(color: extendedColors.neutral100),
+                  ),
+                  TextButton(
+                    onPressed: () => setState(() {}),
+                    child: Text(l10n.retry),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

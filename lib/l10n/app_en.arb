@@ -822,5 +822,7 @@
     "cashDollar": "Cash ($)",
     "stockOrderPlacedDesc": "You can view your order details from the orders section.",
     "termsNotFound": "Terms of service are not available yet.",
-    "orderAmount": "Order amount"
+    "orderAmount": "Order amount",
+    "retry": "Retry",
+    "errorLoadingPDF": "Error loading PDF file"
 }
