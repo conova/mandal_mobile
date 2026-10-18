@@ -149,7 +149,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
   double get _unitPrice =>
       _num(['UNITPRICE', 'CLOSEPRICE', 'STOCKPRICE', 'PRICE']);
 
-  double get _ownedAmount => _num(['AMT']);
+  double get _ownedAmount => _num(['CURRENTBAL']) * _num(['STOCKPRICE']);
 
   bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
 
@@ -157,7 +157,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
 
   /// Эзэмшиж буй ширхэг — CNT талбар ирвэл түүнийг, үгүй бол дүн/нэгж үнэ
   int get _maxQuantity {
-    final cnt = _num(['CNT', 'CURRENTBAL']);
+    final cnt = _num(['CURRENTBAL']);
     if (cnt > 0) return cnt.floor();
     if (_unitPrice > 0) return (_ownedAmount / _unitPrice).floor();
     return 0;
