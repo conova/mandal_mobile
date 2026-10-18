@@ -7,18 +7,24 @@ class CurrencySuffixFormatter extends TextInputFormatter {
   CurrencySuffixFormatter({this.suffix = '₮'});
 
   static String format(String value, {String suffix = '₮'}) {
+    if (value.isEmpty) return '';
     String cleanText = value.replaceAll(suffix, '').replaceAll(',', '');
     if (cleanText.isEmpty) return '';
 
     final number = double.tryParse(cleanText);
-    if (number == null) return '';
+    if (number == null) return cleanText + suffix;
 
-    // If it's a whole number, format without decimals, otherwise keep up to 2 decimals
-    final formatter = number == number.toInt()
-        ? NumberFormat('#,###')
-        : NumberFormat('#,###.##');
-        
-    return '${formatter.format(number)}$suffix';
+    final parts = cleanText.split('.');
+    final wholePart = int.tryParse(parts[0]) ?? 0;
+    final formattedWhole = NumberFormat('#,###').format(wholePart);
+
+    if (parts.length > 1) {
+    String decimalPart = parts[1];
+    if (decimalPart.length > 2) decimalPart = decimalPart.substring(0, 2);
+    return '$formattedWhole.$decimalPart$suffix';
+    }
+
+    return '$formattedWhole$suffix';
   }
 
   @override
@@ -33,20 +39,41 @@ class CurrencySuffixFormatter extends TextInputFormatter {
       return const TextEditingValue(text: '');
     }
 
-    // 2. Format with thousand separators
-    // We use int.tryParse here because standard input boxes using this formatter 
-    // typically use FilteringTextInputFormatter.digitsOnly
-    final number = int.tryParse(cleanText);
-    if (number == null) return oldValue;
+    // Handle leading zero if followed by digits
+    if (cleanText.length > 1 && cleanText.startsWith('0') && cleanText[1] != '.') {
+      cleanText = cleanText.substring(1);
+    }
 
-    final formatter = NumberFormat('#,###');
-    String formattedNumber = formatter.format(number);
+    // Handle dot
+    if (cleanText.endsWith('.')) {
+      final partBeforeDot = cleanText.substring(0, cleanText.length - 1);
+      final number = int.tryParse(partBeforeDot.isEmpty ? '0' : partBeforeDot);
+      if (number == null) return oldValue;
 
-    // 3. Attach suffix
-    String newFormattedText = '$formattedNumber$suffix';
+      String formatted = NumberFormat('#,###').format(number);
+      String newText = '$formatted.$suffix';
+      return TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: newText.length - suffix.length),
+      );
+    }
+    final parts = cleanText.split('.');
+    if (parts.length > 2) return oldValue; // Only one dot allowed
 
-    // 4. Calculate selection index
-    // Keep it at the end of the numbers (before suffix).
+    final wholePartStr = parts[0];
+    final wholeNumber = int.tryParse(wholePartStr.isEmpty ? '0' : wholePartStr);
+    if (wholeNumber == null) return oldValue;
+
+    String formattedWhole = NumberFormat('#,###').format(wholeNumber);
+    String newFormattedText;
+
+    if (parts.length > 1) {
+    String decimalPart = parts[1];
+    if (decimalPart.length > 2) decimalPart = decimalPart.substring(0, 2);
+    newFormattedText = '$formattedWhole.$decimalPart$suffix';
+    } else {
+    newFormattedText = '$formattedWhole$suffix';
+    }
     int selectionIndex = newFormattedText.length - suffix.length;
 
     return TextEditingValue(

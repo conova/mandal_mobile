@@ -100,6 +100,7 @@ import 'services/notification_api_service.dart';
 import 'services/payment_service.dart';
 import 'services/dan_service.dart';
 import 'screens/webview_screen.dart';
+import 'screens/pdf_viewer_screen.dart';
 import 'theme/app_colors.dart';
 import 'theme/extended_colors.dart';
 import 'theme/app_state_manager.dart';
@@ -597,6 +598,10 @@ class MyApp extends StatelessWidget {
               '/blocked': (context) => const BlockedScreen(),
               '/unblock_verification': (context) =>
                   const UnblockVerificationScreen(),
+              '/pdf_viewer': (context) => PdfViewerScreen(
+                    url: (settings.arguments as Map)['url'],
+                    title: (settings.arguments as Map)['title'],
+                  ),
             };
 
             final routeName = settings.name;

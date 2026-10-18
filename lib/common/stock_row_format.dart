@@ -4,11 +4,14 @@ library;
 import '../l10n/app_localizations.dart';
 
 /// AMT г.м. тоон утгыг мянгачилж, валютын тэмдэгтэй буцаана:
-///   7428770000 → "7,428,770,000.00₮" (isForeign бол "...$")
+///   7428770000 → "7,428,770,000₮" (мянган нэгжээс дээш бол бутархайгүй)
+///   742.87 → "742.87₮"
 ///   null/хоосон → "-"
 /// [decimals] — бутархайн орны тоо (progress label г.м. дээр 0 ашиглана)
 String formatStockAmount(dynamic raw, {bool isForeign = false, int decimals = 2}) {
-  final formatted = formatNumbers(raw, decimals: decimals);
+  final n = num.tryParse(raw?.toString().replaceAll(',', '') ?? '');
+  final effectiveDecimals = (n != null && n >= 1000) ? 0 : decimals;
+  final formatted = formatNumbers(raw, decimals: effectiveDecimals);
   return isForeign ? '$formatted\$' : '$formatted₮';
 }
 
