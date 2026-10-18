@@ -2150,4 +2150,8 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get stockOrderPlacedDesc =>
       'You can view your order details from the orders section.';
+
+  @override
+  String get termsNotFound =>
+      'Los términos del servicio aún no están disponibles.';
 }

@@ -78,6 +78,7 @@ import 'screens/dan_verification_screen.dart';
 import 'screens/pep_definition_screen.dart';
 import 'screens/securities_agreement_screen.dart';
 import 'screens/contracts_screen.dart';
+import 'screens/terms_of_service_screen.dart';
 import 'screens/document_request_screen.dart';
 import 'screens/securities_definition_screen.dart';
 import 'screens/document_verification_screen.dart';
@@ -585,6 +586,7 @@ class MyApp extends StatelessWidget {
               '/document_request': (context) =>
                   const DocumentRequestScreen(),
               '/contracts': (context) => const ContractsScreen(),
+              '/terms_of_service': (context) => const TermsOfServiceScreen(),
               '/withdraw_amount': (context) => const WithdrawAmountScreen(),
               '/withdraw_success': (context) => const WithdrawSuccessScreen(),
               '/transaction_history': (context) =>

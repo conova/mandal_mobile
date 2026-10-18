@@ -287,9 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileListItem(
               icon: const CustomSvgIcon('file-02', size: 20),
               title: l10n.termsOfService,
-              onTap: () {
-                // TODO: үйлчилгээний нөхцөлийн дэлгэц/линк холбогдоно
-              },
+              onTap: () => Navigator.pushNamed(context, '/terms_of_service'),
             ),
 
             // Child Account Section — хүүхдийн профайлд харагдахгүй
