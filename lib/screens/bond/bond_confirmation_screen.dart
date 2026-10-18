@@ -30,6 +30,9 @@ class BondConfirmationScreen extends StatelessWidget {
     final qty = (args['qty'] as num?)?.toInt() ?? 0;
     final price = (args['price'] as num?)?.toDouble() ?? 0;
     final fee = (args['fee'] as num?)?.toDouble() ?? 0;
+    // Нийт хуримтлагдсан хүү (тоо × нэг ширхэгийн ХХ) — 0 бол мөр харуулахгүй
+    final accruedInterest =
+        (args['accruedInterest'] as num?)?.toDouble() ?? 0;
     final total = (args['total'] as num?)?.toDouble() ?? 0;
     final isForeign = args['isForeign'] == true;
     final feePct = (args['feePct'] as num?)?.toDouble() ?? 0;
@@ -47,6 +50,15 @@ class BondConfirmationScreen extends StatelessWidget {
           l10n.unitPrice,
           formatStockAmount(price, isForeign: isForeign, decimals: 0),
         ),
+        if (accruedInterest > 0)
+          OrderDetailItem(
+            l10n.accruedInterest,
+            formatStockAmount(
+              accruedInterest,
+              isForeign: isForeign,
+              decimals: 0,
+            ),
+          ),
         OrderDetailItem(
           feePct > 0
               ? '${l10n.commissionLabel} ($feePct%)'

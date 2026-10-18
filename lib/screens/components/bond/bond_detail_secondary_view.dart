@@ -58,6 +58,8 @@ class BondDetailSecondaryView extends StatelessWidget {
       end: parseStockDate(bond?.endDate),
       payPeriod: bond?.payType ?? '',
       nextPayday: parseStockDate(bond?.payday),
+      // Давтамж — PAYTYPE (YYYY/Q г.м.), PAYPERIOD нь зөвхөн нэр
+      payPeriod: bond?.payType ?? '',
     );
     final maturity = parseStockDate(bond?.endDate) ?? parseStockDate(bond?.term);
 
@@ -86,7 +88,7 @@ class BondDetailSecondaryView extends StatelessWidget {
           ),
           BondDateRow(
             label: l10n.nextInterestPayDate,
-            date: schedule?.nextPay ?? parseStockDate(bond?.payday),
+            date: schedule?.nextPay,
           ),
           BondDateRow(label: l10n.bondMaturityDate, date: maturity, isLast: true),
         ],

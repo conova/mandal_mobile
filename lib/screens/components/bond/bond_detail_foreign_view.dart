@@ -42,8 +42,8 @@ class BondDetailForeignView extends StatelessWidget {
     final schedule = BondSchedule.build(
       start: parseStockDate(bond?.startDate),
       end: parseStockDate(bond?.endDate),
-      payPeriod: bond?.payPeriod ?? '',
-      nextPayday: parseStockDate(bond?.payday),
+      // Давтамж — PAYTYPE (YYYY/Q г.м.), PAYPERIOD нь зөвхөн нэр
+      payPeriod: bond?.payType ?? '',
     );
     final maturity =
         parseStockDate(bond?.endDate) ?? parseStockDate(bond?.term);
@@ -156,7 +156,7 @@ class BondDetailForeignView extends StatelessWidget {
           ),
           BondDateRow(
             label: l10n.nextInterestPayDate,
-            date: schedule?.nextPay ?? parseStockDate(bond?.payday),
+            date: schedule?.nextPay,
           ),
           BondDateRow(
             label: l10n.bondMaturityDate,

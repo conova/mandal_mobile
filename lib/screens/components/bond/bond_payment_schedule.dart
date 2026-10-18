@@ -12,6 +12,9 @@ class BondSchedule {
   final DateTime start;
   final DateTime end;
 
+  /// Хүү төлөгдөх бүх өдөр (эхлэхээс хойш, сүүлийнх нь [end])
+  final List<DateTime> dueDates;
+
   /// Сүүлд хүү төлөгдсөн өдөр (нэг ч удаа төлөгдөөгүй бол null)
   final DateTime? lastPaid;
 
@@ -23,17 +26,17 @@ class BondSchedule {
     required this.total,
     required this.start,
     required this.end,
+    this.dueDates = const [],
     this.lastPaid,
     this.nextPay,
   });
 
   int get remaining => (total - paid).clamp(0, total);
 
-  /// Хүү төлөх давтамжийн бичвэрээс сарын тоо гаргана.
-  /// Танигдахгүй бол null — хуваарийг огт харуулахгүй.
+  /// Хүү төлөх давтамжийн (PAYTYPE, системийн dateformat) сарын тоо.
+  /// Сараар илэрхийлэгдэхгүй (долоо хоног/өдөр) эсвэл танигдахгүй бол null.
   static int? monthsOf(String period) {
     final p = period.toUpperCase().trim();
-    if (p.isEmpty) return null;
     if (p == 'YYYY/MM') return 1;
     if (p == 'YYYY/Q') return 3;
     if (p == 'YYYY/2') return 6;
@@ -41,8 +44,30 @@ class BondSchedule {
     return null;
   }
 
-  /// [start]-аас [end] хүртэлх хугацааг [periodMonths]-аар хуваан
-  /// хуваарь үүсгэнэ. Тооцоолох боломжгүй бол null.
+  /// Сараар биш давтамжийн хоногийн тоо: YYYY/WW — 7, YYYY/MM/DD — 1
+  static int? _daysOf(String period) {
+    final p = period.toUpperCase().trim();
+    if (p == 'YYYY/WW') return 7;
+    if (p == 'YYYY/MM/DD') return 1;
+    return null;
+  }
+
+  /// [start]-аас [period]-ийн [i] дахь алхам. Сарын өдөр давбал (31 → 30/28)
+  /// тухайн сарын сүүлийн өдрөөр хязгаарлана.
+  static DateTime _step(DateTime start, int i, int? months, int? days) {
+    if (months == null) return start.add(Duration(days: days! * i));
+    final monthIndex = start.month + months * i;
+    final lastDay = DateTime(start.year, monthIndex + 1, 0).day;
+    return DateTime(
+      start.year,
+      monthIndex,
+      start.day > lastDay ? lastDay : start.day,
+    );
+  }
+
+  /// [start]-аас [end] хүртэлх хүүгийн төлбөрийн хуваарь. Сүүлийн төлбөр
+  /// нь [end] (дуусах өдөр) — эхлэх өдрөөр тооцсон огноо биш.
+  /// Тооцоолох боломжгүй бол null.
   static BondSchedule? build({
     required DateTime? start,
     required DateTime? end,
@@ -50,36 +75,36 @@ class BondSchedule {
     DateTime? nextPayday,
   }) {
     final months = monthsOf(payPeriod);
-    if (start == null || end == null || months == null) return null;
+    final days = months == null ? _daysOf(payPeriod) : null;
+    if (start == null || end == null || (months == null && days == null)) {
+      return null;
+    }
     if (!end.isAfter(start)) return null;
 
-    final totalMonths =
-        (end.year - start.year) * 12 + (end.month - start.month);
-    final total = (totalMonths / months).round();
-    if (total <= 0) return null;
+    // Дуусах өдрөөс хагас давтамжаас бага өмнө таарсан огноог тусад нь
+    // төлбөр гэж тооцохгүй — тэр төлбөр нь дуусах өдөр олгогдоно
+    final tolerance = Duration(days: months != null ? months * 15 : days! ~/ 2);
+    final dueDates = <DateTime>[];
+    for (var i = 1;; i++) {
+      final due = _step(start, i, months, days);
+      if (!due.isBefore(end.subtract(tolerance))) break;
+      dueDates.add(due);
+    }
+    dueDates.add(end);
 
     // Өнөөдрийг хүртэл хэдэн удаа төлөгдсөнийг тоолно
     final now = DateTime.now();
-    var paid = 0;
-    for (var i = 1; i <= total; i++) {
-      final due = DateTime(start.year, start.month + months * i, start.day);
-      if (due.isAfter(now)) break;
-      paid = i;
-    }
+    final paid = dueDates.where((d) => !d.isAfter(now)).length;
+    final total = dueDates.length;
 
     return BondSchedule(
       paid: paid,
       total: total,
       start: start,
       end: end,
-      lastPaid: paid == 0
-          ? null
-          : DateTime(start.year, start.month + months * paid, start.day),
-      nextPay: paid >= total
-          ? null
-          : (nextPayday ??
-              DateTime(start.year, start.month + months * (paid + 1),
-                  start.day)),
+      dueDates: dueDates,
+      lastPaid: paid == 0 ? null : dueDates[paid - 1],
+      nextPay: paid >= total ? null : (nextPayday ?? dueDates[paid]),
     );
   }
 }

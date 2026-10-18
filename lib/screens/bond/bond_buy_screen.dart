@@ -93,15 +93,82 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
 
   bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
 
-  int get _maxQuantity =>
-      _unitPrice > 0 ? (_availableCash / _unitPrice).floor() : 0;
+  /// Нэг ширхэгийн хуримтлагдсан хүү — бондын төрлөөр (анхдагч / хаалттай /
+  /// нээлттэй / USD). Нэрлэсэн үнэ = STOCKPRICE, татвар = STOCKFEE.
+  /// Хүүгийн төлбөрийн хуваарь — STARTDATE, ENDDATE, PAYTYPE-аас
+  BondSchedule? get _schedule => BondSchedule.build(
+        start: parseStockDate(_bond['STARTDATE']),
+        end: parseStockDate(_bond['ENDDATE']),
+        payPeriod: _bond['PAYTYPE']?.toString() ?? '',
+      );
 
-  double get _total => _quantity * _unitPrice;
+  double get _accruedInterest {
+    final startDt = parseStockDate(_bond['STARTDATE']);
+    final schedule = _schedule;
+    return bondAccruedInterest(
+      type: bondAccrualTypeOf(
+        isPrimary: _bond['MARKET']?.toString().toLowerCase() == 'primary',
+        isForeign: _isForeign,
+        isOpen: _bond['ISOPEN']?.toString() == '1',
+      ),
+      nominal: _num(['STOCKPRICE']),
+      intRate: _intRate,
+      taxPct: _num(['STOCKFEE']),
+      lastPaid: schedule?.lastPaid ?? startDt,
+    );
+  }
+
+  /// Нэг ширхэгийн төлөх дүн = (нэгж үнэ + хуримтлагдсан хүү) × (1 + шимтгэл%)
+  double get _unitCost =>
+      (_unitPrice + _accruedInterest) * (1 + _feePct / 100);
+
+  int get _maxQuantity =>
+      _unitCost > 0 ? (_availableCash / _unitCost).floor() : 0;
+
+  /// (нэгж үнэ + хуримтлагдсан хүү) × тоо
+  double get _total => _quantity * (_unitPrice + _accruedInterest);
+
+  /// Шимтгэл — хуримтлагдсан хүү дээр ч мөн тооцно
   double get _fee => _total * _feePct / 100;
   double get _totalPayment => _total + _fee;
 
-  /// Өгөөж /YTM/ — сервэрийн EXPYEILD (₮ дүн)
-  double get _ytm => _num(['EXPYEILD']);
+  /// Өгөөж — өнөөдрөөс хойш авах хүүгийн нийлбэр × тоо ширхэг
+  /// (хуваарь тооцогдохгүй бол сервэрийн EXPYEILD)
+  double get _ytm {
+    final schedule = _schedule;
+    if (schedule == null) return _num(['EXPYEILD']);
+    final perUnit = bondFutureCoupons(
+      dueDates: schedule.dueDates,
+      start: schedule.start,
+      nominal: _num(['STOCKPRICE']),
+      intRate: _intRate,
+      taxPct: _num(['STOCKFEE']),
+      isUsd: _isForeign,
+    );
+    return perUnit * _quantity;
+  }
+
+  /// YTM rate (жилийн %) — нэг ширхэгийн нийт төлөх дүнг (нэгж үнэ +
+  /// хуримтлагдсан хүү + шимтгэл) төлж, ирээдүйн купон + дуусах өдрийн
+  /// нэрлэсэн үнийг авахад. Тоо ширхгээс хамаарахгүй. Тооцоолох боломжгүй бол null.
+  double? get _ytmRate {
+    final schedule = _schedule;
+    if (schedule == null) return null;
+    final nominal = _num(['STOCKPRICE']);
+    return bondYtm(
+      price: _unitCost,
+      coupons: bondFutureCouponFlows(
+        dueDates: schedule.dueDates,
+        start: schedule.start,
+        nominal: nominal,
+        intRate: _intRate,
+        taxPct: _num(['STOCKFEE']),
+        isUsd: _isForeign,
+      ),
+      nominal: nominal,
+      maturity: schedule.end,
+    );
+  }
 
   void _placeOrder() {
     final l10n = AppLocalizations.of(context)!;
@@ -117,6 +184,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
         'qty': _quantity,
         'price': _unitPrice,
         'fee': _fee,
+        'accruedInterest': _quantity * _accruedInterest,
         'feePct': _feePct,
         'total': _totalPayment,
         'isForeign': _isForeign,
@@ -147,28 +215,6 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
 
     final name = _str(['STOCKNAME', 'COMPNAME', 'SYMBOL']);
     final subtitle = (locale.languageCode == 'mn') ? _str(['COMPNAME', 'TYPENAME']) : _str(['COMPNAME2', 'TYPENAME']);
-
-    final startDt = parseStockDate(_bond['STARTDATE']);
-    final endDt = parseStockDate(_bond['ENDDATE']);
-    final schedule = BondSchedule.build(
-      start: startDt,
-      end: endDt,
-      payPeriod: _bond['PAYTYPE']?.toString() ?? '',
-    );
-
-    // Нэг ширхэгийн хуримтлагдсан хүү — бондын төрлөөр (анхдагч / хаалттай /
-    // нээлттэй / USD). Нэрлэсэн үнэ = STOCKPRICE, татвар = STOCKFEE.
-    final accruedInterest = bondAccruedInterest(
-      type: bondAccrualTypeOf(
-        isPrimary: _bond['MARKET']?.toString().toLowerCase() == 'primary',
-        isForeign: _isForeign,
-        isOpen: _bond['ISOPEN']?.toString() == '1',
-      ),
-      nominal: _num(['STOCKPRICE']),
-      intRate: _intRate,
-      taxPct: _num(['STOCKFEE']),
-      lastPaid: schedule?.lastPaid ?? startDt,
-    );
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
@@ -256,6 +302,9 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                 isForeign: _isForeign,
                 decimals: 0,
               ),
+              yieldRate: _ytmRate == null
+                  ? null
+                  : '${_ytmRate!.toStringAsFixed(2)}%',
               onDetailsPressed: () {
                 showModalBottomSheet(
                   context: context,
@@ -264,8 +313,9 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   builder: (context) => BondPaymentDetailsBottomSheet(
                     quantity: _quantity,
                     piecePrice: _unitPrice,
-                    accruedInterest: accruedInterest,
+                    accruedInterest: _accruedInterest,
                     commissionRate: _feePct / 100,
+                    feeIncludesAccruedInterest: true,
                   ),
                 );
               },

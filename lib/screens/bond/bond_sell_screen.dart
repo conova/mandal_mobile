@@ -2,14 +2,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mandal_capital/screens/components/stock_trading/stock_trading_order_board.dart';
 import 'package:provider/provider.dart';
+import '../../common/bond_accrued_interest.dart';
 import '../../common/stock_row_format.dart';
 import '../../models/order_book_entry.dart';
 import '../../services/auth_service.dart';
+import '../../services/holiday_service.dart';
+import '../../services/time_service.dart';
 import '../../widgets/circle_back_button.dart';
 import '../../widgets/custom_snackbar.dart';
 import '../../widgets/custom_svg_icon.dart';
 import '../../widgets/currency_suffix_formatter.dart';
 import '../components/bond/bond_payment_details_bottom_sheet.dart';
+import '../components/bond/bond_payment_schedule.dart';
 import '../components/bond/bond_trading_input_box.dart';
 import '../components/bond/bond_quantity_selector.dart';
 import '../components/bond/bond_price_slider.dart';
@@ -84,6 +88,11 @@ class _BondSellScreenState extends State<BondSellScreen> {
 
     _fetchFee();
     _fetchOrderBook();
+    // Хуримтлагдсан хүүгийн захиалгын өдрийг UB бодит цагаар тооцно
+    // Ажлын өдрөөс нийтийн амралтын өдрүүдийг хасна
+    Future.wait([TimeService.sync(), HolidayService.load()]).then((_) {
+      if (mounted) setState(() {});
+    });
 
     final stockcode = _str(['STOCKCODE']);
     if (stockcode.isNotEmpty) {
@@ -164,10 +173,49 @@ class _BondSellScreenState extends State<BondSellScreen> {
   }
 
   double get _price => _selectedPrice > 0 ? _selectedPrice : _unitPrice;
-  double get _total => _quantity * _price;
+
+  /// Нэг ширхэгийн хуримтлагдсан хүү — бондын төрлөөр (BondBuyScreen-тэй ижил):
+  ///   хаалттай — захиалгын өдөр хүртэл, нээлттэй — захиалга биелэх өдөр
+  ///   (арилжааны өдөр + ажлын SETTLEDAY, анхдагч 2) хүртэл, USD — 30/360.
+  /// Нэрлэсэн үнэ = STOCKPRICE, татвар = STOCKFEE. Тооцоолох өгөгдөл
+  /// дутуу бол сервэрийн ACCRUEDINTEREST / INTEREST.
+  double get _accruedInterest {
+    final startDt = parseStockDate(_bond['STARTDATE']);
+    final nominal = _num(['STOCKPRICE']);
+    if (startDt == null || nominal <= 0) {
+      return _num(['ACCRUEDINTEREST', 'INTEREST']);
+    }
+    final schedule = BondSchedule.build(
+      start: startDt,
+      end: parseStockDate(_bond['ENDDATE']),
+      payPeriod: _bond['PAYTYPE']?.toString() ?? '',
+    );
+    final type = bondAccrualTypeOf(
+      isPrimary: false,
+      isForeign: _isForeign,
+      isOpen: _isOpen,
+    );
+    final now = TimeService.nowUb();
+    return bondAccruedInterest(
+      type: type,
+      nominal: nominal,
+      intRate: _num(['INTRATE']),
+      taxPct: _num(['STOCKFEE']),
+      lastPaid: schedule?.lastPaid ?? startDt,
+      orderDate: type == BondAccrualType.open
+          ? bondOrderTradeDate(now, eTrade: _str(['ETRADE']))
+          : now,
+      settleDays: int.tryParse(_str(['SETTLEDAY']).trim()) ?? 2,
+    );
+  }
+
+  /// (үнэ + хуримтлагдсан хүү) × тоо
+  double get _total => _quantity * (_price + _accruedInterest);
+
+  /// Шимтгэл — хуримтлагдсан хүү дээр ч мөн тооцно
   double get _fee => _total * _feePct / 100;
 
-  /// Хүлээн авах дүн — нийт дүнгээс шимтгэл хассан
+  /// Хүлээн авах дүн = (үнэ + ХХ) × тоо − шимтгэл
   double get _proceeds => _total - _fee;
 
   void _placeOrder() {
@@ -185,6 +233,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
         'price': _price,
         'fee': _fee,
         'feePct': _feePct,
+        'accruedInterest': _quantity * _accruedInterest,
         'total': _proceeds,
         'isForeign': _isForeign,
         'totalLabel': l10n.receivableAmountLabel,
@@ -423,7 +472,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
       ExtendedColors extendedColors,
       ThemeData theme,
       ) {
-    final double accruedInterest = _num(['ACCRUEDINTEREST', 'INTEREST']);
+    final accruedInterest = _accruedInterest;
 
     return GestureDetector(
       onTap: () {
@@ -437,6 +486,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
             accruedInterest: accruedInterest,
             commissionRate: _feePct / 100,
             isSell: true,
+            feeIncludesAccruedInterest: true,
           ),
         );
       },

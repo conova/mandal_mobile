@@ -141,6 +141,10 @@ class ApiConfig {
   ///   ISOPEN, ISFOREIGN, MARKET: "Primary"|"Secondary", ... }
   static const String stocksBondList = '/bdc/api/stocks/bondlist';
 
+  /// Нийтийн амралтын өдрүүд — POST {api: holidays}, нэвтрэлт шаардахгүй.
+  /// data: [{STARTDATE, ENDDATE, ENAME, TERM}]
+  static const String holidays = '/bdc/api/holidays';
+
   /// GET /stocks/mybonds → харилцагчийн эзэмшдэг бондууд
   ///   Row: { SYMBOL, STOCKNAME, COMPNAME2, TYPENAME, AMT, INTRATE, ISOPEN,
   ///   ISFOREIGN, ... }

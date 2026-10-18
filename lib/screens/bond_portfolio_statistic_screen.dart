@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../common/bond_accrued_interest.dart';
 import '../common/stock_row_format.dart';
 import '../models/market_instrument.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../services/time_service.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
 import '../widgets/custom_button.dart';
@@ -33,6 +35,10 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
     Future.microtask(_fetch);
+    // Төлөгдсөн эсэхийг UB бодит цагаар тооцно
+    TimeService.sync().then((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   void _onScroll() {
@@ -87,51 +93,28 @@ class _BondPortfolioStatisticScreenState extends State<BondPortfolioStatisticScr
   List<({DateTime date, double amount, bool paid})> _paymentsOf(
     MarketInstrument bond,
   ) {
-    final start = parseStockDate(bond.startDate);
-    final end = parseStockDate(bond.endDate);
-    final months = BondSchedule.monthsOf(bond.payType);
-
     final schedule = BondSchedule.build(
-      start: start,
-      end: end,
+      start: parseStockDate(bond.startDate),
+      end: parseStockDate(bond.endDate),
       payPeriod: bond.payType,
-      nextPayday: start,
     );
-
-    if (schedule == null || months == null || months == 0) {
+    if (schedule == null) {
       return const <({DateTime date, double amount, bool paid})>[];
     }
-
-    final principal = (bond.currentBal ?? 0) * (bond.stockPrice ?? 0);
-    final annualRate = (bond.intRate ?? 0) / 100;
-
-    final List<({DateTime date, double amount, bool paid})> results = [];
-    DateTime periodStart = schedule.start;
-
-    for (var i = 1; i <= schedule.total; i++) {
-      final periodEnd = DateTime(
-        schedule.start.year,
-        schedule.start.month + months * i,
-        schedule.start.day,
-      );
-
-      final daysInPeriod = periodEnd.difference(periodStart).inDays;
-      final coupon = principal *
-          annualRate *
-          (daysInPeriod / 365) *
-          (1 - ((bond.stockFee ?? 0) > 100 ? 100 : (bond.stockFee ?? 0)) / 100);
-
-      results.add((
-        date: periodEnd,
-        amount: coupon,
-        paid: i <= schedule.paid,
-      ));
-
-      periodStart = periodEnd;
-    }
-
-    return results;
+    // Нэрлэсэн үнэ = STOCKPRICE, тоо = CURRENTBAL, татвар = STOCKFEE;
+    // төлөгдсөн эсэхийг UB бодит цагаар
+    return bondCouponPayments(
+      dueDates: schedule.dueDates,
+      start: schedule.start,
+      nominal: bond.stockPrice ?? 0,
+      quantity: bond.currentBal ?? 0,
+      intRate: bond.intRate ?? 0,
+      taxPct: bond.stockFee ?? 0,
+      isUsd: bond.isForeign,
+      now: TimeService.nowUb(),
+    );
   }
+
 
   List<
       ({

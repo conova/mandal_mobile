@@ -12,6 +12,7 @@ Future<void> showBondPaymentDetailsSheet({
   required double piecePrice,
   required double accruedInterest,
   required double commissionRate, // e.g., 0.001 for 0.1%
+  bool feeIncludesAccruedInterest = false,
 }) async {
   return showModalBottomSheet(
     context: context,
@@ -22,6 +23,7 @@ Future<void> showBondPaymentDetailsSheet({
       piecePrice: piecePrice,
       accruedInterest: accruedInterest,
       commissionRate: commissionRate,
+      feeIncludesAccruedInterest: feeIncludesAccruedInterest,
     ),
   );
 }
@@ -33,6 +35,9 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
   final double commissionRate;
   final bool? isSell;
 
+  /// true бол шимтгэлийг хуримтлагдсан хүү дээр ч тооцно (BondBuyScreen)
+  final bool feeIncludesAccruedInterest;
+
   const BondPaymentDetailsBottomSheet({
     super.key,
     required this.quantity,
@@ -40,6 +45,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
     required this.accruedInterest,
     required this.commissionRate,
     this.isSell,
+    this.feeIncludesAccruedInterest = false,
   });
 
   @override
@@ -50,8 +56,11 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
     final currencyFormat = NumberFormat('#,##0.00');
 
     final unitPrice = piecePrice + accruedInterest;
-    // Шимтгэл = нэгж үнэ × тоо × шимтгэл% (хуримтлагдсан хүүд шимтгэл бодохгүй)
-    final commission = quantity * piecePrice * commissionRate;
+    // Шимтгэл = нэгж үнэ × тоо × шимтгэл%. BondBuyScreen дээр хуримтлагдсан
+    // хүү дээр ч тооцно: (нэгж үнэ + ХХ) × тоо × шимтгэл%
+    final commission = quantity *
+        (feeIncludesAccruedInterest ? unitPrice : piecePrice) *
+        commissionRate;
     final totalPayment = (isSell ?? false) ? (quantity * unitPrice) - commission : (quantity * unitPrice) + commission;
 
     return Container(

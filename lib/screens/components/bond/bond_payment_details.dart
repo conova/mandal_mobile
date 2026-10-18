@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../theme/app_text_styles.dart';
 import '../../../theme/extended_colors.dart';
 import '../../../widgets/custom_svg_icon.dart';
 
@@ -7,12 +8,16 @@ class BondPaymentDetails extends StatelessWidget {
   final String totalPayment;
   /// Өгөөжийн утга — дүн эсвэл хувиар (дуудагчаас хамаарна)
   final String yieldValue;
+
+  /// YTM rate (жишээ нь "14.32%") — өгөөжийн дүнгийн хажууд харагдана
+  final String? yieldRate;
   final VoidCallback onDetailsPressed;
 
   const BondPaymentDetails({
     super.key,
     required this.totalPayment,
     required this.yieldValue,
+    this.yieldRate,
     required this.onDetailsPressed,
   });
 
@@ -69,14 +74,34 @@ class BondPaymentDetails extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 20,),
-                  Text(
-                    yieldValue,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral100,
-                    ),
-                    textAlign: TextAlign.right,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  // Дүн урт үед ч YTM хувь тасрахгүй — дүн нь л "…" болно
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          yieldValue,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: extendedColors.neutral100,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (yieldRate != null) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          '($yieldRate)',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: AppTextStyles.light,
+                            color: extendedColors.primaryMain,
+                          ),
+                          maxLines: 1,
+                        ),
+                      ],
+                    ],
                   ),
                 ]
               )

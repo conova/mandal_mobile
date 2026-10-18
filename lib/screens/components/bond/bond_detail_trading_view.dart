@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import '../../../common/bond_accrued_interest.dart';
 import '../../../common/stock_row_format.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/holiday_service.dart';
+import '../../../services/time_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/market_instrument.dart';
 import '../../../models/order_book_entry.dart';
@@ -61,6 +63,11 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
   @override
   void initState() {
     super.initState();
+    // Хуримтлагдсан хүүгийн захиалгын өдрийг UB бодит цагаар тооцно
+    // Ажлын өдрөөс нийтийн амралтын өдрүүдийг хасна
+    Future.wait([TimeService.sync(), HolidayService.load()]).then((_) {
+      if (mounted) setState(() {});
+    });
     final initialPrice = widget.bond.closePrice ?? widget.bond.openPrice ?? 0;
     _priceController = TextEditingController(
       text: CurrencySuffixFormatter.format(initialPrice.toString(), suffix: '₮'),
@@ -182,32 +189,16 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     final price = _currentPrice;
     final quantity = _currentQuantity;
     //final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
-    final rate = widget.bond.intRate ?? 0.0;
-    
-    final startDt = parseStockDate(widget.bond.startDate);
-    final endDt = parseStockDate(widget.bond.endDate);
-    final schedule = BondSchedule.build(
-      start: startDt,
-      end: endDt,
-      payPeriod: widget.bond.payType,
-    );
-    
-    // Нэг ширхэгийн хуримтлагдсан хүү (нээлттэй бонд: захиалгын өдөр + 2,
-    // Actual/365, татвар = STOCKFEE). Нэрлэсэн үнэ = STOCKPRICE — хэрэглэгчийн
-    // оруулсан үнэ биш. Sheet нэгж үнэ дээр нэмж тоогоор үржүүлнэ.
-    final accruedInterest = bondAccruedInterest(
-      type: widget.bond.isForeign
-          ? BondAccrualType.usd
-          : BondAccrualType.open,
-      nominal: widget.bond.stockPrice ?? 0,
-      intRate: rate,
-      taxPct: widget.bond.stockFee ?? 0,
-      lastPaid: schedule?.lastPaid ?? startDt,
-    );
+    final accruedInterest = openBondAccruedInterest(widget.bond);
 
+    // Авах: (үнэ + ХХ) × тоо + шимтгэл; шимтгэл ХХ дээр ч тооцогдоно
     final unitPrice = price + accruedInterest;
     final commission = quantity * unitPrice * commissionRate;
-    final totalPayment = (quantity * unitPrice) - commission;
+    final totalPayment = (quantity * unitPrice) + commission;
+    final yieldInfo = openBondYield(
+      widget.bond,
+      unitCost: unitPrice * (1 + commissionRate),
+    );
 
     //final expectedReturn = total * rate / 100;
 
@@ -284,12 +275,15 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
               const SizedBox(height: 24),
               BondPaymentDetails(
                 totalPayment: formatStockAmount(totalPayment, decimals: 2),
-                // Өгөөж /YTM/ — сервэрийн EXPYEILD (₮ дүн)
-                yieldValue: formatIntRate(widget.bond.intRate),
-                /*formatStockAmount(
-                  widget.bond.expYield ?? 0,
+                // Өгөөж — биелэх өдрөөс хойш авах хүүгийн нийлбэр × тоо,
+                // хажууд нь YTM rate (шимтгэлтэй нэг ширхэгийн төлөх дүнгээр)
+                yieldValue: formatStockAmount(
+                  yieldInfo.perUnit * quantity,
                   decimals: 0,
-                ),*/
+                ),
+                yieldRate: yieldInfo.ytm == null
+                    ? null
+                    : '${yieldInfo.ytm!.toStringAsFixed(2)}%',
                 onDetailsPressed: () {
                   showBondPaymentDetailsSheet(
                     context: context,
@@ -297,6 +291,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                     piecePrice: _currentPrice.toDouble(),
                     accruedInterest: accruedInterest,
                     commissionRate: commissionRate,
+                    feeIncludesAccruedInterest: true,
                   );
                 },
               ),
@@ -322,6 +317,70 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
       ],
     );
   }
+}
+
+/// Нээлттэй бондын нэг ширхэгийн хуримтлагдсан хүү — захиалга биелэх өдөр
+/// (захиалгын арилжааны өдрөөс хойш ажлын SETTLEDAY хоног, анхдагч 2) хүртэл, Actual/365, татвар = STOCKFEE.
+/// Нэрлэсэн үнэ = STOCKPRICE (хэрэглэгчийн оруулсан үнэ биш). USD бол 30/360.
+double openBondAccruedInterest(MarketInstrument bond) {
+  final startDt = parseStockDate(bond.startDate);
+  final schedule = _scheduleOf(bond);
+  return bondAccruedInterest(
+    type: bond.isForeign ? BondAccrualType.usd : BondAccrualType.open,
+    nominal: bond.stockPrice ?? 0,
+    intRate: bond.intRate ?? 0,
+    taxPct: bond.stockFee ?? 0,
+    lastPaid: schedule?.lastPaid ?? startDt,
+    // Захиалгын өдөр — UB бодит цаг, ETRADE-ээс хойш / амралтын өдөр бол
+    // дараагийн ажлын өдөр; биелэх өдөр нь түүнээс хойш ажлын 2 хоног
+    orderDate: bondOrderTradeDate(TimeService.nowUb(), eTrade: bond.eTrade),
+    // Биелэх ажлын хоног — SETTLEDAY, ирээгүй бол 2
+    settleDays: _settleDaysOf(bond),
+  );
+}
+
+BondSchedule? _scheduleOf(MarketInstrument bond) => BondSchedule.build(
+      start: parseStockDate(bond.startDate),
+      end: parseStockDate(bond.endDate),
+      payPeriod: bond.payType,
+    );
+
+int _settleDaysOf(MarketInstrument bond) =>
+    int.tryParse(bond.settleDay.trim()) ?? 2;
+
+/// Нээлттэй бондын өгөөж — захиалга биелэх өдрөөс (худалдан авагч бондыг
+/// эзэмшиж эхлэх өдөр) хойш авах купоны нийлбэр (нэг ширхэг) болон YTM rate.
+/// [unitCost] — нэг ширхэгийн нийт төлөх дүн (үнэ + ХХ + шимтгэл).
+({double perUnit, double? ytm}) openBondYield(
+  MarketInstrument bond, {
+  required double unitCost,
+}) {
+  final schedule = _scheduleOf(bond);
+  if (schedule == null) return (perUnit: 0, ytm: null);
+  final settle = addBusinessDays(
+    bondOrderTradeDate(TimeService.nowUb(), eTrade: bond.eTrade),
+    _settleDaysOf(bond),
+  );
+  final nominal = bond.stockPrice ?? 0;
+  final flows = bondFutureCouponFlows(
+    dueDates: schedule.dueDates,
+    start: schedule.start,
+    nominal: nominal,
+    intRate: bond.intRate ?? 0,
+    taxPct: bond.stockFee ?? 0,
+    isUsd: bond.isForeign,
+    from: settle,
+  );
+  return (
+    perUnit: flows.fold(0.0, (sum, f) => sum + f.amount),
+    ytm: bondYtm(
+      price: unitCost,
+      coupons: flows,
+      nominal: nominal,
+      maturity: schedule.end,
+      from: settle,
+    ),
+  );
 }
 
 /// Арилжааны дизайны доод хэсэг: түгжигдсэн дүнгийн banner + захиалга
@@ -422,8 +481,12 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                                     ipo: isPrimary,
                                   );
                           if (!context.mounted) return;
-                          final fee =
-                              price * quantity * feePct / 100;
+                          // (үнэ + ХХ) × тоо дээр шимтгэл — карт, sheet-тэй ижил
+                          final accrued = bond == null
+                              ? 0.0
+                              : openBondAccruedInterest(bond!);
+                          final gross = (price + accrued) * quantity;
+                          final fee = gross * feePct / 100;
                           final exp = DateTime.now()
                               .add(const Duration(days: 30));
                           String two(int n) => n.toString().padLeft(2, '0');
@@ -437,7 +500,8 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                               'price': price,
                               'fee': fee,
                               'feePct': feePct,
-                              'total': price * quantity + fee,
+                              'accruedInterest': accrued * quantity,
+                              'total': gross + fee,
                               'isForeign': bond?.isForeign ?? false,
                               'order': {
                                 'STOCKCODE': bond?.stockcode ?? '',
