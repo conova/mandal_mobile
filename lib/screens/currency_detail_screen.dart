@@ -553,16 +553,18 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
           ) ??
           0;
       final txnType = _pickLang(row, 'TXNTYPE', 'TXNTYPE2', isEn);
+      final name =  row['STOCKNAME']?.toString() ?? ''; //_pickLang(row, 'COMPNAME', 'COMPNAME2', isEn);
       final compName = _pickLang(row, 'COMPNAME', 'COMPNAME2', isEn);
+      final group = row['STOCKGRP']?.toString() ?? '';
       final stockSymbol = row['SYMBOL']?.toString() ?? '';
       final tag = _tagOf(row);
 
       final title = txnType.isNotEmpty
-          ? (tag == FilterTag.stockDividend || tag == FilterTag.stockBought || tag == FilterTag.stockSold)
-              ? '$stockSymbol $txnType'
-              : (tag == FilterTag.bondBought || tag == FilterTag.bondSold || tag == FilterTag.bondReturn)
-                  ? '$compName $txnType'
-                  : '$txnType - $curCode'
+          ? (group == 'stock')
+            ? '$stockSymbol - $txnType'
+            : (group == 'mnt' || group == 'usd')
+              ? '$txnType - ${row['CURCODE']}'
+              : '$name - $txnType'
           : _pickLang(row, 'TXNNAME', 'TXNNAME2', isEn);
 
       final isPositive = tag == FilterTag.cashIncome || tag == FilterTag.stockSold ||tag == FilterTag.bondReturn || tag == FilterTag.bondSold;
@@ -577,7 +579,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Row(
           children: [
-            _buildHistoryIcon(tag, row['STATUS']?.toString() ?? '', isPositive, curCode, extendedColors),
+            _buildHistoryIcon(group, row['STATUS']?.toString() ?? '', isPositive, curCode, extendedColors),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -630,10 +632,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
     }).toList();
   }
 
-  Widget _buildHistoryIcon(FilterTag tag, String statusCode, bool isPositive, String curCode, ExtendedColors extendedColors) {
-    final isCash = tag == FilterTag.cashIncome || tag == FilterTag.cashExpense;
-    final isBond = tag == FilterTag.bondBought || tag == FilterTag.bondSold || tag == FilterTag.bondReturn;
-
+  Widget _buildHistoryIcon(String group, String statusCode, bool isPositive, String curCode, ExtendedColors extendedColors) {
     Color bgColor = statusCode == '0' || statusCode == '3'
         ? extendedColors.red200
         : statusCode == '2'
@@ -641,7 +640,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
             : isPositive ? extendedColors.primary100 : extendedColors.bgSecondary;
 
     Widget iconContent;
-    if (isCash) {
+    if (group == 'mnt' || group == 'usd') {
       iconContent = CustomSvgIcon(
         (curCode == 'USD') ? 'currency-dollar' : 'tugrug-01',
         color: statusCode == '0' || statusCode == '3'
@@ -651,7 +650,7 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
             : isPositive ? extendedColors.primaryMain : extendedColors.neutral300,
         size: 22,
       );
-    } else if (isBond) {
+    } else if (group == 'bond') {
       iconContent = CustomSvgIcon(
         'bank-note-01',
         color: statusCode == '0' || statusCode == '3'

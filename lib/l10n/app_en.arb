@@ -821,5 +821,6 @@
     "cashTugrik": "Cash (₮)",
     "cashDollar": "Cash ($)",
     "stockOrderPlacedDesc": "You can view your order details from the orders section.",
-    "termsNotFound": "Terms of service are not available yet."
+    "termsNotFound": "Terms of service are not available yet.",
+    "orderAmount": "Order amount"
 }

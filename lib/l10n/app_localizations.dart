@@ -4077,6 +4077,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Terms of service are not available yet.'**
   String get termsNotFound;
+
+  /// No description provided for @orderAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Order amount'**
+  String get orderAmount;
 }
 
 class _AppLocalizationsDelegate

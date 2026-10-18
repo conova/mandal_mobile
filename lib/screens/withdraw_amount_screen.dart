@@ -116,6 +116,9 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
     final isMnt = currency != 'usd';
     final currencySymbol = isMnt ? '₮' : '\$';
 
+    final enteredAmount = double.tryParse(_amount) ?? 0.0;
+    final isOverBalance = enteredAmount > balance;
+
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: SafeArea(
@@ -146,7 +149,9 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                   '$currencySymbol$_formattedAmount',
                   style: theme.textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: extendedColors.neutral100,
+                    color: isOverBalance
+                        ? extendedColors.red
+                        : extendedColors.neutral100,
                   ),
                 ),
               ),
@@ -225,7 +230,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                 width: double.infinity,
                 child: CustomButton(
                   label: l10n.continueLabel,
-                  onPressed: _hasValue
+                  onPressed: (_hasValue && !isOverBalance)
                       ? () => Navigator.pushNamed(
                             context,
                             '/withdraw_account',

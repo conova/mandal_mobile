@@ -2152,4 +2152,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsNotFound => 'Terms of service are not available yet.';
+
+  @override
+  String get orderAmount => 'Order amount';
 }

@@ -133,7 +133,7 @@ class BondDetailPrimaryView extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _AmountStat(
-                            label: l10n.collectedAmount,
+                            label: l10n.orderAmount,
                             value: formatStockAmount(
                               bond?.orderedAmt ?? 0,
                               isForeign: isForeign,
