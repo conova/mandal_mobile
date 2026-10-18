@@ -56,7 +56,7 @@ class BondDetailSecondaryView extends StatelessWidget {
     final schedule = BondSchedule.build(
       start: parseStockDate(bond?.startDate),
       end: parseStockDate(bond?.endDate),
-      payPeriod: bond?.payPeriod ?? '',
+      payPeriod: bond?.payType ?? '',
       nextPayday: parseStockDate(bond?.payday),
     );
     final maturity = parseStockDate(bond?.endDate) ?? parseStockDate(bond?.term);

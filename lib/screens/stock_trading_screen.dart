@@ -774,7 +774,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         label: isSell
                             ? l10n.totalReceivableLabel
                             : l10n.totalPaymentLabel,
-                        value: '≈ ${CurrencySuffixFormatter.format(
+                        value: '${_orderType == 1 ? '=' : '≈'} ${CurrencySuffixFormatter.format(
                           _totalPayment.toString(),
                           suffix: '₮',
                         )}',

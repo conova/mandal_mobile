@@ -2154,4 +2154,7 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get termsNotFound =>
       'Los términos del servicio aún no están disponibles.';
+
+  @override
+  String get orderAmount => 'Order amount';
 }

@@ -229,7 +229,7 @@
     "pledgeBondDesc": "Бондоо зарахгүйгээр санхүүгийн хэрэгцээгээ шийдээрэй.",
     "pledge": "Барьцаалах",
     "newBond": "Шинэ бонд",
-    "newBondDesc": "Earn steady returns with our premium bond offerings. Start investing today.",
+    "newBondDesc": "Шинээр гарч буй бондуудын мэдээлэлтэй танилцаж, хөрөнгө оруулалтаа эхлээрэй.",
     "watchlist": "Хадгалсан",
     "askingWatchlist": "Watchlist үүсгэх үү?",
     "watchlistDescription": "Өөрийн сонирхсон хувьцааг хадгалж, ханшийг мэдээллийг цаг алдалгүй хурдан аваарай.",
@@ -750,5 +750,6 @@
     "cashTugrik": "Бэлэн мөнгө (₮)",
     "cashDollar": "Бэлэн мөнгө ($)",
     "stockOrderPlacedDesc": "Та захиалга хэсгээс өөрийн захиалгийн дэлгэрэнгүйг харах боломжтой.",
-    "termsNotFound": "Үйлчилгээний нөхцөл одоогоор байхгүй байна."
+    "termsNotFound": "Үйлчилгээний нөхцөл одоогоор байхгүй байна.",
+    "orderAmount": "Захиалгын дүн"
 }

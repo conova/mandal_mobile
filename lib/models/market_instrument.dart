@@ -6,7 +6,8 @@ class MarketInstrument {
   final String stockcode;
   final String symbol;
 
-  /// STOCKNAME → COMPNAME → SYMBOL дарааллаар эхний хоосон биш нэр
+  /// STOCKNAME → COMPNAME → SYMBOL дарааллаар эхний хоосон биш нэр.
+  /// Бонд бол бүх үсгийг том болгож хадгална.
   final String name;
 
   /// COMPNAME2 → TYPENAME дарааллаар — дэд нэр
@@ -115,7 +116,6 @@ class MarketInstrument {
 
   final String? sysDate;
 
-
   /// API-ийн анхны мөр — route arguments-аар цааш дамжуулахад ашиглана
   final Map<String, dynamic> raw;
 
@@ -196,10 +196,14 @@ class MarketInstrument {
       return '';
     }
 
+    final stockGrp = str('STOCKGRP');
+    final isBond = stockGrp.toLowerCase() == 'bond';
+    final rawName = firstNonEmpty(['STOCKNAME', 'COMPNAME', 'SYMBOL']);
+
     return MarketInstrument(
       stockcode: str('STOCKCODE'),
       symbol: str('SYMBOL'),
-      name: firstNonEmpty(['STOCKNAME', 'COMPNAME', 'SYMBOL']),
+      name: isBond ? rawName.toUpperCase() : rawName,
       subtitle: firstNonEmpty(['COMPNAME2', 'TYPENAME']),
       typeName: str('TYPENAME'),
       market: str('MARKET'),
@@ -259,7 +263,6 @@ class MarketInstrument {
       className2: str('CLASSNAME2'),
       classOrder: int.tryParse(str('CLASSORDER')),
       sysDate: str('SYS_DATE'),
-
     );
   }
 
@@ -268,4 +271,7 @@ class MarketInstrument {
 
   /// Анхдагч зах зээлийнх эсэх
   bool get isPrimaryMarket => market.toLowerCase() == 'primary';
+
+  /// Бонд эсэх
+  bool get isBond => stockGrp.toLowerCase() == 'bond';
 }

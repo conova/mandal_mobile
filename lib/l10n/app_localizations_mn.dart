@@ -730,7 +730,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get newBondDesc =>
-      'Earn steady returns with our premium bond offerings. Start investing today.';
+      'Шинээр гарч буй бондуудын мэдээлэлтэй танилцаж, хөрөнгө оруулалтаа эхлээрэй.';
 
   @override
   String get watchlist => 'Хадгалсан';
@@ -2119,4 +2119,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get termsNotFound => 'Үйлчилгээний нөхцөл одоогоор байхгүй байна.';
+
+  @override
+  String get orderAmount => 'Захиалгын дүн';
 }
