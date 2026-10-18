@@ -1485,7 +1485,13 @@ class AuthService with ChangeNotifier {
           if (purpose != null && purpose.isNotEmpty) 'purpose': purpose,
           ...params,
         },
-        options: Options(responseType: ResponseType.plain),
+        options: Options(
+          responseType: ResponseType.plain,
+          // position (хураангуй тайлан) удаан бэлтгэгддэг тул 1 минут хүлээнэ
+          receiveTimeout: doc == 'position'
+              ? const Duration(minutes: 1)
+              : null,
+        ),
       );
       final raw = response.data?.toString().trim() ?? '';
       if (raw.isEmpty) {
