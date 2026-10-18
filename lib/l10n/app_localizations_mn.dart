@@ -436,7 +436,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get incomeAccBenefitPrompt =>
-      'Таны арилжаанаас олсон ашгийг энэ данс руу шилжүүлэх юм шүү';
+      'Таны арилжаанаас олсон ашгийг энэ данс руу шилжүүлнэ';
 
   @override
   String get addIncomeAccPrompt => 'Орлого авах данс оруулна уу';
