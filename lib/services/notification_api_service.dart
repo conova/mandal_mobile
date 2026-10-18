@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../config/api_config.dart';
 import '../models/api_notification.dart';
 import 'auth_service.dart';
+import '../common/api_message.dart';
 
 /// Notification Gateway микросервистэй харьцах HTTP client.
 /// Bearer JWT auth — `AuthService.accessToken` ашиглана.
@@ -92,7 +93,7 @@ class NotificationApiService {
       final err = data['error'];
       if (err is String && err.isNotEmpty) return err;
     }
-    return e.message ?? 'Network error';
+    return dioErrorMessage(e);
   }
 }
 

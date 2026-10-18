@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../config/api_config.dart';
 import 'auth_service.dart';
+import '../common/api_message.dart';
 
 /// E-Mongolia (DAN) баталгаажуулалтын API client.
 class DanService {
@@ -70,7 +71,7 @@ class DanService {
       final t = data['title'] ?? data['message'] ?? data['error'];
       if (t is String && t.isNotEmpty) return t;
     }
-    return e.message ?? 'Network error';
+    return dioErrorMessage(e);
   }
 }
 

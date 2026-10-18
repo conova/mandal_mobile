@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../config/api_config.dart';
 import 'auth_service.dart';
+import '../common/api_message.dart';
 
 /// Payment Gateway микросервистэй ажиллах client.
 /// Bearer JWT auth — `AuthService.accessToken`-ыг ашиглана.
@@ -156,7 +157,7 @@ class PaymentService {
         return detail is String ? '$err — $detail' : err;
       }
     }
-    return e.message ?? 'Network error';
+    return dioErrorMessage(e);
   }
 }
 

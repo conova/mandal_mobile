@@ -560,8 +560,7 @@ class AuthService with ChangeNotifier {
 
   /// DioException-с алдааны мессеж задлах (data нь String эсвэл Map байж болно)
   String _extractErrorMessage(DioException e) {
-    final data = e.response?.data;
-    return apiMessage(data) ?? e.message ?? 'Network error';
+    return dioErrorMessage(e);
   }
 
   Dio get _dio => Dio(
