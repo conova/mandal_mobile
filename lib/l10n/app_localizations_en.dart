@@ -2155,4 +2155,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderAmount => 'Order amount';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get errorLoadingPDF => 'Error loading PDF file';
 }

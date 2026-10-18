@@ -151,6 +151,8 @@ class _StockScreenState extends State<StockScreen> {
     final map = <String, List<MarketInstrument>>{};
     for (final s in _stocks) {
       if (s.isPrimaryMarket) continue;
+      // 4-р ангиллыг нуух
+      if (s.classOrder == 4) continue;
       final key = (s.className ?? '').trim().isNotEmpty
           ? s.className!.trim()
           : 'Бусад';
