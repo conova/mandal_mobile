@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+import '../common/api_message.dart';
 import '../theme/extended_colors.dart';
 
 enum CustomSnackbarType { success, error, info }
@@ -13,8 +15,16 @@ class CustomSnackbar {
   /// Exception-ий "Exception: " угтварыг автоматаар хасна.
   /// Ижил мессеж 3 секундын дотор давхар гарахгүй (зэрэг олон API
   /// дуудлага ижил алдаа буцаахад toast-оор дүүргэхгүй).
+  ///
+  /// DioException эсвэл сүлжээний техникийн текст (SocketException г.м.)
+  /// ирвэл ойлгомжтой мессеж болгож харуулна.
   static void showError(BuildContext context, Object error) {
-    final message = error.toString().replaceFirst('Exception: ', '');
+    final raw = error.toString().replaceFirst('Exception: ', '');
+    final message = error is DioException
+        ? dioErrorMessage(error)
+        : isNetworkError(raw)
+            ? noInternetMessage
+            : raw;
     final now = DateTime.now();
     if (message == _lastErrorMessage &&
         _lastErrorAt != null &&
