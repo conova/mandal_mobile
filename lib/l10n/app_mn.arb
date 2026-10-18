@@ -753,5 +753,10 @@
     "termsNotFound": "Үйлчилгээний нөхцөл одоогоор байхгүй байна.",
     "orderAmount": "Захиалгын дүн",
     "retry": "Дахин оролдох",
-    "errorLoadingPDF": "PDF файлыг ачаалахад алдаа гарлаа."
+    "errorLoadingPDF": "PDF файлыг ачаалахад алдаа гарлаа.",
+    "txnTypeSection": "Гүйлгээний төрөл",
+    "txnCategorySection": "Гүйлгээний ангилал",
+    "txnCategoryCashDesc": "Данс цэнэглэх, зарлага гаргах, хүүний орлого, ногдол ашгийн орлого",
+    "bondTrading": "Бондын арилжаа",
+    "stockTradingCategory": "Хувьцааны арилжаа"
 }

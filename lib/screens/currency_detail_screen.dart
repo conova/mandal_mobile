@@ -100,9 +100,10 @@ class _CurrencyDetailScreenState extends State<CurrencyDetailScreen> {
           '${d.month.toString().padLeft(2, '0')}/'
           '${d.day.toString().padLeft(2, '0')}';
 
+      // Бэлэн мөнгөний орлого, зарлага — тухайн валютаар
       final rows = await auth.getAccountStatement(
+        acntType: 'cash',
         curCode: isMnt ? 'MNT' : 'USD',
-        cashType: '0,1',
         start: fmt(start),
         end: fmt(now),
       );

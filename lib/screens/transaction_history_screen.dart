@@ -9,6 +9,7 @@ import '../widgets/circle_back_button.dart';
 import '../widgets/custom_snackbar.dart';
 import 'components/transaction_history/transaction_list_item.dart';
 import 'components/transaction_history/transaction_filter_sheet.dart';
+import 'components/transaction_history/txn_classifier.dart';
 import 'components/transaction_history/transaction_period_sheet.dart';
 import 'components/transaction_history/transaction_skeleton_loader.dart';
 
@@ -23,7 +24,7 @@ class TransactionHistoryScreen extends StatefulWidget {
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  Set<FilterTag> _activeFilters = {};
+  TransactionFilter _filter = const TransactionFilter();
   TimePeriod _timePeriod = TimePeriod.last1Year;
   DateTime? _customStart;
   DateTime? _customEnd;
@@ -48,44 +49,28 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     super.dispose();
   }
 
-  // ─── Шүүлтүүд → /account/statement параметрүүд ───
-  // Бүлэг доторх сонгогдсон утгуудыг ','-ээр зааглан нэгтгэнэ. Хоосон бол '' (бүгд)
+  // ─── Шүүлтүүр → /account/statement параметрүүд ───
+  // Орлого/зарлага нь сонгосон бүх ангилалд нөлөөлнө — backend шүүнэ.
 
-  String _joinSelected(Map<FilterTag, String> mapping) {
-    return mapping.entries
-        .where((e) => _activeFilters.contains(e.key))
-        .map((e) => e.value)
-        .join(',');
-  }
+  /// Ангилал: `bond|stock|cash` ('' — бүгд)
+  String get _acntTypeParam => [
+        if (_filter.categories.contains(TxnCategory.bond)) 'bond',
+        if (_filter.categories.contains(TxnCategory.stock)) 'stock',
+        if (_filter.categories.contains(TxnCategory.cash)) 'cash',
+      ].join('|');
 
-  String get _acntTypeParam => _joinSelected({
-        FilterTag.nominal: 'nominal',
-        FilterTag.csd: 'mcsd',
-      });
-
-  String get _cashTypeParam => _joinSelected({
-        FilterTag.cashIncome: '0',
-        FilterTag.cashExpense: '1',
-      });
-
-  String get _bondParam => _joinSelected({
-        FilterTag.bondBought: '0',
-        FilterTag.bondSold: '1',
-        FilterTag.bondReturn: 'B',
-      });
-
-  String get _stocksParam => _joinSelected({
-        FilterTag.stockBought: '0',
-        FilterTag.stockSold: '1',
-        FilterTag.stockDividend: 'D',
-        FilterTag.stockTransfer: 'S',
-      });
-
+  /// Валют — tab-аар: Бүгд '', MNT, USD
   String get _curCodeParam => switch (_tabController.index) {
         1 => 'MNT',
         2 => 'USD',
         _ => '',
       };
+
+  /// Төрөл: `0` орлого, `1` зарлага, '|'-ээр ('' — бүгд)
+  String get _cashTypeParam => [
+        if (_filter.directions.contains(TxnDirection.income)) '0',
+        if (_filter.directions.contains(TxnDirection.expense)) '1',
+      ].join('|');
 
   String _fmt(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}/'
@@ -122,8 +107,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
       final rows = await context.read<AuthService>().getAccountStatement(
             acntType: _acntTypeParam,
             cashType: _cashTypeParam,
-            bond: _bondParam,
-            stocks: _stocksParam,
             curCode: _curCodeParam,
             start: _fmt(start),
             end: _fmt(end),
@@ -165,27 +148,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     return normalized.length >= 16 ? normalized.substring(0, 16) : normalized;
   }
 
-  /// Гүйлгээний төрлөөс icon-д хэрэглэх tag тааруулна
-  FilterTag _tagOf(Map<String, dynamic> row) {
-    final t = '${row['TXNTYPE'] ?? ''} ${row['TXNTYPE2'] ?? ''}'.toLowerCase();
-    if (t.contains('ногдол') || t.contains('dividend')) {
-      return FilterTag.stockDividend;
-    }
-    if (t.contains('өгөөж') || t.contains('coupon')) return FilterTag.bondReturn;
-    if (t.contains('орлого') || t.contains('income') || t.contains('deposit')) {
-      return FilterTag.cashIncome;
-    }
-    if (t.contains('зарлага') ||
-        t.contains('expense') ||
-        t.contains('withdraw')) {
-      return FilterTag.cashExpense;
-    }
-    if (t.contains('зар') || t.contains('sell') || t.contains('sold')) {
-      return FilterTag.stockSold;
-    }
-    return FilterTag.stockBought;
-  }
-
   TransactionItem _itemFromRow(Map<String, dynamic> row, bool isEn) {
     final curCode = row['CURCODE']?.toString() ?? 'MNT';
     final isUsd = curCode == 'USD';
@@ -197,7 +159,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
     final name =  row['STOCKNAME']?.toString() ?? ''; //_pickLang(row, 'COMPNAME', 'COMPNAME2', isEn);
     final group = row['STOCKGRP']?.toString() ?? '';
     final stockSymbol = row['SYMBOL']?.toString() ?? '';
-    final tagRow = _tagOf(row);
     final title = txnType.isNotEmpty
         ? (group == 'stock')
           ? '$stockSymbol - $txnType'
@@ -210,7 +171,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
       title: title,
       date: _formatRegDate(row['REGDATE']),
       amount: formatStockAmount(amount.abs(), isForeign: isUsd),
-      isPositive: tagRow == FilterTag.cashIncome || tagRow == FilterTag.stockSold ||tagRow == FilterTag.bondReturn || tagRow == FilterTag.bondSold,
+      isPositive: classifyTxn(row).direction == TxnDirection.income,
       group: group,
       currencyCode: curCode,
     );
@@ -248,17 +209,15 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
   }
 
   void _showFilterSheet() async {
-    final result = await showModalBottomSheet<Set<FilterTag>>(
+    final result = await showModalBottomSheet<TransactionFilter>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => TransactionFilterSheet(
-        initialSelectedTags: _activeFilters,
-      ),
+      builder: (context) => TransactionFilterSheet(initialFilter: _filter),
     );
     if (result != null) {
       setState(() {
-        _activeFilters = result;
+        _filter = result;
       });
       _fetch();
     }
@@ -331,13 +290,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen>
               child: Row(
                 children: [
                   _buildFilterChip(
-                    label: _activeFilters.isEmpty
+                    label: _filter.isEmpty
                         ? l10n.filter
-                        : '${l10n.filter} (${_activeFilters.length})',
+                        : '${l10n.filter} (${_filter.count})',
                     extendedColors: extendedColors,
                     theme: theme,
                     onTap: _showFilterSheet,
-                    isActive: _activeFilters.isNotEmpty,
+                    isActive: !_filter.isEmpty,
                   ),
                   const SizedBox(width: 8),
                   _buildFilterChip(

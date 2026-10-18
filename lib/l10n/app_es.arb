@@ -64,5 +64,10 @@
     "registrationFeeUnpaidDesc": "Pague la cuota de registro para activar su cuenta.",
     "activate": "Activar",
     "paymentFailed": "El pago falló",
-    "termsNotFound": "Los términos del servicio aún no están disponibles."
+    "termsNotFound": "Los términos del servicio aún no están disponibles.",
+    "txnTypeSection": "Tipo de transacción",
+    "txnCategorySection": "Categoría de transacción",
+    "txnCategoryCashDesc": "Depósitos, retiros, ingresos por intereses y dividendos",
+    "bondTrading": "Operaciones de bonos",
+    "stockTradingCategory": "Operaciones de acciones"
 }

@@ -824,5 +824,10 @@
     "termsNotFound": "Terms of service are not available yet.",
     "orderAmount": "Order amount",
     "retry": "Retry",
-    "errorLoadingPDF": "Error loading PDF file"
+    "errorLoadingPDF": "Error loading PDF file",
+    "txnTypeSection": "Transaction type",
+    "txnCategorySection": "Transaction category",
+    "txnCategoryCashDesc": "Deposits, withdrawals, interest income, dividend income",
+    "bondTrading": "Bond trading",
+    "stockTradingCategory": "Stock trading"
 }

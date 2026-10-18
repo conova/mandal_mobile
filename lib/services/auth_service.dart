@@ -1360,11 +1360,12 @@ class AuthService with ChangeNotifier {
   /// Дансны хуулга.
   /// POST /account/statement — body: {"data": {acntType, cashType, bond,
   /// stocks, curCode, start, end}}. Хоосон утга = тухайн шүүлт хэрэглэхгүй.
+  ///
+  /// [acntType] — ангилал, '|'-ээр: `bond|stock|cash` ('' — бүгд)
+  /// [cashType] — төрөл, '|'-ээр: `0` орлого, `1` зарлага ('' — бүгд)
   Future<List<Map<String, dynamic>>> getAccountStatement({
     String acntType = '',
     String cashType = '',
-    String bond = '',
-    String stocks = '',
     String curCode = '',
     required String start,
     required String end,
@@ -1376,8 +1377,6 @@ class AuthService with ChangeNotifier {
           'data': {
             'acntType': acntType,
             'cashType': cashType,
-            'bond': bond,
-            'stocks': stocks,
             'curCode': curCode,
             'start': start,
             'end': end,

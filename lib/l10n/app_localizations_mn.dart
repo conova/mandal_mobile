@@ -2128,4 +2128,20 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get errorLoadingPDF => 'PDF файлыг ачаалахад алдаа гарлаа.';
+
+  @override
+  String get txnTypeSection => 'Гүйлгээний төрөл';
+
+  @override
+  String get txnCategorySection => 'Гүйлгээний ангилал';
+
+  @override
+  String get txnCategoryCashDesc =>
+      'Данс цэнэглэх, зарлага гаргах, хүүний орлого, ногдол ашгийн орлого';
+
+  @override
+  String get bondTrading => 'Бондын арилжаа';
+
+  @override
+  String get stockTradingCategory => 'Хувьцааны арилжаа';
 }

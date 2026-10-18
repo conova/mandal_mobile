@@ -4095,6 +4095,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading PDF file'**
   String get errorLoadingPDF;
+
+  /// No description provided for @txnTypeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction type'**
+  String get txnTypeSection;
+
+  /// No description provided for @txnCategorySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction category'**
+  String get txnCategorySection;
+
+  /// No description provided for @txnCategoryCashDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposits, withdrawals, interest income, dividend income'**
+  String get txnCategoryCashDesc;
+
+  /// No description provided for @bondTrading.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond trading'**
+  String get bondTrading;
+
+  /// No description provided for @stockTradingCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock trading'**
+  String get stockTradingCategory;
 }
 
 class _AppLocalizationsDelegate

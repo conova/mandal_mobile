@@ -2163,4 +2163,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorLoadingPDF => 'Error loading PDF file';
+
+  @override
+  String get txnTypeSection => 'Tipo de transacción';
+
+  @override
+  String get txnCategorySection => 'Categoría de transacción';
+
+  @override
+  String get txnCategoryCashDesc =>
+      'Depósitos, retiros, ingresos por intereses y dividendos';
+
+  @override
+  String get bondTrading => 'Operaciones de bonos';
+
+  @override
+  String get stockTradingCategory => 'Operaciones de acciones';
 }
