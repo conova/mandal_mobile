@@ -19,11 +19,32 @@ class BondDetailPrimaryView extends StatelessWidget {
   /// Хувь хүний бондын хүүгийн татвар — API-аас ирээгүй бол 10%
   static const String _defaultTaxRate = '10%';
 
-  /// Хугацаа — тоо бол "12 сар", огноо бол өөрөө нь
+  /// Хугацаа — огноо хоорондын зөрүүгээр (сар/хоног), эсвэл [term] талбараар
   String _termLabel(AppLocalizations l10n) {
+    final start = parseStockDate(bond?.startDate);
+    final end = parseStockDate(bond?.endDate);
+
+    if (start != null && end != null) {
+      final diff = end.difference(start);
+      final days = diff.inDays;
+
+      if (days >= 28) {
+        final months = (days / 30).round();
+        if (months > 0) {
+          return l10n.timeLeftMonthsCompact(months);
+        }
+      } else if (days > 0) {
+        return l10n.timeLeftDaysCompact(days);
+      }
+    }
+
     final term = bond?.term ?? '';
     if (term.isEmpty) return '-';
-    return num.tryParse(term) != null ? '$term ${l10n.monthLabel}' : term;
+    final n = num.tryParse(term);
+    if (n != null) {
+      return l10n.timeLeftMonthsCompact(n.toInt());
+    }
+    return term;
   }
 
   /// Хүү төлөх давтамж — locale-ийн дагуу (хоосон бол нөгөөгөөр нөхнө)
@@ -32,7 +53,7 @@ class BondDetailPrimaryView extends StatelessWidget {
     final en = bond?.payPeriod2 ?? '';
     final isEnglish = Localizations.localeOf(context).languageCode == 'en';
     final value =
-    isEnglish ? (en.isNotEmpty ? en : mn) : (mn.isNotEmpty ? mn : en);
+        isEnglish ? (en.isNotEmpty ? en : mn) : (mn.isNotEmpty ? mn : en);
     return value.isEmpty ? '-' : value;
   }
 
@@ -41,6 +62,20 @@ class BondDetailPrimaryView extends StatelessWidget {
     final raw = bond?.raw['TAX'] ?? bond?.raw['TAXRATE'];
     final value = num.tryParse(raw?.toString() ?? '');
     return value == null ? _defaultTaxRate : '$value%';
+  }
+
+  void _viewPresentation(BuildContext context) {
+    final stockId = bond?.stockcode;
+    if (stockId == null || stockId.isEmpty) return;
+
+    Navigator.pushNamed(
+      context,
+      '/pdf_viewer',
+      arguments: {
+        'url': 'https://mandalcapital.mn/uploads/ipo/${stockId}.pdf',
+        'title': bond?.name ?? 'Бондын танилцуулга',
+      },
+    );
   }
 
   @override
@@ -58,7 +93,7 @@ class BondDetailPrimaryView extends StatelessWidget {
     final languageCode = Localizations.localeOf(context).languageCode;
 
     final hasSubtitle = (bond?.subtitle ?? '').isNotEmpty;
-    final circleSize = screenWidth * 0.45;
+    final circleSize = screenWidth * 0.5;
     // dots.png хэр хол доош үргэлжлэх вэ: header + завсар + дугуй.
     final headerApproxHeight =
         topInset + 20 + 40 + 8 + 28 + (hasSubtitle ? 20 : 0);
@@ -87,12 +122,13 @@ class BondDetailPrimaryView extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 1,),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: EdgeInsetsGeometry.only(top: 50),
+              padding: EdgeInsets.only(top: topInset + 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -117,7 +153,11 @@ class BondDetailPrimaryView extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 16, left: 16, right: 16,),
+              padding: const EdgeInsets.only(
+                top: 16,
+                left: 16,
+                right: 16,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -172,6 +212,7 @@ class BondDetailPrimaryView extends StatelessWidget {
                       BondFact(l10n.paymentFrequency, _payPeriodOf(context)),
                       BondFact(l10n.taxLabel, _taxLabel),
                     ],
+                    onPresentation:  () => _viewPresentation(context),
                   ),
                 ],
               ),
