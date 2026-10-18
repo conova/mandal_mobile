@@ -33,6 +33,20 @@ class BondDetailSecondaryView extends StatelessWidget {
     return value == null ? _defaultTaxRate : '$value%';
   }
 
+  void _viewPresentation(BuildContext context) {
+    final stockId = bond?.stockcode;
+    if (stockId == null || stockId.isEmpty) return;
+
+    Navigator.pushNamed(
+      context,
+      '/pdf_viewer',
+      arguments: {
+        'url': 'https://mandalcapital.mn/ipo/${stockId}.pdf',
+        'title': bond?.name ?? 'Бондын танилцуулга',
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -48,7 +62,7 @@ class BondDetailSecondaryView extends StatelessWidget {
     final maturity = parseStockDate(bond?.endDate) ?? parseStockDate(bond?.term);
 
     return Padding(
-      padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,6 +73,7 @@ class BondDetailSecondaryView extends StatelessWidget {
               BondFact(l10n.paymentFrequency, _payPeriodOf(context)),
               BondFact(l10n.taxLabel, _taxLabel),
             ],
+            onPresentation: () => _viewPresentation(context),
           ),
           const SizedBox(height: 32),
           if (schedule != null) ...[

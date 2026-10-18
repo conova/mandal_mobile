@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
-import '../../../widgets/currency_suffix_formatter.dart';
+import '../../../widgets/stock_trading_input_formatter.dart';
 
 class StockTradingInputBox extends StatefulWidget {
   final String label;
@@ -38,10 +38,10 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         if (widget.controller.text.isEmpty) {
-          widget.controller.text = CurrencySuffixFormatter.format('0',
+          widget.controller.text = StockTradingInputFormatter.format('0',
               suffix: widget.currencySymbol);
         } else {
-          final formatted = CurrencySuffixFormatter.format(
+          final formatted = StockTradingInputFormatter.format(
             widget.controller.text,
             suffix: widget.currencySymbol,
           );
@@ -71,7 +71,7 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
   void _handleFocusChange() {
     if (!widget.focusNode.hasFocus && widget.controller.text.isEmpty) {
       widget.controller.text =
-          CurrencySuffixFormatter.format('0', suffix: widget.currencySymbol);
+          StockTradingInputFormatter.format('0', suffix: widget.currencySymbol);
     }
     setState(() {});
   }
@@ -116,7 +116,7 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
                     controller: widget.controller,
                     focusNode: widget.focusNode,
                     readOnly: widget.readOnly,
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: widget.focusNode.hasFocus
@@ -124,8 +124,8 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
                           : extendedColors.neutral100,
                     ),
                     inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      CurrencySuffixFormatter(suffix: widget.currencySymbol),
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                      StockTradingInputFormatter(suffix: widget.currencySymbol),
                     ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
@@ -146,12 +146,11 @@ class _StockTradingInputBoxState extends State<StockTradingInputBox> {
                         final data = await Clipboard.getData('text/plain');
                         if (data?.text != null) {
                           final cleanText =
-                              data!.text!.replaceAll(RegExp(r'[^\d]'), '');
-                          widget.controller.text = CurrencySuffixFormatter.format(
+                              data!.text!.replaceAll(RegExp(r'[^\d.]'), '');
+                          widget.controller.text = StockTradingInputFormatter.format(
                             cleanText,
                             suffix: widget.currencySymbol,
                           );
-                          // Trigger onChanged or whatever else might be needed
                         }
                       }
                     },

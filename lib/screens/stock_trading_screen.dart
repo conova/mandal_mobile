@@ -57,6 +57,9 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   /// (захиалгын ORDERTYPE талбараар илгээгдэнэ)
   int _orderType = 1;
 
+  bool get _isIPO =>
+      _args['isPrimary'] == true || _stockInfo?.isPrimaryMarket == true;
+
   @override
   void initState() {
     super.initState();
@@ -199,7 +202,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     if (_args['side'] == 'sell') _fetchOwnedQty();
 
     // 5 секунд тутамд чимээгүй шинэчилнэ (dispose дээр зогсоно)
-    if ((_args['stockcode']?.toString() ?? '').isNotEmpty) {
+    if (!_isIPO && (_args['stockcode']?.toString() ?? '').isNotEmpty) {
       _orderBookTimer = Timer.periodic(
         const Duration(seconds: 5),
         (_) => _fetchOrderBook(),
@@ -224,6 +227,10 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
   }
 
   Future<void> _fetchOrderBook() async {
+    if (_isIPO) {
+      setState(() => _orderBookLoading = false);
+      return;
+    }
     final stockcode = _args['stockcode']?.toString() ?? '';
     if (stockcode.isEmpty) {
       setState(() => _orderBookLoading = false);
@@ -270,7 +277,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final startTime = _stockInfo?.sTrade ?? '10:00';
     final endTime = _stockInfo?.eTrade ?? '13:00';
     final bool isMarketOpen = _stockInfo?.marketOpen ?? false;
-    
+
     // Зах зээл хаалттай үед Market Order-ийг (type 2) хязгаарлана
     final bool isMarketRestricted = !isMarketOpen;
 
@@ -282,7 +289,6 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) {
-
           if (warnUser) {
             return Container(
               padding: const EdgeInsets.all(16),
@@ -294,8 +300,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       offset: const Offset(0, -4),
                       blurRadius: 40,
                     )
-                  ]
-              ),
+                  ]),
               // Жижиг дэлгэц/keyboard үед агуулга багтахгүй бол scroll болно
               child: SingleChildScrollView(
                 child: Column(
@@ -318,15 +323,18 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         color: extendedColors.bgSecondary,
                         shape: BoxShape.circle,
                       ),
-                      child: CustomSvgIcon('info-circle', size: 20, color: extendedColors.primaryMain,),
+                      child: CustomSvgIcon(
+                        'info-circle',
+                        size: 20,
+                        color: extendedColors.primaryMain,
+                      ),
                     ),
-                    const SizedBox(height: 24,),
+                    const SizedBox(height: 24),
                     Text(
                       l10n.marketClosedNotifTitle,
                       style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: extendedColors.neutral100
-                      ),
+                          color: extendedColors.neutral100),
                     ),
                     const SizedBox(height: 12),
                     Padding(
@@ -375,7 +383,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                 Navigator.pop(context);
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -388,7 +397,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(12),
-                        child: CustomSvgIcon(icon, size: 24, color: extendedColors.neutral100),
+                        child: CustomSvgIcon(icon,
+                            size: 24, color: extendedColors.neutral100),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -415,7 +425,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     ),
                     if (isSelected) ...[
                       const SizedBox(width: 8),
-                      Icon(Icons.check, color: extendedColors.primaryMain, size: 24),
+                      Icon(Icons.check,
+                          color: extendedColors.primaryMain, size: 24),
                     ],
                   ],
                 ),
@@ -500,7 +511,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
         if (bestBid > 0) price = bestBid;
       }
     }
-    
+
     // Extracting the 4 variables from passed data via _stockInfo
     final startTime = _stockInfo?.sTrade ?? '10:00';
     final endTime = _stockInfo?.eTrade ?? '13:00';
@@ -555,8 +566,12 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final isSell = _args['side'] == 'sell';
-    final showWarningScreen = (!isSell && !_isPortfolioLoading && _availableCash == 0 && _lockedAmount == 0);
 
+    final showWarningScreen = (!_isIPO &&
+        !isSell &&
+        !_isPortfolioLoading &&
+        _availableCash == 0 &&
+        _lockedAmount == 0);
 
     if (showWarningScreen) {
       return Scaffold(
@@ -631,39 +646,40 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
           child: SizedBox(width: 40, height: 40, child: CircleBackButton()),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16, top: 10),
-            child: GestureDetector(
-              onTap: _showOrderTypeSheet,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: extendedColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomSvgIcon(
-                      'chevron-down',
-                      size: 20,
-                      color: extendedColors.neutral100,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      _orderType == 1 ? l10n.limitPrice : l10n.marketPrice,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
+          if (!_isIPO)
+            Padding(
+              padding: const EdgeInsets.only(right: 16, top: 10),
+              child: GestureDetector(
+                onTap: _showOrderTypeSheet,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: extendedColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomSvgIcon(
+                        'chevron-down',
+                        size: 20,
                         color: extendedColors.neutral100,
                       ),
-                      maxLines: 1,
-                    ),
-                  ],
+                      const SizedBox(width: 4),
+                      Text(
+                        _orderType == 1 ? l10n.limitPrice : l10n.marketPrice,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: extendedColors.neutral100,
+                        ),
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
         ],
         elevation: 0,
       ),
@@ -726,6 +742,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                           controller: _priceController,
                           focusNode: _priceFocusNode,
                           suffixText: l10n.paste,
+                          readOnly: _isIPO,
                         ),
                       StockTradingQuantitySelector(
                         controller: _quantityController,
@@ -754,7 +771,9 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                       ),
                       const SizedBox(height: 16),
                       StockTradingInfoBox(
-                        label: isSell ? l10n.totalReceivableLabel : l10n.totalPaymentLabel,
+                        label: isSell
+                            ? l10n.totalReceivableLabel
+                            : l10n.totalPaymentLabel,
                         value: '≈ ${CurrencySuffixFormatter.format(
                           _totalPayment.toString(),
                           suffix: '₮',
@@ -766,29 +785,32 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
-                const Divider(height: 1, thickness: 1),
-                const SizedBox(height: 32),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (_orderBookLoading)
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: CircularProgressIndicator(),
+                if (!_isIPO) ...[
+                  const SizedBox(height: 32),
+                  const Divider(height: 1, thickness: 1),
+                  const SizedBox(height: 32),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_orderBookLoading)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      else
+                        StockTradingOrderBoard(
+                          buyOrders: _buyOrders,
+                          sellOrders: _sellOrders,
+                          marketPrice: _stockInfo?.closePrice ??
+                              double.tryParse(
+                                  _args['price']?.toString() ?? '0') ??
+                              0.0,
                         ),
-                      )
-                    else
-                      StockTradingOrderBoard(
-                        buyOrders: _buyOrders,
-                        sellOrders: _sellOrders,
-                        marketPrice: _stockInfo?.closePrice ??
-                            double.tryParse(_args['price']?.toString() ?? '0') ??
-                            0.0,
-                      ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 120),
               ],
             ),
