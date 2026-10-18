@@ -41,7 +41,7 @@ class BondDetailSecondaryView extends StatelessWidget {
       context,
       '/pdf_viewer',
       arguments: {
-        'url': 'https://mandalcapital.mn/ipo/${stockId}.pdf',
+        'url': 'https://mandalcapital.mn/uploads/ipo/${stockId}.pdf',
         'title': bond?.name ?? 'Бондын танилцуулга',
       },
     );
