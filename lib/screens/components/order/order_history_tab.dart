@@ -152,6 +152,7 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
     final extendedColors = theme.extension<ExtendedColors>()!;
     final l10n = AppLocalizations.of(context)!;
     final hasFilter = _type != null || _status != null;
+    final lang = Localizations.localeOf(context).languageCode;
 
     return RefreshIndicator(
       onRefresh: _fetch,
@@ -223,15 +224,12 @@ class _OrderHistoryTabState extends State<OrderHistoryTab> {
             else
               ..._orders.map(
                 (order) => OrderCard(
-                  companyName:
-                      order.symbol.isNotEmpty && order.symbol != order.name
-                          ? order.symbol
-                          : order.nameOf(
-                              Localizations.localeOf(context).languageCode,
-                            ),
-                  subtitle: order.nameOf(
-                    Localizations.localeOf(context).languageCode,
-                  ),
+                  companyName: order.isBond
+                    ? order.stockName
+                    : order.symbol,
+                  subtitle: order.isBond
+                    ? order.compNameOf(lang)
+                    : order.nameOf(lang),
                   amount: formatStockAmount(
                     order.totalWithFee,
                     isForeign: order.isForeignCurrency,
