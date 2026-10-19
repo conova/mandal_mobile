@@ -14,6 +14,9 @@ class StockTradingQuantitySelector extends StatefulWidget {
   final VoidCallback onDecrease;
   final ValueChanged<String> onChanged;
 
+  /// Дээр нь үнийн талбар байхгүй (IPO) үед бүх булан бөөрөнхий
+  final bool standalone;
+
   const StockTradingQuantitySelector({
     super.key,
     required this.controller,
@@ -21,6 +24,7 @@ class StockTradingQuantitySelector extends StatefulWidget {
     required this.onIncrease,
     required this.onDecrease,
     required this.onChanged,
+    this.standalone = false,
   });
 
   @override
@@ -86,10 +90,12 @@ class _StockTradingQuantitySelectorState
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(color: extendedColors.neutral500),
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(16),
-          ),
+          borderRadius: widget.standalone
+              ? BorderRadius.circular(16)
+              : const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

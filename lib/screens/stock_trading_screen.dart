@@ -189,10 +189,13 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       _stockInfo = MarketInstrument.fromJson(_args['info']);
     }
 
-    // Initial price pre-fill from arguments
-    if (_args['price'] != null) {
+    // Initial price pre-fill from arguments (IPO-д энэ үнээр захиална;
+    // ирээгүй бол info-ийн үнэ)
+    final initialPrice = _args['price'] ??
+        (_isIPO ? (_stockInfo?.stockPrice ?? _stockInfo?.closePrice) : null);
+    if (initialPrice != null) {
       _priceController.text = CurrencySuffixFormatter.format(
-        _args['price'].toString(),
+        initialPrice.toString(),
         suffix: '₮',
       );
     }
@@ -736,15 +739,17 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                           readOnly: true,
                           suffixText: '',
                         ),
-                      if (_orderType == 1)
+                      // IPO — нөхцөлт үнэ харуулахгүй, өмнөх дэлгэцээс
+                      // ирсэн үнийг (args['price']) ашиглана
+                      if (_orderType == 1 && !_isIPO)
                         StockTradingInputBox(
                           label: l10n.limitPrice,
                           controller: _priceController,
                           focusNode: _priceFocusNode,
                           suffixText: l10n.paste,
-                          readOnly: _isIPO,
                         ),
                       StockTradingQuantitySelector(
+                        standalone: _isIPO,
                         controller: _quantityController,
                         focusNode: _quantityFocusNode,
                         onIncrease: () {
