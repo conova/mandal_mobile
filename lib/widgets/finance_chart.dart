@@ -23,11 +23,32 @@ class FinanceChart extends StatefulWidget {
   /// огноог утгын хамт харуулна (x тэнхлэг өдрийн нэгжтэй гэж үзнэ)
   final DateTime? startDate;
 
+  /// Арилжаалагдсан хэмжээ (count) — [spots]-тэй ижил дараалал, ижил x.
+  /// Өгвөл графикийн доор bar chart-аар zoom/pan-ийг дагаж харуулна.
+  final List<double>? volumes;
+
+  /// Өнөөдрийн ханшийн өөрчлөлтийн чиглэл — өгвөл графикийн өнгийг
+  /// тодорхойлно: true (нэмэх) → primary, false (хасах) → улаан.
+  /// null бол эхний ба сүүлийн утгаар.
+  final bool? isRising;
+
+  /// true бол tooltip нь "үнэ  ±өөрчлөлт (±%)" загвартай (өмнөх цэгтэй
+  /// харьцуулсан), цайвар бөөрөнхий дэвсгэртэй, цэгээс доош бүтэн шугамтай
+  /// (stock detail). false бол үнэ + огноо (хөрөнгийн график).
+  final bool changeTooltip;
+
+  /// true бол дэвсгэр дээр хэвтээ тасархай зураасууд (5 шугам) зурна
+  final bool showGrid;
+
   const FinanceChart({
     super.key,
     this.spots,
     this.height = 200,
     this.startDate,
+    this.volumes,
+    this.isRising,
+    this.changeTooltip = false,
+    this.showGrid = false,
   });
 
   @override
@@ -40,10 +61,16 @@ class _FinanceChartState extends State<FinanceChart> {
   /// Шугамын зузаан
   static const double _lineWidth = 1.5;
 
+  /// Арилжааны хэмжээний bar-ын өндөр (px)
+  static const double _volumeHeight = 44;
+
   /// Шугамын доорх дүүргэлтийн alpha — дээрээс доош аажмаар бүдгэрнэ.
   /// (1.0 → 0.9 шиг өндөр утга өгвөл дүүргэлт бараг тодорхой болно)
-  static const double _fillAlphaTop = 0.6;
-  static const double _fillAlphaBottom = 0.15;
+  /// Дизайн: linear-gradient(180deg, <өнгө> 0.5 -20.7%, white 0.5 100%).
+  /// Flutter сөрөг stop дэмжихгүй тул 0% дээрх завсрын өнгийг тооцно:
+  /// 0.207 / 1.207 ≈ 0.1715 — дээд өнгөөс цагаан руу 17%-ийн зайд.
+  static const double _fillAlpha = 0.5;
+  static const double _fillStartShift = 0.207 / 1.207;
 
   /// График + доод хуваарь хоёулаа нэг transformation хуваалцана
   final TransformationController _transformationController =
@@ -97,6 +124,59 @@ class _FinanceChartState extends State<FinanceChart> {
     return extendedColors.neutral300;
   }
 
+  /// "592.32  -2.07 (-0.35%)" — өмнөх цэгтэй харьцуулсан өөрчлөлт.
+  /// Өсөлт primary, бууралт улаан, өөрчлөлтгүй/эхний цэг саарал.
+  LineTouchTooltipData _changeTooltip(
+    List<FlSpot> spots,
+    ThemeData theme,
+    ExtendedColors extendedColors,
+  ) {
+    return LineTouchTooltipData(
+      getTooltipColor: (_) => extendedColors.bgSecondary,
+      tooltipBorderRadius: BorderRadius.circular(20),
+      tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      tooltipMargin: 8,
+      // Анхдагч 120px өргөнд "үнэ  ±өөрчлөлт (±%)" багтахгүй хоёр мөр
+      // болдог тул нэг мөрөнд багтаана
+      maxContentWidth: 320,
+      fitInsideHorizontally: true,
+      fitInsideVertically: true,
+      getTooltipItems: (touchedSpots) => touchedSpots.map((s) {
+        final i = s.spotIndex;
+        final prev = i > 0 && i < spots.length ? spots[i - 1].y : null;
+        final change = prev == null ? null : s.y - prev;
+        final pct = (prev == null || prev == 0) ? null : change! / prev * 100;
+        final changeColor = change == null || change == 0
+            ? extendedColors.neutral200
+            : change > 0
+                ? theme.primaryColor
+                : extendedColors.red;
+        String signed(double v, {int decimals = 2}) =>
+            '${v > 0 ? '+' : v < 0 ? '-' : ''}${v.abs().toStringAsFixed(decimals)}';
+
+        return LineTooltipItem(
+          formatStockAmount(s.y),
+          theme.textTheme.labelMedium!.copyWith(
+            color: extendedColors.neutral100,
+            fontWeight: FontWeight.w400,
+          ),
+          children: [
+            if (change != null)
+              TextSpan(
+                // \u00A0 — таслагдахгүй зай (мөр шилжихгүй)
+                text: '\u00A0\u00A0${signed(change)}'
+                    '${pct == null ? '' : '\u00A0(${signed(pct)}%)'}',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: changeColor,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+          ],
+        );
+      }).toList(),
+    );
+  }
+
   /// Хуваарь дээр tap — тухайн цэг дээр төвлөж 2 дахин томруулна,
   /// дээд хязгаарт хүрсэн байвал анхны байдалд буцаана.
   void _zoomAt(double localX, double width) {
@@ -127,8 +207,17 @@ class _FinanceChartState extends State<FinanceChart> {
         ? widget.spots!
         : _sampleSpots;
 
-    // Эхний/сүүлийн үлдэгдлээс хамаарсан график өнгө
-    final lineColor = _trendColor(useSpots, theme, extendedColors);
+    // Өнөөдрийн ханшийн өөрчлөлт өгөгдсөн бол түүгээр, үгүй бол
+    // эхний/сүүлийн үлдэгдлээр график өнгө
+    final lineColor = widget.isRising == null
+        ? _trendColor(useSpots, theme, extendedColors)
+        : widget.isRising!
+            ? theme.primaryColor
+            : extendedColors.red;
+    final volumes = widget.volumes;
+    final showVolumes = volumes != null &&
+        volumes.length == useSpots.length &&
+        volumes.any((v) => v > 0);
 
     // Y тэнхлэгийн хязгаар — point-уудаас тооцоолно
     double minY = useSpots.first.y;
@@ -165,7 +254,19 @@ class _FinanceChartState extends State<FinanceChart> {
                 transformationController: _transformationController,
               ),
               LineChartData(
-                gridData: const FlGridData(show: false),
+                // Хэвтээ тасархай зураас — Y мужийг 4 хуваасан 5 шугам
+                gridData: widget.showGrid
+                    ? FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        horizontalInterval: (maxY - minY) / 4,
+                        getDrawingHorizontalLine: (_) => FlLine(
+                          color: extendedColors.neutral500,
+                          strokeWidth: 1,
+                          dashArray: const [4, 4],
+                        ),
+                      )
+                    : const FlGridData(show: false),
                 titlesData: const FlTitlesData(show: false),
                 borderData: FlBorderData(show: false),
                 minX: minX,
@@ -176,7 +277,9 @@ class _FinanceChartState extends State<FinanceChart> {
                 lineTouchData: LineTouchData(
                   // Нимгэн шугамыг барихад хялбар болгоно
                   touchSpotThreshold: 30,
-                  touchTooltipData: LineTouchTooltipData(
+                  touchTooltipData: widget.changeTooltip
+                      ? _changeTooltip(useSpots, theme, extendedColors)
+                      : LineTouchTooltipData(
                     getTooltipColor: (_) =>
                         theme.colorScheme.inverseSurface.withValues(alpha: 0.9),
                     tooltipBorderRadius: BorderRadius.circular(8),
@@ -208,11 +311,14 @@ class _FinanceChartState extends State<FinanceChart> {
                   getTouchedSpotIndicator: (barData, indexes) => indexes
                       .map(
                         (i) => TouchedSpotIndicatorData(
-                      FlLine(
-                        color: lineColor.withValues(alpha: 0.5),
-                        strokeWidth: 1,
-                        dashArray: [4, 4],
-                      ),
+                      widget.changeTooltip
+                          // Цэгээс доош бүтэн шугам
+                          ? FlLine(color: lineColor, strokeWidth: 1.5)
+                          : FlLine(
+                              color: lineColor.withValues(alpha: 0.5),
+                              strokeWidth: 1,
+                              dashArray: [4, 4],
+                            ),
                       // Дотор нь тод цэг, гадуур нь хагас тунгалаг halo
                       FlDotData(
                         show: true,
@@ -241,12 +347,18 @@ class _FinanceChartState extends State<FinanceChart> {
                     // Шугамын доорх дүүргэлт: дээрээс доош аажмаар бүдгэрнэ
                     belowBarData: BarAreaData(
                       show: true,
+                      // Шугамын өнгө (primary / error) → дэвсгэр (цагаан),
+                      // хоёулаа 50% тунгалаг
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          lineColor.withValues(alpha: _fillAlphaTop),
-                          lineColor.withValues(alpha: _fillAlphaBottom),
+                          Color.lerp(
+                            lineColor.withValues(alpha: _fillAlpha),
+                            extendedColors.bgBase.withValues(alpha: _fillAlpha),
+                            _fillStartShift,
+                          )!,
+                          extendedColors.bgBase.withValues(alpha: _fillAlpha),
                         ],
                       ),
                     ),
@@ -255,6 +367,31 @@ class _FinanceChartState extends State<FinanceChart> {
               ),
             ),
           ),
+          if (showVolumes) ...[
+            const SizedBox(height: 8),
+            // Арилжаалагдсан хэмжээ — графиктай ижил x, zoom/pan-ийг дагана
+            SizedBox(
+              height: _volumeHeight,
+              width: double.infinity,
+              child: AnimatedBuilder(
+                animation: _transformationController,
+                builder: (context, _) {
+                  final m = _transformationController.value;
+                  return CustomPaint(
+                    painter: _VolumeBarsPainter(
+                      xs: [for (final s in useSpots) s.x],
+                      volumes: volumes,
+                      minX: minX,
+                      maxX: maxX,
+                      scale: m.getMaxScaleOnAxis(),
+                      translationX: m.getTranslation().x,
+                      color: extendedColors.primary100,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
           const SizedBox(height: 6),
           // Доод босоо зураасууд — 2 зураасын хоорондох зай 1 өдөр.
           // Графикийн zoom-ийг дагана; tap хийхэд тухайн цэг дээр томруулна.
@@ -384,4 +521,67 @@ class _DayTicksPainter extends CustomPainter {
           oldDelegate.scale != scale ||
           oldDelegate.translationX != translationX ||
           oldDelegate.color != color;
+}
+/// Арилжаалагдсан хэмжээний bar-ууд — x нь графикийн цэгүүдтэй ижил,
+/// өндөр нь хамгийн их хэмжээнд харьцуулсан. Zoom-ийн scale/translation-ийг
+/// дагаж зурагдана.
+class _VolumeBarsPainter extends CustomPainter {
+  final List<double> xs;
+  final List<double> volumes;
+  final double minX;
+  final double maxX;
+  final double scale;
+  final double translationX;
+  final Color color;
+
+  _VolumeBarsPainter({
+    required this.xs,
+    required this.volumes,
+    required this.minX,
+    required this.maxX,
+    required this.scale,
+    required this.translationX,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (xs.isEmpty || size.width <= 0) return;
+    final maxVolume = volumes.fold<double>(0, (m, v) => v > m ? v : m);
+    if (maxVolume <= 0) return;
+
+    final span = maxX - minX;
+    // Bar-ын өргөн — цэгүүдийн дундаж зайн 60%, 2…14px
+    final contentWidth = size.width * scale;
+    final barWidth =
+        (contentWidth / xs.length * 0.6).clamp(2.0, 14.0).toDouble();
+    final paint = Paint()..color = color;
+
+    for (var i = 0; i < xs.length; i++) {
+      final v = volumes[i];
+      if (v <= 0) continue;
+      final contentX = span == 0 ? 0.0 : (xs[i] - minX) / span * size.width;
+      final x = contentX * scale + translationX;
+      if (x < -barWidth || x > size.width + barWidth) continue;
+      // Хамгийн бага ч гэсэн 2px харагдана
+      final h = (v / maxVolume * size.height).clamp(2.0, size.height);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(x - barWidth / 2, size.height - h, barWidth, h),
+          Radius.circular(barWidth / 4),
+        ),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_VolumeBarsPainter oldDelegate) =>
+      oldDelegate.xs != xs ||
+      oldDelegate.volumes != volumes ||
+      oldDelegate.minX != minX ||
+      oldDelegate.maxX != maxX ||
+      oldDelegate.scale != scale ||
+      oldDelegate.translationX != translationX ||
+      oldDelegate.color != color;
 }

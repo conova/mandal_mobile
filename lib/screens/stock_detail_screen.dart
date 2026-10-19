@@ -51,6 +51,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
   /// Chart-аас сонгосон хугацааны текст (Today, 7D, 1M г.м)
   String? _selectedPeriodLabel;
 
+  /// Чартын сонгосон хугацааны өөрчлөлтийн хувь — null бол (дата хоосон)
+  /// толгой хэсэгт өнөөдрийн ханшийн өөрчлөлтийг харуулна
+  double? _periodChangePct;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -177,12 +181,17 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         ? formatStockAmount(infoPrice, decimals: 2)
         : (_args['price'] as String?) ?? '-';
 
-    final infoChange = _info?.priceChange;
+    // Чартад дата байвал сонгосон хугацааны өөрчлөлт, хоосон бол
+    // өнөөдрийн ханшийн өөрчлөлт (PRICECHANGE)
+    final periodPct = _isPrimary ? null : _periodChangePct;
+    final infoChange = periodPct ?? _info?.priceChange;
     final change = infoChange != null
         ? '${infoChange.abs().toStringAsFixed(2)}%'
         : (_args['change'] as String?) ?? '-';
     final isGrowing =
         infoChange != null ? infoChange >= 0 : _args['isGrowing'] as bool?;
+    final headerPeriodLabel =
+        periodPct != null ? _selectedPeriodLabel : l10n.today;
 
     // Safe Dividend Yield calculation
     final firstDivAmount = _infoRows
@@ -351,7 +360,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                       price: price,
                       change: change,
                       isGrowing: isGrowing,
-                      periodLabel: _selectedPeriodLabel,
+                      periodLabel: headerPeriodLabel,
                     ),
                     if (!_isPrimary) ...[
                       const SizedBox(height: 32),
@@ -368,6 +377,9 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                               StockPeriod.all => l10n.all,
                             };
                           });
+                        },
+                        onPeriodChangePercent: (pct) {
+                          if (mounted) setState(() => _periodChangePct = pct);
                         },
                       ),
                     ],

@@ -169,9 +169,11 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     widget.onQuantityChanged.call(_currentQuantity);
   }
 
-  int get _currentPrice {
-    final text = _priceController.text.replaceAll(RegExp(r'[^0-9]'), '');
-    return int.tryParse(text) ?? 0;
+  /// Үнэ — "100,000.0₮" хэлбэрийн текстээс; аравтын цэгийг хадгална
+  /// (цэгийг хасвал 100000.0 → 1000000 болж 10 дахин өсдөг)
+  double get _currentPrice {
+    final text = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
+    return double.tryParse(text) ?? 0;
   }
 
   int get _currentQuantity {

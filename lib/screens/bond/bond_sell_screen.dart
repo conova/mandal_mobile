@@ -65,7 +65,8 @@ class _BondSellScreenState extends State<BondSellScreen> {
   }
 
   void _onPriceInputChanged() {
-    final text = _priceController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    // Аравтын цэгийг хадгална (хасвал 100000.5 → 1000005 болно)
+    final text = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
     final price = double.tryParse(text) ?? 0;
     if (_selectedPrice != price) {
       setState(() => _selectedPrice = price);

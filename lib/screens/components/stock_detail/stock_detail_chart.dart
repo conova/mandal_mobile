@@ -15,10 +15,15 @@ class StockDetailChart extends StatefulWidget {
   final String? symbol;
   final ValueChanged<StockPeriod>? onPeriodChanged;
 
+  /// Дата ачаалагдсаны дараа — сонгосон хугацааны өөрчлөлтийн хувь
+  /// ((сүүлийн − эхний) / эхний × 100). Дата хоосон бол null.
+  final ValueChanged<double?>? onPeriodChangePercent;
+
   const StockDetailChart({
     super.key,
     this.symbol,
     this.onPeriodChanged,
+    this.onPeriodChangePercent,
   });
 
   @override
@@ -29,8 +34,8 @@ class _StockDetailChartState extends State<StockDetailChart> {
   StockPeriod _selected = StockPeriod.d1;
   List<FlSpot> _spots = const [];
 
-  /// Эхний цэгийн огноо — tooltip дээр өдрийн огноо харуулахад
-  DateTime? _startDate;
+  /// Арилжаалагдсан хэмжээ (count) — _spots-той ижил дараалал
+  List<double> _volumes = const [];
   bool _isLoading = false;
   String? _error;
 
@@ -70,12 +75,12 @@ class _StockDetailChartState extends State<StockDetailChart> {
     try {
       final (start, end) = _periodRange();
       final auth = context.read<AuthService>();
-      final data = await auth.getStockChart(sym, start: _fmt(start), end: _fmt(end));
+      final data =
+          await auth.getStockChart(sym, start: _fmt(start), end: _fmt(end));
 
-      // Хариунаас огноо + үнийг задална. X тэнхлэг: 1 өдөр = 1 нэгж
-      // (эхний огнооноос хойших хоног) — завсарласан өдрүүд бодит
-      // зайгаараа харагдана.
-      final parsed = <({DateTime? date, double value})>[];
+      // Хариунаас огноо + үнийг задална. X тэнхлэг: цэгийн дараалал
+      // (арилжаагүй өдрүүдэд зай гаргахгүй — цэгүүд ойрхон залгана)
+      final parsed = <({DateTime? date, double value, double volume})>[];
       for (final row in data) {
         final v = row['CLOSEPRICE'] ??
             row['close'] ??
@@ -97,26 +102,40 @@ class _StockDetailChartState extends State<StockDetailChart> {
           date = DateTime.tryParse(rawDate.toString());
         }
 
-        parsed.add((date: date, value: value));
+        // Арилжаалагдсан хэмжээ
+        final c = row['cnt'] ??
+            row['CNT'] ??
+            row['count'] ??
+            row['COUNT'] ??
+            row['volume'] ??
+            row['VOLUME'];
+        final volume = c is num
+            ? c.toDouble()
+            : double.tryParse(c?.toString() ?? '') ?? 0.0;
+
+        parsed.add((date: date, value: value, volume: volume));
       }
 
-      final firstDate = parsed.isEmpty ? null : parsed.first.date;
+      // X нь дараалал тул огноогоор эрэмбэлнэ (огноогүй мөр байрандаа)
+      if (parsed.every((p) => p.date != null)) {
+        parsed.sort((a, b) => a.date!.compareTo(b.date!));
+      }
       final spots = <FlSpot>[
         for (var i = 0; i < parsed.length; i++)
-          FlSpot(
-            firstDate == null || parsed[i].date == null
-                ? i.toDouble()
-                : parsed[i].date!.difference(firstDate).inDays.toDouble(),
-            parsed[i].value,
-          ),
+          FlSpot(i.toDouble(), parsed[i].value),
       ];
 
       if (!mounted) return;
       setState(() {
         _spots = spots;
-        _startDate = firstDate;
+        _volumes = [for (final p in parsed) p.volume];
         _isLoading = false;
       });
+      widget.onPeriodChangePercent?.call(
+        spots.isEmpty || spots.first.y == 0
+            ? null
+            : (spots.last.y - spots.first.y) / spots.first.y * 100,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -134,7 +153,7 @@ class _StockDetailChartState extends State<StockDetailChart> {
     return Column(
       children: [
         Container(
-          height: 200,
+          height: 250,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: _isLoading
@@ -150,8 +169,15 @@ class _StockDetailChartState extends State<StockDetailChart> {
                     )
                   : FinanceChart(
                       spots: _spots.isEmpty ? null : _spots,
-                      height: 200,
-                      startDate: _startDate,
+                      height: 250,
+                      volumes: _volumes,
+                      // Сонгосон хугацааны эхний утгаас өссөн/тэнцүү → primary,
+                      // буурсан → улаан
+                      isRising: _spots.isEmpty
+                          ? null
+                          : _spots.last.y >= _spots.first.y,
+                      changeTooltip: true,
+                      showGrid: true,
                     ),
         ),
         const SizedBox(height: 16),
