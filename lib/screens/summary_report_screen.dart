@@ -656,7 +656,7 @@ class _SummaryReportScreenState extends State<SummaryReportScreen> {
           ),
           SummaryTableRow(
             label: l10n.cash,
-            val1: _money(_typeOf(first, 'cash')),
+            val1: _money(_typeOf(first, 'mnt') + _typeOf(first, 'usd')),
             val2: col2('cash'),
             isOdd: false,
           ),

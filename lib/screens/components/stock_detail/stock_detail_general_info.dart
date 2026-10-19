@@ -157,10 +157,11 @@ class StockDetailGeneralInfo extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   CustomInfoPopupBottomSheet(
-                    title: dividendYield,
-                    description: 'None',
+                    title: l10n.dividendYield,
+                    description: l10n.dividendYieldDesc,
                     extendedColors: extendedColors,
                     l10n: l10n,
+                    icon: 'info-circle',
                   )
                 ],
               ),

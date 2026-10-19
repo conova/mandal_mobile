@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:mandal_capital/widgets/custom_svg_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:mandal_capital/widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
@@ -101,11 +102,19 @@ class _BiometricEnrollmentScreenState extends State<BiometricEnrollmentScreen> {
           child: Column(
             children: [
               const Spacer(flex: 3),
-              Icon(
-                _isFace ? Icons.face_retouching_natural : Icons.fingerprint,
-                size: 96,
-                color: theme.colorScheme.primary,
-              ),
+              if(_isFace) ...[
+                CustomSvgIcon(
+                  'face_id',
+                  size: 96,
+                  color: extendedColors.primaryMain,
+                ),
+              ] else ...[
+                Icon(
+                  Icons.fingerprint,
+                  size: 96,
+                  color: extendedColors.primaryMain,
+                ),
+              ],
               const SizedBox(height: 32),
               Text(
                 _isFace

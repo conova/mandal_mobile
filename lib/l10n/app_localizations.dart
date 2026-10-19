@@ -3229,7 +3229,7 @@ abstract class AppLocalizations {
   /// No description provided for @childRegisterTitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter your child\'s registration number'**
+  /// **'Enter your child\'s civil registration number'**
   String get childRegisterTitle;
 
   /// No description provided for @childRegisterDesc.
@@ -4125,6 +4125,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stock trading'**
   String get stockTradingCategory;
+
+  /// No description provided for @dividendYieldDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Indicates the dividend yield at today\'s stock price, assuming the same dividend payout as the previous period. Note that actual yields may vary!'**
+  String get dividendYieldDesc;
 }
 
 class _AppLocalizationsDelegate
