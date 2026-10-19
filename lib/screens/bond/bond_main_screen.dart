@@ -528,6 +528,7 @@ class _BondMainScreenState extends State<BondMainScreen>
             SectionTitle(l10n.ableToSell, false, false),
             const SizedBox(height: 24),
             ..._buildMyBondCards(_myBonds, l10n, extendedColors),
+            const SizedBox(height: 24),
           ]
         ],
       ),
