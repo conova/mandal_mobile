@@ -30,11 +30,6 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
   bool _loaded = false;
   List<Map<String, dynamic>> _items = const [];
 
-  /// Эзэмшдэг бонд/хувьцааны тойм — mybonds/mystocks API-аас (null бол
-  /// хараахан ирээгүй; breakdown-ийн count-ийг ашиглана)
-  int? _myBondCount;
-  int? _myStockCount;
-
   @override
   void initState() {
     super.initState();
@@ -46,17 +41,10 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
     if (!mounted) return;
     try {
       final auth = context.read<AuthService>();
-      // 3 API-г зэрэг дуудна: breakdown + миний бонд/хувьцааны тойм
-      final results = await Future.wait([
-        auth.getAssetBreakdown(),
-        auth.getMyBonds().catchError((_) => <Map<String, dynamic>>[]),
-        auth.getMyStocks().catchError((_) => <Map<String, dynamic>>[]),
-      ]);
+      final items = await auth.getAssetBreakdown();
       if (!mounted) return;
       setState(() {
-        _items = results[0];
-        _myBondCount = results[1].length;
-        _myStockCount = results[2].length;
+        _items = items;
         _loaded = true;
       });
     } catch (e) {
@@ -198,27 +186,17 @@ class _HomeAssetBreakdownState extends State<HomeAssetBreakdown> {
                 : type == 'stock' ? l10n.stocks
                 : _defaultName(type, l10n);
             final amount = (item['amount'] as num?) ?? 0;
-            // Бонд/хувьцааны тоог mybonds/mystocks-ийн бодит тоймоор
-            // солино (ирээгүй бол breakdown-ийн count хэвээр)
-            final typeLower = type?.toLowerCase();
-            final overrideCount = typeLower == 'bond' || typeLower == 'bonds'
-                ? _myBondCount
-                : (typeLower == 'stock' ||
-                        typeLower == 'stocks' ||
-                        typeLower == 'equity'
-                    ? _myStockCount
-                    : null);
-            final count =
-                overrideCount ?? (item['count'] as num?)?.toInt() ?? 0;
+            final count = (item['count'] as num?)?.toInt() ?? 0;
             final currency = item['currency']?.toString() ??
                 (type?.toLowerCase() == 'usd' ? '\$' : '₮');
             final meta = _meta(type, extendedColors);
+            final typeLower = type?.toLowerCase();
             final isUsd = typeLower == 'usd' || typeLower == 'dollar';
-            final subtitle = type?.toLowerCase() == 'mnt' ||
-                    type?.toLowerCase() == 'usd' ||
-                    type?.toLowerCase() == 'cash' ||
-                    type?.toLowerCase() == 'tugrik' ||
-                    type?.toLowerCase() == 'dollar'
+            final subtitle = typeLower == 'mnt' ||
+                    typeLower == 'usd' ||
+                    typeLower == 'cash' ||
+                    typeLower == 'tugrik' ||
+                    typeLower == 'dollar'
                 ? l10n.orderCount(count.toString())
                 : '$count ${l10n.type}';
             if (isUsd && amount == 0 && _loaded) {
