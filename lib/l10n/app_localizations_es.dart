@@ -1659,7 +1659,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hasError => 'Tiene error';
 
   @override
-  String get childRegisterTitle => 'Enter your child\'s registration number';
+  String get childRegisterTitle =>
+      'Enter your child\'s civil registration number';
 
   @override
   String get childRegisterDesc =>
@@ -2179,4 +2180,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stockTradingCategory => 'Operaciones de acciones';
+
+  @override
+  String get dividendYieldDesc =>
+      'Indicates the dividend yield at today\'s stock price, assuming the same dividend payout as the previous period. Note that actual yields may vary!';
 }

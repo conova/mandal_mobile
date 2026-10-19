@@ -49,6 +49,14 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
 
   void _onDigit(String digit) {
     setState(() {
+      // Restrict to 2 decimal places
+      if (digit != '.' && _amount.contains('.')) {
+        final parts = _amount.split('.');
+        if (parts.length > 1 && parts[1].length >= 2) {
+          return;
+        }
+      }
+
       _selectedPercent = null;
       if (_amount == '0' && digit != '.') {
         _amount = digit;

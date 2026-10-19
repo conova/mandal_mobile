@@ -184,6 +184,18 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
     final isGrowing =
         infoChange != null ? infoChange >= 0 : _args['isGrowing'] as bool?;
 
+    // Safe Dividend Yield calculation
+    final firstDivAmount = _infoRows
+        .where((row) => row.divAmount != null)
+        .firstOrNull
+        ?.divAmount;
+
+    final currentPrice = _info?.closePrice;
+
+    final dividendYield = (firstDivAmount != null && currentPrice != null && currentPrice != 0)
+        ? '${((firstDivAmount / currentPrice) * 100).toStringAsFixed(2)}%'
+        : '-';
+
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
       body: Stack(
@@ -372,8 +384,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                           : '₮${formatCompactAmount(_info!.dayTrade, languageCode: languageCode)}',
                       peRatio: formatNumbers(_info?.peRatio, decimals: 2),
                       pbRatio: formatNumbers(_info?.pbRatio, decimals: 2),
-                      dividendYield:
-                          _info?.divYield == null ? '-' : '${_info!.divYield}%',
+                      dividendYield: dividendYield,
                     ),
                     const SizedBox(height: 48),
                     StockDetailDividendHistory(items: _dividendHistory),

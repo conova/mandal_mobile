@@ -604,7 +604,7 @@
     "listUpdated": "List updated",
     "changed": "Changed",
     "hasError": "Has error",
-    "childRegisterTitle": "Enter your child's registration number",
+    "childRegisterTitle": "Enter your child's civil registration number",
     "childRegisterDesc": "Only a legal guardian can open a child's account.",
     "childDocTitle": "Upload a photo of the birth certificate",
     "birthCertificate": "Birth certificate",
@@ -829,5 +829,6 @@
     "txnCategorySection": "Transaction category",
     "txnCategoryCashDesc": "Deposits, withdrawals, interest income, dividend income",
     "bondTrading": "Bond trading",
-    "stockTradingCategory": "Stock trading"
+    "stockTradingCategory": "Stock trading",
+    "dividendYieldDesc": "Indicates the dividend yield at today's stock price, assuming the same dividend payout as the previous period. Note that actual yields may vary!"
 }

@@ -1657,7 +1657,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hasError => 'Алдаатай';
 
   @override
-  String get childRegisterTitle => 'Хүүхдийнхээ регистрийн дугаарыг оруулна уу';
+  String get childRegisterTitle =>
+      'Хүүхдийнхээ иргэний бүртгэлийн дугаарыг оруулна уу';
 
   @override
   String get childRegisterDesc =>
@@ -2144,4 +2145,8 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get stockTradingCategory => 'Хувьцааны арилжаа';
+
+  @override
+  String get dividendYieldDesc =>
+      'Хувьцааг өнөөдрийн үнээр худалдан авахад өнгөрсөн удаагийнхтайгаа ижил хэмжээний ногдол ашиг тараавал хэдэн хувийн өгөөж хүртэхийг илэрхийлнэ. Бодит өгөөж өөр байж болохыг анхаарна уу!';
 }

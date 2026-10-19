@@ -91,6 +91,21 @@ class _StoryCarouselState extends State<StoryCarousel> {
     }
   }
 
+  void _prevSlide() {
+    if (_currentIndex > 0) {
+      _currentIndex--;
+      _pageController.animateToPage(
+        _currentIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+      _startTimer();
+    } else {
+      // Stay on first slide, but restart progress
+      _startTimer();
+    }
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -249,7 +264,14 @@ class _StoryCarouselState extends State<StoryCarousel> {
         slide['image'] == 'assets/images/story_handshaking.png';
 
     return GestureDetector(
-      onTap: _nextSlide,
+      onTapUp: (details) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        if (details.globalPosition.dx < screenWidth / 2) {
+          _prevSlide();
+        } else {
+          _nextSlide();
+        }
+      },
       behavior: HitTestBehavior.opaque,
       child: Stack(
         children: [
