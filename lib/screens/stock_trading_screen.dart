@@ -753,13 +753,27 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         controller: _quantityController,
                         focusNode: _quantityFocusNode,
                         onIncrease: () {
-                          _quantityController.text =
+                          if(!isSell) {
+                            _quantityController.text =
                               CurrencySuffixFormatter.format(
                                   (_quantity + 1).toString(),
                                   suffix: '');
+                          } else if(_ownedQty != null && _ownedQty! > _quantity){
+                            _quantityController.text =
+                                CurrencySuffixFormatter.format(
+                                  (_quantity + 1).toString(),
+                                  suffix: '');
+                          }
                         },
                         onDecrease: () {
-                          if (_quantity > 1) {
+                          if (!isSell) {
+                            if (_quantity > 1) {
+                              _quantityController.text =
+                                  CurrencySuffixFormatter.format(
+                                      (_quantity - 1).toString(),
+                                      suffix: '');
+                            }
+                          } else if(_ownedQty != null && _ownedQty! > 1 && _ownedQty! >= _quantity && _quantity > 0) {
                             _quantityController.text =
                                 CurrencySuffixFormatter.format(
                                     (_quantity - 1).toString(),
@@ -769,6 +783,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         onChanged: (value) {
                           // Handled by controller listener
                         },
+                        isSell: isSell,
+                        maxQuantity: _ownedQty ?? 0,
                       ),
                       const SizedBox(height: 16),
                       StockTradingPercentageSelector(

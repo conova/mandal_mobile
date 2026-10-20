@@ -13,6 +13,8 @@ class StockTradingQuantitySelector extends StatefulWidget {
   final VoidCallback onIncrease;
   final VoidCallback onDecrease;
   final ValueChanged<String> onChanged;
+  final bool? isSell;
+  final int maxQuantity;
 
   /// Дээр нь үнийн талбар байхгүй (IPO) үед бүх булан бөөрөнхий
   final bool standalone;
@@ -25,6 +27,8 @@ class StockTradingQuantitySelector extends StatefulWidget {
     required this.onDecrease,
     required this.onChanged,
     this.standalone = false,
+    this.isSell = false,
+    this.maxQuantity = 0,
   });
 
   @override
@@ -34,6 +38,8 @@ class StockTradingQuantitySelector extends StatefulWidget {
 
 class _StockTradingQuantitySelectorState
     extends State<StockTradingQuantitySelector> {
+  bool get isSell => widget.isSell ?? false;
+
   @override
   void initState() {
     super.initState();
@@ -97,51 +103,78 @@ class _StockTradingQuantitySelectorState
                   bottomRight: Radius.circular(16),
                 ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.quantityLabel,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: extendedColors.neutral200,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                      TextField(
+                        controller: widget.controller,
+                        focusNode: widget.focusNode,
+                        keyboardType: TextInputType.number,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: widget.focusNode.hasFocus
+                              ? extendedColors.primaryMain
+                              : extendedColors.neutral100,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          isSell
+                            ? _StockMaxQuantityFormatter(widget.maxQuantity)
+                            : ThousandsSeparatorInputFormatter(),
+                        ],
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        onChanged: widget.onChanged,
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    _buildCircleButton('minus', widget.onDecrease, extendedColors),
+                    const SizedBox(width: 8),
+                    _buildCircleButton('plus', widget.onIncrease, extendedColors),
+                  ],
+                ),
+              ],
+            ),
+            if (widget.isSell == true)
+              Row(
                 children: [
+                  const SizedBox(height: 4,),
                   Text(
-                    l10n.quantityLabel,
+                    '${l10n.availableQuantity}: ',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.neutral200,
                       fontWeight: FontWeight.w200,
                     ),
                   ),
-                  TextField(
-                    controller: widget.controller,
-                    focusNode: widget.focusNode,
-                    keyboardType: TextInputType.number,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: widget.focusNode.hasFocus
-                          ? extendedColors.primaryMain
-                          : extendedColors.neutral100,
+                  Text(
+                    NumberFormat('#,###').format(widget.maxQuantity),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: extendedColors.neutral100,
+                      fontWeight: FontWeight.w300,
                     ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      ThousandsSeparatorInputFormatter(),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    onChanged: widget.onChanged,
                   ),
                 ],
               ),
-            ),
-            Row(
-              children: [
-                _buildCircleButton('minus', widget.onDecrease, extendedColors),
-                const SizedBox(width: 8),
-                _buildCircleButton('plus', widget.onIncrease, extendedColors),
-              ],
-            ),
           ],
         ),
       ),
@@ -200,5 +233,37 @@ class ThousandsSeparatorInputFormatter extends TextInputFormatter {
       text: formatted,
       selection: TextSelection.collapsed(offset: selectionOffset),
     );
+  }
+}
+
+class _StockMaxQuantityFormatter extends TextInputFormatter {
+  final int max;
+
+  _StockMaxQuantityFormatter(this.max);
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    if (newValue.text.isEmpty) return newValue;
+
+    // Strip non-digits (like commas) before parsing
+    final digitsOnly = newValue.text.replaceAll(RegExp(r'\D'), '');
+    final intValue = int.tryParse(digitsOnly);
+
+    if (intValue == null) return oldValue;
+
+    if (intValue > max) {
+      // Return the max value as a plain string.
+      // The subsequent ThousandsSeparatorInputFormatter will handle the commas.
+      final maxStr = max.toString();
+      return TextEditingValue(
+        text: maxStr,
+        selection: TextSelection.collapsed(offset: maxStr.length),
+      );
+    }
+
+    return newValue;
   }
 }
