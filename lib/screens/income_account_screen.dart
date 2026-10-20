@@ -101,7 +101,7 @@ class _IncomeAccountScreenState extends State<IncomeAccountScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final primaryAccounts = _accounts.where((a) => a.isPrimary).toList();
-    final otherAccounts = _accounts.where((a) => !a.isPrimary).toList();
+    final otherAccounts = _accounts.where((a) => (!a.isPrimary && a.bankCode != '95')).toList();
 
     return Scaffold(
       backgroundColor: extendedColors.bgBase,
