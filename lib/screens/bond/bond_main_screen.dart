@@ -55,8 +55,23 @@ class _BondMainScreenState extends State<BondMainScreen>
       final auth = context.read<AuthService>();
       final rows = await auth.getMyBonds();
       if (!mounted) return;
+
+      // Only takes bonds which its end date is in the future
+      final allBonds = MarketInstrument.listFromJson(rows);
+
+      final sysDt = allBonds.isNotEmpty ? parseStockDate(allBonds.first.sysDate) : null;
+      final today = sysDt != null
+          ? DateTime(sysDt.year, sysDt.month, sysDt.day)
+          : DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+      final visibleBonds = allBonds.where((bond) {
+        final endDt = parseStockDate(bond.endDate);
+        if (endDt == null) return true;
+        return !endDt.isBefore(today);
+      }).toList();
+
       setState(() {
-        _myBonds = MarketInstrument.listFromJson(rows);
+        _myBonds = visibleBonds;
         _myBondsLoading = false;
       });
     } catch (e) {

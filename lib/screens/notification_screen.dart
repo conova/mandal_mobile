@@ -304,6 +304,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
+        scrolledUnderElevation: 0.0,
         toolbarHeight: 70,
         leadingWidth: 60,
         leading: Padding(
