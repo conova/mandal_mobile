@@ -61,7 +61,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
       final summary = await context.read<AuthService>().getPortfolioSummary();
       if (!mounted) return;
       setState(() {
-        _availableCash = summary.cashBalance - summary.holdAmount;
+        _availableCash = _isForeign ? (summary.cashBalance - summary.holdAmount) / _curRate : summary.cashBalance - summary.holdAmount;
         _lockedAmount = summary.holdAmount;
       });
     } catch (_) {
@@ -84,12 +84,13 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
     }
     return '';
   }
-
   /// Нэгж үнэ — бондын мөрийн боломжит талбаруудаас
   double get _unitPrice =>
       _num(['STOCKPRICE', 'CLOSEPRICE']);
 
   double get _intRate => _num(['INTRATE']);
+
+  double get _curRate => _num(['CURRATE']);
 
   bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
 
@@ -273,7 +274,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                   ),
                 ),
                 Text(
-                  formatStockAmount(_availableCash, decimals: 0),
+                  formatStockAmount(_availableCash, isForeign: _isForeign, decimals: 0),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: extendedColors.primaryMain,
                   ),
@@ -316,6 +317,7 @@ class _BondBuyScreenState extends State<BondBuyScreen> {
                     accruedInterest: _accruedInterest,
                     commissionRate: _feePct / 100,
                     feeIncludesAccruedInterest: true,
+                    isForeign: _isForeign,
                   ),
                 );
               },

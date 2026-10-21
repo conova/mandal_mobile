@@ -190,7 +190,7 @@ class _StockScreenState extends State<StockScreen> {
         arguments: {
           'symbol': row.symbol,
           'name': row.name,
-          'price': row.closePrice ?? row.stockPrice ?? 0,
+          'price': priceStr,
           'stockcode': row.stockcode,
           'info': row.raw,
           'side': 'buy',

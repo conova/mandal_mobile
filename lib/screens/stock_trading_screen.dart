@@ -163,8 +163,11 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       calculatedQty = (owned * percent / 100).floor();
     } else {
       if (price <= 0) return;
-      final targetAmount = _availableCash * (percent / 100);
-      calculatedQty = (targetAmount / price).floor();
+      // Авах дүн нь бэлэн мөнгөний хувь байна.
+      // Нийт төлөх дүн (_totalPayment) нь энэ дүнгээс хэтрэхгүй байх ёстой.
+      // _totalPayment = qty * price * (1 + _feePct / 100)
+      final targetTotal = _availableCash * (percent / 100);
+      calculatedQty = (targetTotal / (price * (1 + _feePct / 100))).floor();
     }
 
     if (calculatedQty > 0) {
@@ -753,13 +756,27 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         controller: _quantityController,
                         focusNode: _quantityFocusNode,
                         onIncrease: () {
-                          _quantityController.text =
+                          if(!isSell) {
+                            _quantityController.text =
                               CurrencySuffixFormatter.format(
                                   (_quantity + 1).toString(),
                                   suffix: '');
+                          } else if(_ownedQty != null && _ownedQty! > _quantity){
+                            _quantityController.text =
+                                CurrencySuffixFormatter.format(
+                                  (_quantity + 1).toString(),
+                                  suffix: '');
+                          }
                         },
                         onDecrease: () {
-                          if (_quantity > 1) {
+                          if (!isSell) {
+                            if (_quantity > 1) {
+                              _quantityController.text =
+                                  CurrencySuffixFormatter.format(
+                                      (_quantity - 1).toString(),
+                                      suffix: '');
+                            }
+                          } else if(_ownedQty != null && _ownedQty! > 1 && _ownedQty! >= _quantity && _quantity > 0) {
                             _quantityController.text =
                                 CurrencySuffixFormatter.format(
                                     (_quantity - 1).toString(),
@@ -769,6 +786,8 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                         onChanged: (value) {
                           // Handled by controller listener
                         },
+                        isSell: isSell,
+                        maxQuantity: _ownedQty ?? 0,
                       ),
                       const SizedBox(height: 16),
                       StockTradingPercentageSelector(
@@ -812,6 +831,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                               double.tryParse(
                                   _args['price']?.toString() ?? '0') ??
                               0.0,
+                          isForeign: _args['isForeign'] ?? false,
                         ),
                     ],
                   ),

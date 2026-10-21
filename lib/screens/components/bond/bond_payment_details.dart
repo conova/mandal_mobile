@@ -12,6 +12,7 @@ class BondPaymentDetails extends StatelessWidget {
   /// YTM rate (жишээ нь "14.32%") — өгөөжийн дүнгийн хажууд харагдана
   final String? yieldRate;
   final VoidCallback onDetailsPressed;
+  final bool isWarning;
 
   const BondPaymentDetails({
     super.key,
@@ -19,6 +20,7 @@ class BondPaymentDetails extends StatelessWidget {
     required this.yieldValue,
     this.yieldRate,
     required this.onDetailsPressed,
+    this.isWarning = false,
   });
 
   @override
@@ -67,7 +69,7 @@ class BondPaymentDetails extends StatelessWidget {
                   Text(
                     totalPayment,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: extendedColors.neutral100,
+                      color: isWarning ? extendedColors.red : extendedColors.neutral100,
                     ),
                     textAlign: TextAlign.right,
                     maxLines: 1,

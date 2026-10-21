@@ -41,7 +41,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   /// уншаагүй тоог зөв харуулна
   int _serverUnread = 0;
 
-  final ScrollController _scrollController = ScrollController();
+  final PageController _pageController = PageController();
 
   /// FCM push сонсогч — дэлгэц нээлттэй байхад шинэ push ирвэл
   /// жагсаалтыг server-ээс дахин татаж дээр нь нэмэгдсэн байдлаар харуулна
@@ -51,13 +51,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void initState() {
     super.initState();
     _fetch();
-    // Жагсаалтын төгсгөлд ойртоход дараагийн 10-ыг татна
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 200) {
-        _loadMore();
-      }
-    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       try {
@@ -73,7 +66,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _pageController.dispose();
     _fcmService?.removeListener(_onPushReceived);
     super.dispose();
   }
@@ -261,10 +254,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   /// Сонгосон categorist-аар filter хийх (одоо type field ашиглана)
-  List<ApiNotification> get _filtered {
-    if (_selectedCategory == 'All') return _items;
+  List<ApiNotification> _getFiltered(String category) {
+    if (category == 'All') return _items;
     return _items.where((n) {
-      switch (_selectedCategory) {
+      switch (category) {
         case 'Trading':
           return n.type == 'order' || n.type == 'trading';
         case 'News':
@@ -387,11 +380,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
             filters: categories.values.toList(),
             selectedFilter: categories[_selectedCategory]!,
             onFilterSelected: (selectedLabel) {
-              setState(() {
-                _selectedCategory = categories.entries
-                    .firstWhere((entry) => entry.value == selectedLabel)
-                    .key;
-              });
+              final newCategory = categories.entries
+                  .firstWhere((entry) => entry.value == selectedLabel)
+                  .key;
+              if (newCategory != _selectedCategory) {
+                setState(() => _selectedCategory = newCategory);
+                _pageController.animateToPage(
+                  categories.keys.toList().indexOf(newCategory),
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              }
             },
             horizontalPadding: 16,
           ),
@@ -399,13 +398,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
           const Divider(height: 1),
           if (_usingMock) _buildMockBanner(theme, extendedColors),
           Expanded(
-            child: RefreshIndicator(
-              onRefresh: _fetch,
-              child: _isLoading && _items.isEmpty
-                  ? const NotificationSkeletonLoader()
-                  : _error != null && _items.isEmpty
-                      ? _buildErrorState(theme, extendedColors)
-                      : _buildList(l10n, extendedColors, theme),
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedCategory = categories.keys.elementAt(index);
+                });
+              },
+              children: categories.keys.map((cat) {
+                return RefreshIndicator(
+                  onRefresh: _fetch,
+                  child: _isLoading && _items.isEmpty
+                      ? const NotificationSkeletonLoader()
+                      : _error != null && _items.isEmpty
+                          ? _buildErrorState(theme, extendedColors)
+                          : _buildList(cat, l10n, extendedColors, theme),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -452,8 +461,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Widget _buildList(AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
-    final list = _filtered;
+  Widget _buildList(String category, AppLocalizations l10n, ExtendedColors extendedColors, ThemeData theme) {
+    final list = _getFiltered(category);
     if (list.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -480,34 +489,42 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ],
       );
     }
-    return ListView.builder(
-      controller: _scrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      // Дараагийн хуудас ачаалж байгааг үзүүлэх сүүлийн мөр
-      itemCount: list.length + (_isLoadingMore ? 1 : 0),
-      itemBuilder: (context, i) {
-        if (i >= list.length) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          );
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        if (scrollInfo.metrics.axis == Axis.vertical &&
+            scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+          _loadMore();
         }
-        final n = list[i];
-        return NotificationItem(
-          title: n.title,
-          subtitle: n.body,
-          time: n.formattedTime,
-          isUnread: !n.isRead,
-          icon: notificationIconForType(n.type),
-          onTap: () => _onItemTap(n),
-        );
+        return false;
       },
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        // Дараагийн хуудас ачаалж байгааг үзүүлэх сүүлийн мөр
+        itemCount: list.length + (_isLoadingMore ? 1 : 0),
+        itemBuilder: (context, i) {
+          if (i >= list.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            );
+          }
+          final n = list[i];
+          return NotificationItem(
+            title: n.title,
+            subtitle: n.body,
+            time: n.formattedTime,
+            isUnread: !n.isRead,
+            icon: notificationIconForType(n.type),
+            onTap: () => _onItemTap(n),
+          );
+        },
+      ),
     );
   }
 

@@ -35,6 +35,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
   final double accruedInterest;
   final double commissionRate;
   final bool? isSell;
+  final bool? isForeign;
 
   /// true бол шимтгэлийг хуримтлагдсан хүү дээр ч тооцно (BondBuyScreen)
   final bool feeIncludesAccruedInterest;
@@ -47,6 +48,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
     required this.commissionRate,
     this.isSell,
     this.feeIncludesAccruedInterest = false,
+    this.isForeign,
   });
 
   @override
@@ -55,6 +57,8 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
     final theme = Theme.of(context);
     final extendedColors = theme.extension<ExtendedColors>()!;
     final currencyFormat = NumberFormat('#,##0.00');
+
+    final curSymbol = isForeign ?? false ? '\$' : '₮';
 
     final unitPrice = piecePrice + accruedInterest;
     // Шимтгэл = нэгж үнэ × тоо × шимтгэл%. BondBuyScreen дээр хуримтлагдсан
@@ -110,12 +114,12 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
                   const SizedBox(height: 16),
                   _DataRow(
                     label: l10n.unitPrice,
-                    value: '${currencyFormat.format(unitPrice)}₮',
+                    value: '${currencyFormat.format(unitPrice)}$curSymbol',
                   ),
                   const SizedBox(height: 16),
                   _DataRow(
                     label: '${l10n.commissionLabel} (${(commissionRate * 100).toStringAsFixed(1)}%)',
-                    value: '${currencyFormat.format(commission)}₮',
+                    value: '${currencyFormat.format(commission)}$curSymbol',
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
@@ -123,7 +127,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
                   ),
                   _DataRow(
                     label: (isSell ?? false) ? l10n.recieveAmount : l10n.totalPayment,
-                    value: '${currencyFormat.format(totalPayment)}₮',
+                    value: '${currencyFormat.format(totalPayment)}$curSymbol',
                   ),
                 ],
               ),
@@ -155,12 +159,12 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
                 children: [
                   _DataRow(
                     label: l10n.piecePrice,
-                    value: '${currencyFormat.format(piecePrice)}₮',
+                    value: '${currencyFormat.format(piecePrice)}$curSymbol',
                   ),
                   const SizedBox(height: 16),
                   _DataRow(
                     label: l10n.accruedInterest,
-                    value: '${currencyFormat.format(accruedInterest)}₮',
+                    value: '${currencyFormat.format(accruedInterest)}$curSymbol',
                     isInfo: true,
                   ),
                   const Padding(
@@ -169,7 +173,7 @@ class BondPaymentDetailsBottomSheet extends StatelessWidget {
                   ),
                   _DataRow(
                     label: l10n.unitPrice,
-                    value: '${currencyFormat.format(unitPrice)}₮',
+                    value: '${currencyFormat.format(unitPrice)}$curSymbol',
                   ),
                 ],
               ),

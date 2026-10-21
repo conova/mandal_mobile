@@ -70,7 +70,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     });
     final initialPrice = widget.bond.closePrice ?? widget.bond.openPrice ?? 0;
     _priceController = TextEditingController(
-      text: CurrencySuffixFormatter.format(initialPrice.toString(), suffix: '₮'),
+      text: CurrencySuffixFormatter.format(initialPrice.toString(), suffix: widget.bond.isForeign ? '\$' : '₮'),
     );
     _quantityController = TextEditingController(
       text: CurrencySuffixFormatter.format(widget.quantity.toString(), suffix: ''),
@@ -137,11 +137,23 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
   void didUpdateWidget(BondDetailTradingView oldWidget) {
     super.didUpdateWidget(oldWidget);
     
+    // Sync price if it changes from outside
+    if (oldWidget.price != widget.price) {
+      final formatted = CurrencySuffixFormatter.format(widget.price.toString(), suffix: widget.bond.isForeign ? '\$' : '₮');
+      if (_priceController.text != formatted) {
+        _priceController.removeListener(_onInputsChanged);
+        _priceController.text = formatted;
+        _priceController.addListener(_onInputsChanged);
+      }
+    }
+
     // Sync quantity if it changes from outside
     if (oldWidget.quantity != widget.quantity) {
       final formatted = CurrencySuffixFormatter.format(widget.quantity.toString(), suffix: '');
       if (_quantityController.text != formatted) {
+        _quantityController.removeListener(_onInputsChanged);
         _quantityController.text = formatted;
+        _quantityController.addListener(_onInputsChanged);
       }
     }
 
@@ -199,7 +211,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     final totalPayment = (quantity * unitPrice) + commission;
     final yieldInfo = openBondYield(
       widget.bond,
-      unitCost: unitPrice * (1 + commissionRate),
+      unitPrice * (1 + commissionRate),
     );
 
     //final expectedReturn = total * rate / 100;
@@ -242,7 +254,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                     ),
                   ),
                   Text(
-                    formatStockAmount(widget.cash, decimals: 0),
+                    formatStockAmount(widget.cash, isForeign: widget.bond.isForeign, decimals: 0),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.primaryMain,
                     ),
@@ -255,7 +267,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                 label: l10n.buyRate,
                 controller: _priceController,
                 focusNode: _priceFocusNode,
-                currencySymbol: '₮',
+                currencySymbol: widget.bond.isForeign ? '\$' : '₮',
               ),
               BondTradingQuantitySelector(
                 controller: _quantityController,
@@ -276,11 +288,13 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
               ),
               const SizedBox(height: 24),
               BondPaymentDetails(
-                totalPayment: formatStockAmount(totalPayment, decimals: 2),
+                totalPayment: formatStockAmount(totalPayment, isForeign: widget.bond.isForeign, decimals: 2),
+                isWarning: totalPayment > widget.cash,
                 // Өгөөж — биелэх өдрөөс хойш авах хүүгийн нийлбэр × тоо,
                 // хажууд нь YTM rate (шимтгэлтэй нэг ширхэгийн төлөх дүнгээр)
                 yieldValue: formatStockAmount(
                   yieldInfo.perUnit * quantity,
+                  isForeign: widget.bond.isForeign,
                   decimals: 0,
                 ),
                 yieldRate: yieldInfo.ytm == null
@@ -315,6 +329,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
             buyOrders: _buyOrders,
             sellOrders: _sellOrders,
             marketPrice: widget.bond.stockPrice ?? widget.bond.closePrice ?? 0,
+            isForeign: widget.bond.isForeign,
           ),
       ],
     );
@@ -354,9 +369,9 @@ int _settleDaysOf(MarketInstrument bond) =>
 /// эзэмшиж эхлэх өдөр) хойш авах купоны нийлбэр (нэг ширхэг) болон YTM rate.
 /// [unitCost] — нэг ширхэгийн нийт төлөх дүн (үнэ + ХХ + шимтгэл).
 ({double perUnit, double? ytm}) openBondYield(
-  MarketInstrument bond, {
-  required double unitCost,
-}) {
+  MarketInstrument bond,
+  double unitCost,
+) {
   final schedule = _scheduleOf(bond);
   if (schedule == null) return (perUnit: 0, ytm: null);
   final settle = addBusinessDays(
@@ -387,11 +402,12 @@ int _settleDaysOf(MarketInstrument bond) =>
 
 /// Арилжааны дизайны доод хэсэг: түгжигдсэн дүнгийн banner + захиалга
 /// өгөх товч (ширхэг 0 үед идэвхгүй).
-class BondDetailTradingBottomBar extends StatelessWidget {
+class BondDetailTradingBottomBar extends StatefulWidget {
   final MarketInstrument? bond;
   final double price;
   final int quantity;
   final double? lockedAmount;
+  final double cash;
 
   const BondDetailTradingBottomBar({
     super.key,
@@ -399,13 +415,62 @@ class BondDetailTradingBottomBar extends StatelessWidget {
     required this.price,
     required this.quantity,
     this.lockedAmount,
+    required this.cash,
   });
+
+  @override
+  State<BondDetailTradingBottomBar> createState() => _BondDetailTradingBottomBarState();
+}
+
+class _BondDetailTradingBottomBarState extends State<BondDetailTradingBottomBar> {
+  double _feePct = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFee();
+  }
+
+  @override
+  void didUpdateWidget(BondDetailTradingBottomBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.bond?.stockcode != oldWidget.bond?.stockcode) {
+      _fetchFee();
+    }
+  }
+
+  Future<void> _fetchFee() async {
+    if (widget.bond == null) return;
+    final raw = widget.bond!.raw;
+    final isPrimary = raw['MARKET']?.toString().toLowerCase() == 'primary';
+    final pct = await context.read<AuthService>().getFeePercent(
+          stockType: raw['STOCKTYPE']?.toString() ?? '',
+          ipo: isPrimary,
+        );
+    if (mounted) setState(() => _feePct = pct);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final extendedColors = theme.extension<ExtendedColors>()!;
+
+    final bond = widget.bond;
+    final price = widget.price;
+    final quantity = widget.quantity;
+    final cash = widget.cash;
+
+    double totalPayment = 0;
+    if (bond != null && price > 0 && quantity > 0) {
+      final accruedInterest = openBondAccruedInterest(bond);
+      final unitPrice = price + accruedInterest;
+      final commissionRate = _feePct / 100;
+      final commission = quantity * unitPrice * commissionRate;
+      totalPayment = (quantity * unitPrice) + commission;
+    }
+
+    final isOverCash = totalPayment > cash;
 
     return Container(
       decoration: BoxDecoration(
@@ -417,7 +482,7 @@ class BondDetailTradingBottomBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (lockedAmount != null && lockedAmount! > 0)
+          if (widget.lockedAmount != null && widget.lockedAmount! > 0)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(color: extendedColors.primary200),
@@ -427,7 +492,7 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${l10n.lockedAmountLabel}: ${formatStockAmount(lockedAmount ?? 0, isForeign: bond?.isForeign ?? false)}',
+                      '${l10n.lockedAmountLabel}: ${formatStockAmount(widget.lockedAmount ?? 0, isForeign: bond?.isForeign ?? false)}',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w300,
                         color: extendedColors.neutral100,
@@ -468,7 +533,7 @@ class BondDetailTradingBottomBar extends StatelessWidget {
                 width: double.infinity,
                 child: CustomButton(
                   label: l10n.placeOrder,
-                  onPressed: (quantity > 0 && price > 0)
+                  onPressed: (quantity > 0 && price > 0 && !isOverCash)
                       ? () async {
                           final raw = bond?.raw ?? const {};
                           // Шимтгэлийн хувь — /user/fees (кэштэй тул хурдан)

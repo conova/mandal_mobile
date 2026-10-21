@@ -157,6 +157,10 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
   /// цэгэн хээтэй
   bool get _hasTintedHeader => _isSecondary || _isForeign;
 
+  double get _cash => _bond!.isForeign
+      ? (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0) / (_portfolioSummary?.usdRate ?? 1)
+      : (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -200,7 +204,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
                       if (!_isPrimary && !_hasTintedHeader) ...[
                         BondDetailHeader(
                           bond: _bond,
-                          availableCash: (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
+                          availableCash: _cash,
                         ),
                         const SizedBox(height: 10),
                       ],
@@ -210,7 +214,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
                         BondDetailForeignView(bond: _bond, topPadding: _headerHeight)
                       else if (_isBondOpen && _bond != null)
                         BondDetailTradingView(
-                          cash: (_portfolioSummary?.cashBalance ?? 0) - (_portfolioSummary?.holdAmount ?? 0),
+                          cash: _cash,
                           bond: _bond!,
                           price: _price,
                           quantity: _quantity,
@@ -293,9 +297,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
                                 padding: const EdgeInsets.only(left: 4),
                                 child: BondDetailHeader(
                                   bond: _bond,
-                                  availableCash:
-                                  (_portfolioSummary?.cashBalance ?? 0) -
-                                      (_portfolioSummary?.holdAmount ?? 0),
+                                  availableCash: _cash,
                                 ),
                               ),
                             ],
@@ -323,8 +325,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
         BondActionBottomBar(
           label: l10n.availableCash,
           amount: formatStockAmount(
-            (_portfolioSummary?.cashBalance ?? 0) -
-                (_portfolioSummary?.holdAmount ?? 0),
+            _cash,
             isForeign: _isForeign,
           ),
           buttonText: l10n.buyBond,
@@ -336,6 +337,7 @@ class _BondDetailScreenState extends State<BondDetailScreen> {
           price: _price,
           quantity: _quantity,
           lockedAmount: _portfolioSummary?.holdAmount,
+          cash: _cash,
         ),
     );
   }
