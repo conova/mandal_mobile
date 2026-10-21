@@ -163,8 +163,11 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
       calculatedQty = (owned * percent / 100).floor();
     } else {
       if (price <= 0) return;
-      final targetAmount = _availableCash * (percent / 100);
-      calculatedQty = (targetAmount / price).floor();
+      // Авах дүн нь бэлэн мөнгөний хувь байна.
+      // Нийт төлөх дүн (_totalPayment) нь энэ дүнгээс хэтрэхгүй байх ёстой.
+      // _totalPayment = qty * price * (1 + _feePct / 100)
+      final targetTotal = _availableCash * (percent / 100);
+      calculatedQty = (targetTotal / (price * (1 + _feePct / 100))).floor();
     }
 
     if (calculatedQty > 0) {
@@ -828,6 +831,7 @@ class _StockTradingScreenState extends State<StockTradingScreen> {
                               double.tryParse(
                                   _args['price']?.toString() ?? '0') ??
                               0.0,
+                          isForeign: _args['isForeign'] ?? false,
                         ),
                     ],
                   ),

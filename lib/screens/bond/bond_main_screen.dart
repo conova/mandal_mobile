@@ -560,8 +560,12 @@ class _BondMainScreenState extends State<BondMainScreen>
     double totalWeightYield = 0;
 
     for (final bond in bonds) {
+      final isForeign = bond.isForeign;
       final bal = bond.currentBal ?? 0;
-      final price = bond.stockPrice ?? bond.closePrice ?? bond.avgPrice ?? 0;
+      final rate = bond.curRate ?? 1.0;
+      final price = isForeign 
+          ? (bond.stockPrice ?? bond.closePrice ?? bond.avgPrice ?? 0) * rate
+          : (bond.stockPrice ?? bond.closePrice ?? bond.avgPrice ?? 0);
       final value = bal * price;
       totalValue += value;
       totalWeightYield += (bond.intRate ?? 0) * value;

@@ -9,12 +9,14 @@ class StockTradingOrderBoard extends StatefulWidget {
   final List<OrderBookEntry> buyOrders;
   final List<OrderBookEntry> sellOrders;
   final double? marketPrice;
+  final bool isForeign;
 
   const StockTradingOrderBoard({
     super.key,
     this.buyOrders = const [],
     this.sellOrders = const [],
     this.marketPrice,
+    this.isForeign = false,
   });
 
   @override
@@ -26,12 +28,13 @@ class _StockTradingOrderBoardState extends State<StockTradingOrderBoard> {
 
   String _formatPrice(double price) {
     final str = price.toStringAsFixed(2);
+    final curSymbol = widget.isForeign ? '\$' : '₮';
     final parts = str.split('.');
     final whole = parts[0].replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
       (m) => '${m[1]},',
     );
-    return '$whole.${parts[1]}₮';
+    return '$whole.${parts[1]}$curSymbol';
   }
 
   @override

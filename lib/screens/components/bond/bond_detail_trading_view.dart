@@ -70,7 +70,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     });
     final initialPrice = widget.bond.closePrice ?? widget.bond.openPrice ?? 0;
     _priceController = TextEditingController(
-      text: CurrencySuffixFormatter.format(initialPrice.toString(), suffix: '₮'),
+      text: CurrencySuffixFormatter.format(initialPrice.toString(), suffix: widget.bond.isForeign ? '\$' : '₮'),
     );
     _quantityController = TextEditingController(
       text: CurrencySuffixFormatter.format(widget.quantity.toString(), suffix: ''),
@@ -242,7 +242,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                     ),
                   ),
                   Text(
-                    formatStockAmount(widget.cash, decimals: 0),
+                    formatStockAmount(widget.cash, isForeign: widget.bond.isForeign, decimals: 0),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.primaryMain,
                     ),
@@ -255,7 +255,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                 label: l10n.buyRate,
                 controller: _priceController,
                 focusNode: _priceFocusNode,
-                currencySymbol: '₮',
+                currencySymbol: widget.bond.isForeign ? '\$' : '₮',
               ),
               BondTradingQuantitySelector(
                 controller: _quantityController,
@@ -276,11 +276,12 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
               ),
               const SizedBox(height: 24),
               BondPaymentDetails(
-                totalPayment: formatStockAmount(totalPayment, decimals: 2),
+                totalPayment: formatStockAmount(totalPayment, isForeign: widget.bond.isForeign, decimals: 2),
                 // Өгөөж — биелэх өдрөөс хойш авах хүүгийн нийлбэр × тоо,
                 // хажууд нь YTM rate (шимтгэлтэй нэг ширхэгийн төлөх дүнгээр)
                 yieldValue: formatStockAmount(
                   yieldInfo.perUnit * quantity,
+                  isForeign: widget.bond.isForeign,
                   decimals: 0,
                 ),
                 yieldRate: yieldInfo.ytm == null
@@ -315,6 +316,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
             buyOrders: _buyOrders,
             sellOrders: _sellOrders,
             marketPrice: widget.bond.stockPrice ?? widget.bond.closePrice ?? 0,
+            isForeign: widget.bond.isForeign,
           ),
       ],
     );

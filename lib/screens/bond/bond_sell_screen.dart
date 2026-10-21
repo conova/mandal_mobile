@@ -84,7 +84,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
 
     _priceController.text = CurrencySuffixFormatter.format(
       _selectedPrice.toInt().toString(),
-      suffix: '₮',
+      suffix: _isForeign ? '\$' : '₮',
     );
 
     _fetchFee();
@@ -111,7 +111,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
       stockType: _bond['STOCKTYPE']?.toString() ?? '',
       ipo: isPrimary,
     );
-    if (mounted) setState(() => _feePct = pct);
+    if (mounted) setState(() => (_isForeign ? _feePct = pct / _curRate : _feePct = pct));
   }
 
   Future<void> _fetchOrderBook() async {
@@ -162,6 +162,8 @@ class _BondSellScreenState extends State<BondSellScreen> {
   double get _ownedAmount => _num(['CURRENTBAL']) * _num(['STOCKPRICE']);
 
   bool get _isForeign => _bond['ISFOREIGN']?.toString() == '1';
+
+  double get _curRate => _num(['CURRATE']);
 
   bool get _isOpen => (_bond['ISOPEN']?.toString() ?? '1') == '1';
 
@@ -362,7 +364,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
               StockTradingOrderBoard(
                 buyOrders: _buyOrders,
                 sellOrders: _sellOrders,
-                marketPrice: _unitPrice,
+                isForeign: _isForeign,
               )
             else
               Padding(
@@ -412,7 +414,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
           label: l10n.sellingPrice,
           controller: _priceController,
           focusNode: _priceFocusNode,
-          currencySymbol: '₮',
+          currencySymbol: _isForeign ? '\$' : '₮',
         ),
         BondQuantitySelector(
           maxQuantity: _maxQuantity,
@@ -443,7 +445,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
                 _selectedPrice = price;
                 _priceController.text = CurrencySuffixFormatter.format(
                   price.toInt().toString(),
-                  suffix: '₮',
+                  suffix: _isForeign ? '\$' : '₮',
                 );
               });
             },
@@ -488,6 +490,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
             commissionRate: _feePct / 100,
             isSell: true,
             feeIncludesAccruedInterest: true,
+            isForeign: _isForeign,
           ),
         );
       },

@@ -8,7 +8,12 @@ class CurrencySuffixFormatter extends TextInputFormatter {
 
   static String format(String value, {String suffix = '₮'}) {
     if (value.isEmpty) return '';
-    String cleanText = value.replaceAll(suffix, '').replaceAll(',', '');
+    // Strip common currency symbols to avoid duplicates like 1,000₮$
+    String cleanText = value
+        .replaceAll('₮', '')
+        .replaceAll('\$', '')
+        .replaceAll(suffix, '')
+        .replaceAll(',', '');
     if (cleanText.isEmpty) return '';
 
     final number = double.tryParse(cleanText);
@@ -19,9 +24,9 @@ class CurrencySuffixFormatter extends TextInputFormatter {
     final formattedWhole = NumberFormat('#,###').format(wholePart);
 
     if (parts.length > 1) {
-    String decimalPart = parts[1];
-    if (decimalPart.length > 2) decimalPart = decimalPart.substring(0, 2);
-    return '$formattedWhole.$decimalPart$suffix';
+      String decimalPart = parts[1];
+      if (decimalPart.length > 2) decimalPart = decimalPart.substring(0, 2);
+      return '$formattedWhole.$decimalPart$suffix';
     }
 
     return '$formattedWhole$suffix';
@@ -68,11 +73,11 @@ class CurrencySuffixFormatter extends TextInputFormatter {
     String newFormattedText;
 
     if (parts.length > 1) {
-    String decimalPart = parts[1];
-    if (decimalPart.length > 2) decimalPart = decimalPart.substring(0, 2);
-    newFormattedText = '$formattedWhole.$decimalPart$suffix';
+      String decimalPart = parts[1];
+      if (decimalPart.length > 2) decimalPart = decimalPart.substring(0, 2);
+      newFormattedText = '$formattedWhole.$decimalPart$suffix';
     } else {
-    newFormattedText = '$formattedWhole$suffix';
+      newFormattedText = '$formattedWhole$suffix';
     }
     int selectionIndex = newFormattedText.length - suffix.length;
 
