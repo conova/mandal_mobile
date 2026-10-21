@@ -137,11 +137,23 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
   void didUpdateWidget(BondDetailTradingView oldWidget) {
     super.didUpdateWidget(oldWidget);
     
+    // Sync price if it changes from outside
+    if (oldWidget.price != widget.price) {
+      final formatted = CurrencySuffixFormatter.format(widget.price.toString(), suffix: widget.bond.isForeign ? '\$' : '₮');
+      if (_priceController.text != formatted) {
+        _priceController.removeListener(_onInputsChanged);
+        _priceController.text = formatted;
+        _priceController.addListener(_onInputsChanged);
+      }
+    }
+
     // Sync quantity if it changes from outside
     if (oldWidget.quantity != widget.quantity) {
       final formatted = CurrencySuffixFormatter.format(widget.quantity.toString(), suffix: '');
       if (_quantityController.text != formatted) {
+        _quantityController.removeListener(_onInputsChanged);
         _quantityController.text = formatted;
+        _quantityController.addListener(_onInputsChanged);
       }
     }
 
@@ -199,7 +211,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     final totalPayment = (quantity * unitPrice) + commission;
     final yieldInfo = openBondYield(
       widget.bond,
-      unitCost: unitPrice * (1 + commissionRate),
+      unitPrice * (1 + commissionRate),
     );
 
     //final expectedReturn = total * rate / 100;
@@ -357,9 +369,9 @@ int _settleDaysOf(MarketInstrument bond) =>
 /// эзэмшиж эхлэх өдөр) хойш авах купоны нийлбэр (нэг ширхэг) болон YTM rate.
 /// [unitCost] — нэг ширхэгийн нийт төлөх дүн (үнэ + ХХ + шимтгэл).
 ({double perUnit, double? ytm}) openBondYield(
-  MarketInstrument bond, {
-  required double unitCost,
-}) {
+  MarketInstrument bond,
+  double unitCost,
+) {
   final schedule = _scheduleOf(bond);
   if (schedule == null) return (perUnit: 0, ytm: null);
   final settle = addBusinessDays(

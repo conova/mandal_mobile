@@ -26,6 +26,7 @@ class _BondMainScreenState extends State<BondMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  late final FocusNode _searchFocusNode;
 
   bool _myBondsLoading = true;
   List<MarketInstrument> _myBonds = const [];
@@ -44,6 +45,7 @@ class _BondMainScreenState extends State<BondMainScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _searchFocusNode = FocusNode();
     Future.microtask(_fetchMyBonds);
     Future.microtask(_fetchBondList);
   }
@@ -110,6 +112,7 @@ class _BondMainScreenState extends State<BondMainScreen>
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -346,6 +349,7 @@ class _BondMainScreenState extends State<BondMainScreen>
               if (!_isSearchExpanded) {
                 _searchQuery = '';
                 _searchController.clear();
+                _searchFocusNode.unfocus();
               }
             });
           },
@@ -415,6 +419,8 @@ class _BondMainScreenState extends State<BondMainScreen>
       ),
       child: TextField(
         controller: _searchController,
+        focusNode: _searchFocusNode,
+        autofocus: true,
         onChanged: (value) => setState(() => _searchQuery = value),
         style: theme.textTheme.bodyMedium?.copyWith(color: extendedColors.neutral100),
         textAlignVertical: TextAlignVertical.center,

@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:printing/printing.dart';
 import 'package:flutter/foundation.dart';
+import 'package:printing/printing.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/extended_colors.dart';
 import '../widgets/circle_back_button.dart';
-import '../widgets/custom_snackbar.dart';
 import '../widgets/custom_svg_icon.dart';
 
 class PdfViewerScreen extends StatefulWidget {
@@ -23,6 +22,26 @@ class PdfViewerScreen extends StatefulWidget {
 }
 
 class _PdfViewerScreenState extends State<PdfViewerScreen> {
+  late Future<Uint8List> _pdfFuture;
+  final ScrollController _scrollController = ScrollController();
+
+  // Zoom/pan state for InteractiveViewer
+  final TransformationController _transformController =
+  TransformationController();
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfFuture = _fetchPdf();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _transformController.dispose();
+    super.dispose();
+  }
+
   Future<Uint8List> _fetchPdf() async {
     try {
       final response = await Dio().get<Uint8List>(
@@ -37,6 +56,11 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       debugPrint('Error fetching PDF: $e');
       rethrow;
     }
+  }
+
+  /// Resets zoom to default (useful as a "fit to width" button)
+  void _resetZoom() {
+    _transformController.value = Matrix4.identity();
   }
 
   @override
@@ -60,43 +84,223 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         backgroundColor: extendedColors.bgBase,
         elevation: 0,
         leadingWidth: 60,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20, top: 8, bottom: 8),
           child: CircleBackButton(),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Reset zoom',
+            icon: Icon(Icons.fit_screen, color: extendedColors.neutral100),
+            onPressed: _resetZoom,
+          ),
+        ],
       ),
-      body: InteractiveViewer(
-        panEnabled: true, // Allows dragging/panning
-        minScale: 0.5,
-        maxScale: 4.0, // Allows zooming up to 4x
-        child: PdfPreview(
-          build: (format) => _fetchPdf(),
-          useActions: true,
-          canChangePageFormat: false,
-          canChangeOrientation: false,
-          canDebug: false,
-          loadingWidget: const Center(child: CircularProgressIndicator()),
-          onError: (context, error) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomSvgIcon('info-circle', size: 48, color: extendedColors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.errorLoadingPDF,
-                    style: TextStyle(color: extendedColors.neutral100),
+      body: FutureBuilder<Uint8List>(
+        future: _pdfFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return _buildError(extendedColors, l10n);
+          }
+
+          return PdfPreview.builder(
+            build: (format) => snapshot.data!,
+            useActions: true,
+            canChangePageFormat: false,
+            canChangeOrientation: false,
+            canDebug: false,
+            loadingWidget: const Center(child: CircularProgressIndicator()),
+            onError: (context, error) => _buildError(extendedColors, l10n),
+            pagesBuilder: (context, pages) {
+              return _PdfPagesView(
+                pages: pages,
+                extendedColors: extendedColors,
+                scrollController: _scrollController,
+                transformController: _transformController,
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildError(ExtendedColors extendedColors, AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CustomSvgIcon('info-circle', size: 48, color: extendedColors.red),
+          const SizedBox(height: 16),
+          Text(
+            l10n.errorLoadingPDF,
+            style: TextStyle(color: extendedColors.neutral100),
+          ),
+          TextButton(
+            onPressed: () => setState(() => _pdfFuture = _fetchPdf()),
+            child: Text(l10n.retry),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PdfPagesView extends StatefulWidget {
+  final List<PdfPreviewPageData> pages;
+  final ExtendedColors extendedColors;
+  final ScrollController scrollController;
+  final TransformationController transformController;
+
+  const _PdfPagesView({
+    required this.pages,
+    required this.extendedColors,
+    required this.scrollController,
+    required this.transformController,
+  });
+
+  @override
+  State<_PdfPagesView> createState() => _PdfPagesViewState();
+}
+
+class _PdfPagesViewState extends State<_PdfPagesView> {
+  int _currentPage = 0;
+
+  // One key per page, created lazily so it never goes out of range
+  // (PdfPreview may add pages to the same list while rendering)
+  final Map<int, GlobalKey> _itemKeys = {};
+  GlobalKey _keyFor(int index) => _itemKeys.putIfAbsent(index, () => GlobalKey());
+  final GlobalKey _listKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.scrollController.addListener(_onScroll);
+    // Initial calculation after first layout
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+  }
+
+  @override
+  void dispose() {
+    widget.scrollController.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!mounted) return;
+    final controller = widget.scrollController;
+    if (!controller.hasClients) return;
+
+    final pageCount = widget.pages.length;
+    if (pageCount == 0) return;
+
+    int newPage = _currentPage;
+    final pos = controller.position;
+
+    // 1) At the bottom -> always the last page
+    if (pos.maxScrollExtent > 0 && pos.pixels >= pos.maxScrollExtent - 4) {
+      newPage = pageCount - 1;
+    }
+    // 2) At the top -> always the first page
+    else if (pos.pixels <= 4) {
+      newPage = 0;
+    }
+    // 3) Otherwise: the page that covers the viewport's vertical center
+    else {
+      final listBox =
+      _listKey.currentContext?.findRenderObject() as RenderBox?;
+      if (listBox == null || !listBox.hasSize) return;
+
+      final listTop = listBox.localToGlobal(Offset.zero).dy;
+      final centerY = listTop + listBox.size.height / 2;
+
+      for (int i = 0; i < pageCount; i++) {
+        final ctx = _itemKeys[i]?.currentContext;
+        if (ctx == null) continue; // not built (off-screen)
+        final box = ctx.findRenderObject() as RenderBox?;
+        if (box == null || !box.hasSize) continue;
+
+        final top = box.localToGlobal(Offset.zero).dy;
+        final bottom = top + box.size.height;
+
+        if (top <= centerY && bottom >= centerY) {
+          newPage = i;
+          break;
+        }
+      }
+    }
+
+    if (newPage != _currentPage) {
+      setState(() => _currentPage = newPage);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Snapshot: PdfPreview mutates/clears its page list while re-rendering,
+    // which makes pages[index] throw RangeError inside the lazy itemBuilder.
+    final pages = List<PdfPreviewPageData>.of(widget.pages);
+    final currentPage =
+    pages.isEmpty ? 0 : _currentPage.clamp(0, pages.length - 1);
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Stack(
+      children: [
+        // Zoomable + scrollable content
+        InteractiveViewer(
+          transformationController: widget.transformController,
+          panEnabled: false, // scrolling is handled by ListView
+          scaleEnabled: true,
+          minScale: 1.0,
+          maxScale: 4.0,
+          child: Scrollbar(
+            controller: widget.scrollController,
+            thumbVisibility: true,
+            interactive: true,
+            child: ListView.builder(
+              key: _listKey,
+              controller: widget.scrollController,
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 80),
+              itemCount: pages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  key: _keyFor(index),
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image(
+                      image: pages[index].image,
+                      width: screenWidth - 24,
+                      fit: BoxFit.fitWidth,
+                      filterQuality: FilterQuality.medium,
+                    ),
                   ),
-                  TextButton(
-                    onPressed: () => setState(() {}),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
-            );
-          },
+                );
+              },
+            ),
+          ),
         ),
-      ),
+
+        // Floating "current page / total" indicator
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '${currentPage + 1} / ${pages.length}',
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
