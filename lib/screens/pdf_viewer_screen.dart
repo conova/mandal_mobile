@@ -22,12 +22,20 @@ class PdfViewerScreen extends StatefulWidget {
 }
 
 class _PdfViewerScreenState extends State<PdfViewerScreen> {
+  // Auto-retry configuration
+  static const int _maxAutoRetries = 2;
+  static const Duration _retryDelay = Duration(seconds: 6);
+
   late Future<Uint8List> _pdfFuture;
   final ScrollController _scrollController = ScrollController();
 
   // Zoom/pan state for InteractiveViewer
   final TransformationController _transformController =
   TransformationController();
+
+  // Auto-retry state for render errors
+  int _renderRetries = 0;
+  bool _reloadScheduled = false;
 
   @override
   void initState() {
@@ -42,19 +50,34 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     super.dispose();
   }
 
-  Future<Uint8List> _fetchPdf() async {
-    try {
-      final response = await Dio().get<Uint8List>(
-        widget.url,
-        options: Options(responseType: ResponseType.bytes),
-      );
-      if (response.data == null) {
-        throw Exception("Failed to load PDF data");
+  /// Downloads the PDF. On failure, waits [_retryDelay] (spinner stays visible
+  /// because the Future is still pending) and retries up to [_maxAutoRetries]
+  /// times before rethrowing.
+  ///
+  /// [delayFirst] is used when reloading after a render error, so the spinner
+  /// is shown for a few seconds before the new request starts.
+  Future<Uint8List> _fetchPdf({bool delayFirst = false}) async {
+    if (delayFirst) {
+      await Future.delayed(_retryDelay);
+    }
+
+    for (var attempt = 0;; attempt++) {
+      try {
+        if (!mounted) throw Exception('Screen disposed');
+        final response = await Dio().get<Uint8List>(
+          widget.url,
+          options: Options(responseType: ResponseType.bytes),
+        );
+        if (response.data == null) {
+          throw Exception("Failed to load PDF data");
+        }
+        return response.data!;
+      } catch (e) {
+        debugPrint('Error fetching PDF (attempt ${attempt + 1}): $e');
+        if (attempt >= _maxAutoRetries || !mounted) rethrow;
+        // Keep the loading spinner visible while waiting before the next try
+        await Future.delayed(_retryDelay);
       }
-      return response.data!;
-    } catch (e) {
-      debugPrint('Error fetching PDF: $e');
-      rethrow;
     }
   }
 
@@ -113,7 +136,22 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             canChangeOrientation: false,
             canDebug: false,
             loadingWidget: const Center(child: CircularProgressIndicator()),
-            onError: (context, error) => _buildError(extendedColors, l10n),
+            onError: (context, error) {
+              if (_renderRetries < _maxAutoRetries) {
+                if (!_reloadScheduled) {
+                  _reloadScheduled = true;
+                  _renderRetries++;
+                  // Can't call setState during build, so defer it
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _reloadScheduled = false;
+                    if (!mounted) return;
+                    setState(() => _pdfFuture = _fetchPdf(delayFirst: true));
+                  });
+                }
+                return const Center(child: CircularProgressIndicator());
+              }
+              return _buildError(extendedColors, l10n);
+            },
             pagesBuilder: (context, pages) {
               return _PdfPagesView(
                 pages: pages,
@@ -140,7 +178,10 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             style: TextStyle(color: extendedColors.neutral100),
           ),
           TextButton(
-            onPressed: () => setState(() => _pdfFuture = _fetchPdf()),
+            onPressed: () => setState(() {
+              _renderRetries = 0;
+              _pdfFuture = _fetchPdf();
+            }),
             child: Text(l10n.retry),
           ),
         ],
@@ -172,7 +213,8 @@ class _PdfPagesViewState extends State<_PdfPagesView> {
   // One key per page, created lazily so it never goes out of range
   // (PdfPreview may add pages to the same list while rendering)
   final Map<int, GlobalKey> _itemKeys = {};
-  GlobalKey _keyFor(int index) => _itemKeys.putIfAbsent(index, () => GlobalKey());
+  GlobalKey _keyFor(int index) =>
+      _itemKeys.putIfAbsent(index, () => GlobalKey());
   final GlobalKey _listKey = GlobalKey();
 
   @override

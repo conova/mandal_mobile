@@ -22,6 +22,10 @@ import 'bond_payment_details.dart';
 import 'bond_payment_details_bottom_sheet.dart';
 import 'bond_payment_schedule.dart';
 
+/// Үнийн талбарт зөвшөөрөх аравтын орны тоо (0 = бүхэл тоо).
+/// Бондын үнэ аравтын бутархайтай байж болох бол 2 болго.
+const int _priceDecimals = 2;
+
 /// Хоёрдогч + НЭЭЛТТЭЙ бондын арилжааны дизайн: авах ханш, ширхэг
 /// сонгогч, төлбөрийн задаргаа, захиалгын самбар.
 class BondDetailTradingView extends StatefulWidget {
@@ -60,6 +64,8 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
   Timer? _orderBookTimer;
   bool _orderBookFetching = false;
 
+  String get _currencySymbol => widget.bond.isForeign ? '\$' : '₮';
+
   @override
   void initState() {
     super.initState();
@@ -68,12 +74,21 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     Future.wait([TimeService.sync(), HolidayService.load()]).then((_) {
       if (mounted) setState(() {});
     });
+
     final initialPrice = widget.bond.closePrice ?? widget.bond.openPrice ?? 0;
     _priceController = TextEditingController(
-      text: CurrencySuffixFormatter.format(initialPrice.toString(), suffix: widget.bond.isForeign ? '\$' : '₮'),
+      text: CurrencySuffixFormatter.format(
+        initialPrice.toString(),
+        suffix: _currencySymbol,
+        maxDecimals: _priceDecimals,
+      ),
     );
     _quantityController = TextEditingController(
-      text: CurrencySuffixFormatter.format(widget.quantity.toString(), suffix: ''),
+      text: CurrencySuffixFormatter.format(
+        widget.quantity.toString(),
+        suffix: '',
+        maxDecimals: 0,
+      ),
     );
     _priceFocusNode = FocusNode();
     _quantityFocusNode = FocusNode();
@@ -92,7 +107,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     _orderBookTimer?.cancel();
     _orderBookTimer = Timer.periodic(
       const Duration(seconds: 5),
-      (_) => _fetchOrderBook(),
+          (_) => _fetchOrderBook(),
     );
   }
 
@@ -101,9 +116,9 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
     final raw = widget.bond.raw;
     final isPrimary = raw['MARKET']?.toString().toLowerCase() == 'primary';
     final pct = await context.read<AuthService>().getFeePercent(
-          stockType: raw['STOCKTYPE']?.toString() ?? '',
-          ipo: isPrimary,
-        );
+      stockType: raw['STOCKTYPE']?.toString() ?? '',
+      ipo: isPrimary,
+    );
     if (mounted) setState(() => _feePct = pct);
   }
 
@@ -136,31 +151,56 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
   @override
   void didUpdateWidget(BondDetailTradingView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
-    // Sync price if it changes from outside
-    if (oldWidget.price != widget.price) {
-      final formatted = CurrencySuffixFormatter.format(widget.price.toString(), suffix: widget.bond.isForeign ? '\$' : '₮');
-      if (_priceController.text != formatted) {
-        _priceController.removeListener(_onInputsChanged);
-        _priceController.text = formatted;
-        _priceController.addListener(_onInputsChanged);
-      }
+
+    // Хэрэглэгч бичиж байхад өөрийн илгээсэн утга буцаж ирдэг тул
+    // текстийг БИШ, ТООГ харьцуулна. Ингэхгүй бол "100,000.₮" гэх мэт
+    // завсрын текст дарагдаж, цэг устаж, курсор төгсгөл рүү үсэрнэ.
+    if (oldWidget.price != widget.price && _currentPrice != widget.price) {
+      _setSilently(
+        _priceController,
+        CurrencySuffixFormatter.format(
+          widget.price.toString(),
+          suffix: _currencySymbol,
+          maxDecimals: _priceDecimals,
+        ),
+        suffixLength: _currencySymbol.length,
+      );
     }
 
-    // Sync quantity if it changes from outside
-    if (oldWidget.quantity != widget.quantity) {
-      final formatted = CurrencySuffixFormatter.format(widget.quantity.toString(), suffix: '');
-      if (_quantityController.text != formatted) {
-        _quantityController.removeListener(_onInputsChanged);
-        _quantityController.text = formatted;
-        _quantityController.addListener(_onInputsChanged);
-      }
+    if (oldWidget.quantity != widget.quantity &&
+        _currentQuantity != widget.quantity) {
+      _setSilently(
+        _quantityController,
+        CurrencySuffixFormatter.format(
+          widget.quantity.toString(),
+          suffix: '',
+          maxDecimals: 0,
+        ),
+        suffixLength: 0,
+      );
     }
 
     if (oldWidget.bond.stockcode != widget.bond.stockcode) {
       _fetchOrderBook();
       _startOrderBookPolling();
     }
+  }
+
+  /// Listener-ийг түр салгаад текст солино; курсорыг дүрмийн тэмдэгтийн
+  /// өмнө тавина.
+  void _setSilently(
+      TextEditingController c,
+      String text, {
+        required int suffixLength,
+      }) {
+    c.removeListener(_onInputsChanged);
+    c.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(
+        offset: (text.length - suffixLength).clamp(0, text.length),
+      ),
+    );
+    c.addListener(_onInputsChanged);
   }
 
   @override
@@ -177,11 +217,11 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
   void _onInputsChanged() {
     setState(() {});
-    widget.onPriceChanged.call(_currentPrice.toDouble());
+    widget.onPriceChanged.call(_currentPrice);
     widget.onQuantityChanged.call(_currentQuantity);
   }
 
-  /// Үнэ — "100,000.0₮" хэлбэрийн текстээс; аравтын цэгийг хадгална
+  /// Үнэ — "100,000.5₮" хэлбэрийн текстээс; аравтын цэгийг хадгална
   /// (цэгийг хасвал 100000.0 → 1000000 болж 10 дахин өсдөг)
   double get _currentPrice {
     final text = _priceController.text.replaceAll(RegExp(r'[^0-9.]'), '');
@@ -202,7 +242,6 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
 
     final price = _currentPrice;
     final quantity = _currentQuantity;
-    //final total = (price * quantity).toDouble() + (price * quantity).toDouble() * commissionRate;
     final accruedInterest = openBondAccruedInterest(widget.bond);
 
     // Авах: (үнэ + ХХ) × тоо + шимтгэл; шимтгэл ХХ дээр ч тооцогдоно
@@ -213,8 +252,6 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
       widget.bond,
       unitPrice * (1 + commissionRate),
     );
-
-    //final expectedReturn = total * rate / 100;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +291,11 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                     ),
                   ),
                   Text(
-                    formatStockAmount(widget.cash, isForeign: widget.bond.isForeign, decimals: 0),
+                    formatStockAmount(
+                      widget.cash,
+                      isForeign: widget.bond.isForeign,
+                      decimals: 0,
+                    ),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: extendedColors.primaryMain,
                     ),
@@ -267,28 +308,40 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                 label: l10n.buyRate,
                 controller: _priceController,
                 focusNode: _priceFocusNode,
-                currencySymbol: widget.bond.isForeign ? '\$' : '₮',
+                currencySymbol: _currencySymbol,
+                maxDecimals: _priceDecimals,
               ),
               BondTradingQuantitySelector(
                 controller: _quantityController,
                 focusNode: _quantityFocusNode,
                 onIncrease: () {
-                  final current = _currentQuantity;
-                  final newVal = current + 1;
-                  _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
+                  final newVal = _currentQuantity + 1;
+                  _quantityController.text = CurrencySuffixFormatter.format(
+                    newVal.toString(),
+                    suffix: '',
+                    maxDecimals: 0,
+                  );
                 },
                 onDecrease: () {
                   final current = _currentQuantity;
                   if (current > 0) {
                     final newVal = current - 1;
-                    _quantityController.text = CurrencySuffixFormatter.format(newVal.toString(), suffix: '');
+                    _quantityController.text = CurrencySuffixFormatter.format(
+                      newVal.toString(),
+                      suffix: '',
+                      maxDecimals: 0,
+                    );
                   }
                 },
                 onChanged: (val) {},
               ),
               const SizedBox(height: 24),
               BondPaymentDetails(
-                totalPayment: formatStockAmount(totalPayment, isForeign: widget.bond.isForeign, decimals: 2),
+                totalPayment: formatStockAmount(
+                  totalPayment,
+                  isForeign: widget.bond.isForeign,
+                  decimals: 2,
+                ),
                 isWarning: totalPayment > widget.cash,
                 // Өгөөж — биелэх өдрөөс хойш авах хүүгийн нийлбэр × тоо,
                 // хажууд нь YTM rate (шимтгэлтэй нэг ширхэгийн төлөх дүнгээр)
@@ -304,7 +357,7 @@ class _BondDetailTradingViewState extends State<BondDetailTradingView> {
                   showBondPaymentDetailsSheet(
                     context: context,
                     quantity: quantity,
-                    piecePrice: _currentPrice.toDouble(),
+                    piecePrice: price,
                     accruedInterest: accruedInterest,
                     commissionRate: commissionRate,
                     feeIncludesAccruedInterest: true,
@@ -357,10 +410,10 @@ double openBondAccruedInterest(MarketInstrument bond) {
 }
 
 BondSchedule? _scheduleOf(MarketInstrument bond) => BondSchedule.build(
-      start: parseStockDate(bond.startDate),
-      end: parseStockDate(bond.endDate),
-      payPeriod: bond.payType,
-    );
+  start: parseStockDate(bond.startDate),
+  end: parseStockDate(bond.endDate),
+  payPeriod: bond.payType,
+);
 
 int _settleDaysOf(MarketInstrument bond) =>
     int.tryParse(bond.settleDay.trim()) ?? 2;
@@ -369,9 +422,9 @@ int _settleDaysOf(MarketInstrument bond) =>
 /// эзэмшиж эхлэх өдөр) хойш авах купоны нийлбэр (нэг ширхэг) болон YTM rate.
 /// [unitCost] — нэг ширхэгийн нийт төлөх дүн (үнэ + ХХ + шимтгэл).
 ({double perUnit, double? ytm}) openBondYield(
-  MarketInstrument bond,
-  double unitCost,
-) {
+    MarketInstrument bond,
+    double unitCost,
+    ) {
   final schedule = _scheduleOf(bond);
   if (schedule == null) return (perUnit: 0, ytm: null);
   final settle = addBusinessDays(
@@ -389,14 +442,14 @@ int _settleDaysOf(MarketInstrument bond) =>
     from: settle,
   );
   return (
-    perUnit: flows.fold(0.0, (sum, f) => sum + f.amount),
-    ytm: bondYtm(
-      price: unitCost,
-      coupons: flows,
-      nominal: nominal,
-      maturity: schedule.end,
-      from: settle,
-    ),
+  perUnit: flows.fold(0.0, (sum, f) => sum + f.amount),
+  ytm: bondYtm(
+    price: unitCost,
+    coupons: flows,
+    nominal: nominal,
+    maturity: schedule.end,
+    from: settle,
+  ),
   );
 }
 
@@ -419,10 +472,12 @@ class BondDetailTradingBottomBar extends StatefulWidget {
   });
 
   @override
-  State<BondDetailTradingBottomBar> createState() => _BondDetailTradingBottomBarState();
+  State<BondDetailTradingBottomBar> createState() =>
+      _BondDetailTradingBottomBarState();
 }
 
-class _BondDetailTradingBottomBarState extends State<BondDetailTradingBottomBar> {
+class _BondDetailTradingBottomBarState
+    extends State<BondDetailTradingBottomBar> {
   double _feePct = 0;
 
   @override
@@ -440,13 +495,14 @@ class _BondDetailTradingBottomBarState extends State<BondDetailTradingBottomBar>
   }
 
   Future<void> _fetchFee() async {
-    if (widget.bond == null) return;
-    final raw = widget.bond!.raw;
+    final bond = widget.bond;
+    if (bond == null) return;
+    final raw = bond.raw;
     final isPrimary = raw['MARKET']?.toString().toLowerCase() == 'primary';
     final pct = await context.read<AuthService>().getFeePercent(
-          stockType: raw['STOCKTYPE']?.toString() ?? '',
-          ipo: isPrimary,
-        );
+      stockType: raw['STOCKTYPE']?.toString() ?? '',
+      ipo: isPrimary,
+    );
     if (mounted) setState(() => _feePct = pct);
   }
 
@@ -477,7 +533,7 @@ class _BondDetailTradingBottomBarState extends State<BondDetailTradingBottomBar>
         color: extendedColors.bgBase,
         border: BorderDirectional(
           top: BorderSide(color: extendedColors.neutral500, width: 1),
-        )
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -488,7 +544,11 @@ class _BondDetailTradingBottomBarState extends State<BondDetailTradingBottomBar>
               decoration: BoxDecoration(color: extendedColors.primary200),
               child: Row(
                 children: [
-                  CustomSvgIcon('info-circle', color: extendedColors.primaryMain, size: 22),
+                  CustomSvgIcon(
+                    'info-circle',
+                    color: extendedColors.primaryMain,
+                    size: 22,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -518,7 +578,11 @@ class _BondDetailTradingBottomBarState extends State<BondDetailTradingBottomBar>
                             color: extendedColors.primaryMain,
                           ),
                         ),
-                        CustomSvgIcon('chevron-up', color: extendedColors.primaryMain, size: 16,),
+                        CustomSvgIcon(
+                          'chevron-up',
+                          color: extendedColors.primaryMain,
+                          size: 16,
+                        ),
                       ],
                     ),
                   ),
@@ -535,62 +599,61 @@ class _BondDetailTradingBottomBarState extends State<BondDetailTradingBottomBar>
                   label: l10n.placeOrder,
                   onPressed: (quantity > 0 && price > 0 && !isOverCash)
                       ? () async {
-                          final raw = bond?.raw ?? const {};
-                          // Шимтгэлийн хувь — /user/fees (кэштэй тул хурдан)
-                          final isPrimary = raw['MARKET']
-                                  ?.toString()
-                                  .toLowerCase() ==
-                              'primary';
-                          final feePct =
-                              await context.read<AuthService>().getFeePercent(
-                                    stockType:
-                                        raw['STOCKTYPE']?.toString() ?? '',
-                                    ipo: isPrimary,
-                                  );
-                          if (!context.mounted) return;
-                          // (үнэ + ХХ) × тоо дээр шимтгэл — карт, sheet-тэй ижил
-                          final accrued = bond == null
-                              ? 0.0
-                              : openBondAccruedInterest(bond!);
-                          final gross = (price + accrued) * quantity;
-                          final fee = gross * feePct / 100;
-                          final exp = DateTime.now()
-                              .add(const Duration(days: 30));
-                          String two(int n) => n.toString().padLeft(2, '0');
-                          final symbol = bond?.symbol ?? '';
-                          Navigator.pushNamed(
-                            context,
-                            '/bond_confirmation',
-                            arguments: {
-                              'bond': raw,
-                              'qty': quantity,
-                              'price': price,
-                              'fee': fee,
-                              'feePct': feePct,
-                              'accruedInterest': accrued * quantity,
-                              'total': gross + fee,
-                              'isForeign': bond?.isForeign ?? false,
-                              'order': {
-                                'STOCKCODE': bond?.stockcode ?? '',
-                                'CNT': quantity.toString(),
-                                'PRICE': price.toString(),
-                                // 0 — авах
-                                'TXNTYPE': '0',
-                                'ORDERTYPE': '1',
-                                'CONDID': '18',
-                                'DESCR':
-                                    'App: $symbol бонд авах $quantity ширхэг, нэгж үнэ $price',
-                                'EXPDATE':
-                                    '${exp.year}/${two(exp.month)}/${two(exp.day)}',
-                                'FEE': '1',
-                              },
-                            },
-                          );
-                        }
+                    final raw = bond?.raw ?? const {};
+                    // Шимтгэлийн хувь — /user/fees (кэштэй тул хурдан)
+                    final isPrimary =
+                        raw['MARKET']?.toString().toLowerCase() ==
+                            'primary';
+                    final feePct =
+                    await context.read<AuthService>().getFeePercent(
+                      stockType:
+                      raw['STOCKTYPE']?.toString() ?? '',
+                      ipo: isPrimary,
+                    );
+                    if (!context.mounted) return;
+                    // (үнэ + ХХ) × тоо дээр шимтгэл — карт, sheet-тэй ижил
+                    final accrued = bond == null
+                        ? 0.0
+                        : openBondAccruedInterest(bond);
+                    final gross = (price + accrued) * quantity;
+                    final fee = gross * feePct / 100;
+                    final exp =
+                    DateTime.now().add(const Duration(days: 30));
+                    String two(int n) => n.toString().padLeft(2, '0');
+                    final symbol = bond?.symbol ?? '';
+                    Navigator.pushNamed(
+                      context,
+                      '/bond_confirmation',
+                      arguments: {
+                        'bond': raw,
+                        'qty': quantity,
+                        'price': price,
+                        'fee': fee,
+                        'feePct': feePct,
+                        'accruedInterest': accrued * quantity,
+                        'total': gross + fee,
+                        'isForeign': bond?.isForeign ?? false,
+                        'order': {
+                          'STOCKCODE': bond?.stockcode ?? '',
+                          'CNT': quantity.toString(),
+                          'PRICE': price.toString(),
+                          // 0 — авах
+                          'TXNTYPE': '0',
+                          'ORDERTYPE': '1',
+                          'CONDID': '18',
+                          'DESCR':
+                          'App: $symbol бонд авах $quantity ширхэг, нэгж үнэ $price',
+                          'EXPDATE':
+                          '${exp.year}/${two(exp.month)}/${two(exp.day)}',
+                          'FEE': '1',
+                        },
+                      },
+                    );
+                  }
                       : null,
                 ),
               ),
-            )
+            ),
           ),
         ],
       ),

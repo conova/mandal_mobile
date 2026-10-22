@@ -364,6 +364,7 @@ class _BondSellScreenState extends State<BondSellScreen> {
               StockTradingOrderBoard(
                 buyOrders: _buyOrders,
                 sellOrders: _sellOrders,
+                marketPrice: _num(['STOCKPRICE']),
                 isForeign: _isForeign,
               )
             else
