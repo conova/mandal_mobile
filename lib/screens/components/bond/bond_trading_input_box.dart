@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mandal_capital/theme/extended_colors.dart';
 
 import '../../../widgets/currency_suffix_formatter.dart';
@@ -10,12 +9,16 @@ class BondTradingInputBox extends StatefulWidget {
   final FocusNode focusNode;
   final String currencySymbol;
 
+  /// 0 = whole numbers only. Use 2 if the price can have decimals.
+  final int maxDecimals;
+
   const BondTradingInputBox({
     super.key,
     required this.label,
     required this.controller,
     required this.focusNode,
     this.currencySymbol = '₮',
+    this.maxDecimals = 0,
   });
 
   @override
@@ -27,13 +30,14 @@ class _BondTradingInputBoxState extends State<BondTradingInputBox> {
   void initState() {
     super.initState();
     widget.focusNode.addListener(_handleFocusChange);
-    
-    // Ensure initial text is formatted with the correct currency symbol
+    widget.controller.addListener(_keepCursorBeforeSuffix);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && widget.controller.text.isNotEmpty) {
         final formatted = CurrencySuffixFormatter.format(
-          widget.controller.text, 
+          widget.controller.text,
           suffix: widget.currencySymbol,
+          maxDecimals: widget.maxDecimals,
         );
         if (widget.controller.text != formatted) {
           widget.controller.text = formatted;
@@ -53,13 +57,31 @@ class _BondTradingInputBoxState extends State<BondTradingInputBox> {
 
   @override
   void dispose() {
+    widget.controller.removeListener(_keepCursorBeforeSuffix);
     widget.focusNode.removeListener(_handleFocusChange);
     super.dispose();
   }
 
+  void _keepCursorBeforeSuffix() {
+    final c = widget.controller;
+    final s = widget.currencySymbol;
+    final sel = c.selection;
+    if (s.isEmpty || !sel.isValid || !sel.isCollapsed) return;
+    if (!c.text.endsWith(s)) return;
+
+    final maxOffset = c.text.length - s.length;
+    if (sel.baseOffset > maxOffset) {
+      c.selection = TextSelection.collapsed(offset: maxOffset);
+    }
+  }
+
   void _handleFocusChange() {
     if (!widget.focusNode.hasFocus && widget.controller.text.isEmpty) {
-      widget.controller.text = CurrencySuffixFormatter.format('0', suffix: widget.currencySymbol);
+      widget.controller.text = CurrencySuffixFormatter.format(
+        '0',
+        suffix: widget.currencySymbol,
+        maxDecimals: widget.maxDecimals,
+      );
     }
     setState(() {});
   }
@@ -99,16 +121,21 @@ class _BondTradingInputBoxState extends State<BondTradingInputBox> {
                   child: TextField(
                     controller: widget.controller,
                     focusNode: widget.focusNode,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: widget.maxDecimals > 0,
+                    ),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: widget.focusNode.hasFocus
                           ? extendedColors.primaryMain
                           : extendedColors.neutral100,
                     ),
+                    // IMPORTANT: no FilteringTextInputFormatter.digitsOnly here
                     inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      CurrencySuffixFormatter(suffix: widget.currencySymbol),
+                      CurrencySuffixFormatter(
+                        suffix: widget.currencySymbol,
+                        maxDecimals: widget.maxDecimals,
+                      ),
                     ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
